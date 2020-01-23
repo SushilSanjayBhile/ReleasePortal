@@ -1,0 +1,82 @@
+[
+    {
+        "Subgroup": "StandardScenarios",
+        "Total TCs": 22.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 11.0,
+        "Automated %": 50.0
+    },
+    {
+        "Subgroup": "Reboot",
+        "Total TCs": 13.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 8.0,
+        "Automated %": 61.54
+    },
+    {
+        "Subgroup": "KubernetesSnapshot",
+        "Total TCs": 14.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 7.0,
+        "Automated %": 50.0
+    },
+    {
+        "Subgroup": "Stress",
+        "Total TCs": 8.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 2.0,
+        "Automated %": 25.0
+    },
+    {
+        "Subgroup": "Negative",
+        "Total TCs": 6.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 5.0,
+        "Automated %": 83.33
+    },
+    {
+        "Subgroup": "BackupController",
+        "Total TCs": 48.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 6.0,
+        "Automated %": 12.5
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": ""
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 111.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 39.0,
+        "Automated %": 35.14
+    }
+]

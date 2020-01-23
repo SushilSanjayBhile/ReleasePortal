@@ -1,0 +1,46 @@
+[
+    {
+        "Role": "",
+        "Operation allowed": ""
+    },
+    {
+        "Role": "Node-edit",
+        "Operation allowed": "Cluster-edit (Cluster create/destroy), drive list, node list, add/remove nodes (dctl cluster add/remove)"
+    },
+    {
+        "Role": "Node-view",
+        "Operation allowed": "Drives list, node get / list."
+    },
+    {
+        "Role": "User-edit",
+        "Operation allowed": "Authserver create, delete, edit. \nGroup create, delete, edit, get, list. \nUser create, delete, edit, get, list\nRole get, list."
+    },
+    {
+        "Role": "User-view",
+        "Operation allowed": "Authserver create, delete, edit. \nGroup  get, list. \nUser get, list\nRole get, list."
+    },
+    {
+        "Role": "Allcontainer-edit",
+        "Operation allowed": "Authserver - None\nCluster - Get\nContainer - Get\nContainerSummary - Get\nDrive -None\nEndpoint - Get, Describe, Delete\nEvents - Get\nGroups - None\nMetrics - Get\nNamespaces - Get\nNetwork - None\nNode - None\nNodeSummary - None\nPerfTier - Get\nPods - Get\nPodSumarry - Get\nProfile - Get\nReservation - Get, Post, Delete\nRole - None\nUser -None\nVolumeClaim - Get\nVolumeClaimSummary - Get\nVolume - None\nVolumeSummary - None"
+    },
+    {
+        "Role": "Allcontainer-view",
+        "Operation allowed": "Authserver - None\nCluster - Get\nContainer - Get\nContainerSummary - Get\nDrive -None\nEndpoint - Get, Describe, Delete\nEvents - Get\nGroups - None\nMetrics - None\nNamespaces - Get\nNetwork - None\nNode - None\nNodeSummary - None\nPerfTier - None\nPods - Get\nPodSumarry - Get\nProfile - Get\nReservation - Get\nRole - None\nUser -None\nVolumeClaim - Get\nVolumeClaimSummary - Get\nVolume - None\nVolumeSummary - None"
+    },
+    {
+        "Role": "Container-edit",
+        "Operation allowed": "Authserver - None\nCluster - Get\nContainer - Get\nContainerSummary - Get\nDrive -None\nEndpoint - Get, Describe, Delete\nEvents - Get\nGroups - None\nMetrics - None\nNamespaces - None\nNetwork - None\nNode - None\nNodeSummary - None\nPerfTier - Get\nPods - Get\nPodSumarry - Get\nProfile - Get\nReservation - Get\nRole - None\nUser -None\nVolumeClaim - Get\nVolumeClaimSummary - Get\nVolume - None\nVolumeSummary - None"
+    },
+    {
+        "Role": "Container-view",
+        "Operation allowed": "Authserver - None\nCluster - Get\nContainer - Get\nContainerSummary - Get\nDrive -None\nEndpoint - Get, Describe, Delete\nEvents - Get\nGroups - None\nMetrics - None\nNamespaces - None\nNetwork - None\nNode - None\nNodeSummary - None\nPerfTier - None \nPods - Get\nPodSumarry - Get\nProfile - Get\nReservation - Get\nRole - None\nUser -None\nVolumeClaim - Get\nVolumeClaimSummary - Get\nVolume - None\nVolumeSummary - None"
+    },
+    {
+        "Role": "Volumeclaim-edit",
+        "Operation allowed": "Authserver - None\nCluster - Get\nContainer - None\nContainerSummary - None\nDrive -None\nEndpoint - None\nEvents - Get\nGroups - None\nMetrics - None\nNamespaces - None\nNetwork - None\nNode - None\nNodeSummary - None\nPerfTier - None \nPods - None\nPodSumarry - None\nProfile - Get\nReservation - None\nRole - None\nUser -None\nVolumeClaim - None\nVolumeClaimSummary - None\nVolume - None\nVolumeSummary - None"
+    },
+    {
+        "Role": "required",
+        "Operation allowed": "Authserver - None\nCluster - Get (cannot perform get)\nContainer - None\nContainerSummary - None\nDrive -None\nEndpoint - None\nEvents - Get (cannot perform get)\nGroups - None\nMetrics - Get (cannot perform get)\nNamespaces - None\nNetwork - None\nNode - None\nNodeSummary - None\nPerfTier - None \nPods - None\nPodSumarry - None\nProfile - Get\nReservation - None\nRole - None\nUser -None\nVolumeClaim - None\nVolumeClaimSummary - None\nVolume - None\nVolumeSummary - None"
+    }
+]

@@ -1,0 +1,92 @@
+[
+    {
+        "Subgroup": "Benchmarking",
+        "Total TCs": 19.0,
+        "Ran (Coverage)": 19.0,
+        "Coverage %": 100.0,
+        "Passed": 18.0,
+        "Passed %": 94.74,
+        "Automated": 13.0,
+        "Automated %": 68.42
+    },
+    {
+        "Subgroup": "scheduling",
+        "Total TCs": 8.0,
+        "Ran (Coverage)": 8.0,
+        "Coverage %": 100.0,
+        "Passed": 8.0,
+        "Passed %": 100.0,
+        "Automated": 8.0,
+        "Automated %": 100.0
+    },
+    {
+        "Subgroup": "QoS",
+        "Total TCs": 16.0,
+        "Ran (Coverage)": 16.0,
+        "Coverage %": 100.0,
+        "Passed": 13.0,
+        "Passed %": 81.25,
+        "Automated": 15.0,
+        "Automated %": 93.75
+    },
+    {
+        "Subgroup": "Other tests",
+        "Total TCs": 16.0,
+        "Ran (Coverage)": 16.0,
+        "Coverage %": 100.0,
+        "Passed": 14.0,
+        "Passed %": 87.5,
+        "Automated": 9.0,
+        "Automated %": 56.25
+    },
+    {
+        "Subgroup": "snmp",
+        "Total TCs": 17.0,
+        "Ran (Coverage)": 17.0,
+        "Coverage %": 100.0,
+        "Passed": 17.0,
+        "Passed %": 100.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Chaos Monkey",
+        "Total TCs": 12.0,
+        "Ran (Coverage)": 12.0,
+        "Coverage %": 100.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "EventList",
+        "Total TCs": 12.0,
+        "Ran (Coverage)": 12.0,
+        "Coverage %": 100.0,
+        "Passed": 12.0,
+        "Passed %": 100.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": ""
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 100.0,
+        "Ran (Coverage)": 100.0,
+        "Coverage %": 100.0,
+        "Passed": 82.0,
+        "Passed %": 82.0,
+        "Automated": 45.0,
+        "Automated %": 45.0
+    }
+]

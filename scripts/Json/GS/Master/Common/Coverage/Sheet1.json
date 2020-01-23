@@ -1,0 +1,78 @@
+[
+    {
+        "Release Name : GA-X.X.X-Common": "Last Updated : ",
+        "": ""
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "",
+        "": ""
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "Test Sheets",
+        "": "Automated %"
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "",
+        "": ""
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "Multizone Cluster.xlsx",
+        "": 0.0
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "Kubernetes-tests.xlsx",
+        "": 46.99
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "Helm TestCases.xlsx",
+        "": 0.0
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "KVM.xlsx",
+        "": 65.52
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "Management Testcases.xlsx",
+        "": 32.88
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "Rbac.xlsx",
+        "": 73.29
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "Vagrant Cluster.xlsx",
+        "": 0.0
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "NVME Compliance.xlsx",
+        "": 100.0
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "",
+        "": ""
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "",
+        "": ""
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "Total",
+        "": 58.32
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "",
+        "": ""
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "GUI.xlsx",
+        "": 26.94
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "Storage - Driveset TCs.xlsx",
+        "": 0.0
+    },
+    {
+        "Release Name : GA-X.X.X-Common": "Dctl commands.xlsx",
+        "": 0.0
+    }
+]

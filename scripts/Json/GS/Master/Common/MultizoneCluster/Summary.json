@@ -1,0 +1,92 @@
+[
+    {
+        "Subgroup": "Management",
+        "Total TCs": 30.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Networking",
+        "Total TCs": 14.0,
+        "Ran (Coverage)": 5.0,
+        "Coverage %": 35.71,
+        "Passed": 5.0,
+        "Passed %": 100.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Storage",
+        "Total TCs": 19.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Backup Controller",
+        "Total TCs": 6.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Upgrade/Update cluster",
+        "Total TCs": 3.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Cluster Backup Restore",
+        "Total TCs": 23.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Zone Capability",
+        "Total TCs": 42.0,
+        "Ran (Coverage)": 23.0,
+        "Coverage %": 54.76,
+        "Passed": 23.0,
+        "Passed %": 100.0,
+        "Automated": 4.0,
+        "Automated %": 9.52
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": ""
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 137.0,
+        "Ran (Coverage)": 5.0,
+        "Coverage %": 3.65,
+        "Passed": 5.0,
+        "Passed %": 100.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    }
+]

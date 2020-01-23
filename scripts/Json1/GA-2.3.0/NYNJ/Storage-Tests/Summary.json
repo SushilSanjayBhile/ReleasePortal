@@ -1,0 +1,152 @@
+[
+    {
+        "Subgroup": "Standard Scenarios",
+        "Total TCs": 20.0,
+        "Ran (Coverage)": 20.0,
+        "Coverage %": 100.0,
+        "Passed": 18.0,
+        "Passed %": 90.0,
+        "Automated": 14.0,
+        "Automated %": 70.0
+    },
+    {
+        "Subgroup": "LDFS",
+        "Total TCs": 17.0,
+        "Ran (Coverage)": 17.0,
+        "Coverage %": 100.0,
+        "Passed": 17.0,
+        "Passed %": 100.0,
+        "Automated": 12.0,
+        "Automated %": 70.59
+    },
+    {
+        "Subgroup": "Negative Scenarios",
+        "Total TCs": 8.0,
+        "Ran (Coverage)": 8.0,
+        "Coverage %": 100.0,
+        "Passed": 8.0,
+        "Passed %": 100.0,
+        "Automated": 8.0,
+        "Automated %": 100.0
+    },
+    {
+        "Subgroup": "Stress Scenarios",
+        "Total TCs": 11.0,
+        "Ran (Coverage)": 11.0,
+        "Coverage %": 100.0,
+        "Passed": 6.0,
+        "Passed %": 54.55,
+        "Automated": 11.0,
+        "Automated %": 100.0
+    },
+    {
+        "Subgroup": "Limit Testing",
+        "Total TCs": 4.0,
+        "Ran (Coverage)": 4.0,
+        "Coverage %": 100.0,
+        "Passed": 4.0,
+        "Passed %": 100.0,
+        "Automated": 4.0,
+        "Automated %": 100.0
+    },
+    {
+        "Subgroup": "Simulation Testing",
+        "Total TCs": 15.0,
+        "Ran (Coverage)": 15.0,
+        "Coverage %": 100.0,
+        "Passed": 15.0,
+        "Passed %": 100.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "iSCSI",
+        "Total TCs": 0.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Migration",
+        "Total TCs": 0.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Nfs",
+        "Total TCs": 11.0,
+        "Ran (Coverage)": 11.0,
+        "Coverage %": 100.0,
+        "Passed": 11.0,
+        "Passed %": 100.0,
+        "Automated": 5.0,
+        "Automated %": 45.45
+    },
+    {
+        "Subgroup": "Resize",
+        "Total TCs": 27.0,
+        "Ran (Coverage)": 27.0,
+        "Coverage %": 100.0,
+        "Passed": 26.0,
+        "Passed %": 96.3,
+        "Automated": 7.0,
+        "Automated %": 25.93
+    },
+    {
+        "Subgroup": "Restore",
+        "Total TCs": 40.0,
+        "Ran (Coverage)": 39.0,
+        "Coverage %": 97.5,
+        "Passed": 39.0,
+        "Passed %": 100.0,
+        "Automated": 16.0,
+        "Automated %": 40.0
+    },
+    {
+        "Subgroup": "Replicate",
+        "Total TCs": 22.0,
+        "Ran (Coverage)": 22.0,
+        "Coverage %": 100.0,
+        "Passed": 19.0,
+        "Passed %": 86.36,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "CSI Plugin",
+        "Total TCs": 32.0,
+        "Ran (Coverage)": 32.0,
+        "Coverage %": 100.0,
+        "Passed": 30.0,
+        "Passed %": 93.75,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": ""
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 207.0,
+        "Ran (Coverage)": 206.0,
+        "Coverage %": 99.52,
+        "Passed": 193.0,
+        "Passed %": 93.69,
+        "Automated": 77.0,
+        "Automated %": 37.2
+    }
+]
