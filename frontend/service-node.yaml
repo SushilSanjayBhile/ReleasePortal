@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nodejs-service
+spec:
+  selector:
+    name: nodejs
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 5051
+  type: LoadBalancer 
+  externalIPs:
+    - 80.11.12.10

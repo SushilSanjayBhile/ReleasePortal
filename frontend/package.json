@@ -1,0 +1,27 @@
+{
+    "name": "d3",
+    "version": "0.0.0",
+    "license": "MIT",
+    "scripts": {
+        "ng": "ng",
+        "start": "npm run start-all-servers",
+        "build": "ng build --prod",
+        "test": "ng test",
+        "lint": "ng lint",
+        "e2e": "ng e2e",
+        "proxy": "node proxy-server.js",
+        "mock-server": "node app-server.js",
+        "start-all-servers": "concurrently --kill-others \"npm run proxy\" \"npm run mock-server\""
+    },
+    "private": true,
+    "dependencies": {
+        "concurrently": "^5.0.1",
+        "express": "^4.17.1",
+        "http": "0.0.0",
+        "http-proxy": "^1.18.0",
+        "jsonfile": "^5.0.0",
+        "node-rest-client": "^3.1.0",
+        "nodemon": "^2.0.2"
+    },
+    "devDependencies": {}
+}
