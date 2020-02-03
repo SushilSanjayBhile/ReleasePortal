@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs-deployment
+  labels:
+    name: nodejs
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: nodejs
+  template:
+    metadata:
+      labels:
+        name: nodejs
+    spec:
+      containers:
+        - name: nodejs-container
+          image: blackwidow1088/dockernodejs:rp10
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5051

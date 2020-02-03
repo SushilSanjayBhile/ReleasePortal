@@ -1,0 +1,14 @@
+@import '../../scss/variables';
+
+
+.rp-app-table-small .table-responsive {
+  overflow-y: scroll;
+  max-height: 18rem;
+  scrollbar-width: 1rem;
+}
+
+.rp-app-table-medium .table-responsive {
+  overflow-y: scroll;
+  max-height: 30rem;
+  scrollbar-width: 1rem;
+}

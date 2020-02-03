@@ -1,0 +1,38 @@
+@import './../../scss/variables';
+
+.rp-dc-header {
+  background-color: $app-secondary-color;
+  color: $app-font-color-light;
+  text-decoration-color: $app-font-color-light;
+  border-style: solid;
+  border-color: $app-primary-color;
+  border-width: 0px 0px 2px 0px;
+}
+
+.rp-dc-logo {
+  max-height: 3.5rem;
+  margin-top: 0.2rem;
+}
+
+.rp-dc-avatar {
+  height: 3rem;
+  float: right;
+  margin-top: 0.5rem;
+  margin-right: 2rem;
+}
+
+.rp-dc-select-release {
+  margin-top: 1rem;
+  max-width: 15rem;
+}
+.rp-app-table-title { 
+  text-transform: uppercase;
+}
+
+.d-md-down-none{
+  position: absolute;
+  right: 100px;
+}
+ .navbar {
+  height: 65px;
+}

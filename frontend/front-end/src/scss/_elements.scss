@@ -1,0 +1,535 @@
+@import './variables';
+
+body {
+  // change 1
+  // background-color: white;
+  background-color: rgba(228, 229, 230, 0.3);
+  font-weight: 400;
+  font-size: 14px;
+  overflow-x: hidden;
+}
+
+i {
+  font-size: 1rem !important;
+  // Change
+  // color: $app-primary-color;
+  color: $app-secondary-color-light;
+}
+
+th {
+  color: $app-secondary-color;
+}
+
+.carousel-control {
+  &-prev {
+    width: 1rem;
+  }
+
+  &-next {
+    width: 1rem;
+  }
+}
+
+.card {
+  margin-bottom: 0.75rem;
+}
+
+.card-header {
+  padding: 0.25rem 0.75rem;
+}
+
+.main .container-fluid {
+  padding: 0px;
+}
+
+.rp-app-table-title {
+  //change
+  font-family: Open Sans, sans-serif;
+  font-size: 13px;
+  font-weight: 550;
+  color: $app-secondary-color-light;
+}
+
+//change 2
+.rp-summary-tables {
+  background-color: white;
+  font-size: 14px;
+  margin: 1rem .2rem 1rem 3.5rem;
+  border: 1px solid #fff;
+  padding: 0.4rem;
+  box-shadow: 2px 4px 8px 4px rgba(1, 210, 81, 0.4);
+
+  &:hover {
+    box-shadow: 4px 8px 12px 8px rgba(11, 98, 46, 0.3);
+  }
+}
+
+
+// .rp-summary-tables {
+//   font-size: 14px;
+//   margin: 3.5rem;
+//   margin-bottom: 1rem;
+//   margin-top: 1rem;
+//   margin-right: 0.2rem;
+//   border-style: solid;
+//   border-color: white;
+//   border-width: 1px;
+//   padding: 0rem;
+//   box-shadow: 2px 4px 8px 4px rgba(0, 0, 0, 0.2);
+
+//   &:hover {
+//     box-shadow: 4px 8px 12px 8px rgba(0, 0, 0, 0.2);
+//   }
+// }
+
+.rp-open-status-badge {
+  color: white;
+  font-size: 1rem;
+  background-color: $app-pass-color;
+  font-weight: 400;
+}
+
+.rp-array-badge {
+  color: white;
+  font-size: 12px;
+  background-color: $app-secondary-color-light;
+  font-weight: 400;
+  margin: 0.2rem;
+}
+
+.rp-bug-Total-status-badge {
+  color: white;
+  font-size: 1rem;
+  background-color: $app-pass-color;
+  font-weight: 400;
+  margin: 0.2rem;
+}
+
+.rp-bug-Closed-status-badge {
+  color: white;
+  font-size: 1rem;
+  background-color: $app-secondary-color-light;
+  font-weight: 400;
+  margin: 0.2rem;
+}
+
+.rp-bug-Open-status-badge {
+  color: white;
+  font-size: 1rem;
+  background-color: #d9534f;
+  font-weight: 400;
+  margin: 0.2rem;
+}
+
+.rp-feature-Open-status-badge {
+  color: white;
+  font-size: 1rem;
+  background-color: $app-pass-color;
+  font-weight: 400;
+  margin: 0.2rem;
+}
+
+.rp-feature-Resolved-status-badge {
+  color: white;
+  font-size: 1rem;
+  background-color: $app-secondary-color-light;
+  font-weight: 400;
+  margin: 0.2rem;
+}
+
+.rp-feature-Closed-status-badge {
+  color: white;
+  font-size: 1rem;
+  background-color: $app-secondary-color-light;
+  font-weight: 400;
+  margin: 0.2rem;
+}
+
+.rp-priority-Medium-status-badge {
+  color: black;
+  font-size: 1rem;
+  background-color: #FFCE56;
+  font-weight: 400;
+  margin: 0.2rem;
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+}
+
+.rp-priority-Highest-status-badge {
+  color: black;
+  font-size: 1rem;
+  background-color: #d9534f;
+  font-weight: 400;
+  margin: 0.2rem;
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+}
+
+.rp-priority-Low-status-badge {
+  color: black;
+  font-size: 1rem;
+  background-color: $app-primary-color;
+  font-weight: 400;
+  margin: 0.2rem;
+  border-style: solid;
+  border-width: 2px;
+  border-color: black;
+}
+
+.rp-sunburst-container {
+  flex: 0 0 33.33333%;
+  max-width: 33.33333%;
+  display: flex;
+  flex-wrap: wrap;
+  background-color: white;
+  font-size: 14px;
+  margin: 1rem .2rem 1rem 3.5rem;
+  border: 1px solid #fff;
+  padding: 0.4rem;
+  box-shadow: 2px 4px 8px 4px rgba(1, 210, 81, 0.4);
+}
+
+.rp-app-table-header {
+  // change
+  // background-color: $app-secondary-color;
+  // // background-color: #2f353a;
+  // padding: 0.5rem;
+  // background-color: rgba(65, 240, 65, 0.3);
+  // background-color: rgba(0, 116, 43, 0.3);
+  // margin-top: 10px;
+  // margin-bottom: 10px;
+}
+
+.rp-icon-button {
+  display: inline-block;
+  font-size: 14px;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  text-align: center;
+  vertical-align: middle;
+
+  i {
+    font-size: 24px !important;
+  }
+}
+
+.rp-app-table-key {
+  color: $app-secondary-color-light;
+  font-weight: 400;
+  font-size: 13px;
+  font-family: Open Sans, sans-serif;
+}
+
+.rp-app-table-label {
+  color: $app-secondary-color-light;
+  font-weight: 600;
+  font-size: 13px;
+  font-family: Open Sans, sans-serif;
+}
+
+.rp-app-table-value {
+  //change
+  font-family: Open Sans, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: $app-secondary-color-light;
+}
+
+.rp-margin-tp-btm-1 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.rp-edit-TC-span {
+  text-decoration: underline;
+  word-wrap: break-word;
+}
+
+.rp-rs-hw-support {
+  margin-left: 0.5rem;
+  font-size: 18px;
+  margin-top: 0.2rem;
+  color: $app-secondary-color;
+  font-weight: 600;
+}
+
+.rp-any-button {
+  background-color: $app-secondary-color !important;
+  color: $app-primary-color !important;
+  margin-left: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+
+.sidebar {
+  height: calc(100vh - 65px);
+  margin-top: 10px;
+}
+
+.sidebar .nav-link {
+  // color: $app-primary-color !important;
+  color: $app-secondary-color-light !important;
+}
+
+.app-header .nav-item .nav-link {
+  font-family: Open Sans, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.25rem;
+  border-bottom: 1px solid #edf1f7;
+  color: $app-secondary-color-light;
+}
+
+.canvasjs-chart-credit {
+  display: none !important;
+}
+
+
+// changes
+.sidebar .nav-item {
+
+  // color: #1a2138;
+  font-family: Open Sans, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.25rem;
+  border-bottom: 1px solid #edf1f7;
+
+  // &:last-child .nav-link {
+  //   color: $app-primary-color !important;
+
+  // }
+
+  &:last-child .nav-link.active {
+    color: $app-secondary-color !important;
+    background-color: white;
+
+    &:hover {
+      color: $app-secondary-color !important;
+      background-color: $app-primary-color !important;
+    }
+
+    &:hover .nav-icon {
+      color: $app-secondary-color !important;
+    }
+  }
+
+  &:last-child .nav-link.active .nav-icon {
+    color: $app-secondary-color !important;
+
+    &:hover {
+      color: $app-primary-color !important;
+    }
+  }
+
+  // &:hover {
+  //   // background-color: $app-primary-color !important;
+  //   color: $app-secondary-color !important;
+  // }
+}
+
+.sidebar .nav-link {
+  font-family: Open Sans, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+  color: $app-secondary-color-light;
+
+  &:hover {
+    background-color: $app-primary-color !important;
+    color: $app-secondary-color !important;
+  }
+}
+
+// changes
+.sidebar .nav-link {
+  /* color: #41f041 !important; */
+  // color: #3a4248 !important;
+}
+
+.sidebar .nav-link .nav-icon {
+  color: $app-secondary-color-light !important;
+
+  &:last-child {
+    color: $app-secondary-color !important;
+  }
+
+  &:last-child:hover {
+    color: $app-primary-color !important;
+  }
+
+  &:hover {
+    color: $app-secondary-color !important;
+  }
+}
+
+.sidebar .nav-link.active .nav-icon {
+  color: $app-primary-color !important;
+
+  &:hover {
+    color: $app-secondary-color !important;
+
+  }
+}
+
+
+.sidebar .nav {
+  width: 200px;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 0;
+  background-color: white;
+}
+
+.sidebar .nav-link.active {
+  // color: #3a4248 !important;
+  // color: $app-secondary-color !important;
+  color: $app-primary-color !important;
+  // background: white;
+  background-color: $app-secondary-color;
+
+  &:hover {
+    color: $app-primary-color !important;
+    background-color: $app-secondary-color !important;
+  }
+}
+
+
+
+.sidebar .sidebar-minimizer {
+  background-color: white;
+  position: relative;
+  flex: 0 0 50px;
+  cursor: pointer;
+  /* background-color: rgba(0, 0, 0, 0.2); */
+  border: 0;
+}
+
+.table th,
+.table td {
+  padding: 0.4rem;
+  vertical-align: top;
+  border-top: 1px solid #c8ced3;
+  width: 50%;
+  font-weight: 400;
+  font-size: 13px;
+  font-family: Open Sans, sans-serif;
+}
+
+.rp-table-textarea-container {
+
+  .table th,
+  .table td {
+    padding: 0.4rem;
+    vertical-align: top;
+    border-top: 1px solid #c8ced3;
+    width: auto;
+    font-weight: 400;
+    font-size: 13px;
+    font-family: Open Sans, sans-serif;
+  }
+}
+
+.rp-new-badge {
+  padding: 0.3rem !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+
+.c-callout {
+  position: relative;
+  padding: 0 1rem;
+  margin: 1rem 0;
+  border-radius: .25rem;
+}
+
+html:not([dir=rtl]) .c-callout-total {
+  border-left-color: #39f !important;
+}
+
+html:not([dir=rtl]) .c-callout-open {
+  border-left-color: #e55353 !important;
+}
+
+html:not([dir=rtl]) .c-callout-closed {
+  border-left-color: #2eb85c !important;
+}
+
+html:not([dir=rtl]) .c-callout-resolved {
+  border-left-color: #2eb85c !important;
+}
+
+html:not([dir=rtl]) .c-callout-medium {
+  border-left-color: #ffc107 !important;
+}
+
+html:not([dir=rtl]) .c-callout-highest {
+  border-left-color: #e55353 !important;
+}
+
+html:not([dir=rtl]) .c-callout-high {
+  border-left-color: #df5c11 !important;
+}
+
+html:not([dir=rtl]) .c-callout-low {
+  border-left-color: rgb(0, 130, 251) !important;
+}
+
+html:not([dir=rtl]) .c-callout-lowest {
+  border-left-color: rgb(46, 0, 251) !important;
+}
+
+html:not([dir=rtl]) .c-callout {
+  border-left: 4px solid #d8dbe0;
+}
+
+html:not([dir=rtl]) .c-callout-duplicate {
+  border-left-color: #2eb85c !important;
+}
+
+html:not([dir=rtl]) .c-callout-info {
+  border-left-color: #2eb85c !important;
+}
+
+html:not([dir=rtl]) .c-callout-not-a-bug {
+  border-left-color: #2eb85c !important;
+}
+html:not([dir=rtl]) .c-callout-pass {
+  border-left-color: #2eb85c !important;
+}
+html:not([dir=rtl]) .c-callout-fail {
+  border-left-color: #e55353 !important;
+}
+
+.text-muted {
+  color: $app-secondary-color !important;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.rp-error-text {
+  font-weight: 600;
+  font-size: 14px;
+  color: $app-fail-color;
+}
+
+.rp-error-icon {
+  margin-left: 0.5rem;
+  color: $app-fail-color;
+}
+
+.rp-error-box {
+  border-color: $app-fail-color;
+}
+
+// '#e55353',
+// //fail
+// '#2eb85c',
+// //pass
+// '#ffc107',
+// //blocked
+// '#39f',
+// //not yet

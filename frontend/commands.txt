@@ -1,0 +1,44 @@
+1) create repository on docker hub with your login 
+    example 
+    repo:dockernodejs
+    accountName: blackwidow1088
+2) now ensure docker service is running locally
+    systemctl status docker
+if stopped then start docker engine server
+    sudo dockerd
+3) create Dockerfile and add the config for the container
+4) cd to folder containing the Dockerfile
+5) sudo docker build -t blackwidow1088/dockernodejs:v1 .
+6) sudo docker run -p 8080:8081 blackwidow1088/dockernodejs:v1
+    now, if the aplication is running as expected then push docker image to docker hub
+7) sudo docker push blackwidow1088/dockernodejs:v1
+    now, it is available for clustered environmant to access
+
+8) cd .. (move to parent folder where many such deployments can be available)
+9) create deployment.yaml 
+10) create service.yaml
+11) sudo kubectl create -f service.yaml
+12) sudo kubectl create -f deployment.yaml
+13) sudo kubectl get service   
+    now, open the internal cluster ip address in browser with the port mentioned
+    the application will run
+
+14) editing app live
+    edit the application 
+    and push the edited app with updated version
+15) cd docker_nodejs
+16) sudo docker build -t blackwidow1088/dockernodejs:v2 .
+17) sudo docker push blackwidow1088/dockernodejs:v2
+18) cd ..
+19) sudo kubectl set image deployment/nodejs-deployment nodejs-container=blackwidow1088/dockernodejs:v2
+
+
+
+
+
+20)setting virtaul environmant
+python -m virtualenv venv
+source venv/bin/activate
+
+59560
+

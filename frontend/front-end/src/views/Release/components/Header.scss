@@ -1,0 +1,23 @@
+@import '../../../scss/variables';
+
+.rp-release-header {
+  background-color: $app-secondary-color;
+  color: $app-primary-color;
+  text-decoration-color: $app-primary-color;
+  border-style: solid;
+  border-color: $app-primary-color;
+  border-width: 0px 0px 2px 0px;
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.rp-release-header-item {
+  padding: 1rem;
+}
+
+.rp-rh-selected-item {
+  padding: 1rem;
+  border-style: solid;
+  border-color: $app-primary-color;
+  border-width: 0px 0px 2px 0px;
+}
