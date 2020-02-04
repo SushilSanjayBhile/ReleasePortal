@@ -830,9 +830,11 @@ app.delete('/api/release/:release', (req, res) => {
 
 });
 
+// FOR PRODUCTION: 
+app.use('/', express.static('./build'));
+app.use('*', express.static('./build'));
+// for development: comment above lines
 
-//  app.use('/', express.static('./build'));
-//  app.use('*', express.static('./build'));
 console.log('Mock Invar listening on port 5051');
 const server = app.listen('5051');
 

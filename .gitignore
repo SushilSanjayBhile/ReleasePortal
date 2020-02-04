@@ -1,1 +1,4 @@
 *.pyc
+frontend/front-end/node_modules/
+frontend/server/node_modules/
+frontend/server/node_modules/
