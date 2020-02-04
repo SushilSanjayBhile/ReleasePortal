@@ -729,7 +729,7 @@ class TestCases extends Component {
                                                 <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
                                                     <span className='rp-app-table-value'>Selected: {this.state.selectedRows}</span>
                                                     <span className='rp-app-table-value'>{`    Total: ${this.state.totalRows}`}</span>
-                                                    <span className='rp-app-table-value'>{`    All Tcs: ${this.state.allRows}`}</span>
+                                                    {/* <span className='rp-app-table-value'>{`    All Tcs: ${this.state.allRows}`}</span> */}
                                                 </div>
                                             }
 
