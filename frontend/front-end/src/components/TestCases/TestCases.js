@@ -111,6 +111,7 @@ class TestCases extends Component {
                     headerCheckboxSelection: (params) => {
                         if (this.gridApi) {
                             this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
+                            
                         }
 
                         return true;
@@ -485,30 +486,51 @@ class TestCases extends Component {
     saveAll() {
         this.gridOperations(false);
         let items = [];
-        Object.keys(this.editedRows).forEach(item => {
-            if (this.editedRows[item] && this.editedRows[item].Changed) {
-                // let assignee = this.editedRows[item].Assignee.newValue && this.editedRows[item].Assignee.newValue !== 'ADMIN' 
-                // ? this.editedRows[item].Assignee.newValue : 'ADMIN';
-                // let ws = assignee === 'ADMIN' ? 'UNASSIGNED' : 'MANUAL_ASSIGNED'
+        // Object.keys(this.editedRows).forEach(item => {
+        //     if (this.editedRows[item] && this.editedRows[item].Changed) {
+        //         // let assignee = this.editedRows[item].Assignee.newValue && this.editedRows[item].Assignee.newValue !== 'ADMIN' 
+        //         // ? this.editedRows[item].Assignee.newValue : 'ADMIN';
+        //         // let ws = assignee === 'ADMIN' ? 'UNASSIGNED' : 'MANUAL_ASSIGNED'
+        //         let pushable = {
+        //             TcID: this.editedRows[item].TcID.newValue,
+        //             CardType: this.editedRows[item].CardType.newValue
+        //         };
+        //         if(this.editedRows[item].Priority) {
+        //             if (this.editedRows[item].Priority.newValue === 'Skip') {
+        //                 this.editedRows[item].Priority.newValue = 'Skp';
+        //             }
+        //             pushable.Priority = this.editedRows[item].Priority.newValue
+        //         }
+        //         if(this.editedRows[item].Assignee) {
+        //             pushable.Assignee = this.editedRows[item].Assignee.newValue
+        //         }
+        //         if(this.editedRows[item].WorkingStatus) {
+        //             pushable.WorkingStatus = this.editedRows[item].WorkingStatus.newValue
+        //         }
+        //         items.push(pushable);
+        //     }
+        // });
+        let selectedRows = this.gridApi.getSelectedRows();
+        selectedRows.forEach(item => {
                 let pushable = {
-                    TcID: this.editedRows[item].TcID.newValue,
-                    CardType: this.editedRows[item].CardType.newValue
+                    TcID: item.TcID,
+                    CardType: item.CardType
                 };
-                if(this.editedRows[item].Priority) {
-                    if (this.editedRows[item].Priority.newValue === 'Skip') {
-                        this.editedRows[item].Priority.newValue = 'Skp';
+                if(item.Priority) {
+                    if (item.Priority === 'Skip') {
+                        item.Priority = 'Skp';
                     }
-                    pushable.Priority = this.editedRows[item].Priority.newValue
+                    pushable.Priority = item.Priority
                 }
-                if(this.editedRows[item].Assignee) {
-                    pushable.Assignee = this.editedRows[item].Assignee.newValue
+                if(item.Assignee) {
+                    pushable.Assignee = item.Assignee
                 }
-                if(this.editedRows[item].WorkingStatus) {
-                    pushable.WorkingStatus = this.editedRows[item].WorkingStatus.newValue
+                if(item.WorkingStatus) {
+                    pushable.WorkingStatus = item.WorkingStatus
                 }
                 items.push(pushable);
-            }
-        });
+        })
+        
         this.props.saveTestCase({ data: [], id: this.props.selectedRelease.ReleaseNumber });
         this.props.saveSingleTestCase({});
 
@@ -580,6 +602,7 @@ class TestCases extends Component {
         }
     }
     save() {
+        this.toggle();
         this.gridOperations(false);
         let data = {};
         // tc info meta fields
@@ -656,7 +679,7 @@ class TestCases extends Component {
                     }, 1000);
                 });
         }
-        this.setState({ toggleMessage: null, isEditing: false, domain: '', CardType: '', subDomain: '' })
+        this.setState({ toggleMessage: null, isEditing: false })
         // this.toggle();
     }
     confirmToggle() {
