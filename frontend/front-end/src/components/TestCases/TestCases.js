@@ -111,11 +111,10 @@ class TestCases extends Component {
                     headerCheckboxSelection: (params) => {
                         if (this.gridApi) {
                             this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
-                            
                         }
-
                         return true;
                     },
+                    headerCheckboxSelectionFilteredOnly: true,
                     cellStyle: { alignItems: 'top' },
                     checkboxSelection: true,
                     headerName: "Tc ID", field: "TcID", sortable: true, filter: true, cellStyle: this.renderEditedCell,
@@ -379,7 +378,7 @@ class TestCases extends Component {
         console.log('edited cells ', cellDefs);
     }
     onFilterTextBoxChanged(value) {
-        this.setState({ domain: null, subDomain: null, CardType: null, rowSelect: false });
+        this.setState({ rowSelect: false });
         this.gridApi.setQuickFilter(value);
         this.deselect();
     }
