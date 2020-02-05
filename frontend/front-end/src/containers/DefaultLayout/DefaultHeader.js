@@ -56,25 +56,29 @@ class DefaultHeader extends Component {
             <DropdownMenu>
               {
                 this.props.releases
-                .map(release =>  <DropdownItem onClick={e => {
-                  this.props.history.push('/release/summary')
-                  this.props.onReleaseChange(release);
-                }} ><i className="fa fa-file" ></i> {release}</DropdownItem>
-                  
+                  .map(release => <DropdownItem onClick={e => {
+                    this.props.history.push('/release/summary')
+                    this.props.onReleaseChange(release);
+                  }} ><i className="fa fa-file" ></i> {release}</DropdownItem>
 
-                )
+
+                  )
               }
             </DropdownMenu>
           </UncontrolledDropdown>
           {
             this.props.currentUser &&
+
             <NavItem className="px-3">
+
               <UncontrolledDropdown nav direction="down">
                 {/* <DropdownToggle nav>
                   <i className="icon-bell"></i>
                   <img src={userIcon} className="img-avatar" alt={this.props.currentUser && this.props.currentUser.email} title={this.props.currentUser && this.props.currentUser.email} />
                 </DropdownToggle> */}
-                <DropdownMenu right>
+
+                <DropdownMenu>
+
                   {
                     this.props.notifications && this.props.notifications.map(item =>
                       <DropdownItem onClick={() => this.props.history.push('/release/user')}><i className="fa fa-envelope-o"></i>{item.message}<span style={{ float: 'right' }}>{item.date}</span></DropdownItem>
@@ -82,7 +86,9 @@ class DefaultHeader extends Component {
                   }
                 </DropdownMenu>
               </UncontrolledDropdown>
+
             </NavItem>
+
           }
 
           {/* <NavItem className="px-3">
@@ -103,8 +109,9 @@ class DefaultHeader extends Component {
           {/* <NavItem className="d-md-down-none"> */}
           {/* <NavLink to="#" className="nav-link"><i className="icon-location-pin"></i></NavLink> */}
           {/* </NavItem> */}
-
+          <span>{this.props.currentUser && this.props.currentUser.name}</span>
           <UncontrolledDropdown nav direction="down">
+
             <DropdownToggle nav>
               <img src={userIcon} className="img-avatar" alt={this.props.currentUser && this.props.currentUser.email} title={this.props.currentUser && this.props.currentUser.email} />
             </DropdownToggle>
@@ -128,6 +135,7 @@ class DefaultHeader extends Component {
               {
                 this.props.user &&
                 <React.Fragment>
+
                   <DropdownItem onClick={() => this.props.history.push('/release/user')}><i className="fa fa-user"></i>{this.props.currentUser && this.props.currentUser.email}</DropdownItem>
                   {
                     this.props.currentUser && this.props.currentUser.isAdmin &&

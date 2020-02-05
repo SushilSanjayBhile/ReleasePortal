@@ -142,6 +142,11 @@ class ReleaseTestMetrics extends Component {
         let op = this.props.selectedRelease.OrchestrationPlatform ? this.props.selectedRelease.OrchestrationPlatform.map(item => ({ value: item })) : [];
         return (
             <div>
+                <TestCases></TestCases>
+                {
+                    this.props.currentUser &&
+                    <CreateTCs isEditing={true} update={() => this.save()}></CreateTCs>
+                }
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                         <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ metricsOpen: !this.state.metricsOpen })}>
@@ -261,12 +266,9 @@ class ReleaseTestMetrics extends Component {
                         </Row> */}
                     </Col>
                 </Row>
-                <TestCases></TestCases>
 
-                {
-                    this.props.currentUser &&
-                    <CreateTCs isEditing={true} update={() => this.save()}></CreateTCs>
-                }
+
+
                 {
                     // this.props.currentUser && this.props.currentUser.isAdmin &&
                     // <UpdateTCOptions></UpdateTCOptions>
