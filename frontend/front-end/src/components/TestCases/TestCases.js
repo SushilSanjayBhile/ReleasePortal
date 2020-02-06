@@ -46,7 +46,7 @@ class TestCases extends Component {
             failRows: 0,
             automatedRows: 0,
             passRows: 0,
-            overlayLoadingTemplate: '<span class="ag-overlay-loading-center">Please wait while table is loading</span>',
+            overlayLoadingTemplate: '<span class="ag-overlay-loading-center">Please wait while table or Tc is loading</span>',
             overlayNoRowsTemplate: '<span class="ag-overlay-loading-center">No rows to show</span>',
             rowSelect: false,
             isEditing: false,
@@ -528,8 +528,8 @@ class TestCases extends Component {
             items.push(pushable);
         })
 
-        // this.props.saveTestCase({ data: [], id: this.props.selectedRelease.ReleaseNumber });
-        // this.props.saveSingleTestCase({});
+        this.props.saveTestCase({ data: [], id: this.props.selectedRelease.ReleaseNumber });
+        this.props.saveSingleTestCase({});
         axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
             .then(res => {
                 this.gridOperations(true);

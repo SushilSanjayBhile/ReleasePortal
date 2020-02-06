@@ -1,4 +1,6 @@
 *.pyc
 frontend/front-end/node_modules/
+frontend/front-end/build/
 frontend/server/node_modules/
 frontend/server/node_modules/
+
