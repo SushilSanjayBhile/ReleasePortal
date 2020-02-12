@@ -209,6 +209,12 @@ export const SAVE_MY_REGRESSION = 'SAVE_MY_REGRESSION';
 export const SAVE_ASSIGN_TCS = 'SAVE_ASSIGN_TCS';
 export const SAVE_MY_PENDING_APPROVAL = 'SAVE_MY_PENDING_APPROVAL';
 export const SAVE_OPTIONS = 'SAVE_OPTIONS';
+export const SAVE_E2E = 'SAVE_E2E';
+export const SAVE_SINGLE_E2E = 'SAVE_SINGLE_E2E';
+export const UPDATE_E2E_EDIT = 'UPDATE_E2E_EDIT';
+export const UPDATE_SANITY_EDIT = 'UPDATE_SANITY_EDIT';
+export const SAVE_LONGEVITY = 'SAVE_LONGEVITY';
+export const SAVE_STRESS = 'SAVE_STRESS';
 export const logInRequest = payload => ({
   type: LOG_IN_REQUEST,
   payload,
@@ -332,6 +338,33 @@ export const saveUserMyPendingApproval = (payload) => ({
   payload
 })
 export const saveOptions = (payload) => ({
-  type:SAVE_OPTIONS,
+  type: SAVE_OPTIONS,
+  payload
+})
+export const saveE2E = (payload) => ({
+  type: SAVE_E2E,
+  payload
+})
+export const saveSingleE2E = (payload) => ({
+  type: SAVE_SINGLE_E2E,
+  payload
+})
+export const updateE2EEdit = (payload) => ({
+  type: UPDATE_E2E_EDIT,
+  payload
+})
+export const updateSanityEdit = (payload) => ({
+  type: UPDATE_SANITY_EDIT,
+  payload
+})
+
+
+export const saveStress = (payload) => ({
+  type: SAVE_STRESS,
+  payload
+})
+
+export const saveLongevity = (payload) => ({
+  type: SAVE_LONGEVITY,
   payload
 })

@@ -275,33 +275,6 @@ class EditTC extends Component {
                     </FormGroup> */}
                     <div>TC Information</div>
                     <FormGroup row className="my-0" style={{ marginTop: '1rem' }}>
-                        {/* add or remove if there are errors */}
-
-                        {
-                            this.props.currentUser && this.props.currentUser.isAdmin &&
-                            [
-                                { field: 'NewTcID', header: 'New Tc ID', type: 'text', restrictWidth: false },
-
-                            ].map((item, index) => (
-                                <Col xs="12" md="6" lg="6">
-                                    <FormGroup className='rp-app-table-value'>
-                                        <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}  {
-                                            this.props.testcaseEdit.errors[item.field] &&
-                                            <i className='fa fa-exclamation-circle rp-error-icon'>{this.props.testcaseEdit.errors[item.field]}</i>
-                                        }</Label>
-                                        {
-                                            !this.props.isEditing ?
-                                                <div key={index} className='rp-app-table-value'><span className='rp-edit-TC-span'>{this.props.testcaseDetail && this.props.testcaseDetail[item.field]}</span></div>
-                                                :
-                                                <Input style={{ borderColor: this.props.testcaseEdit.errors[item.field] ? 'red' : '' }} key={index} className='rp-app-table-value' type="text" placeholder={`Add ${item.header}`} id={item.field} name={item.field} value={this.props.testcaseEdit && this.props.testcaseEdit[item.field]}
-                                                    onChange={(e) => this.props.updateTCEdit({ ...this.props.testcaseEdit, [item.field]: e.target.value, errors: { ...this.props.testcaseEdit.errors, [item.field]: null } })} >
-
-                                                </Input>
-                                        }
-                                    </FormGroup>
-                                </Col>
-                            ))
-                        }
                         {
                             [
                                 { field: 'Assignee', header: 'Assignee' },

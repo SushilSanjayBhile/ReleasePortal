@@ -27,6 +27,16 @@ export default {
       icon: 'fa fa-compass',
     },
     {
+      name: 'Gui Test Metrics',
+      url: '/release/guitestmetrics',
+      icon: 'fa fa-compass',
+    },
+    {
+      name: 'Manual Sanity',
+      url: '/release/sanityresults',
+      icon: 'fa fa-compass',
+    },
+    {
       name: 'Documents',
       url: '/release/docs',
       icon: 'fa fa-file'

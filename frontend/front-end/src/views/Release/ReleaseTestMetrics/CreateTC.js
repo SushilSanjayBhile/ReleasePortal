@@ -42,19 +42,19 @@ class CreateTC extends Component {
     whichFieldsUpdated(old, latest) {
         let changes = {};
         this.textFields.forEach(item => {
-            if(old[item] !== latest[item]) {
-                changes[item] = {old: old[item], new: latest[item]}
+            if (old[item] !== latest[item]) {
+                changes[item] = { old: old[item], new: latest[item] }
             }
         });
         this.arrayFields.forEach(item => {
-            if(!old[item] && latest[item]) {
-                changes[item] = {old: '', new: latest[item]}
-            } else if(!latest[item] && old[item]) {
-                changes[item] = {old: old[item], new: ''}
-            } else if(old[item] && latest[item]){
+            if (!old[item] && latest[item]) {
+                changes[item] = { old: '', new: latest[item] }
+            } else if (!latest[item] && old[item]) {
+                changes[item] = { old: old[item], new: '' }
+            } else if (old[item] && latest[item]) {
                 let arrayChange = latest[item].filter(each => old[item].includes(each));
-                if(arrayChange.length > 0) {
-                    changes[item] = {old: old[item], new: latest[item]}
+                if (arrayChange.length > 0) {
+                    changes[item] = { old: old[item], new: latest[item] }
                 }
             }
         });
@@ -74,7 +74,7 @@ class CreateTC extends Component {
         let data = {};
         // tc info meta fields
         let date = new Date(data[item]).toISOString().split('T');
-        data.DateTC = `${date[0]} ${date[1].substring(0, date[1].length-1)}`;
+        data.DateTC = `${date[0]} ${date[1].substring(0, date[1].length - 1)}`;
 
         data.Created = this.props.currentUser.email;
         data.Role = this.props.currentUser.role;
@@ -88,8 +88,8 @@ class CreateTC extends Component {
         // tc status fields
         data.CurrentStatus = 'NotTested';
 
-        if(data.Role === 'ADMIN') {
-            if(data.Assignee && data.Assignee !== 'ADMIN') {
+        if (data.Role === 'ADMIN') {
+            if (data.Assignee && data.Assignee !== 'ADMIN') {
                 data.WorkingStatus = 'MANUAL_ASSIGNED';
             } else {
                 data.WorkingStatus = 'UNASSIGNED';
@@ -97,43 +97,24 @@ class CreateTC extends Component {
             }
         } else {
             data.WorkingStatus = 'CREATED';
-            if(!(data.Assignee && data.Assignee !== 'ADMIN')) {
+            if (!(data.Assignee && data.Assignee !== 'ADMIN')) {
                 data.Assignee = 'ADMIN';
             }
         }
-        data.Activity={
+        data.Activity = {
             "Date": data.DateTC,
             "Header": `${data.WorkingStatus}: ${this.props.selectedRelease.ReleaseNumber}, master, REPORTER: ${this.props.currentUser.email} `,
             "Details": this.changeLog,
             "StatusChangeComments": ''
         };
-
-
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 this.getTcs();
                 this.setState({ addTC: { Master: true, Domain: '' }, errors: {}, toggleMessage: `TC ${this.state.addTC.TcID} Added Successfully` });
                 this.toggle();
             }, error => {
-                let message = error.response.data.message;
-                let found = false;
-                ['Domain', 'SubDomain', 'TcID', 'TcName', 'CardType', 'ServerType', 'Scenario', 'OrchestrationPlatform',
-                    'Description', 'ExpectedBehavior', 'Notes', 'Date', 'Master', 'Assignee', 'Created', 'Tag', 'Activity']
-                    .forEach((item, index) => {
-                        if (!found && message.search(item) !== -1) {
-                            found = true;
-                            let msg = { [item]: `Invalid ${item}` };
-                            if (item === 'TcID') {
-                                msg = { [item]: `Invalid or Duplicate ${item}` };
-                            }
-                            this.setState({ errors: msg, toggleMessage: `Error: ${error.message}` });
-                            this.toggle();
-                        }
-                    });
-                if (!found) {
-                    this.setState({ errors: {}, toggleMessage: `Error: ${error.message}` });
-                    this.toggle();
-                }
+                this.setState({ errors: {}, toggleMessage: `Failed to add Result` });
+                this.toggle();
             });
         this.setState({ toggleMessage: null })
         // this.toggle();
@@ -254,8 +235,9 @@ class CreateTC extends Component {
                                                 <div className='rp-icon-button'><i className="fa fa-plus-circle"></i></div>
                                                 <span className='rp-app-table-title'>Create Test Case</span>
                                             </div>
-                                            <Button style={{ position: 'absolute', right: '1rem' }} title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.confirmToggle()} >
-                                                <i className="fa fa-check-square-o"></i>
+                                            <Button style={{ position: 'absolute', right: '1rem' }} title="Save" size="md" className="float-right rp-rb-save-btn" onClick={() => this.confirmToggle()} >
+                                                {/* <i className="fa fa-check-square-o"></i> */}
+                                                Save
                                             </Button>
                                         </div>
 

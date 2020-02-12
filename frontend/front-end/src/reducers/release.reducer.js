@@ -202,11 +202,11 @@ function current(state = initialState.current, action) {
             return state;
     }
 }
-function options(state=initialState.options, action) {
-    switch(action.type) {
+function options(state = initialState.options, action) {
+    switch (action.type) {
         case SAVE_OPTIONS:
-            return {...state,...action, ReleaseSpecific: {...state.ReleaseSpecific, ...action.ReleaseSpecific}}
-        default: 
+            return { ...state, ...action, ReleaseSpecific: { ...state.ReleaseSpecific, ...action.ReleaseSpecific } }
+        default:
             return state;
     }
 }
@@ -223,7 +223,6 @@ export const releaseReducer = combineReducers({
 
 export const optionSelector = (state) => {
     return {
-        
     }
 }
 export const getCurrentRelease = (state) => {

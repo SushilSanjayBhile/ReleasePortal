@@ -19,8 +19,8 @@ import { Bar, Doughnut, Line, Pie, Polar, Radar } from 'react-chartjs-2';
 import { AgGridReact } from 'ag-grid-react';
 import axios from 'axios';
 import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../actions';
-import TestCases from '../../../components/TestCases/TestCases';
-import './ReleaseTestMetrics.scss'
+import GuiTestCases from '../../../components/GuiTestCases/GuiTestCases';
+import './ReleaseGuiTestMetrics.scss'
 import Sunburst from '../components/Sunburst';
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
 import CreateTCs from '../CreateTCs/CreateTCs';
@@ -38,7 +38,7 @@ const options = {
     // legend: { labels: { fontSize: '14px', fontColor: 'black' } }
 }
 const loading = () => <div className="animated fadeIn pt-3 text-center">Loading...</div>;
-class ReleaseTestMetrics extends Component {
+class ReleaseGuiTestMetrics extends Component {
     newCards = {};
     constructor(props) {
         super(props);
@@ -142,13 +142,13 @@ class ReleaseTestMetrics extends Component {
         let op = this.props.selectedRelease.OrchestrationPlatform ? this.props.selectedRelease.OrchestrationPlatform.map(item => ({ value: item })) : [];
         return (
             <div>
-                <TestCases></TestCases>
+                <GuiTestCases></GuiTestCases>
                 {/* <TestCasesAll></TestCasesAll> */}
-                {
+                {/* {
                     this.props.currentUser &&
                     <CreateTCs isEditing={true} update={() => this.save()}></CreateTCs>
-                }
-                <Row>
+                } */}
+                {/* <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                         <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ metricsOpen: !this.state.metricsOpen })}>
 
@@ -208,46 +208,46 @@ class ReleaseTestMetrics extends Component {
                                                         <Col>
                                                             <div className="chart-wrapper" style={{ minHeight: '400px' }}>
                                                                 {/* <Doughnut data={item.data} /> */}
-                                                                <Bar data={item.data} options={options} />
-                                                            </div>
-                                                            <div className='rp-tc-dougnut-text'>
-                                                                {item && item.title}
-                                                            </div>
-                                                        </Col>
+                {/* <Bar data={item.data} options={options} />
+            </div>
+            <div className='rp-tc-dougnut-text'>
+                {item && item.title}
+            </div>
+                                                        </Col >
                                                     )
 
 
-                                                })
-                                            }
-                                        </Row>
+    })
+}
+                                        </Row >
                                     }
 
-                                    <Row style={{ marginLeft: '2.5rem' }}>
-                                        {
-                                            this.state.doughnuts &&
-                                            this.state.doughnuts.map((item, index) => {
+<Row style={{ marginLeft: '2.5rem' }}>
+    {
+        this.state.doughnuts &&
+        this.state.doughnuts.map((item, index) => {
 
-                                                return (
-                                                    !item.hide &&
-                                                    <Col>
-                                                        <div className="chart-wrapper" style={{ minHeight: '400px' }}>
+            return (
+                !item.hide &&
+                <Col>
+                    <div className="chart-wrapper" style={{ minHeight: '400px' }}>
 
-                                                            <Bar data={item.data} options={options} />
-                                                        </div>
-                                                        <div className='rp-tc-dougnut-text'>
-                                                            {item && item.title}
-                                                        </div>
-                                                    </Col>
-                                                )
+                        <Bar data={item.data} options={options} />
+                    </div>
+                    <div className='rp-tc-dougnut-text'>
+                        {item && item.title}
+                    </div>
+                </Col>
+            )
 
 
-                                            })
-                                        }
-                                    </Row>
-                                </Col>
-                            </Row>
-                        </Collapse>
-                        {/* <Row>
+        })
+    }
+</Row>
+                                </Col >
+                            </Row >
+                        </Collapse >  */}
+                {/* <Row>
                             {
                                 this.state.doughnuts &&
                                 this.state.doughnuts.length >= 4 &&
@@ -265,8 +265,8 @@ class ReleaseTestMetrics extends Component {
                                 })
                             }
                         </Row> */}
-                    </Col>
-                </Row>
+                {/* </Col>
+                </Row> */}
 
 
 
@@ -292,11 +292,11 @@ class ReleaseTestMetrics extends Component {
                     <MyTcsForAutomation></MyTcsForAutomation>
                 } */}
                 {/* {
-                    this.props.currentUser && (this.props.currentUser.role === 'QA' || this.props.currentUser.role === 'DEVELOPER') &&
+                    // this.props.currentUser && (this.props.currentUser.role === 'QA' || this.props.currentUser.role === 'DEVELOPER') &&
                     <MyTcsPendingForApproval></MyTcsPendingForApproval>
                 } */}
                 {/* {
-                    this.props.currentUser && this.props.currentUser.email &&
+                    this.props.currentUser && this.props.currentUser.email && 
                     <AddOptions></AddOptions>
                 } */}
 
@@ -319,7 +319,7 @@ const mapStateToProps = (state, ownProps) => ({
     selectedTC: state.testcase.all[state.release.current.id],
     testcaseDetail: state.testcase.testcaseDetail
 })
-export default connect(mapStateToProps, { saveTestCase, saveTestCaseStatus, saveSingleTestCase })(ReleaseTestMetrics);
+export default connect(mapStateToProps, { saveTestCase, saveTestCaseStatus, saveSingleTestCase })(ReleaseGuiTestMetrics);
 
 
 

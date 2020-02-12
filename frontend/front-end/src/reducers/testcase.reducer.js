@@ -12,7 +12,15 @@ import {
     SAVE_TEST_CASE,
     SAVE_TEST_CASE_STATUS,
     SAVE_SINGLE_TEST_CASE,
-    UPDATE_TC_EDIT
+    UPDATE_TC_EDIT,
+
+    SAVE_E2E,
+    SAVE_SINGLE_E2E,
+    UPDATE_E2E_EDIT,
+
+    UPDATE_SANITY_EDIT,
+    SAVE_LONGEVITY,
+    SAVE_STRESS
 } from '../actions';
 
 const initialState = {
@@ -20,6 +28,12 @@ const initialState = {
     testcaseStatus: {},
     testcaseDetail: {},
     testcaseEdit: { Master: true, errors: {} },
+    e2e: [],
+    e2eDetails: {},
+    e2eEdit: {},
+    sanityEdit: {},
+    stress: [],
+    longevity: []
 };
 
 // TO BE REMOVEED
@@ -103,12 +117,73 @@ function testcaseEdit(state = initialState.testcaseEdit, action) {
             return state;
     }
 }
+function e2e(state = initialState.e2e, action) {
+    switch (action.type) {
+        case SAVE_E2E:
+            state = action.payload
+            return state;
+        default:
+            return state;
+    }
+}
+function stress(state = initialState.stress, action) {
+    switch (action.type) {
+        case SAVE_STRESS:
+            state = action.payload
+            return state;
+        default:
+            return state;
+    }
+}
+function longevity(state = initialState.longevity, action) {
+    switch (action.type) {
+        case SAVE_LONGEVITY:
+            state = action.payload
+            return state;
+        default:
+            return state;
+    }
+}
+function e2eDetails(state = initialState.e2eDetails, action) {
+    switch (action.type) {
+        case SAVE_SINGLE_E2E:
+            state = action.payload
+            return state;
+        default:
+            return state;
+    }
+}
+function e2eEdit(state = initialState.e2eEdit, action) {
+    switch (action.type) {
+        case UPDATE_E2E_EDIT:
+            state = action.payload
+            return state;
+        default:
+            return state;
+    }
+}
+
+function sanityEdit(state = initialState.sanityEdit, action) {
+    switch (action.type) {
+        case UPDATE_SANITY_EDIT:
+            state = action.payload
+            return state;
+        default:
+            return state;
+    }
+}
 
 export const testcaseReducer = combineReducers({
     all,
     status,
     testcaseDetail,
-    testcaseEdit
+    testcaseEdit,
+    e2e,
+    e2eDetails,
+    e2eEdit,
+    sanityEdit,
+    longevity,
+    stress
 });
 
 // ////////////////////
@@ -131,7 +206,7 @@ export const getEachTCStatusScenario = ({ data, domain, all }) => {
         }
     });
     let totalPass = 0;
-    let totalFail  = 0;
+    let totalFail = 0;
     let totalSkip = 0;
     let totalNA = 0;
     let totalNT = 0;
@@ -187,25 +262,25 @@ export const getEachTCStatusScenario = ({ data, domain, all }) => {
         let labels = [];
         let datasets = [
             {
-                label: 'Pass ('+totalPass+')',
+                label: 'Pass (' + totalPass + ')',
                 data: [],
                 backgroundColor: [],
                 hoverBackgroundColor: []
             },
             {
-                label: 'Blocked ('+totalSkip+')',
+                label: 'Blocked (' + totalSkip + ')',
                 data: [],
                 backgroundColor: [],
                 hoverBackgroundColor: []
             },
             {
-                label: 'Fail ('+totalFail+')',
+                label: 'Fail (' + totalFail + ')',
                 data: [],
                 backgroundColor: [],
                 hoverBackgroundColor: []
             },
             {
-                label: 'Not Tested ('+totalNT+')',
+                label: 'Not Tested (' + totalNT + ')',
                 data: [],
                 backgroundColor: [],
                 hoverBackgroundColor: []

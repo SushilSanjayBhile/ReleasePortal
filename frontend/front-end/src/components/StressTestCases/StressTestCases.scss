@@ -1,0 +1,51 @@
+@import '../../scss/variables';
+
+.ag-row-hover {
+  /* putting in !important so it overrides the theme's styling as it hovers the row also */
+  // background-color: #dfdfff !important;
+  background-color: rgba(112, 240, 161, 0.842) !important;
+}
+
+.rp-grid-edited-cell {
+  background-color: rgb(209, 255, 82);
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgb(255, 166, 0);
+
+  &:hover {
+    background-color: rgb(255, 166, 0);
+  }
+}
+
+.rp-grid-original-cell {
+  background-color: white;
+
+  &:hover {
+    background-color: rgba(112, 240, 161, 0.842) !important;
+  }
+}
+
+.test-header {
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.rp-save-tc-icon {
+  font-size: 20px !important;
+}
+
+.ag-row-selected {
+  background-color: rgba(82, 240, 108, 0.842) !important;
+}
+
+.cell-wrap-text {
+  white-space: normal !important;
+}
+
+.ag-cell {
+  font-size: 13px;
+}
+.ag-cell-wrapper {
+  align-items: top !important;
+}

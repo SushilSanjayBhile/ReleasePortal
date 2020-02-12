@@ -7,10 +7,10 @@ var http = require('http');
 var httpProxy = require('http-proxy');
 
 // FOR DEVELOPMENT:
-// var APP_URL = 'http://localhost:3000';
+var APP_URL = 'http://localhost:3000';
 
 // FOR PRODUCTION:
-var APP_URL = 'http://localhost:5051';
+// var APP_URL = 'http://localhost:5051';
 
 // var DJANGOURL = '/api/tcinfo'
 // // var DATA_URL = 'http://172.16.19.57:8000';
@@ -22,7 +22,7 @@ var APP_URL = 'http://localhost:5051';
 var URL = ['/api'];
 var USER = ['/user'];
 var JIRA = ['/rest'];
-var TEST = ['/test'];
+var TEST = ['/dummy'];
 var VAGSERV = ['/vag'];
 //  var DATA_URL = 'http://localhost:8000';
 //  var DATA_URL = 'http://localhost:5051';
@@ -34,9 +34,10 @@ var VAGSERV = ['/vag'];
 
 // FOR DEVELOPMENT:
 // var DATA_URL = 'http://release:8000';
+var DATA_URL = 'http://192.168.1.37:8000';
 
 // FOR PRODUCTION:
-var DATA_URL = 'http://localhost:8000';
+// var DATA_URL = 'http://localhost:8000';
 
 
 var JIRA_URL = 'http://localhost:5051';

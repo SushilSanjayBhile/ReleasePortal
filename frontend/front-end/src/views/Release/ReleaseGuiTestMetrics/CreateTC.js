@@ -18,7 +18,7 @@ import axios from 'axios';
 import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../actions';
 import Multiselect from 'react-bootstrap-multiselect';
 const loading = () => <div className="animated fadeIn pt-3 text-center">Loading...</div>;
-class CreateTCs extends Component {
+class CreateTC extends Component {
     // [field] : {old,new}
     changeLog = {};
     constructor(props) {
@@ -35,27 +35,26 @@ class CreateTCs extends Component {
 
 
     textFields = [
-        'Domain', 'SubDomain',
-        'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes',
+        'Domain', 'SubDomain', 'Scenario', 'TcID', 'TcName', 'Tag', 'Assignee',
+        'Description', 'Steps', 'ExpectationBehavior', 'Notes'
     ];
-    arrayFields = ['CardType', 'ServerType']
+    arrayFields = ['CardType', 'ServerType', 'OrchestrationPlatform']
     whichFieldsUpdated(old, latest) {
         let changes = {};
         this.textFields.forEach(item => {
-            if (old[item] !== latest[item]) {
-                changes[item] = { old: old[item], new: latest[item] }
+            if(old[item] !== latest[item]) {
+                changes[item] = {old: old[item], new: latest[item]}
             }
         });
         this.arrayFields.forEach(item => {
-            if (!old[item] && latest[item]) {
-                changes[item] = { old: '', new: latest[item] }
-            } else if (!latest[item] && old[item]) {
-                changes[item] = { old: old[item], new: '' }
-            } else if (old[item] && latest[item]) {
+            if(!old[item] && latest[item]) {
+                changes[item] = {old: '', new: latest[item]}
+            } else if(!latest[item] && old[item]) {
+                changes[item] = {old: old[item], new: ''}
+            } else if(old[item] && latest[item]){
                 let arrayChange = latest[item].filter(each => old[item].includes(each));
-                if (arrayChange.length > 0) {
-                    changes[item] = { old: old[item], new: latest[item] }
+                if(arrayChange.length > 0) {
+                    changes[item] = {old: old[item], new: latest[item]}
                 }
             }
         });
@@ -74,18 +73,39 @@ class CreateTCs extends Component {
     save() {
         let data = {};
         // tc info meta fields
+        let date = new Date(data[item]).toISOString().split('T');
+        data.DateTC = `${date[0]} ${date[1].substring(0, date[1].length-1)}`;
+
+        data.Created = this.props.currentUser.email;
+        data.Role = this.props.currentUser.role;
         // data.Role = 'QA';
+        data.OldWorkingStatus = 'NOTCREATED';
         // tc info fields
         this.textFields.map(item => data[item] = this.state.addTC[item]);
-        this.arrayFields.forEach(item => data[item] = this.state.addTC[item]);
-        data.Activity = {
-            Release: this.props.selectedRelease.ReleaseNumber,
-            "TcID": data.TcID,
-            "CardType": data.CardType,
-            "UserName": this.props.currentUser.email,
-            "LogData": `${JSON.stringify(this.changeLog)}`,
-            "RequestType": 'POST',
-            "URL": `/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`
+        this.arrayFields.forEach(item => data[item] = this.joinArrays(this.state.addTC[item]));
+        data.Assignee = data.Assignee ? data.Assignee : 'ADMIN';
+        data.TcName = 'TC NOT AUTOMATED';
+        // tc status fields
+        data.CurrentStatus = 'NotTested';
+
+        if(data.Role === 'ADMIN') {
+            if(data.Assignee && data.Assignee !== 'ADMIN') {
+                data.WorkingStatus = 'MANUAL_ASSIGNED';
+            } else {
+                data.WorkingStatus = 'UNASSIGNED';
+                data.Assignee = 'ADMIN';
+            }
+        } else {
+            data.WorkingStatus = 'CREATED';
+            if(!(data.Assignee && data.Assignee !== 'ADMIN')) {
+                data.Assignee = 'ADMIN';
+            }
+        }
+        data.Activity={
+            "Date": data.DateTC,
+            "Header": `${data.WorkingStatus}: ${this.props.selectedRelease.ReleaseNumber}, master, REPORTER: ${this.props.currentUser.email} `,
+            "Details": this.changeLog,
+            "StatusChangeComments": ''
         };
 
 
@@ -95,29 +115,25 @@ class CreateTCs extends Component {
                 this.setState({ addTC: { Master: true, Domain: '' }, errors: {}, toggleMessage: `TC ${this.state.addTC.TcID} Added Successfully` });
                 this.toggle();
             }, error => {
-                alert('failed to create TC');
-                if (error && error.response && error.response.data) {
-                    let message = error.response.data.message;
-                    let found = false;
-                    ['Domain', 'SubDomain', 'TcID', 'TcName', 'CardType', 'ServerType', 'Scenario', 'OrchestrationPlatform',
-                        'Description', 'ExpectedBehavior', 'Notes', 'Date', 'Master', 'Assignee', 'Created', 'Tag', 'Activity']
-                        .forEach((item, index) => {
-                            if (!found && message && message.search(item) !== -1) {
-                                found = true;
-                                let msg = { [item]: `Invalid ${item}` };
-                                if (item === 'TcID') {
-                                    msg = { [item]: `Invalid or Duplicate ${item}` };
-                                }
-                                this.setState({ errors: msg, toggleMessage: `Error: ${error.message}` });
-                                this.toggle();
+                let message = error.response.data.message;
+                let found = false;
+                ['Domain', 'SubDomain', 'TcID', 'TcName', 'CardType', 'ServerType', 'Scenario', 'OrchestrationPlatform',
+                    'Description', 'ExpectedBehavior', 'Notes', 'Date', 'Master', 'Assignee', 'Created', 'Tag', 'Activity']
+                    .forEach((item, index) => {
+                        if (!found && message.search(item) !== -1) {
+                            found = true;
+                            let msg = { [item]: `Invalid ${item}` };
+                            if (item === 'TcID') {
+                                msg = { [item]: `Invalid or Duplicate ${item}` };
                             }
-                        });
-                    if (!found) {
-                        this.setState({ errors: {}, toggleMessage: `Error: ${error.message}` });
-                        this.toggle();
-                    }
+                            this.setState({ errors: msg, toggleMessage: `Error: ${error.message}` });
+                            this.toggle();
+                        }
+                    });
+                if (!found) {
+                    this.setState({ errors: {}, toggleMessage: `Error: ${error.message}` });
+                    this.toggle();
                 }
-
             });
         this.setState({ toggleMessage: null })
         // this.toggle();
@@ -199,9 +215,7 @@ class CreateTCs extends Component {
 
     }
     getTcs() {
-        this.props.saveTestCase({ data: [], id: this.props.selectedRelease.ReleaseNumber });
-        this.props.saveSingleTestCase({});
-        axios.get(`/api/wholetcinfo/${this.props.selectedRelease.ReleaseNumber}`)
+        axios.get(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`)
             .then(all => {
                 if (all.data && all.data.length) {
                     this.props.saveTestCase({ data: all.data, id: this.props.selectedRelease.ReleaseNumber });
@@ -212,8 +226,8 @@ class CreateTCs extends Component {
 
         let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.email);
 
-        let cards = ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(item => ({ value: item, selected: this.state.addTC.CardType && this.state.addTC.CardType.includes(item) }));
-        let servers = ['Intel', 'Dell', 'Lenovo'].map(item => ({ value: item, selected: this.state.addTC.ServerType && this.state.addTC.ServerType.includes(item) }));
+        let cards = this.props.selectedRelease.CardType ? this.props.selectedRelease.CardType.map(item => ({ value: item, selected: this.state.addTC.CardType && this.state.addTC.CardType.includes(item) })) : [];
+        let servers = this.props.selectedRelease.ServerType ? this.props.selectedRelease.ServerType.map(item => ({ value: item, selected: this.state.addTC.ServerType && this.state.addTC.ServerType.includes(item) })) : [];
         let op = this.props.selectedRelease.OrchestrationPlatform ? this.props.selectedRelease.OrchestrationPlatform.map(item => ({ value: item, selected: this.state.addTC.OrchestrationPlatform && this.state.addTC.OrchestrationPlatform.includes(item) })) : [];
         let multiselect = { 'CardType': cards, 'OrchestrationPlatform': op, 'ServerType': servers };
         return (
@@ -241,7 +255,7 @@ class CreateTCs extends Component {
                                                 <span className='rp-app-table-title'>Create Test Case</span>
                                             </div>
                                             <Button style={{ position: 'absolute', right: '1rem' }} title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.confirmToggle()} >
-                                                <i className="fa fa-save"></i>
+                                                <i className="fa fa-check-square-o"></i>
                                             </Button>
                                         </div>
 
@@ -314,7 +328,7 @@ class CreateTCs extends Component {
                                                 [
                                                     { field: 'CardType', header: 'Card Type' },
                                                     { field: 'ServerType', header: 'Server Type' },
-                                                    // { field: 'OrchestrationPlatform', header: 'Orchestration Platform' },
+                                                    { field: 'OrchestrationPlatform', header: 'Orchestration Platform' },
                                                 ].map(item => (
                                                     <Col xs="6" md="3" lg="3">
                                                         <FormGroup className='rp-app-table-value'>
@@ -372,7 +386,8 @@ class CreateTCs extends Component {
                                                             <Input style={{ borderColor: this.state.errors.Tag ? 'red' : '' }} className='rp-app-table-value' type="select" id="TAG" name="TAG" value={this.state.addTC && this.state.addTC.Tag}
                                                                 onChange={(e) => this.setState({ addTC: { ...this.state.addTC, Tag: e.target.value }, errors: { ...this.state.errors, Tag: null } })} >
                                                                 {
-                                                                    ['DAILY', 'WEEKLY', 'SANITY'].map(item => <option value={item}>{item}</option>)
+                                                                    this.props.selectedRelease.TagOptions &&
+                                                                    this.props.selectedRelease.TagOptions.map(item => <option value={item}>{item}</option>)
                                                                 }
                                                             </Input>
                                                     }
@@ -402,6 +417,7 @@ class CreateTCs extends Component {
                                                                                 errors: { ...this.state.errors, [item.field]: null }
                                                                             })} >
                                                                         <option value=''>{`Select ${item.header}`}</option>
+                                                                        <option value='ADMIN'>ADMIN</option>
                                                                         {
                                                                             users &&
                                                                             users.map(item => <option value={item}>{item}</option>)
@@ -411,7 +427,6 @@ class CreateTCs extends Component {
                                                         </FormGroup>
                                                     </Col>))
                                             }
-
                                         </React.Fragment>
                                     }
                                 </FormGroup>
@@ -482,7 +497,7 @@ const mapStateToProps = (state, ownProps) => ({
     selectedTC: state.testcase.all[state.release.current.id],
     testcaseDetail: state.testcase.testcaseDetail
 })
-export default connect(mapStateToProps, { saveTestCase, saveTestCaseStatus, saveSingleTestCase })(CreateTCs);
+export default connect(mapStateToProps, { saveTestCase, saveTestCaseStatus, saveSingleTestCase })(CreateTC);
 
 
 

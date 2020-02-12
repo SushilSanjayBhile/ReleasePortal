@@ -409,7 +409,7 @@ class ReleaseSummary extends Component {
                                             this.state.basic.editing ?
                                                 <Fragment>
                                                     <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggle()} >
-                                                        <i className="fa fa-check-square-o"></i>
+                                                        <i className="fa fa-save"></i>
                                                     </Button>
                                                     <Button size="md" color="transparent" className="float-right" onClick={() => this.reset()} >
                                                         <i className="fa fa-undo"></i>
@@ -781,7 +781,7 @@ class ReleaseSummary extends Component {
                                     this.state.qaStrategy.editing ?
                                         <Fragment>
                                             <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggle()} >
-                                                <i className="fa fa-check-square-o"></i>
+                                                <i className="fa fa-save"></i>
                                             </Button>
                                             <Button size="md" color="transparent" className="float-right" onClick={() => this.reset()} >
                                                 <i className="fa fa-undo"></i>
@@ -969,7 +969,7 @@ class ReleaseSummary extends Component {
                                     this.state.qaStatus.editing ?
                                         <Fragment>
                                             <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggle()} >
-                                                <i className="fa fa-check-square-o"></i>
+                                                <i className="fa fa-save"></i>
                                             </Button>
                                             <Button size="md" color="transparent" className="float-right" onClick={() => this.reset()} >
                                                 <i className="fa fa-undo"></i>
