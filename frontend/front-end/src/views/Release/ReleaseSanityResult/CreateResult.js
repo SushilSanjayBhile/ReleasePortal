@@ -70,7 +70,8 @@ class CreateResult extends Component {
         // data.Role = 'QA';
         // tc info fields
         this.textFields.map(item => data[item] = this.state.addTC[item]);
-        this.arrayFields.forEach(item => data[item] = this.joinArrays(this.state.addTC[item]));
+        // this.arrayFields.forEach(item => data[item] = this.joinArrays(this.state.addTC[item]));
+        data.CardType = [this.state.addTC.CardType];
         data.User = this.props.currentUser.email;
         let date = new Date().toISOString().split('T');
         data.Date = `${date[0]} ${date[1].substring(0, date[1].length - 1)}`;
@@ -209,7 +210,7 @@ class CreateResult extends Component {
                             }
                         </FormGroup>
                     </Col>
-                    {
+                    {/* {
 
                         this.state.addTC.Type &&
 
@@ -231,6 +232,27 @@ class CreateResult extends Component {
                             </Col>
                         ))
 
+                    } */}
+                    {
+                        this.state.addTC.Type &&
+                        [
+                            { field: 'CardType', header: 'Card Type' },
+                        ].map((item, index) => (
+                            <Col xs="6" md="6" lg="4">
+                                <FormGroup className='rp-app-table-value'>
+                                    <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}  {
+                                        this.state.errors[item.field] &&
+                                        <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
+                                    }</Label>
+                                    <Input style={{ borderColor: this.state.errors['CardType'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="CardType" name="CardType" value={this.state.addTC && this.state.addTC.CardType}
+                                        onChange={(e) => this.setState({ addTC: { ...this.state.addTC, CardType: e.target.value }, errors: { ...this.state.errors, CardType: null } })} >
+                                        <option value=''>Select Card Type</option>
+                                        <option value='BOS'>BOS</option>
+                                        <option value='NYNJ'>NYNJ</option>
+                                        <option value='SOFTWARE'>SOFTWARE</option>
+                                    </Input>
+                                </FormGroup>
+                            </Col>))
                     }
                     {
                         this.state.addTC.Type && this.state.addTC.CardType && this.state.addTC.CardType.length > 0 &&

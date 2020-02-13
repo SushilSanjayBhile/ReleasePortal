@@ -6,6 +6,7 @@
 // ExpectedBehaviour and Steps not updating
 //  Working Status: Deleted, and others
 // User list from backend
+// 73/deepak/deploy/crd
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
@@ -471,7 +472,7 @@ class TestCases extends Component {
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
                 this.props.saveTestCase({ data: all.data, id: this.props.selectedRelease.ReleaseNumber });
-                setTimeout(this.gridApi.refreshView(), 0)
+                setTimeout(this.gridApi.redrawRows(), 0)
                 this.deselect();
                 this.gridOperations(true);
 
@@ -959,7 +960,7 @@ class TestCases extends Component {
                                                                                 })
                                                                             }
                                                                             this.setState({ multi: { ...this.state.multi, [each.labels]: e.target.value } })
-                                                                            setTimeout(this.gridApi.refreshView(), 0);
+                                                                            setTimeout(this.gridApi.redrawRows(), 0);
                                                                         }} type="select" id={`select_${each.labels}`}>
                                                                             <option value=''>Select Priority</option>
                                                                             {
@@ -997,7 +998,7 @@ class TestCases extends Component {
                                                                                 })
                                                                             }
                                                                             this.setState({ multi: { ...this.state.multi, [each.labels]: e.target.value } })
-                                                                            setTimeout(this.gridApi.refreshView(), 0);
+                                                                            setTimeout(this.gridApi.redrawRows(), 0);
                                                                         }} type="select" id={`select_assignee${each.labels}`}>
                                                                             {/* {
                                                                             ['P0','P1','P2','P3','P4','P5','P6','P7','P8','P9'].map(item => <option value={item}>{item}</option>)
@@ -1034,7 +1035,7 @@ class TestCases extends Component {
                                                                                 })
                                                                             }
                                                                             this.setState({ multi: { ...this.state.multi, [each.labels]: e.target.value } })
-                                                                            setTimeout(this.gridApi.refreshView(), 0);
+                                                                            setTimeout(this.gridApi.redrawRows(), 0);
                                                                         }} type="select" id={`select_WS${each.labels}`}>
                                                                             <option value=''>Select Working Status</option>
                                                                             {

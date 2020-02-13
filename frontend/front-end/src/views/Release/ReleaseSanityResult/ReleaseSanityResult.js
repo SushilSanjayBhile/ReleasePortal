@@ -98,8 +98,13 @@ class ReleaseSanityResult extends Component {
                                             } */}
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
                                             <span className='rp-app-table-title'>Manual Sanity</span>
-                                            <Button style={{ marginLeft: '1rem', right: '1rem', position: 'absolute' }} id="getall" onClick={() => this.toggleCreate()} type="button">Create</Button>
-                                            <Button style={{ marginLeft: '1rem', right: '6rem', position: 'absolute' }} id="getDelete" onClick={() => this.confirmDelete()} type="button">Delete</Button>
+                                            {
+                                                this.props.currentUser && this.props.currentUser.email &&
+                                                <React.Fragment>
+                                                    <Button style={{ marginLeft: '1rem', right: '1rem', position: 'absolute' }} id="getall" onClick={() => this.toggleCreate()} type="button">Create</Button>
+                                                    <Button style={{ marginLeft: '1rem', right: '6rem', position: 'absolute' }} id="getDelete" onClick={() => this.confirmDelete()} type="button">Delete</Button>
+                                                </React.Fragment>
+                                            }
                                         </div>
                                     </div>
                                 </div>

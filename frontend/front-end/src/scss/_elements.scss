@@ -524,7 +524,9 @@ html:not([dir=rtl]) .c-callout-fail {
 .rp-error-box {
   border-color: $app-fail-color;
 }
-
+.modal-open {
+  overflow: scroll;
+}
 // '#e55353',
 // //fail
 // '#2eb85c',
