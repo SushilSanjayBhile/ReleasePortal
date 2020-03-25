@@ -1,0 +1,72 @@
+[
+    {
+        "Subgroup": "Probes",
+        "Total TCs": 9.0,
+        "Ran (Coverage)": 9.0,
+        "Coverage %": 100.0,
+        "Passed": 9.0,
+        "Passed %": 100.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "ResourceQuota",
+        "Total TCs": 37.0,
+        "Ran (Coverage)": 37.0,
+        "Coverage %": 100.0,
+        "Passed": 37.0,
+        "Passed %": 100.0,
+        "Automated": 36.0,
+        "Automated %": 97.3
+    },
+    {
+        "Subgroup": "Services",
+        "Total TCs": 6.0,
+        "Ran (Coverage)": 6.0,
+        "Coverage %": 100.0,
+        "Passed": 6.0,
+        "Passed %": 100.0,
+        "Automated": 3.0,
+        "Automated %": 50.0
+    },
+    {
+        "Subgroup": "CRIO",
+        "Total TCs": 11.0,
+        "Ran (Coverage)": 11.0,
+        "Coverage %": 100.0,
+        "Passed": 8.0,
+        "Passed %": 72.73,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Kata",
+        "Total TCs": 14.0,
+        "Ran (Coverage)": 14.0,
+        "Coverage %": 100.0,
+        "Passed": 11.0,
+        "Passed %": 78.57,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": ""
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 77.0,
+        "Ran (Coverage)": 77.0,
+        "Coverage %": 100.0,
+        "Passed": 71.0,
+        "Passed %": 92.21,
+        "Automated": 39.0,
+        "Automated %": 50.65
+    }
+]

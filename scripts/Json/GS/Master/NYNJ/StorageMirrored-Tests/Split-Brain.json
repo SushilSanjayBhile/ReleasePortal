@@ -1,0 +1,106 @@
+[
+    {
+        "Terminology :": "",
+        "": ""
+    },
+    {
+        "Terminology :": "q ==> quorum node",
+        "": ""
+    },
+    {
+        "Terminology :": "nq ==> non quorum node",
+        "": ""
+    },
+    {
+        "Terminology :": "R ==> Reboot node",
+        "": ""
+    },
+    {
+        "Terminology :": "M ==> Management network down",
+        "": ""
+    },
+    {
+        "Terminology :": "D ==> Data network down",
+        "": ""
+    },
+    {
+        "Terminology :": "A ==> Initiator can reach etcd cluster majority",
+        "": ""
+    },
+    {
+        "Terminology :": "!A==> Initiator can not reach etcd cluster majority",
+        "": ""
+    },
+    {
+        "Terminology :": "",
+        "": ""
+    },
+    {
+        "Terminology :": "",
+        "": "Result"
+    },
+    {
+        "Terminology :": 1.0,
+        "": ""
+    },
+    {
+        "Terminology :": 2.0,
+        "": ""
+    },
+    {
+        "Terminology :": 3.0,
+        "": ""
+    },
+    {
+        "Terminology :": 5.0,
+        "": ""
+    },
+    {
+        "Terminology :": 6.0,
+        "": ""
+    },
+    {
+        "Terminology :": 6.0,
+        "": ""
+    },
+    {
+        "Terminology :": 7.0,
+        "": ""
+    },
+    {
+        "Terminology :": 8.0,
+        "": ""
+    },
+    {
+        "Terminology :": 9.0,
+        "": ""
+    },
+    {
+        "Terminology :": 10.0,
+        "": ""
+    },
+    {
+        "Terminology :": "",
+        "": ""
+    },
+    {
+        "Terminology :": "*Expected :",
+        "": ""
+    },
+    {
+        "Terminology :": "1) In IO Fail cases above :",
+        "": ""
+    },
+    {
+        "Terminology :": "- After restore of mgmt, data network or nodes up, the volumes should be available for IOs to continue.",
+        "": ""
+    },
+    {
+        "Terminology :": "",
+        "": ""
+    },
+    {
+        "Terminology :": "2) After resync of plexes data should be same on all the plexes.",
+        "": ""
+    }
+]

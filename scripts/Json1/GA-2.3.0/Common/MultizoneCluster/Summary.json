@@ -1,0 +1,82 @@
+[
+    {
+        "Subgroup": "Management",
+        "Total TCs": 30.0,
+        "Ran (Coverage)": 30.0,
+        "Coverage %": 100.0,
+        "Passed": 30.0,
+        "Passed %": 100.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Networking",
+        "Total TCs": 14.0,
+        "Ran (Coverage)": 14.0,
+        "Coverage %": 100.0,
+        "Passed": 13.0,
+        "Passed %": 92.86,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Storage",
+        "Total TCs": 19.0,
+        "Ran (Coverage)": 17.0,
+        "Coverage %": 89.47,
+        "Passed": 17.0,
+        "Passed %": "",
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Backup Controller",
+        "Total TCs": 6.0,
+        "Ran (Coverage)": 1.0,
+        "Coverage %": 16.67,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Upgrade/Update cluster",
+        "Total TCs": 0.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Zone Capability",
+        "Total TCs": 48.0,
+        "Ran (Coverage)": 48.0,
+        "Coverage %": 100.0,
+        "Passed": 42.0,
+        "Passed %": 87.5,
+        "Automated": 4.0,
+        "Automated %": 8.33
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": ""
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 117.0,
+        "Ran (Coverage)": 110.0,
+        "Coverage %": 94.02,
+        "Passed": 102.0,
+        "Passed %": 92.73,
+        "Automated": 4.0,
+        "Automated %": 3.42
+    }
+]

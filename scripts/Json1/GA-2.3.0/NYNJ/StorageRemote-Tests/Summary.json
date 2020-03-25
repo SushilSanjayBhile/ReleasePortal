@@ -1,0 +1,68 @@
+[
+    {
+        "Subgroup": "Standard Scenarios",
+        "Total TCs": 21.0,
+        "Ran (Coverage)": 21.0,
+        "Coverage %": 100.0,
+        "Passed": 20.0,
+        "Passed %": 95.24,
+        "Automated": 13.0,
+        "Automated %": 61.9,
+        "Manual TCs": 8.0
+    },
+    {
+        "Subgroup": "Stress & Limit",
+        "Total TCs": 11.0,
+        "Ran (Coverage)": 11.0,
+        "Coverage %": 100.0,
+        "Passed": 11.0,
+        "Passed %": 100.0,
+        "Automated": 6.0,
+        "Automated %": 54.55,
+        "Manual TCs": 5.0
+    },
+    {
+        "Subgroup": "Negative Scenarios",
+        "Total TCs": 10.0,
+        "Ran (Coverage)": 10.0,
+        "Coverage %": 100.0,
+        "Passed": 10.0,
+        "Passed %": 100.0,
+        "Automated": 8.0,
+        "Automated %": 80.0,
+        "Manual TCs": 2.0
+    },
+    {
+        "Subgroup": "Simulation Testing",
+        "Total TCs": 15.0,
+        "Ran (Coverage)": 15.0,
+        "Coverage %": 100.0,
+        "Passed": 15.0,
+        "Passed %": 100.0,
+        "Automated": 0.0,
+        "Automated %": 0.0,
+        "Manual TCs": 15.0
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": "",
+        "Manual TCs": 0.0
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 57.0,
+        "Ran (Coverage)": 57.0,
+        "Coverage %": 100.0,
+        "Passed": 56.0,
+        "Passed %": 98.25,
+        "Automated": 27.0,
+        "Automated %": 47.37,
+        "Manual TCs": 30.0
+    }
+]

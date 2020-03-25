@@ -1,0 +1,202 @@
+[
+    {
+        "TC Name": "RemoteStorage.IPMIBasedTargetReboot",
+        "TC Tag": "Weekly",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Rbac.Multiple",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Pod.UnhealthyNode",
+        "TC Tag": "Weekly",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Storage.StressWithFioPods",
+        "TC Tag": "Weekly",
+        "Reason": "PVC remained in pending state",
+        "Owner": "",
+        "Bug No.": "DWS-5041",
+        "": ""
+    },
+    {
+        "TC Name": "ReplicationController.NetworkPodEvacuation",
+        "TC Tag": "Weekly",
+        "Reason": "Test case ReplicationController.NetworkPodEvacuation is failing sometimes.",
+        "Owner": "",
+        "Bug No.": "DWS-3713",
+        "": ""
+    },
+    {
+        "TC Name": "Rbac.MultipleAuths",
+        "TC Tag": "Weekly",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Rbac.MultipleSecureAuthsWindowsLinux",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Network.BasicPod",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Snapshot.LimitTestMaxSnapshotsPerLocalVolumeOnANode",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "StorageKubeSnapshot.PatternVerificationOnLCV",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Rbac.FunctionTestsRemoteLAuth",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Rbac.FunctionTestsRemoteWAuth",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Network.ValidateTrafficAfterIperfClientRcPodEvacuation",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Nfs.NfsSrvrAndClientOnSameCluster",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Quorum",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Cluster.DataValidationOnQHMVolumesAfterNodeRemoveAndAdd",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "StorageKubeSnapshot.CreateSnapshotAndLCV",
+        "TC Tag": "",
+        "Reason": "",
+        "Owner": "",
+        "Bug No.": "",
+        "": ""
+    },
+    {
+        "TC Name": "Storage.StressWithFioPodsWithReboot",
+        "TC Tag": "Weekly",
+        "Reason": "PVC remained in pending state",
+        "Owner": "",
+        "Bug No.": "DWS-5041",
+        "": ""
+    },
+    {
+        "TC Name": "Qos",
+        "TC Tag": "Weekly",
+        "Reason": "TC : Network.QosValidationAcrossPodAndPerfTierDeleteCreate",
+        "Owner": "",
+        "Bug No.": "DWS-4807",
+        "": ""
+    },
+    {
+        "TC Name": "Rbac",
+        "TC Tag": "Weekly",
+        "Reason": "TC: Rbac.MultipleAuthsWithSameSearchOrder",
+        "Owner": "",
+        "Bug No.": "DWS-5322",
+        "": ""
+    },
+    {
+        "TC Name": "MaxSize",
+        "TC Tag": "Weekly",
+        "Reason": "Here we create one volume of size 3TB / 8TB and run cksum before and after reboot. cksum takes too long. The TC will run for 6+ hrs. There is one such TC for local, remote and mirrored volume. Total time will be more than 20 hrs for just 3 TCs. Once we have multiple clean run of other Weekly tests, we can enable these. ",
+        "Owner": "Yatish",
+        "Bug No.": "",
+        "": "Has been run manually for this release couple of times"
+    },
+    {
+        "TC Name": "ResyncTwoTargetReboot",
+        "TC Tag": "Weekly",
+        "Reason": "cluster split brain scenario. ",
+        "Owner": "Shilpa / Abhay",
+        "Bug No.": "DWS-3810",
+        "": ""
+    },
+    {
+        "TC Name": "RebootDestinationNodeDuringResync",
+        "TC Tag": "Weekly",
+        "Reason": "cluster split brain scenario. ",
+        "Owner": "Shilpa / Abhay",
+        "Bug No.": "DWS-3810",
+        "": ""
+    },
+    {
+        "TC Name": "RebootSourceNodeDuringResync",
+        "TC Tag": "Weekly",
+        "Reason": "cluster split brain scenario. ",
+        "Owner": "Shilpa / Abhay",
+        "Bug No.": "DWS-3810",
+        "": ""
+    },
+    {
+        "TC Name": "Nvme",
+        "TC Tag": "Weekly",
+        "Reason": "No need to run it regularly",
+        "Owner": "Yatish",
+        "Bug No.": "",
+        "": ""
+    }
+]

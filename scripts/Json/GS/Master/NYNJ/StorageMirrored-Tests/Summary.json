@@ -1,0 +1,92 @@
+[
+    {
+        "Subgroup": "Standard Scenarios",
+        "Total TCs": 24.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 12.0,
+        "Automated %": 50.0
+    },
+    {
+        "Subgroup": "Reboot Tests",
+        "Total TCs": 32.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 14.0,
+        "Automated %": 43.75
+    },
+    {
+        "Subgroup": "Plex Operations",
+        "Total TCs": 33.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 15.0,
+        "Automated %": 45.45
+    },
+    {
+        "Subgroup": "Stress Scenarios",
+        "Total TCs": 14.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 11.0,
+        "Automated %": 78.57
+    },
+    {
+        "Subgroup": "Negative Tests",
+        "Total TCs": 9.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 8.0,
+        "Automated %": 88.89
+    },
+    {
+        "Subgroup": "Limit Testing",
+        "Total TCs": 3.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 1.0,
+        "Automated %": 33.33
+    },
+    {
+        "Subgroup": "Simulation Testing",
+        "Total TCs": 15.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": ""
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 130.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 61.0,
+        "Automated %": 46.92
+    }
+]
