@@ -4,9 +4,9 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
 # imports from django app
-from .models import DEFAULT_VALUES, DEFAULT_DOMAIN, DEFAULT_SUBDOMAIN
-from .forms import DEFAULT_VALUES_FORM, DomainForm, SubDomainForm
-from DDB.serializers import DEFAULT_VALUES_SERIALIZER, DOMAIN_SERIALIZER, SUBDOMAIN_SERIALIZER
+from .models import DEFAULT_DOMAIN_SUBDOMAIN
+from .forms import DomainSubDomainForm
+from DDB.serializers import DOMAIN_SUBDOMAIN_SERIALIZER
 
 import datetime
 from .forms import LogForm
@@ -95,52 +95,3 @@ def DEFAULT_DOMAIN_GET_POST_VIEW(request, Release):
        data = DEFAULT_DOMAIN.objects.using(Release).all()
        serializer = DOMAIN_SERIALIZER(data, many = True)
        return HttpResponse(json.dumps(serializer.data), status = 200)
-
-@csrf_exempt
-def DEFAULT_VALUES_PUT_DELETE_VIEW(request, Release, id):
-    if request.method == "PUT":
-        req = json.loads(request.body.decode("utf-8"))
-        data = DEFAULT_VALUES.objects.using(Release).get(id = id)
-        serializer = DEFAULT_VALUES_SERIALIZER(data)
-
-        updatedData = serializer.data
-        for key in req:
-            updatedData[key] = req[key]
-
-        data.key = updatedData['key']
-        data.value = updatedData['value']
-        data.save(using = Release)
-
-        if "Activity" in req:
-            AD = req['Activity']
-            GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
-        return HttpResponse("Sucess", status = 200)
-
-
-@csrf_exempt
-def DEFAULT_VALUES_GET_POST_VIEW(request, Release, key):
-    if request.method == "POST":
-        req = json.loads(request.body.decode("utf-8"))
-        try:
-            data = DEFAULT_VALUES.objects.using(Release).filter(key = key).get(value = req['value'])
-            return HttpResponse("Conflict: Values already exists", status = 409)
-        except:
-            pass
-
-        fd = DEFAULT_VALUES_FORM(req)
-        if fd.is_valid():
-            data = fd.save(commit = False)
-            data.save(using = Release)
-            if "Activity" in req:
-                AD = req['Activity']
-                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
-
-        else:
-            print(req, fd.errors)
-            return HttpResponse(fd.errors)
-        return HttpResponse("Sucess", status = 200)
-
-    elif request.method == "GET":
-        data = DEFAULT_VALUES.objects.using(Release).filter(key = key)
-        serializer = DEFAULT_VALUES_SERIALIZER(data, many=True)
-        return HttpResponse(json.dumps(serializer.data))

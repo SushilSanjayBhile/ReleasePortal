@@ -8,10 +8,17 @@ from django.views.decorators.http import require_http_methods
 
 # imports from django app
 from constraints import *
-from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, LATEST_TC_STATUS
-from .forms import TcInfoForm, TcStatusForm, UserInfoForm, LogForm, ReleaseInfoForm, AggregationForm, GuiTcInfoForm
+
+from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, LATEST_TC_STATUS, \
+        DEFAULT_DOMAIN_SUBDOMAIN
+
+from .forms import TcInfoForm, TcStatusForm, UserInfoForm, LogForm, ReleaseInfoForm, AggregationForm, GuiTcInfoForm, \
+        DomainSubDomainForm
+
 from DDB.serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, USER_SERIALIZER, LOG_SERIALIZER, \
-    RELEASE_SERIALIZER, AGGREGATION_SERIALIZER, TC_STATUS_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER
+    RELEASE_SERIALIZER, AGGREGATION_SERIALIZER, TC_STATUS_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER, \
+    DOMAIN_SUBDOMAIN_SERIALIZER
+
 from .createDB import createReleaseDB
 
 import datetime
@@ -202,13 +209,213 @@ def GUITCSTATUSGETPOSTVIEW(request, Release):
 # @csrf_exempt
 # def DEFAULT_VALUE_SETTER_GETTER(request):
 #     if request.method == "POST":
-        
+
+def updateDomainData(newData, oldData, Release):
+    oldData.Domain = newData['Domain']
+    oldData.SubDomain = newData['SubDomain']
+
+    oldData.save(using = Release)
+
+def addDomain(domain, Release):
+    domainGet = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(Release).filter(Domain = domain)
+    if len(domainGet) < 1:
+        fd = DomainSubDomainForm({"Domain" : domain})
+        if fd.is_valid():
+            data = fd.save(commit = False)
+            data.save(using = Release)
+        else:
+            print(fd.errors)
+
+def addSubDomain(domain, subDomain, Release):
+    subDomainGet = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(Release).get(Domain = domain)
+    ser = DOMAIN_SUBDOMAIN_SERIALIZER(subDomainGet)
+    newData = ser.data
+    
+    if subDomain not in ser.data['SubDomain']:
+        newData['SubDomain'].append(subDomain)
+        updateDomainData(newData, subDomainGet, Release)
+
+def tcaggr(Release):
+    tcInfo = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI"))
+    domains = tcInfo.values("Domain").distinct()
+
+    for i in domains:
+        domain = i['Domain']
+        addDomain(domain, Release)
+        subDomains = tcInfo.filter(Domain = domain).values("Domain","SubDomain").distinct()
+        for i in subDomains:
+            addSubDomain(domain, i['SubDomain'], Release)
+
+@csrf_exempt
+def AddDomainSubDomain(request, Release):
+    req = json.loads(request.body.decode("utf-8"))
+
+    for dom in req['domains']:
+        addDomain(dom, Release)
+
+    for subdom in req['subdomains']:
+        addSubDomain(req['selectedDomain'], subdom, Release)
+    return HttpResponse("COMING", status = 200)
+
+def editAggregate(newData, oldData, Release):
+    oldData.Domain = newData["Domain"]
+
+    oldData.Total  = newData["Total"]
+    oldData.NotApplicable = newData["NotApplicable"]
+    oldData.Skipped = newData["Skipped"]
+    oldData.Automated  = newData["Automated"]
+    oldData.NonAutomated  = newData["NonAutomated"]
+
+    oldData.Tested  = newData["Tested"]
+    oldData.NotTested  = newData["NotTested"]
+
+    oldData.ManualPass  = newData["ManualPass"]
+    oldData.ManualFail  = newData["ManualFail"]
+    oldData.ManualSkip  = newData["ManualSkip"]
+
+    oldData.AutomatedPass  = newData["AutomatedPass"]
+    oldData.AutomatedFail  = newData["AutomatedFail"]
+    oldData.AutomatedSkip  = newData["AutomatedSkip"]
+
+def getAggregate(Release):
+    dic = {}
+
+    dic["TcAggregate"] = {}
+    dic["TcAggregate"]["domain"] = {}
+
+    # calculation 2
+    # avaiable domains and their subdomains
+    dic["AvailableDomainOptions"] = {}
+
+    domains = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(Release).all()
+    domSer = ser = DOMAIN_SUBDOMAIN_SERIALIZER(domains, many = True)
+
+    for dom in domSer.data:
+        dic["AvailableDomainOptions"][dom["Domain"]] = dom["SubDomain"]
+
+
+    # calclation 3
+    # available scenarios
+    dic['AvailableScenarios'] = []
+
+    tcInfoAll = TC_INFO.objects.using(Release)
+    tcInfoCli = tcInfoAll.filter(~Q(Domain = "GUI"))
+    tcinfo = tcInfoCli.filter(~Q(Priority = "NA"))
+
+    scenario = tcinfo.values('Scenario').distinct()
+    for tc in scenario:
+        dic['AvailableScenarios'].append(tc['Scenario'])
+
+
+    # calculation 4
+    # all info not specific to domain, etc
+    dic["all"] = {}
+
+    tcStatus = LATEST_TC_STATUS.objects.using(Release).all()
+
+    dic["all"]["All"] = tcInfoCli.count() #total cli test cases
+    dic["all"]["GUI"] = tcInfoAll.filter(Domain = "GUI").count()
+    dic["all"]["NotTested"] = dic["all"]["All"] - tcStatus.count()
+    dic["all"]["NotApplicable"] = tcInfoCli.filter(Priority = "NA").count()
+    dic["all"]["NonAutomated"] = tcInfoCli.filter(TcName = "TC NOT AUTOMATED").count()
+    dic["all"]["Automated"] = tcInfoCli.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
+
+    dic["all"]["Tested"] = {}
+
+    dic["all"]["Tested"]["auto"] = {}
+    dic["all"]["Tested"]["auto"]["Pass"] = 0
+    dic["all"]["Tested"]["auto"]["Fail"] = 0
+    dic["all"]["Tested"]["auto"]["Skip"] = 0
+
+    dic["all"]["Tested"]["manual"] = {}
+    dic["all"]["Tested"]["manual"]["Pass"] = 0
+    dic["all"]["Tested"]["manual"]["Fail"] = 0
+    dic["all"]["Tested"]["manual"]["Skip"] = 0
+
+
+
+    # calculation 1
+    # Domain wise pass, fail, skip, automated etc calculation
+    aggData = AGGREGATE_TC_STATE.objects.using(Release).all()
+    aggSer = AGGREGATION_SERIALIZER(aggData, many = True)
+
+    for dom in aggSer.data:
+        dic["TcAggregate"]["domain"][dom["Domain"]] = {}
+
+        dic["TcAggregate"]["domain"][dom["Domain"]]["NotApplicable"] = dom["NotApplicable"]
+        dic["TcAggregate"]["domain"][dom["Domain"]]["NotTested"] = dom["NotTested"]
+
+        dic["TcAggregate"]["domain"][dom["Domain"]]["Tested"] = {}
+
+        dic["all"]["Tested"]["auto"]["Pass"] = dic["all"]["Tested"]["auto"]["Pass"] + dom["AutomatedPass"]
+        dic["all"]["Tested"]["auto"]["Fail"] = dic["all"]["Tested"]["auto"]["Fail"] + dom["AutomatedFail"]
+        dic["all"]["Tested"]["auto"]["Skip"] = dic["all"]["Tested"]["auto"]["Skip"] + dom["AutomatedSkip"]
+        dic["all"]["Tested"]["manual"]["Pass"] = dic["all"]["Tested"]["manual"]["Pass"] + dom["ManualPass"]
+        dic["all"]["Tested"]["manual"]["Fail"] = dic["all"]["Tested"]["manual"]["Fail"] + dom["ManualFail"]
+        dic["all"]["Tested"]["manual"]["Skip"] = dic["all"]["Tested"]["manual"]["Skip"] + dom["ManualSkip"]
+
+        dic["TcAggregate"]["domain"][dom["Domain"]]["Tested"]["auto"] = {}
+        dic["TcAggregate"]["domain"][dom["Domain"]]["Tested"]["auto"]["Pass"] = dom["AutomatedPass"]
+        dic["TcAggregate"]["domain"][dom["Domain"]]["Tested"]["auto"]["Fail"] = dom["AutomatedFail"]
+        dic["TcAggregate"]["domain"][dom["Domain"]]["Tested"]["auto"]["Skip"] = dom["AutomatedSkip"]
+
+        dic["TcAggregate"]["domain"][dom["Domain"]]["Tested"]["manual"] = {}
+        dic["TcAggregate"]["domain"][dom["Domain"]]["Tested"]["manual"]["Pass"] = dom["ManualPass"]
+        dic["TcAggregate"]["domain"][dom["Domain"]]["Tested"]["manual"]["Fail"] = dom["ManualFail"]
+        dic["TcAggregate"]["domain"][dom["Domain"]]["Tested"]["manual"]["Skip"] = dom["ManualSkip"]
+
+    return dic
+
+def aggregateTcStatus(Release):
+    print(Release)
+    tcInfo = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI"))
+    applicableTcInfo = tcInfo.filter(~Q(Priority = "NA"))
+
+    domains = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(Release).values("Domain").all()
+
+    latestTcStatus = LATEST_TC_STATUS.objects.using(Release).all()
+
+    for dom in domains:
+        newData = {}
+
+        domain = dom["Domain"]
+        domainTc = tcInfo.filter(Domain = domain)
+        applicableDomainTc = domainTc.filter(~Q(Priority = "NA"), ~Q(Priority = "Skip"))
+
+        newData["Domain"] = domain
+
+        newData["Total"] = domainTc.count()
+        newData["NotApplicable"] = domainTc.filter(Priority = "NA").count()
+        newData["Skipped"] = domainTc.filter(Priority = "Skip").count()
+        newData["Automated"] = domainTc.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
+        newData["NonAutomated"] = domainTc.filter(TcName = "TC NOT AUTOMATED").count()
+
+        newData["Tested"] = latestTcStatus.filter(Domain = domain).count()
+        newData["NotTested"] = applicableDomainTc.count() - newData["Tested"]
+
+        manualTcStatus = latestTcStatus.filter(Domain = domain).filter(TcName = "TC NOT AUTOMATED")
+        newData["ManualPass"] = manualTcStatus.filter(Result = "Pass").count()
+        newData["ManualFail"] = manualTcStatus.filter(Result = "Fail").count()
+        newData["ManualSkip"] = manualTcStatus.filter(Result = "Skip").count()
+
+        automatedTcStatus = latestTcStatus.filter(Domain = domain).filter(~Q(TcName = "TC NOT AUTOMATED"))
+        newData["AutomatedPass"] = automatedTcStatus.filter(Result = "Pass").count()
+        newData["AutomatedFail"] = automatedTcStatus.filter(Result = "Fail").count()
+        newData["AutomatedSkip"] = automatedTcStatus.filter(Result = "Skip").count()
+
+        aggrTcStatus = AGGREGATE_TC_STATE.objects.using(Release).filter(Domain = domain)
+        if len(aggrTcStatus) == 0:
+            fd = AggregationForm(newData)
+            if fd.is_valid():
+                data = fd.save(commit = False)
+                data.save(using = Release)
+            else:
+                print(fd.errors)
+    return getAggregate(Release)
+
+
 def TCAGGREGATE(Release):
         dictionary = {}
-
-        dictionary['domain'] = {}
-        dictionary['AvailableDomainOptions'] = {}
-        dictionary['AvailableScenarios'] = []
 
         total = 0
         totalpass = 0
@@ -220,110 +427,112 @@ def TCAGGREGATE(Release):
         autofail = 0
         autoskipped = 0
 
+        #dictionary['domain'] = {}
+        #dictionary['AvailableDomainOptions'] = {}
+        #dictionary['AvailableScenarios'] = []
+
         data = LATEST_TC_STATUS.objects.using(Release).all()
         serializer = LATEST_TC_STATUS_SERIALIZER(data, many=True)
 
-        tcinfo = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI")).filter(~Q(Priority = "NA"))
+        tcInfoCli = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI"))
+        tcinfo = tcInfoCli.filter(~Q(Priority = "NA"))
         tcinfoserializer = TC_INFO_SERIALIZER(tcinfo, many=True)
 
         automated = tcinfo.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
         nonautomated = tcinfo.filter(TcName = "TC NOT AUTOMATED").count()
-        notapplicable = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI")).filter(Priority = "NA").count()
+        notapplicable = tcInfoCli.filter(Priority = "NA").count()
 
-        scenario = TC_INFO.objects.using(Release).values('Scenario').distinct()
+        scenario = tcinfo.values('Scenario').distinct()
         for tc in scenario:
-            dictionary['AvailableScenarios'].append(tc['Scenario'])
+            pass
+            #dictionary['AvailableScenarios'].append(tc['Scenario'])
 
         domains = tcinfo.values('Domain').distinct()
         for tc in domains:
             domain = tc['Domain']
-            # dictionary['AvailableDomainOptions'].append(domain) 
 
             subdomains = tcinfo.values('SubDomain').filter(Domain = domain).distinct()
             for sd in subdomains:
                 subdomain = sd['SubDomain']
 
-                if domain in dictionary['AvailableDomainOptions']:
-                    dictionary['AvailableDomainOptions'][domain].append(subdomain)
-                else:
-                    dictionary['AvailableDomainOptions'][domain] = []
-                    dictionary['AvailableDomainOptions'][domain].append(subdomain)
+                #if domain not in dictionary['AvailableDomainOptions']:
+                #    pass
+                #    dictionary['AvailableDomainOptions'][domain] = []
+                #dictionary['AvailableDomainOptions'][domain].append(subdomain)
 
-            tccount = 0
+            #if domain not in dictionary['domain']:
+            #    dictionary['domain'][domain] = {}
+            #    dictionary['domain'][domain]['Tested'] = {}
 
-            if domain not in dictionary['domain']:
-                dictionary['domain'][domain] = {}
+            #    tcByDomain = tcInfoCli.filter(Domain = domain)
+            #    domainallcount = tcInfoCli.filter(Domain = tc['Domain']).count()
 
-                dictionary['domain'][domain]['Tested'] = {}
+            #    dictionary['domain'][tc['Domain']]['NotApplicable'] = tcByDomain.filter(Priority = "NA").count()
 
-                domainallcount = TC_INFO.objects.using(Release).filter(Domain = tc['Domain']).filter(~Q(Priority = 'NA')).count()
-                dictionary['domain'][tc['Domain']]['NotApplicable'] = 0
+            #    dictionary['domain'][tc['Domain']]['Tested']['auto'] = {}
+            #    dictionary['domain'][tc['Domain']]['Tested']['manual'] = {}
 
-                dictionary['domain'][tc['Domain']]['Tested']['auto'] = {}
-                dictionary['domain'][tc['Domain']]['Tested']['manual'] = {}
+            #    tcinfocount = tcByDomain.filter(TcName = "TC NOT AUTOMATED").count()
+            #    tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Pass").count()
+            #    if Release == "2.3.0":
+            #        d = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'])
+            #    dictionary['domain'][tc['Domain']]['Tested']['manual']['Pass'] = tccount
+            #    totalpass += tccount
+            #    domainallcount -= tccount
 
-                tcinfocount = TC_INFO.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain']).count()
-                tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Pass").count()
-                if Release == "2.3.0":
-                    d = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'])
-                dictionary['domain'][tc['Domain']]['Tested']['manual']['Pass'] = tccount
-                totalpass += tccount
-                domainallcount -= tccount
+            #    tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Fail").count()
+            #    dictionary['domain'][tc['Domain']]['Tested']['manual']['Fail'] = tccount
+            #    totalfail += tccount
+            #    domainallcount -= tccount
 
-                tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Fail").count()
-                dictionary['domain'][tc['Domain']]['Tested']['manual']['Fail'] = tccount
-                totalfail += tccount
-                domainallcount -= tccount
+            #    tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "NotTested").count()
+            #    dictionary['domain'][tc['Domain']]['Tested']['manual']['Skip'] = tccount
+            #    totalskipped += tccount
 
-                tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "NotTested").count()
-                dictionary['domain'][tc['Domain']]['Tested']['manual']['Skip'] = tccount
-                totalskipped += tccount
+            #    tcinfocount = TC_INFO.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain']).count()
+            #    tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Pass").count()
+            #    dictionary['domain'][tc['Domain']]['Tested']['auto']['Pass'] = tccount
+            #    totalpass += tccount
+            #    autopass += tccount
+            #    domainallcount -= tccount
 
-                tcinfocount = TC_INFO.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain']).count()
-                tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Pass").count()
-                dictionary['domain'][tc['Domain']]['Tested']['auto']['Pass'] = tccount
-                totalpass += tccount
-                autopass += tccount
-                domainallcount -= tccount
+            #    tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Fail").count()
+            #    dictionary['domain'][tc['Domain']]['Tested']['auto']['Fail'] = tccount
+            #    totalfail += tccount
+            #    autofail += tccount
+            #    domainallcount -= tccount
 
-                tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Fail").count()
-                dictionary['domain'][tc['Domain']]['Tested']['auto']['Fail'] = tccount
-                totalfail += tccount
-                autofail += tccount
-                domainallcount -= tccount
+            #    tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "NotTested").count()
+            #    dictionary['domain'][tc['Domain']]['Tested']['auto']['Skip'] = tccount
+            #    totalskipped += tccount
+            #    autoskipped += tccount
 
-                tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "NotTested").count()
-                dictionary['domain'][tc['Domain']]['Tested']['auto']['Skip'] = tccount
-                totalskipped += tccount
-                autoskipped += tccount
-
-                dictionary['domain'][tc['Domain']]['NotTested'] = domainallcount
-                totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
+            #    dictionary['domain'][tc['Domain']]['NotTested'] = domainallcount
+            #    totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
 
         notapplicable = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI")).filter(Priority = "NA").count()
 
-        dictionary['all'] = {}
+        #dictionary['all'] = {}
 
-        dictionary['all']['Tested'] = {}
-        guitcinfo = TC_INFO.objects.using(Release).filter(Domain = "GUI").count()
-        dictionary['all']['GUI'] = guitcinfo
-#        dictionary['all']['NotTested'] = ((total - (autopass + autofail)) - (totalpass - autopass)) - (totalfail - autofail)
-        dictionary['all']['NotTested'] = totalnottested
-        dictionary['all']['NonAutomated'] = nonautomated
-        dictionary['all']['Automated'] = automated
-        dictionary['all']['NotApplicable'] = notapplicable
+        #dictionary['all']['Tested'] = {}
+        #guitcinfo = TC_INFO.objects.using(Release).filter(Domain = "GUI").count()
+        #dictionary['all']['GUI'] = guitcinfo
+        #dictionary['all']['NotTested'] = totalnottested
+        #dictionary['all']['NonAutomated'] = nonautomated
+        #dictionary['all']['Automated'] = automated
+        #dictionary['all']['NotApplicable'] = notapplicable
 
-        dictionary['all']['Tested']['auto'] = {}
+        #dictionary['all']['Tested']['auto'] = {}
         tcinfo1 = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI"))
-        dictionary['all']['All'] = tcinfo1.count()
+        #dictionary['all']['All'] = tcinfo1.count()
         tcstatus1 = LATEST_TC_STATUS.objects.using(Release).all()
         tcstatusserializer1 = LATEST_TC_STATUS_SERIALIZER(tcstatus1, many = True)
 
-        manualpass = totalpass - autopass
-        manualfail = totalfail - autofail
-        manualskipped = totalskipped - autoskipped
+        #manualpass = totalpass - autopass
+        #manualfail = totalfail - autofail
+        #manualskipped = totalskipped - autoskipped
 
-        totalSkipped = tcinfo1.filter(Priority = "Skip").count()
+        #totalSkipped = tcinfo1.filter(Priority = "Skip").count()
         
         priorities = tcinfo1.values('Priority').distinct()
         dictionary['Priority'] = {}
@@ -354,176 +563,49 @@ def TCAGGREGATE(Release):
                 if flag == 0:
                     dictionary['Priority'][prior['Priority']]['NotTested'] += 1
 
-        if Release == "2.4.0" or Release == "5.0.0":
-            tcinfoserializer1 = TC_INFO_SERIALIZER(tcinfo1, many = True)
-            autopass = 0
-            autofail = 0
-            autoskipped = 0
-            manualpass = 0
-            manualfail = 0
-            manualskipped = 0
+        #if Release == "2.4.0" or Release == "5.0.0":
+        #    tcinfoserializer1 = TC_INFO_SERIALIZER(tcinfo1, many = True)
+        #    autopass = 0
+        #    autofail = 0
+        #    autoskipped = 0
+        #    manualpass = 0
+        #    manualfail = 0
+        #    manualskipped = 0
 
-            for status in tcstatusserializer1.data:
-                flag = 0
-                for tc in tcinfoserializer1.data:
-                    if tc['TcID'] == status['TcID'] and tc['CardType'] == status['CardType']:
-                        flag = 1
-
-
-                if flag == 1:
-                    if status["TcName"] == "TC NOT AUTOMATED":
-                        if status['Result'].lower() == "pass":
-                            manualpass += 1
-                        elif status['Result'].lower() == "fail":
-                            manualfail += 1
-                        elif status['Result'].lower() == "skip":
-                            manualskipped += 1
-                    else:
-                        if status['Result'].lower() == "pass":
-                            autopass += 1
-                        elif status['Result'].lower() == "fail":
-                            autofail += 1
-                        elif status['Result'].lower() == "skip":
-                            autoskipped += 1
-
-        dictionary['all']['Skip'] = totalSkipped
-
-        dictionary['all']['Tested']['auto']['Pass'] = autopass
-        dictionary['all']['Tested']['auto']['Fail'] = autofail
-        dictionary['all']['Tested']['auto']['Skip'] = autoskipped
-
-        dictionary['all']['Tested']['manual'] = {}
-        dictionary['all']['Tested']['manual']['Pass'] = manualpass
-        dictionary['all']['Tested']['manual']['Fail'] = manualfail
-        dictionary['all']['Tested']['manual']['Skip'] = manualskipped
-
-        return dictionary
+        #    for status in tcstatusserializer1.data:
+        #        flag = 0
+        #        for tc in tcinfoserializer1.data:
+        #            if tc['TcID'] == status['TcID'] and tc['CardType'] == status['CardType']:
+        #                flag = 1
 
 
-def TCAGGREGATE1(Release):
-        dictionary = {}
-        print(Release)
-        TCAGGREGATE1(Release)
+        #        if flag == 1:
+        #            if status["TcName"] == "TC NOT AUTOMATED":
+        #                if status['Result'].lower() == "pass":
+        #                    manualpass += 1
+        #                elif status['Result'].lower() == "fail":
+        #                    manualfail += 1
+        #                elif status['Result'].lower() == "skip":
+        #                    manualskipped += 1
+        #            else:
+        #                if status['Result'].lower() == "pass":
+        #                    autopass += 1
+        #                elif status['Result'].lower() == "fail":
+        #                    autofail += 1
+        #                elif status['Result'].lower() == "skip":
+        #                    autoskipped += 1
 
-        dictionary['domain'] = {}
-        dictionary['AvailableDomainOptions'] = {}
-        dictionary['AvailableScenarios'] = []
+        #dictionary['all']['Skip'] = totalSkipped
 
-        total = 0
-        totalpass = 0
-        totalfail = 0
-        totalskipped = 0
-        totalnottested = 0
+        #dictionary['all']['Tested']['auto']['Pass'] = autopass
+        #dictionary['all']['Tested']['auto']['Fail'] = autofail
+        #dictionary['all']['Tested']['auto']['Skip'] = autoskipped
 
-        autopass = 0
-        autofail = 0
-        autoskipped = 0
+        #dictionary['all']['Tested']['manual'] = {}
+        #dictionary['all']['Tested']['manual']['Pass'] = manualpass
+        #dictionary['all']['Tested']['manual']['Fail'] = manualfail
+        #dictionary['all']['Tested']['manual']['Skip'] = manualskipped
 
-        data = TC_STATUS.objects.using(Release).all()
-        serializer = TC_STATUS_SERIALIZER(data, many=True)
-
-        tcinfo = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI")).filter(~Q(Priority = "NA"))
-        tcinfoserializer = TC_INFO_SERIALIZER(tcinfo, many=True)
-
-        automated = tcinfo.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
-        nonautomated = tcinfo.filter(TcName = "TC NOT AUTOMATED").count()
-        notapplicable = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI")).filter(Priority = "NA").count()
-
-        scenario = TC_INFO.objects.using(Release).values('Scenario').distinct()
-        for tc in scenario:
-            dictionary['AvailableScenarios'].append(tc['Scenario'])
-
-        domains = tcinfo.values('Domain').distinct()
-        for tc in domains:
-            domain = tc['Domain']
-            # dictionary['AvailableDomainOptions'].append(domain) 
-
-            subdomains = tcinfo.values('SubDomain').filter(Domain = domain).distinct()
-            for sd in subdomains:
-                subdomain = sd['SubDomain']
-
-                if domain in dictionary['AvailableDomainOptions']:
-                    dictionary['AvailableDomainOptions'][domain].append(subdomain)
-                else:
-                    dictionary['AvailableDomainOptions'][domain] = []
-                    dictionary['AvailableDomainOptions'][domain].append(subdomain)
-
-            tccount = 0
-
-            if domain not in dictionary['domain']:
-                dictionary['domain'][domain] = {}
-
-                dictionary['domain'][domain]['Tested'] = {}
-
-                domainallcount = TC_INFO.objects.using(Release).filter(Domain = tc['Domain']).filter(~Q(Priority = 'NA')).count()
-                dictionary['domain'][tc['Domain']]['NotApplicable'] = 0
-
-                dictionary['domain'][tc['Domain']]['Tested']['auto'] = {}
-                dictionary['domain'][tc['Domain']]['Tested']['manual'] = {}
-
-                tcinfocount = TC_INFO.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain']).count()
-                tccount = TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Pass").count()
-                if Release == "2.3.0":
-                    d = TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'])
-                dictionary['domain'][tc['Domain']]['Tested']['manual']['Pass'] = tccount
-                totalpass += tccount
-                domainallcount -= tccount
-
-                tccount = TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Fail").count()
-                dictionary['domain'][tc['Domain']]['Tested']['manual']['Fail'] = tccount
-                totalfail += tccount
-                domainallcount -= tccount
-
-                tccount = TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "NotTested").count()
-                dictionary['domain'][tc['Domain']]['Tested']['manual']['Skip'] = tccount
-                totalskipped += tccount
-
-                tcinfocount = TC_INFO.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain']).count()
-                tccount = TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Pass").count()
-                dictionary['domain'][tc['Domain']]['Tested']['auto']['Pass'] = tccount
-                totalpass += tccount
-                autopass += tccount
-                domainallcount -= tccount
-
-                tccount = TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Fail").count()
-                dictionary['domain'][tc['Domain']]['Tested']['auto']['Fail'] = tccount
-                totalfail += tccount
-                autofail += tccount
-                domainallcount -= tccount
-
-                tccount = TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "NotTested").count()
-                dictionary['domain'][tc['Domain']]['Tested']['auto']['Skip'] = tccount
-                totalskipped += tccount
-                autoskipped += tccount
-
-                dictionary['domain'][tc['Domain']]['NotTested'] = domainallcount
-                totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
-
-        notapplicable = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI")).filter(Priority = "NA").count()
-
-        dictionary['all'] = {}
-
-        dictionary['all']['Tested'] = {}
-        guitcinfo = TC_INFO.objects.using(Release).filter(Domain = "GUI").count()
-        dictionary['all']['GUI'] = guitcinfo
-#        dictionary['all']['NotTested'] = ((total - (autopass + autofail)) - (totalpass - autopass)) - (totalfail - autofail)
-        dictionary['all']['NotTested'] = totalnottested
-        dictionary['all']['NonAutomated'] = nonautomated
-        dictionary['all']['Automated'] = automated
-        dictionary['all']['NotApplicable'] = notapplicable
-
-        dictionary['all']['Tested']['auto'] = {}
-        dictionary['all']['Tested']['auto']['Pass'] = autopass
-        dictionary['all']['Tested']['auto']['Fail'] = autofail
-        dictionary['all']['Tested']['auto']['Skip'] = autoskipped
-
-        dictionary['all']['Tested']['manual'] = {}
-        dictionary['all']['Tested']['manual']['Pass'] = totalpass - autopass
-        dictionary['all']['Tested']['manual']['Fail'] = totalfail - autofail
-        dictionary['all']['Tested']['manual']['Skip'] = totalskipped - autoskipped
-
-        #if Release == "2.3.0":
-        #    print(dictionary)
         return dictionary
 
 @csrf_exempt
@@ -664,6 +746,7 @@ def RELEASEINFOPOST(request):
 @csrf_exempt
 def RELEASEINFO(request, Release):
     if request.method == "GET":
+        startTime = time.time()
         list = []
         
         if(Release == 'all'):
@@ -675,23 +758,25 @@ def RELEASEINFO(request, Release):
                 data = json.loads(data)
     
                 if(i['ReleaseNumber'] != "universal"):
-                    #latestResultUpdateFunction(i['ReleaseNumber'])
-                    a = TCAGGREGATE(i['ReleaseNumber'])
-                    data['Priority'] = a['Priority']
+                    tcaggr(i['ReleaseNumber'])
+                    a = getAggregate(i['ReleaseNumber'])   #remove this comment after hitting release/all first and then comment below line, one more condition is bytes returned by both the functions must be same else UI will not work!!!
+                    a = TCAGGREGATE(i['ReleaseNumber']) #comment this line after above given condition is met
+                    aggregateTcStatus(i["ReleaseNumber"])
+                    data['TcAggregate'] = a
 
                     if i['ReleaseNumber'] == "5.0.0":
+                        #continue
                         i['ReleaseNumber'] = "Test Database"
-                    data['TcAggregate'] = a
-                #list.append(data)
+                    #data['TcAggregate'] = a
                 list.insert(0, data)
 
-            # return JsonResponse(json.dumps(list), status = 200)
-            return HttpResponse(json.dumps(list))
+            endTime = time.time()
+            print("Total time taken by release/all", endTime - startTime)
+            return HttpResponse(json.dumps(list), status = 200)
         else:
             data = RELEASES.objects.using('universal').filter(ReleaseNumber__icontains = Release)
             serializer = RELEASE_SERIALIZER(data, many = True)
-            # return JsonResponse({'data': json.dumps(serializer.data)}, status = 200)
-            return HttpResponse(json.dumps(serializer.data))
+            return HttpResponse(json.dumps(serializer.data), status = 200)
 
     elif request.method == "DELETE":
         try:

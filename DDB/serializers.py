@@ -1,15 +1,10 @@
 from rest_framework import serializers
 from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, E2E, STRESS, LONGEVITY, \
-        LATEST_TC_STATUS, DEFAULT_VALUES, DEFAULT_DOMAIN, DEFAULT_SUBDOMAIN
+        LATEST_TC_STATUS, DEFAULT_DOMAIN_SUBDOMAIN
 
-class DOMAIN_SERIALIZER(serializers.ModelSerializer):
+class DOMAIN_SUBDOMAIN_SERIALIZER(serializers.ModelSerializer):
     class Meta:
-        model = DEFAULT_DOMAIN
-        fields = '__all__'
-
-class SUBDOMAIN_SERIALIZER(serializers.ModelSerializer):
-    class Meta:
-        model = DEFAULT_SUBDOMAIN
+        model = DEFAULT_DOMAIN_SUBDOMAIN
         fields = '__all__'
 
 class TC_INFO_SERIALIZER(serializers.ModelSerializer):
@@ -65,9 +60,4 @@ class LONGEVITY_SERIALIZER(serializers.ModelSerializer):
 class AGGREGATION_SERIALIZER(serializers.ModelSerializer):
     class Meta:
         model = AGGREGATE_TC_STATE
-        fields = '__all__'
-
-class DEFAULT_VALUES_SERIALIZER(serializers.ModelSerializer):
-    class Meta:
-        model = DEFAULT_VALUES
         fields = '__all__'

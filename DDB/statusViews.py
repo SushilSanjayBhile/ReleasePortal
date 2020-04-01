@@ -67,3 +67,4 @@ def TC_STATUS_UPDATE_VIEW(request, Release):
         if len(errRecords) > 0:
             return HttpResponse(fd.errors, status = 500)
         return HttpResponse("All records updated successfully", status  = 200)
+

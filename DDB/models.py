@@ -4,11 +4,36 @@ from django.contrib.postgres.fields import ArrayField
 
 # Table per release
 class AGGREGATE_TC_STATE(models.Model):
-    Domain = models.CharField(max_length=50, blank = True) #storage, networking
+    Domain = models.CharField(max_length=200, blank = True)
+
     Total = models.IntegerField(default = 0)
+    NotApplicable = models.IntegerField(default = 0)
+    Skipped = models.IntegerField(default = 0)
     Automated = models.IntegerField(default = 0)
+    NonAutomated = models.IntegerField(default = 0)
+
+    Tested = models.IntegerField(default = 0)
+    NotTested = models.IntegerField(default = 0)
+
+    ManualPass = models.IntegerField(default = 0)
+    ManualFail = models.IntegerField(default = 0)
+    ManualSkip = models.IntegerField(default = 0)
+
+    AutomatedPass = models.IntegerField(default = 0)
+    AutomatedFail = models.IntegerField(default = 0)
+    AutomatedSkip = models.IntegerField(default = 0)
+
+    def __str__(self):
+        return self.Domain
+
+# Table per release
+class PriorityWiseStatus(models.Model):
+    Priority = models.CharField(max_length=5, blank = True)
+
     Pass = models.IntegerField(default = 0)
     Fail = models.IntegerField(default = 0)
+    Skip = models.IntegerField(default = 0)
+    NotTested = models.IntegerField(default = 0)
 
     def __str__(self):
         return self.Domain
@@ -33,30 +58,15 @@ class TC_INFO(models.Model):
     Assignee = models.CharField(max_length = 50, blank = True, default = "UNKNOWN")
     Creator = models.CharField(max_length = 50, blank = True, default = "ANONYMOUS")
     Tag = models.CharField(max_length = 20, blank = True, default = "NO TAG")
-    Priority = models.CharField(max_length = 5, blank = True, default = "P4")
+    Priority = models.CharField(max_length = 5, blank = True, default = "P7")
     #deleted = models.BooleanField(default = False)
 
     def __str__(self):
         return self.TcID
 
-# table per release
-class DEFAULT_VALUES(models.Model):
-    key = models.CharField(max_length = 100, default = "NOT PROVIDED")
-    value = models.CharField(max_length = 250, default = "NOT PROVIDED")
-    #CardType = ArrayField(models.CharField(max_length = 20, blank = True), blank = True) # nynj / bos
-    #ServerType = ArrayField(models.CharField(max_length = 20, blank = True), blank = True) # dell, lenovo, software
-    #StatusValues = ArrayField(models.CharField(max_length = 20, blank = True), blank = True) # assigned, completed, manual_assigned, automation_completed
-    #UserRoles = ArrayField(models.CharField(max_length = 20, blank = True), blank = True) # dev, ui, automation tester, manual tester
-    #UserPermission = ArrayField(models.CharField(max_length = 20, blank = True), blank = True) # admin, user
-
-class DEFAULT_DOMAIN(models.Model):
-    Domain = models.CharField(max_length = 100, blank = True, default = "NOT PROVIDED")
-    User = models.CharField(max_length = 100, blank = True, default = "NOT PROVIDED")
-
-class DEFAULT_SUBDOMAIN(models.Model):
-    Domain = models.IntegerField(blank = True, default = -1)
-    SubDomain = models.CharField(max_length = 100, blank = True, default = "NOT PROVIDED")
-    User = models.CharField(max_length = 100, blank = True, default = "NOT PROVIDED")
+class DEFAULT_DOMAIN_SUBDOMAIN(models.Model):
+    Domain = models.CharField(max_length = 200, blank = False, default = "NOT PROVIDED")
+    SubDomain = ArrayField(models.CharField(max_length = 200, blank = True, null = True), blank = True, null = True)
 
 # Universal
 class USER_INFO(models.Model):

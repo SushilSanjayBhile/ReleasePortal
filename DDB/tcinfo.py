@@ -4,7 +4,7 @@ from django.db.models.functions import Trunc
 import json, time
 
 from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER
-from .models import TC_INFO, TC_STATUS, LOGS
+from .models import TC_INFO, TC_STATUS, LOGS, LATEST_TC_STATUS
 from .forms import TcInfoForm
 from django.db.models import Q
 
@@ -260,6 +260,33 @@ def updateStatusData(updatedData, data, Release):
 
      data.save(using = Release)
      return 1
+
+@csrf_exempt
+def UpdateTcStatusView(request, Release):
+    if request.method == "PUT":
+        print(request.body)
+        req = json.loads(request.body.decode("utf-8"))
+
+        statusData = TC_STATUS.objects.using(Release).get(TcID = req["TcID"], CardType = req["CardType"], Date = req["Date"])
+        statusSer = TC_STATUS_SERIALIZER(statusData)
+        newData = statusSer.data
+
+        for i in req:
+            if i != "id":
+                newData[i] = req[i]
+
+        statusData = LATEST_TC_STATUS.objects.using(Release).get(id = req["id"])
+        statusSer = TC_STATUS_SERIALIZER(statusData)
+        newData = statusSer.data
+
+        for i in req:
+            if i != "id":
+                newData[i] = req[i]
+
+        print(newData)
+
+        return HttpResponse("PUT request", status = 400)
+
 
 def TcCountByFilter(request, Release):
     try:

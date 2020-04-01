@@ -1,22 +1,15 @@
 from django.forms import ModelForm
-#from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, E2E, STRESS, LONGEVITY, DEFAULT_VALUES, \
-#        DEFAULT_DOMAIN, DEFAULT_SUBDOMAIN
-from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, E2E, STRESS, LONGEVITY, DEFAULT_VALUES, \
-        DEFAULT_DOMAIN, DEFAULT_SUBDOMAIN, LATEST_TC_STATUS
+from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, E2E, STRESS, LONGEVITY, \
+        DEFAULT_DOMAIN_SUBDOMAIN, LATEST_TC_STATUS
 
 class LatestStatusForm(ModelForm):
     class Meta:
         model = LATEST_TC_STATUS
         fields = "__all__"
 
-class DomainForm(ModelForm):
+class DomainSubDomainForm(ModelForm):
     class Meta:
-        model = DEFAULT_DOMAIN
-        fields = "__all__"
-
-class SubDomainForm(ModelForm):
-    class Meta:
-        model = DEFAULT_SUBDOMAIN
+        model = DEFAULT_DOMAIN_SUBDOMAIN
         fields = "__all__"
 
 class TcInfoForm(ModelForm):
@@ -67,9 +60,4 @@ class LongevityForm(ModelForm):
 class AggregationForm(ModelForm):
     class Meta:
         model = AGGREGATE_TC_STATE
-        fields = "__all__"
-
-class DEFAULT_VALUES_FORM(ModelForm):
-    class Meta:
-        model = DEFAULT_VALUES
         fields = "__all__"
