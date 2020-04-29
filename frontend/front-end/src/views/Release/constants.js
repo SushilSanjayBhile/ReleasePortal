@@ -459,10 +459,9 @@ export const stackedBarChartOptions = {
         display: false,
         text: '80%'
     },
-    // tooltips: {
-    //     mode: 'index',
-    //     intersect: false
-    // },
+    tooltips: {
+        yAlign: 'above'
+    },
     maintainAspectRatio: false,
     responsive: true,
     scales: {

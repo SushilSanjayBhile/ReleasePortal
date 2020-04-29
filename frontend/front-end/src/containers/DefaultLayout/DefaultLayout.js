@@ -16,7 +16,6 @@
 // yatish checking
 
 
-/* global gapi */
 import React, { Component, Suspense } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
@@ -40,7 +39,7 @@ import {
 // routes config
 import routes from '../../routes';
 import { connect } from 'react-redux';
-import { saveUsers, saveReleaseBasicInfo, releaseChange, saveTestCase, saveTestCaseStatus, logInSuccess, clearUserData, fetchUserNotifications } from '../../actions';
+import { logOut, saveUsers, saveReleaseBasicInfo, releaseChange, saveTestCase, saveTestCaseStatus, logInSuccess, clearUserData, fetchUserNotifications } from '../../actions';
 import { getCurrentRelease } from '../../reducers/release.reducer';
 
 const DefaultAside = React.lazy(() => import('./DefaultAside'));
@@ -57,8 +56,8 @@ class DefaultLayout extends Component {
   userEmail = null;
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
   loginBackend(user) {
-    let email = user.w3.U3;
-    let name = user.w3.ig;
+    let email = user.profileObj.email;
+    let name = user.profileObj.name;
     axios.post('/user/login', { email: email, name: name })
       .then(res => {
         console.log('received from user')
@@ -72,26 +71,36 @@ class DefaultLayout extends Component {
       .catch(err => { })
   }
   setSigninStatus(isSignedIn) {
-    this.GoogleAuth = gapi.auth2.getAuthInstance();
-    let user = this.GoogleAuth.currentUser.get();
-    let isAuthorized = user.hasGrantedScopes(this.SCOPE);
-    if (isAuthorized) {
-      this.loginBackend(user)
-    } else {
-      console.log('un authorized')
+    // this.GoogleAuth = gapi.auth2.getAuthInstance();
+    console.log('issigned in')
+    console.log(isSignedIn)
+    if (this.GoogleAuth) {
+      let user = this.GoogleAuth.currentUser.get();
+      let isAuthorized = user.hasGrantedScopes(this.SCOPE);
+      console.log('got user ', user)
+      if (isAuthorized) {
+        this.loginBackend(user)
+      } else {
+        console.log('un authorized')
+      }
     }
   }
   signOut(e) {
     if (e) {
       e.preventDefault()
     }
-    this.stopPolling();
+    // this.stopPolling();
     if (this.props.currentUser) {
       this.props.clearUserData();
-
-      this.GoogleAuth.signOut().then(() => {
+      this.props.logOut();
+      if (this.GoogleAuth) {
+        this.GoogleAuth.signOut().then(() => {
+          this.props.history.push('/login')
+        })
+      } else {
         this.props.history.push('/login')
-      })
+      }
+
     } else {
       this.props.history.push('/login');
     }
@@ -100,11 +109,6 @@ class DefaultLayout extends Component {
     this.GoogleAuth.disconnect();
   }
 
-  // updateSigninStatus(isSignedIn) {
-  //   console.log('creds');
-  //   console.log(isSignedIn);
-  //   this.setSigninStatus();
-  // }
   isUserSignedIn() {
     return this.GoogleAuth ? this.GoogleAuth.isSignedIn.get() : false;
   }
@@ -115,22 +119,22 @@ class DefaultLayout extends Component {
         return;
       }
       this.userEmail = newProps.currentUser.email;
-      this.startPolling(newProps.currentUser.email, new Date().toISOString());
+      // this.startPolling(newProps.currentUser.email, new Date().toISOString());
     }
   }
   componentDidMount() {
     // this.props.logInSuccess({ email: 'yatish@diamati.com', isAdmin: true, role: 'ADMIN', name: 'Yatish' });
-    gapi.load('auth2', () => {
-
-      let auth2 = gapi.auth2.init({
-        'apiKey': 'AIzaSyAxV1LfUI_TIjiQ2b8rW0fVYdMwHPeKQTYY',
-        client_id: '271454306292-fnma4vrg7dssj2opv4jovof9v8uq8n1l.apps.googleusercontent.com',
-        'scope': this.SCOPE,
-        'discoveryDocs': ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest']
+    // this.props.logInSuccess({ email: 'ADMIN', name: 'ADMIN', isAdmin: true, role: 'ADMIN' });
+    window.gapi.load('auth2', () => {
+      gapi.auth2.init({
+        'apiKey': 'AIzaSyCx0M1qs_LyfAgVmkTmDE6qIfgUiDekM-I',
+        'client_id': '271454306292-q477q7slv0vpe1gep84habq5m2gv58k3.apps.googleusercontent.com',
+        'scope': this.SCOPE
       }).then(() => {
+        this.GoogleAuth = gapi.auth2.getAuthInstance();
+        this.GoogleAuth.isSignedIn.listen((data) => this.setSigninStatus(data));
         // Listen for sign-in state changes.
         // this.GoogleAuth.isSignedIn.listen((data) => this.updateSigninStatus(data));
-
         // Handle initial sign-in state. (Determine if user is already signed in.)
         this.setSigninStatus();
       }).catch(err => { console.log('cannot get details') });
@@ -192,15 +196,13 @@ class DefaultLayout extends Component {
                 console.log(release);
                 if (release) {
                   this.props.releaseChange({ id: release });
-                  this.props.history.push(`/release/${release}`);
+                  // this.props.history.push(`/release/${release}`);
                 } else {
                   this.props.releaseChange({ id: null });
                   // this.props.history.push(`/release/manage`);
                 }
               }}
               onLogout={e => this.signOut(e)} />
-
-
           </Suspense>
         </AppHeader>
         <div className="app-body">
@@ -265,5 +267,5 @@ const mapStateToProps = (state, ownProps) => ({
 })
 
 export default connect(mapStateToProps, {
-  logInSuccess, saveReleaseBasicInfo, saveUsers, releaseChange, saveTestCase, saveTestCaseStatus, clearUserData, fetchUserNotifications
+  logOut, logInSuccess, saveReleaseBasicInfo, saveUsers, releaseChange, saveTestCase, saveTestCaseStatus, clearUserData, fetchUserNotifications
 })(DefaultLayout);

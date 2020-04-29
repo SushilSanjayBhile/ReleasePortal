@@ -99,9 +99,10 @@ class EditTC extends Component {
 
     }
     render() {
-
+        let ws = ['CREATED', 'UNASSIGNED', 'DEV_ASSIGNED', 'DEV_APPROVED', 'APPROVED', 'UNAPPROVED', 'MANUAL_ASSIGNED', 'MANUAL_COMPLETED',
+            'AUTO_ASSIGNED', 'AUTO_COMPLETED', 'DELETED'
+        ];
         let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE');
-        let statuses = this.WorkingStatusOptions
 
         let cards = this.props.selectedRelease.CardType ? this.props.selectedRelease.CardType.map(item => ({ value: item, selected: this.props.testcaseEdit.CardType && this.props.testcaseEdit.CardType.includes(item) })) : [];
         let servers = this.props.selectedRelease.ServerType ? this.props.selectedRelease.ServerType.map(item => ({ value: item, selected: this.props.testcaseEdit.ServerType && this.props.testcaseEdit.ServerType.includes(item) })) : [];
@@ -156,22 +157,22 @@ class EditTC extends Component {
                                     }
                                 </FormGroup>
                             </Col>
-                            {/* <Col xs="12" md="6" lg="6">
+                            <Col xs="12" md="6" lg="6">
                                 <FormGroup className='rp-app-table-value'>
-                                    <Label className='rp-app-table-label' htmlFor="Card Type">
-                                        Card Type
+                                    <Label className='rp-app-table-label' htmlFor="Bugs">
+                                        Bug Number
                                                      </Label>
                                     {
-                                        // !this.props.isEditing ? 
-                                        <div className='rp-app-table-value'><span className='rp-edit-TC-span'>{this.props.testcaseDetail && this.props.testcaseDetail.CardType}</span></div>
-                                        //  <Input placeholder='Build Number' value={this.props.testcaseEdit && this.props.testcaseEdit.Build} onChange={(e) => this.props.updateTCEdit({
-                                        //             ...this.props.testcaseEdit, Build: e.target.value,
-                                        //             errors: { ...this.props.testcaseEdit.errors, Build: null }
-                                        //             })}  type="input" >
-                                        //  </Input>
+                                        !this.props.isEditing ? 
+                                        <div className='rp-app-table-value'><span className='rp-edit-TC-span'>{this.props.testcaseDetail && this.props.testcaseDetail.Bugs}</span></div> :
+                                         <Input placeholder='Bug Number' value={this.props.testcaseEdit && this.props.testcaseEdit.Bugs} onChange={(e) => this.props.updateTCEdit({
+                                                    ...this.props.testcaseEdit, Bugs: e.target.value,
+                                                    errors: { ...this.props.testcaseEdit.errors, Bugs: null }
+                                                    })}  type="input" >
+                                         </Input>
                                     }
                                 </FormGroup>
-                            </Col> */}
+                            </Col>
 
                         </FormGroup>
                     }
@@ -387,8 +388,6 @@ class EditTC extends Component {
                         {
                             (this.props.testcaseEdit.Domain || this.props.testcaseDetail.Domain) && (this.props.testcaseEdit.SubDomain || this.props.testcaseDetail.SubDomain) &&
                             <React.Fragment>
-
-
                                 {
                                     [
                                         { field: 'TcName', header: 'Tc Name', type: 'text', restrictWidth: false },
@@ -522,9 +521,7 @@ class EditTC extends Component {
                                                     <option value=''>Select Working Status</option>
                                                     {
 
-                                                        ['CREATED', 'UNASSIGNED', 'DEV_ASSIGNED', 'DEV_APPROVED', 'APPROVED', 'UNAPPROVED', 'MANUAL_ASSIGNED', 'MANUAL_COMPLETED',
-                                                            'AUTO_ASSIGNED', 'AUTO_COMPLETED', 'DELETED'
-                                                        ].map(item => <option value={item}>{item}</option>)
+                                                        ws.map(item => <option value={item}>{item}</option>)
                                                     }
                                                 </Input>
                                         }

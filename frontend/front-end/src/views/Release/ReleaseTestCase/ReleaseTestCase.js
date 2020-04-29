@@ -46,6 +46,7 @@ class ReleaseTestCase extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            cntr:0,
             component: 'all',
             result: 'all',
             svgKey: 0,
@@ -61,6 +62,25 @@ class ReleaseTestCase extends Component {
             tcSummaryTitleStyle: window.screen.availWidth > 1400 ?
                 { position: 'absolute', top: '41%', left: '47%', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: '#003168' } :
                 { position: 'absolute', top: '42%', left: '46%', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: '#003168' },
+        }
+    }
+    componentWillReceiveProps(newProps) {
+        if(this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
+            // let dough = getTCStatusForUIDomains(newProps.selectedRelease.ReleaseNumber);
+            // let dom = getTCStatusForSunburst(newProps.selectedRelease.ReleaseNumber);
+            // this.setState({
+            //     cntr: this.state.cntr +1,
+            //     component: 'all',
+            //     result: 'all',
+            //     svgKey: 0,
+            //     selected: 'Domains',
+            //     addTC: {},
+            //     qaStrategy: {},
+            //     domainSelected: false,
+            //     doughnuts: dough && dough.length>0 ? [...dough]:null,
+            //     domains: dom && Object.keys(dom).length>0 ? {...getTCStatusForSunburst(newProps.selectedRelease.ReleaseNumber)}:null,
+            // })
+            this.props.history.push('/release/summary');
         }
     }
     componentDidMount() {
@@ -176,7 +196,7 @@ class ReleaseTestCase extends Component {
                             <React.Fragment>
                                 <Row>
 
-                                    <Col xs="11" sm="11" md="11" lg="4">
+                                    <Col xs="11" sm="11" md="4">
                                         <div style={{ marginLeft: '1rem', marginTop: '1rem' }}>
                                             <Sunburst
                                                 tooltip={false}
@@ -196,7 +216,7 @@ class ReleaseTestCase extends Component {
                                         </div> */}
 
                                     </Col>
-                                    <Col xs="11" sm="11" md="11" lg="8">
+                                    <Col xs="11" sm="11" md="8">
                                     {
                                             this.state.domainSelected && 
                                             <div style={{textAlign:'center'}}>

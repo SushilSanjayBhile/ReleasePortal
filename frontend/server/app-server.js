@@ -1,3 +1,5 @@
+// JIRA ATLASSIAN TOKEN: cemD1yQmrI20xSBId0QOC880
+// generated: YWNoYXZhbkBkaWFtYW50aS5jb206Y2VtRDF5UW1ySTIweFNCSWQwUU9DODgw
 /**
  * mock server for serving sunburst data to angular client
  */
@@ -8,6 +10,8 @@ let releases = jsonfile.readFileSync('./releases.json');
 let assignedTCs = jsonfile.readFileSync('./currentAssigned.json');
 let users = jsonfile.readFileSync('./users.json');
 let allTcs = jsonfile.readFileSync('./tcCompleteSort.json');
+let initTC = jsonfile.readFileSync('./initTC.json');
+let selectedTC = jsonfile.readFileSync('./initSelect.json');
 
 // assignedTCs['2.3.0'] = { "ADMIN": Object.keys(allTcs['2.3.0']) }
 let statusOptions = jsonfile.readFileSync('./constants.json');
@@ -174,21 +178,28 @@ function assignPriority(priority, release) {
 var Client = require('node-rest-client').Client;
 client = new Client();
 // Provide user credentials, which will be used to log in to JIRA.
-var loginArgs = {
-    data: {
-        "username": "abhijeet",
-        "password": "abhijeet0987!"
-    },
+// var loginArgs = {
+//     // data: {
+//     //     "username": "achavan@diamanti.com",
+//     //     "password": "indiandreams"
+//     // },
+//     headers: {
+//         "Content-Type": "application/json",
+//         "Authorization": "Basic YWNoYXZhbkBkaWFtYW50aS5jb206Y2VtRDF5UW1ySTIweFNCSWQwUU9DODgw"
+//     }
+// };
+var searchArgs = {
     headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Authorization": "Basic YWNoYXZhbkBkaWFtYW50aS5jb206Y2VtRDF5UW1ySTIweFNCSWQwUU9DODgw"
     }
-};
-loginJIRA()
-    .then(function (res) {
-        console.log('logged in')
-    }).catch(err => {
+}
+// loginJIRA()
+//     .then(function (res) {
+//         console.log('logged in')
+//     }).catch(err => {
 
-    });
+//     });
 // var jiraReq = client.post("http://dwsjira1.eng.diamanti.com:8080/rest/auth/1/session", loginArgs, function (data, response) {
 //     if (response.statusCode == 200) {
 //         console.log('succesfully logged in, session:', data.session);
@@ -222,60 +233,66 @@ loginJIRA()
 //     console.log('cannot get jira')
 // });
 
-function loginJIRA() {
-    return new Promise(function (resolve, reject) {
-        var jiraReq = client.post("http://dwsjira1.eng.diamanti.com:8080/rest/auth/1/session", loginArgs, function (data, response) {
-            if (response.statusCode == 200) {
-                console.log('succesfully logged in, session:', data.session);
-                var session = data.session;
-                jiraHeaders = {
-                    cookie: session.name + '=' + session.value,
-                    "Content-Type": "application/json"
-                }
-                // Get the session information and store it in a cookie in the header
-                searchArgs = {
-                    headers: {
-                        // Set the cookie from the session information
-                        cookie: session.name + '=' + session.value,
-                        "Content-Type": "application/json"
-                    },
-                    // data: {
-                    //     // Provide additional data for the JIRA search. You can modify the JQL to search for whatever you want.
-                    //     jql: "type=Bug AND status=Closed"
-                    // }
-                };
-                resolve();
-                // Make the request return the search results, passing the header information including the cookie.
-                // client.post("http://localhost:8090/jira/rest/api/2/search", searchArgs, function (searchResult, response) {
-                //     console.log('status code:', response.statusCode);
-                //     console.log('search result:', searchResult);
-                // });
-            } else {
-                console.log('jira logging failed')
-                reject();
-            }
-        }, function (err) {
-            console.log('cannot get jira')
-            reject();
-        });
+// function loginJIRA() {
+//     return new Promise(function (resolve, reject) {
+//         // var jiraReq = client.post("http://dwsjira1.eng.diamanti.com:8080/rest/auth/1/session", loginArgs, function (data, response) {
+//         var jiraReq = client.post("https://diamanti.atlassian.net/rest/auth", loginArgs, function (data, response) {
+//             console.log(response.error);
+//             console.log("")
+//             console.log("asdassssssssssssssssssssssssssssssssssssssssssssssss")
+//             console.log(response.statusCode)
+//             if (response.statusCode == 200) {
+//                 console.log('succesfully logged in, session:', data.session);
+//                 var session = data.session;
+//                 jiraHeaders = {
+//                     cookie: session.name + '=' + session.value,
+//                     "Content-Type": "application/json"
+//                 }
+//                 // Get the session information and store it in a cookie in the header
+//                 // searchArgs = {
+//                 //     headers: {
+//                 //         // Set the cookie from the session information
+//                 //         cookie: session.name + '=' + session.value,
+//                 //         "Content-Type": "application/json"
+//                 //     },
+//                 //     // data: {
+//                 //     //     // Provide additional data for the JIRA search. You can modify the JQL to search for whatever you want.
+//                 //     //     jql: "type=Bug AND status=Closed"
+//                 //     // }
+//                 // };
+//                 resolve();
+//                 // Make the request return the search results, passing the header information including the cookie.
+//                 // client.post("http://localhost:8090/jira/rest/api/2/search", searchArgs, function (searchResult, response) {
+//                 //     console.log('status code:', response.statusCode);
+//                 //     console.log('search result:', searchResult);
+//                 // });
+//             } else {
+//                 console.log('jira logging failed')
+//                 reject();
+//             }
+//         }, function (err) {
+//             console.log('cannot get jira')
+//             reject();
+//         });
 
-        jiraReq.on('requestTimeout', function (err) {
-            console.log('cannot get jira due to timeout')
-            reject();
-        })
-        jiraReq.on('responseTimeout', function (err) {
-            console.log('cannot get jira due to response timeout')
-            reject();
-        })
-        jiraReq.on('error', function (err) {
-            console.log('cannot get jira due to error')
-            reject();
-        })
-    });
-}
+//         jiraReq.on('requestTimeout', function (err) {
+//             console.log('cannot get jira due to timeout')
+//             reject();
+//         })
+//         jiraReq.on('responseTimeout', function (err) {
+//             console.log('cannot get jira due to response timeout')
+//             reject();
+//         })
+//         jiraReq.on('error', function (err) {
+//             console.log('cannot get jira due to error')
+//             reject();
+//         })
+//     });
+// }
 
 
-var JIRA_URL = 'http://dwsjira1.eng.diamanti.com:8080';
+// var JIRA_URL = 'http://dwsjira1.eng.diamanti.com:8080';
+var JIRA_URL = 'https://diamanti.atlassian.net'
 const app = express();
 const responseDelayQuick = 10;
 const responseDelayModerate = 100;
@@ -293,10 +310,10 @@ app.use('/rest/features/:id', (req, res) => {
     //         jql: "type=Bug AND status=Closed"
     //     }
     // };
-    var jiraReq = client.get(JIRA_URL + '/rest/api/2/search' + str, searchArgs, function (searchResult, response) {
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult, response) {
         if (response.statusCode === 401) {
             loginJIRA().then(function () {
-                client.get(JIRA_URL + '/rest/api/2/search' + str, searchArgs, function (searchResult2, response2) {
+                client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult2, response2) {
                     res.send(searchResult2);
                 }, err => { console.log(err) });
             }).catch(err => { console.log('rpomise failed'); console.log(err) })
@@ -328,11 +345,11 @@ app.use('/rest/features/:id', (req, res) => {
 //     }, err => { console.log('cannot get jira') });
 // }, err => { })
 app.use('/rest/bugs/total/:id', (req, res) => {
-    var totalBugsStr = `?jql=fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug","Sub-task")&fields=key,status,priority,summary&maxResults=2000`
-    var jiraReq = client.get(JIRA_URL + '/rest/api/2/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+    var totalBugsStr = `?jql=fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug")&fields=key,status,priority,summary&maxResults=2000`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
         if (response.statusCode === 401) {
             loginJIRA().then(function () {
-                client.get(JIRA_URL + '/rest/api/2/search' + totalBugsStr, searchArgs, function (searchResultTotal2, responseTotal) {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal2, responseTotal) {
                     res.send(searchResultTotal2);
                 }, err1 => { console.log('cannot get jira') });
             }).catch(err => { console.log('rpomise failed'); console.log(err) })
@@ -347,11 +364,11 @@ app.use('/rest/bugs/total/:id', (req, res) => {
     })
 }, err => { });
 app.use('/rest/bugs/open/:id', (req, res) => {
-    var openBugsStr = `?jql=status%20in%20("Open","In Progress","To Do","Done")%20AND%20fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug","Sub-task")%20AND%20(Component!=Automation%20OR%20Component=EMPTY)&fields=key,status,priority,summary&maxResults=2000`
-    var jiraReq = client.get(JIRA_URL + '/rest/api/2/search' + openBugsStr, searchArgs, function (searchResultTotal, response) {
+    var openBugsStr = `?jql=status%20in%20("Open","In Progress","To Do","Done")%20AND%20fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug")%20AND%20(Component!=Automation%20OR%20Component=EMPTY)&fields=key,status,priority,summary&maxResults=2000`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + openBugsStr, searchArgs, function (searchResultTotal, response) {
         if (response.statusCode === 401) {
             loginJIRA().then(function () {
-                client.get(JIRA_URL + '/rest/api/2/search' + openBugsStr, searchArgs, function (searchResultTotal2, responseTotal) {
+                client.get(JIRA_URL + '/rest/api/3/search' + openBugsStr, searchArgs, function (searchResultTotal2, responseTotal) {
                     res.send(searchResultTotal2);
                 }, err1 => { console.log('cannot get jira') });
             }).catch(err => { console.log('rpomise failed'); console.log(err) })
@@ -367,10 +384,10 @@ app.use('/rest/bugs/open/:id', (req, res) => {
 }, err => { })
 app.use('/rest/bugs/resolved/:id', (req, res) => {
     var resolvedBugsStr = `?jql=status%20in%20("Done","Resolved","Closed","Duplicate")%20AND%20fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug","Sub-task")%20AND%20(Component!=Automation%20OR%20Component=EMPTY)&fields=key,status,priority,summary&maxResults=2000`
-    var jiraReq = client.get(JIRA_URL + '/rest/api/2/search' + resolvedBugsStr, searchArgs, function (searchResultTotal, response) {
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + resolvedBugsStr, searchArgs, function (searchResultTotal, response) {
         if (response.statusCode === 401) {
             loginJIRA().then(function () {
-                client.get(JIRA_URL + '/rest/api/2/search' + resolvedBugsStr, searchArgs, function (searchResultTotal2, responseTotal) {
+                client.get(JIRA_URL + '/rest/api/3/search' + resolvedBugsStr, searchArgs, function (searchResultTotal2, responseTotal) {
                     res.send(searchResultTotal2);
                 }, err1 => { console.log('cannot get jira') });
             }).catch(err => { console.log('rpomise failed'); console.log(err) })
@@ -863,6 +880,27 @@ app.put('/dummy/api/sanity/e2e/:release', (req, res) => {
     data = req.body
     res.status(200).send({})
 })
+app.get('/dummy/api/wholetcinfo/:release', (req, res) => {
+    res.status(200).send(initTC);
+})
+app.get('/dummy/api/tcinfo/:release/id/:tcid/card/:card', (req, res) => {
+    console.log(req.params)
+    initTC.forEach(each => {
+        if (each.CardType === req.params.card && each.TcID === req.params.tcid) {
+            console.log('found')
+            each.Activity = selectedTC.Activty;
+            each.StatusList = selectedTC.StatusList;
+            res.send({ ...selectedTC, ...each });
+        }
+    })
+    // res.send({});
+})
+app.post('/dummy/api/tcinfo/:release', (req, res) => {
+    console.log(req.body);
+    req.body.CardType = req.body.CardType[0];
+    initTC.push(req.body);
+    res.send({})
+})
 
 // FOR PRODUCTION: 
 // app.use('/', express.static('./build'));
@@ -881,6 +919,8 @@ var gracefulShutdown = function () {
     jsonfile.writeFileSync('./releases.json', releases);
     console.log('updated releases')
     jsonfile.writeFileSync('./tcCompleteSort.json', allTcs);
+    console.log('updated initTC')
+    jsonfile.writeFileSync('./initTC.json', initTC);
 
     // jsonfile.writeFileSync('./releases.json', updatedReleases);
     // jsonfile.writeFileSync('./tcCompleteSort.json', tcs);

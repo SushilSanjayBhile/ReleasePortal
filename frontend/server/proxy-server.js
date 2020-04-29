@@ -19,11 +19,11 @@ var APP_URL = 'http://localhost:3000';
 
 // var APP_URL = 'http://localhost:5000';
 
+var BACK = ['/django'];
 var URL = ['/api'];
 var USER = ['/user'];
 var JIRA = ['/rest'];
 var TEST = ['/dummy'];
-var VAGSERV = ['/vag'];
 //  var DATA_URL = 'http://localhost:8000';
 //  var DATA_URL = 'http://localhost:5051';
 // var DATA_URL = 'http://172.16.19.57:8000';
@@ -33,8 +33,9 @@ var VAGSERV = ['/vag'];
 
 
 // FOR DEVELOPMENT:
-// var DATA_URL = 'http://release:8000';
-var DATA_URL = 'http://192.168.1.37:8000';
+var DATA_URL = 'http://release:8000';
+var DJANGO_URL = 'http://localhost:8000';
+// var DATA_URL = 'http://192.168.1.76:8000';
 
 // FOR PRODUCTION:
 // var DATA_URL = 'http://localhost:8000';
@@ -78,9 +79,9 @@ try {
                 break;
             }
         }
-        for (var i = 0; i < VAGSERV.length; i++) {
-            if (req.url.startsWith(VAGSERV[i])) {
-                target = VAGSERV_URL;
+        for (var i = 0; i < BACK.length; i++) {
+            if (req.url.startsWith(BACK[i])) {
+                target = DJANGO_URL;
                 break;
             }
         }

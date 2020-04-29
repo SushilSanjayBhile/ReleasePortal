@@ -190,6 +190,7 @@ export const SAVE_TEST_CASE = 'SAVE_TEST_CASE';
 export const SAVE_TEST_CASE_STATUS = 'SAVE_TEST_CASE_STATUS';
 export const DELETE_TEST_CASE = 'DELETE_TEST_CASE';
 export const RELEASE_CHANGE = 'RELEASE_CHANGE';
+export const UPDATE_PRIORITY_DASHBOARD='UPDATE_PRIORITY_DASHBOARD';
 export const SAVE_SINGLE_TEST_CASE = 'SAVE_SINGLE_TEST_CASE';
 export const SAVE_FEATURES = 'SAVE_FEATURES';
 export const SAVE_BUGS = 'SAVE_BUGS';
@@ -263,6 +264,10 @@ export const deleteTestCase = payload => ({
 })
 export const releaseChange = payload => ({
   type: RELEASE_CHANGE,
+  payload
+})
+export const updateSelectedPriority = payload => ({
+  type: UPDATE_PRIORITY_DASHBOARD,
   payload
 })
 export const saveSingleTestCase = payload => ({

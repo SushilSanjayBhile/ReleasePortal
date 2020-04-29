@@ -44,9 +44,9 @@ const ReleaseTestMetrics = React.lazy(() => import('./views/Release/ReleaseTestM
 const ReleaseStatus = React.lazy(() => import('./views/Release/ReleaseStatus/ReleaseStatus'));
 const ReleaseAdmin = React.lazy(() => import('./views/Release/ReleaseAdmin/ReleaseAdmin'));
 const ReleaseDocs = React.lazy(() => import('./views/Release/ReleaseDocs/ReleaseDocs'));
-const ReleaseGuiTestMetrics = React.lazy(() => import('./views/Release/ReleaseGuiTestMetrics/ReleaseGuiTestMetrics'))
+const ReleaseTestMetricsGUI = React.lazy(() => import('./views/Release/ReleaseTestMetricsGUI/ReleaseTestMetricsGUI'))
 const ReleaseSanityResult = React.lazy(() => import('./views/Release/ReleaseSanityResult/ReleaseSanityResult'))
-
+const Examples = React.lazy(() => import('./views/Examples/Examples.js'))
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Release Portal' },
@@ -56,12 +56,12 @@ const routes = [
   { path: '/release/manage', exact: true, name: 'Manage', component: ManageRelease },
   { path: '/release/qastrategy', name: 'QA Strategy', exact: true, component: ReleaseQAStrategy },
   { path: '/release/testmetrics', name: 'QA Strategy', exact: true, component: ReleaseTestMetrics },
-  { path: '/release/guitestmetrics', name: 'QA Strategy', exact: true, component: ReleaseGuiTestMetrics },
+  { path: '/release/guitestmetrics', name: 'QA Strategy', exact: true, component: ReleaseTestMetricsGUI },
   { path: '/release/status', name: 'Release Status', exact: true, component: ReleaseStatus },
   { path: '/release/user', name: 'Admin Panel', exact: true, component: ReleaseAdmin },
   { path: '/release/docs', name: 'Documentation Panel', exact: true, component: ReleaseDocs },
   { path: '/release/sanityresults', name: 'sanityresults', exact: true, component: ReleaseSanityResult },
-
+  // {path: '/examples', name: 'Examples', exact:true, component:Examples}
   // { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   // { path: '/theme', exact: true, name: 'Theme', component: Colors },
   // { path: '/theme/colors', name: 'Colors', component: Colors },

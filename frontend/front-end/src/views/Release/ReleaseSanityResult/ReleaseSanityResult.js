@@ -34,12 +34,21 @@ class ReleaseSanityResult extends Component {
             open: false,
             metricsOpen: false,
             edited: {},
-            activeTab: '2',
+            activeTab: '1',
             counter: 1,
-            deleteE2ECntr: 1,
+            deleteE2ESanityCntr: 1,
+            deleteE2EDailyCntr: 1,
+            deleteE2EWeeklyCntr: 1,
             deleteLongevityCntr: 1,
             deleteStressCntr: 1,
-            E2E: 1,
+            E2ESANITY: 1,
+            E2EDAILY: 1,
+            E2EWEEKLY: 1,
+            saveE2ESanityCntr:1,
+            saveE2EDailyCntr:1,
+            saveE2EWeeklyCntr:1,
+            saveStressCntr:1,
+            saveLongevityCntr:1,
             Longevity: 1,
             Stress: 1,
             tcOpen: true,
@@ -49,29 +58,64 @@ class ReleaseSanityResult extends Component {
     }
     toggleCreate = () => { this.setState({ createOpen: !this.state.createOpen }) };
     confirmDeleteToggle = () => { this.setState({ deleteOpen: !this.state.deleteOpen }) }
+    confirmSaveToggle = () => { this.setState({ saveOpen: !this.state.saveOpen }) }
     create = () => {
         this.setState({ counter: this.state.counter + 1 })
     }
     componentDidMount() {
-        this.setState({ tcOpen: true, activeTab: '2' })
+        this.setState({ tcOpen: true, activeTab: '4' })
     }
     toggleTab = tab => {
         if (this.state.activeTab !== tab) this.setState({ activeTab: tab });
     }
     delete = () => {
+
         if (this.state.activeTab === '1') {
+            this.setState({ deleteE2ESanityCntr: this.state.deleteE2ESanityCntr + 1 })
+        }
+
+        if (this.state.activeTab === '2') {
+            this.setState({ deleteE2EDailyCntr: this.state.deleteE2EDailyCntr + 1 })
+        }
+
+        if (this.state.activeTab === '3') {
+            this.setState({ deleteE2EWeeklyCntr: this.state.deleteE2EWeeklyCntr + 1 })
+        }
+        if (this.state.activeTab === '4') {
             this.setState({ deleteStressCntr: this.state.deleteStressCntr + 1 })
         }
-        if (this.state.activeTab === '2') {
-            this.setState({ deleteE2ECntr: this.state.deleteE2ECntr + 1 })
-        }
-        if (this.state.activeTab === '3') {
+        if (this.state.activeTab === '5') {
             this.setState({ deleteLongevityCntr: this.state.deleteLongevityCntr + 1 })
         }
-        this.confirmDeleteToggle();
+        // this.confirmDeleteToggle();
+    }
+    save = () => {
+
+        if (this.state.activeTab === '1') {
+            this.setState({ saveE2ESanityCntr: this.state.saveE2ESanityCntr + 1 })
+        }
+
+        if (this.state.activeTab === '2') {
+            this.setState({ saveE2EDailyCntr: this.state.saveE2EDailyCntr + 1 })
+        }
+
+        if (this.state.activeTab === '3') {
+            this.setState({ saveE2EWeeklyCntr: this.state.saveE2EWeeklyCntr + 1 })
+        }
+        if (this.state.activeTab === '4') {
+            this.setState({ saveStressCntr: this.state.saveStressCntr + 1 })
+        }
+        if (this.state.activeTab === '5') {
+
+            this.setState({ saveLongevityCntr: this.state.saveLongevityCntr + 1 })
+        }
+        // this.confirmSaveToggle();
     }
     confirmDelete = () => {
         this.confirmDeleteToggle();
+    }
+    confirmSave = () => {
+        this.confirmSaveToggle();
     }
     render() {
         let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE');
@@ -97,12 +141,17 @@ class ReleaseSanityResult extends Component {
                                                 <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                             } */}
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
-                                            <span className='rp-app-table-title'>Manual Sanity</span>
+                                            <span className='rp-app-table-title'>Other Test Result</span>
+                                            <span style={{ 'marginLeft': '2rem' }}>Please keep rows selected before making changes...</span>
+                                            
                                             {
                                                 this.props.currentUser && this.props.currentUser.email &&
                                                 <React.Fragment>
-                                                    <Button style={{ marginLeft: '1rem', right: '1rem', position: 'absolute' }} id="getall" onClick={() => this.toggleCreate()} type="button">Create</Button>
-                                                    <Button style={{ marginLeft: '1rem', right: '6rem', position: 'absolute' }} id="getDelete" onClick={() => this.confirmDelete()} type="button">Delete</Button>
+                                                   
+                                                   
+                                                    <Button style={{ marginLeft: '1rem', right: '1rem', position: 'absolute' }} id="getDelete" onClick={() => this.confirmDelete()} type="button">Delete</Button>
+                                                    <Button style={{ marginLeft: '1rem', right: '6rem', position: 'absolute' }} id="getall" onClick={() => this.confirmSave()} type="button">Update</Button>
+                                                    <Button style={{ marginLeft: '1rem', right: '11rem', position: 'absolute' }} id="getall" onClick={() => this.toggleCreate()} type="button">Create</Button>
                                                 </React.Fragment>
                                             }
                                         </div>
@@ -116,7 +165,7 @@ class ReleaseSanityResult extends Component {
                                 <NavLink
                                     className={classnames({ active: this.state.activeTab === '1' })}
                                     onClick={() => this.toggleTab('1')}>
-                                    Stress
+                                    E2E Sanity
                                 </NavLink>
                             </NavItem>
                             <NavItem>
@@ -124,7 +173,7 @@ class ReleaseSanityResult extends Component {
                                     className={classnames({ active: this.state.activeTab === '2' })}
                                     onClick={() => this.toggleTab('2')}
                                 >
-                                    e2e
+                                    E2E Daily
                                 </NavLink>
                             </NavItem>
                             <NavItem>
@@ -132,19 +181,41 @@ class ReleaseSanityResult extends Component {
                                     className={classnames({ active: this.state.activeTab === '3' })}
                                     onClick={() => this.toggleTab('3')}
                                 >
+                                    E2E Weekly
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    className={classnames({ active: this.state.activeTab === '4' })}
+                                    onClick={() => this.toggleTab('4')}
+                                >
+                                    Stress
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    className={classnames({ active: this.state.activeTab === '5' })}
+                                    onClick={() => this.toggleTab('5')}
+                                >
                                     Longevity
                                 </NavLink>
                             </NavItem>
                         </Nav>
                         <TabContent activeTab={this.state.activeTab}>
                             <TabPane tabId="1">
-                                <StressTestCases e2eCounter={this.state.Stress} deleteCounter={this.state.deleteStressCntr}></StressTestCases>
+                                <E2ETestCases tag='SANITY' e2eCounter={this.state.E2ESANITY} deleteCounter={this.state.deleteE2ESanityCntr} saveCounter={this.state.saveE2ESanityCntr}></E2ETestCases>
                             </TabPane>
                             <TabPane tabId="2">
-                                <E2ETestCases e2eCounter={this.state.E2E} deleteCounter={this.state.deleteE2ECntr}></E2ETestCases>
+                                <E2ETestCases tag='DAILY' e2eCounter={this.state.E2EDAILY} deleteCounter={this.state.deleteE2EDailyCntr} saveCounter={this.state.saveE2EDailyCntr}></E2ETestCases>
                             </TabPane>
                             <TabPane tabId="3">
-                                <LongevityTestCases e2eCounter={this.state.Longevity} deleteCounter={this.state.deleteLongevityCntr}></LongevityTestCases>
+                                <E2ETestCases tag='WEEKLY' e2eCounter={this.state.E2EWEEKLY} deleteCounter={this.state.deleteE2EWeeklyCntr} saveCounter={this.state.saveE2EWeeklyCntr}></E2ETestCases>
+                            </TabPane>
+                            <TabPane tabId="4">
+                                <StressTestCases e2eCounter={this.state.Stress} deleteCounter={this.state.deleteStressCntr} saveCounter={this.state.saveStressCntr}></StressTestCases>
+                            </TabPane>
+                            <TabPane tabId="5">
+                                <LongevityTestCases e2eCounter={this.state.Longevity} deleteCounter={this.state.deleteLongevityCntr} saveCounter={this.state.saveLongevityCntr}></LongevityTestCases>
                             </TabPane>
                         </TabContent>
                     </Col>
@@ -179,9 +250,25 @@ class ReleaseSanityResult extends Component {
                         Are you sure you want to make the delete the results?
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onClick={() => this.delete()}>Delete</Button>{' '}
+                        <Button color="primary" onClick={() => { this.confirmDeleteToggle(); setTimeout(() => this.delete(), 1)}}>Delete</Button>{' '}
                         {
                             <Button color="secondary" onClick={() => this.confirmDeleteToggle()}>Cancel</Button>
+                        }
+                    </ModalFooter>
+                </Modal>
+                <Modal isOpen={this.state.saveOpen} toggle={() => this.confirmSaveToggle()}>
+                    {
+                        <ModalHeader toggle={() => this.confirmSaveToggle()}>{
+                            'Save'
+                        }</ModalHeader>
+                    }
+                    <ModalBody>
+                        Are you sure you want to save the results?
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => { this.confirmSaveToggle(); setTimeout(() => this.save(), 1)}}>Save</Button>{' '}
+                        {
+                            <Button color="secondary" onClick={() => this.confirmSaveToggle()}>Cancel</Button>
                         }
                     </ModalFooter>
                 </Modal>

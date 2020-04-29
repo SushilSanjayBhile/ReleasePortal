@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import {
     Badge, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table, Button, Input, Collapse
-    , Modal, ModalHeader, ModalBody, ModalFooter, Progress, Popover, PopoverBody, FormGroup, Label
+    , Modal, ModalHeader, ModalBody, ModalFooter, Progress, Popover, PopoverBody, FormGroup, Label, TabContent, TabPane, Nav, NavItem, NavLink,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { getCurrentRelease } from '../../../reducers/release.reducer';
@@ -17,6 +17,10 @@ import { AgGridReact } from 'ag-grid-react';
 import axios from 'axios';
 import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../actions';
 import Multiselect from 'react-bootstrap-multiselect';
+import CreateMultiple from './CreateMultiple';
+import UpdateMultiple from './UpdateMultiple';
+import classnames from 'classnames';
+import { workingStatuses, steps } from '../../../constants';
 const loading = () => <div className="animated fadeIn pt-3 text-center">Loading...</div>;
 class CreateTCs extends Component {
     // [field] : {old,new}
@@ -28,15 +32,20 @@ class CreateTCs extends Component {
             open: false,
             width: window.screen.availWidth > 1700 ? 500 : 380,
             edited: {},
-            errors: {}
+            errors: {},
+            multipleErrors: { 'mesg': 'hi' },
+            activeTab: '1',
         }
     }
     toggle = () => this.setState({ modal: !this.state.modal });
 
+    toggleTab = tab => {
+        if (this.state.activeTab !== tab) this.setState({ activeTab: tab });
+    }
 
     textFields = [
         'Domain', 'SubDomain',
-        'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'Priority',
+        'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'AutoAssignee', 'DevAssignee', 'Priority',
         'Description', 'Steps', 'ExpectedBehaviour', 'Notes',
     ];
     arrayFields = ['CardType', 'ServerType']
@@ -66,9 +75,16 @@ class CreateTCs extends Component {
             array = [];
         }
         if (array && !Array.isArray(array)) {
-            array = array.split(',');
+            array = `${array}`.split(',');
         }
         return array;
+    }
+    getTcName(name) {
+        let tcName = name;
+        if (!tcName || tcName === 'NOT AUTOMATED' || tcName === undefined || tcName === null) {
+            tcName = 'TC NOT AUTOMATED';
+        }
+        return tcName;
     }
 
     save() {
@@ -87,40 +103,29 @@ class CreateTCs extends Component {
             "RequestType": 'POST',
             "URL": `/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`
         };
-
-
+        let request = {};
+        if (this.props.currentUser && this.props.currentUser.isAdmin) {
+            if (data.Assignee && data.Assignee !== 'ADMIN') {
+                request = steps.onAdminManualAssigned({ step: 'onAdminManualAssigned', Assignee: data.Assignee });
+                request.note = 'added by admin and unassigned'
+            } else {
+                request = steps.onAdminCreate();
+                request.note = 'added by admin and unassigned'
+            }
+        } else {
+            request = steps.onNonAdminCreateRequest({ Assignee: this.props.currentUser.email });
+            request.note = 'added by non-admin and pending for approval'
+        }
+        data = { ...data, ...request }
+        data.TcName = this.getTcName(`${data.TcName}`);
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
-                this.getTcs();
-                this.setState({ addTC: { Master: true, Domain: '' }, errors: {}, toggleMessage: `TC ${this.state.addTC.TcID} Added Successfully` });
-                this.toggle();
+                // this.getTcs();
+                this.setState({ addTC: { Master: true, Domain: this.state.Domain, SubDomain: this.state.SubDomain, CardType: this.state.CardType }, errors: {} });
+                alert(`TC ${data.TcID} Added Successfully`)
             }, error => {
                 alert('failed to create TC');
-                if (error && error.response && error.response.data) {
-                    let message = error.response.data.message;
-                    let found = false;
-                    ['Domain', 'SubDomain', 'TcID', 'TcName', 'CardType', 'ServerType', 'Scenario', 'OrchestrationPlatform',
-                        'Description', 'ExpectedBehavior', 'Notes', 'Date', 'Master', 'Assignee', 'Created', 'Tag', 'Activity']
-                        .forEach((item, index) => {
-                            if (!found && message && message.search(item) !== -1) {
-                                found = true;
-                                let msg = { [item]: `Invalid ${item}` };
-                                if (item === 'TcID') {
-                                    msg = { [item]: `Invalid or Duplicate ${item}` };
-                                }
-                                this.setState({ errors: msg, toggleMessage: `Error: ${error.message}` });
-                                this.toggle();
-                            }
-                        });
-                    if (!found) {
-                        this.setState({ errors: {}, toggleMessage: `Error: ${error.message}` });
-                        this.toggle();
-                    }
-                }
-
             });
-        this.setState({ toggleMessage: null })
-        // this.toggle();
     }
     confirmToggle() {
         let errors = null;
@@ -137,9 +142,13 @@ class CreateTCs extends Component {
         if (!isNaN(this.state.addTC['TcID'])) {
             errors = { ...this.state.errors, TcID: 'Cannot be a number' };
         }
+        if (this.props.currentUser && !this.props.currentUser.isAdmin) {
+            if (!this.state.addTC['Assignee'] || this.state.addTC['Assignee'] === 'ADMIN') {
+                errors = { ...this.state.errors, Assignee: 'Cannot be ADMIN or empty' };
+            }
+        }
         if (!errors) {
             this.changeLog = this.whichFieldsUpdated({}, this.state.addTC);
-            this.setState({ toggleMessage: null })
             this.toggle();
         } else {
             this.setState({ errors: errors })
@@ -238,11 +247,15 @@ class CreateTCs extends Component {
                                                 }
 
                                                 <div className='rp-icon-button'><i className="fa fa-plus-circle"></i></div>
-                                                <span className='rp-app-table-title'>Create Test Case</span>
+                                                <span className='rp-app-table-title'>Create OR Update Test Case</span>
+                                                {
+                                                    this.state.showLoading &&
+                                                    <spam style={{ marginLeft: '2rem' }} className='rp-app-table-value'>Please Wait while TC are creating or updating ...</spam>
+                                                }
+                                                {
+                                                    !this.state.showLoading && <span style={{ 'marginLeft': '2rem', fontWeight: '500', color: 'red' }}>TcName is Automated TC Name. It should contain '.' in its name. Please dont add description/scenario in TcName.</span>
+                                                }
                                             </div>
-                                            <Button style={{ position: 'absolute', right: '1rem' }} title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.confirmToggle()} >
-                                                <i className="fa fa-save"></i>
-                                            </Button>
                                         </div>
 
 
@@ -256,218 +269,260 @@ class CreateTCs extends Component {
 
                             </div>
                             <Collapse isOpen={this.state.createTc}>
-                                <FormGroup row className="my-0" style={{ marginTop: '1rem' }}>
-                                    <Col xs="6" md="3" lg="3">
-                                        <FormGroup className='rp-app-table-value'>
-                                            <Label className='rp-app-table-label' htmlFor="Domain">
-                                                Domain
-                                                {
-                                                    this.state.errors['Domain'] &&
-                                                    <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors['Domain']}</i>
-                                                }
-                                            </Label>
-                                            {
-                                                !this.props.isEditing ?
-                                                    <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail.Domain}</span>
-                                                    :
-                                                    <Input style={{ borderColor: this.state.errors['Domain'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="Domain" name="Domain" value={this.state.addTC && this.state.addTC.Domain}
-                                                        onChange={(e) => this.setState({ addTC: { ...this.state.addTC, Domain: e.target.value }, errors: { ...this.state.errors, Domain: null } })} >
-                                                        <option value=''>Select Domain</option>
-                                                        {
-                                                            this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions &&
-                                                            Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions).map(item => <option value={item}>{item}</option>)
-                                                        }
-                                                    </Input>
-                                            }
-                                        </FormGroup>
-                                    </Col>
-                                    {
-                                        this.state.addTC.Domain &&
-                                        <Col xs="6" md="3" lg="3">
-                                            <FormGroup className='rp-app-table-value'>
-                                                <Label className='rp-app-table-label' htmlFor="SubDomain">Sub Domain
-                                                {
-                                                        this.state.errors['SubDomain'] &&
-                                                        <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors['SubDomain']}</i>
-                                                    }
-                                                </Label>
-                                                {
-                                                    !this.props.isEditing ?
-                                                        <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail.SubDomain}</span>
-                                                        :
-                                                        <Input style={{ borderColor: this.state.errors['SubDomain'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="Domain" name="Domain" value={this.state.addTC && this.state.addTC.SubDomain}
-                                                            onChange={(e) => this.setState({ addTC: { ...this.state.addTC, SubDomain: e.target.value }, errors: { ...this.state.errors, SubDomain: null } })} >
-                                                            <option value=''>Select Sub Domain</option>
-                                                            {
-                                                                this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions &&
-                                                                this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.addTC.Domain].map(item => <option value={item}>{item}</option>)
-                                                            }
-                                                        </Input>
-                                                }
-                                            </FormGroup>
-                                        </Col>
-                                    }
-                                    {
-                                        this.state.addTC.Domain && this.state.addTC.SubDomain &&
-                                        <React.Fragment>
-                                            {
-                                                [
-                                                    { field: 'CardType', header: 'Card Type' },
-                                                    { field: 'ServerType', header: 'Server Type' },
-                                                    // { field: 'OrchestrationPlatform', header: 'Orchestration Platform' },
-                                                ].map(item => (
-                                                    <Col xs="6" md="3" lg="3">
-                                                        <FormGroup className='rp-app-table-value'>
-                                                            <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}
-                                                                {
-                                                                    this.state.errors[item.field] &&
-                                                                    <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
-                                                                }</Label>
-                                                            {
-                                                                !this.props.isEditing ?
-                                                                    <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail[item.field]}</span>
-                                                                    :
-                                                                    <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(item.field, e, checked, select)}
-                                                                        data={multiselect[item.field]} multiple /></div>
-                                                            }
-                                                        </FormGroup>
-                                                    </Col>
-                                                ))
-                                            }
+                                <Nav tabs>
+                                    <NavItem>
+                                        <NavLink
+                                            className={classnames({ active: this.state.activeTab === '1' })}
+                                            onClick={() => this.toggleTab('1')}>
+                                            Multiple
+                                </NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink
+                                            className={classnames({ active: this.state.activeTab === '2' })}
+                                            onClick={() => this.toggleTab('2')}
+                                        >
+                                            Single
+                                </NavLink>
+                                    </NavItem>
+                                    <NavItem>
+                                        <NavLink
+                                            className={classnames({ active: this.state.activeTab === '3' })}
+                                            onClick={() => this.toggleTab('3')}
+                                        >
+                                            Update Multiple
+                                </NavLink>
+                                    </NavItem>
+                                </Nav>
+                                <TabContent activeTab={this.state.activeTab}>
+                                    <TabPane tabId="1">
+                                        <CreateMultiple showLoadingMessage={(show) => this.setState({ showLoading: show })}></CreateMultiple>
+                                    </TabPane>
+                                    <TabPane tabId="2">
 
-                                            {
-                                                [
-                                                    { field: 'Scenario', header: 'Scenario *', type: 'text' },
-                                                    { field: 'TcID', header: 'Tc ID *', type: 'text', }
-                                                ].map((item, index) => (
-                                                    <Col xs="6" md="3" lg="3">
-                                                        <FormGroup className='rp-app-table-value'>
-                                                            <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}  {
-                                                                this.state.errors[item.field] &&
-                                                                <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
-                                                            }</Label>
-                                                            {
-                                                                !this.props.isEditing ?
-                                                                    <span key={index} className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail[item.field]}</span>
-                                                                    :
-                                                                    <Input style={{ borderColor: this.state.errors[item.field] ? 'red' : '' }} key={index} className='rp-app-table-value' type="text" placeholder={`Add ${item.header}`} id={item.field} name={item.field} value={this.state.addTC && this.state.addTC[item.field]}
-                                                                        onChange={(e) => this.setState({ addTC: { ...this.state.addTC, [item.field]: e.target.value }, errors: { ...this.state.errors, [item.field]: null } })} >
-
-                                                                    </Input>
-                                                            }
-                                                        </FormGroup>
-                                                    </Col>
-                                                ))
-                                            }
+                                        <FormGroup row className="my-0" style={{ marginTop: '1rem' }}>
+                                            <Button style={{ position: 'absolute', right: '1rem' }} title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.confirmToggle()} >
+                                                <i className="fa fa-save"></i>
+                                            </Button>
                                             <Col xs="6" md="3" lg="3">
                                                 <FormGroup className='rp-app-table-value'>
-                                                    <Label className='rp-app-table-label' htmlFor='TAG'>Tag {
-                                                        this.state.errors.Tag &&
-                                                        <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors.Tag}</i>
-                                                    }</Label>
+                                                    <Label className='rp-app-table-label' htmlFor="Domain">
+                                                        Domain
+                                                {
+                                                            this.state.errors['Domain'] &&
+                                                            <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors['Domain']}</i>
+                                                        }
+                                                    </Label>
                                                     {
                                                         !this.props.isEditing ?
-                                                            <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail.Tag}</span>
+                                                            <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail.Domain}</span>
                                                             :
-                                                            <Input style={{ borderColor: this.state.errors.Tag ? 'red' : '' }} className='rp-app-table-value' type="select" id="TAG" name="TAG" value={this.state.addTC && this.state.addTC.Tag}
-                                                                onChange={(e) => this.setState({ addTC: { ...this.state.addTC, Tag: e.target.value }, errors: { ...this.state.errors, Tag: null } })} >
+                                                            <Input style={{ borderColor: this.state.errors['Domain'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="Domain" name="Domain" value={this.state.addTC && this.state.addTC.Domain}
+                                                                onChange={(e) => this.setState({ addTC: { ...this.state.addTC, Domain: e.target.value }, errors: { ...this.state.errors, Domain: null } })} >
+                                                                <option value=''>Select Domain</option>
                                                                 {
-                                                                    ['DAILY', 'WEEKLY', 'SANITY'].map(item => <option value={item}>{item}</option>)
+                                                                    this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions &&
+                                                                    Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions).map(item => <option value={item}>{item}</option>)
                                                                 }
                                                             </Input>
                                                     }
                                                 </FormGroup>
                                             </Col>
-
-
                                             {
-                                                [
-                                                    { field: 'Assignee', header: 'Assignee' },
-                                                    // { field: 'Status', header: 'Status' },
-                                                ].map(item => (
-                                                    <Col xs="6" md="3" lg="3">
-                                                        <FormGroup className='rp-app-table-value'>
-                                                            <Label className='rp-app-table-label' htmlFor={item.field}>{item.header} {
-                                                                this.state.errors[item.field] &&
-                                                                <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
-                                                            }</Label>
-                                                            {
-                                                                !this.props.isEditing ?
-                                                                    <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail[item.field]}</span>
-                                                                    :
-                                                                    <Input style={{ borderColor: this.state.errors[item.field] ? 'red' : '' }} className='rp-app-table-value' type="select" id={item.field} name={item.field} value={this.state.addTC && this.state.addTC[item.field]} onChange={(e) =>
-                                                                        this.setState(
-                                                                            {
-                                                                                addTC: { ...this.state.addTC, [item.field]: e.target.value },
-                                                                                errors: { ...this.state.errors, [item.field]: null }
-                                                                            })} >
-                                                                        <option value=''>{`Select ${item.header}`}</option>
-                                                                        {
-                                                                            users &&
-                                                                            users.map(item => <option value={item}>{item}</option>)
-                                                                        }
-                                                                    </Input>
-                                                            }
-                                                        </FormGroup>
-                                                    </Col>))
-                                            }
-
-                                        </React.Fragment>
-                                    }
-                                </FormGroup>
-                                {
-                                    this.state.addTC.Domain && this.state.addTC.SubDomain &&
-                                    <FormGroup row className="my-0" style={{ marginTop: '1rem' }}>
-                                        {
-                                            [
-
-                                                { field: 'Description', header: 'Description', type: 'text' },
-                                                { field: 'Steps', header: 'Steps', type: 'text' },
-                                                { field: 'ExpectedBehaviour', header: 'Expected Behaviour', type: 'text' },
-                                                { field: 'Notes', header: 'Notes', type: 'text' },
-
-                                            ].map((item, index) => (
-                                                <Col xs="12" md="6" lg="6">
+                                                this.state.addTC.Domain &&
+                                                <Col xs="6" md="3" lg="3">
                                                     <FormGroup className='rp-app-table-value'>
-                                                        <Label className='rp-app-table-label' htmlFor={item.field}>{item.header} {
-                                                            this.state.errors.Master &&
-                                                            <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors.Master}</i>
-                                                        }</Label>
+                                                        <Label className='rp-app-table-label' htmlFor="SubDomain">Sub Domain
+                                                {
+                                                                this.state.errors['SubDomain'] &&
+                                                                <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors['SubDomain']}</i>
+                                                            }
+                                                        </Label>
                                                         {
                                                             !this.props.isEditing ?
-                                                                <Input style={{ borderColor: this.state.errors[item.field] ? 'red' : '' }} className='rp-app-table-value' type='textarea' rows='9' readOnly={true}>{this.props.testcaseDetail && this.props.testcaseDetail[item.field]}</Input>
+                                                                <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail.SubDomain}</span>
                                                                 :
-                                                                <Input className='rp-app-table-value' placeholder={'Add ' + item.header} type="textarea" rows='9' id={item.field} value={this.state.addTC && this.state.addTC[item.field]}
-                                                                    onChange={(e) => this.setState({ addTC: { ...this.state.addTC, [item.field]: e.target.value }, errors: { ...this.state.errors, [item.field]: null } })} >
-
+                                                                <Input style={{ borderColor: this.state.errors['SubDomain'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="Domain" name="Domain" value={this.state.addTC && this.state.addTC.SubDomain}
+                                                                    onChange={(e) => this.setState({ addTC: { ...this.state.addTC, SubDomain: e.target.value }, errors: { ...this.state.errors, SubDomain: null } })} >
+                                                                    <option value=''>Select Sub Domain</option>
+                                                                    {
+                                                                        this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions &&
+                                                                        this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.addTC.Domain].map(item => <option value={item}>{item}</option>)
+                                                                    }
                                                                 </Input>
                                                         }
                                                     </FormGroup>
                                                 </Col>
-                                            ))
+                                            }
+
+                                            {
+                                                this.state.addTC.Domain && this.state.addTC.SubDomain &&
+                                                <React.Fragment>
+                                                    {
+                                                        [
+                                                            { field: 'CardType', header: 'Card Type' },
+                                                            { field: 'ServerType', header: 'Server Type' },
+                                                            // { field: 'OrchestrationPlatform', header: 'Orchestration Platform' },
+                                                        ].map(item => (
+                                                            <Col xs="6" md="3" lg="2">
+                                                                <FormGroup className='rp-app-table-value'>
+                                                                    <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}
+                                                                        {
+                                                                            this.state.errors[item.field] &&
+                                                                            <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
+                                                                        }</Label>
+                                                                    {
+                                                                        !this.props.isEditing ?
+                                                                            <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail[item.field]}</span>
+                                                                            :
+                                                                            <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(item.field, e, checked, select)}
+                                                                                data={multiselect[item.field]} multiple /></div>
+                                                                    }
+                                                                </FormGroup>
+                                                            </Col>
+                                                        ))
+                                                    }
+
+                                                    {
+                                                        [
+                                                            { field: 'Scenario', header: 'Scenario *', type: 'text' },
+                                                            { field: 'TcID', header: 'Tc ID *', type: 'text', }
+                                                        ].map((item, index) => (
+                                                            <Col xs="6" md="3" lg="3">
+                                                                <FormGroup className='rp-app-table-value'>
+                                                                    <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}  {
+                                                                        this.state.errors[item.field] &&
+                                                                        <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
+                                                                    }</Label>
+                                                                    {
+                                                                        !this.props.isEditing ?
+                                                                            <span key={index} className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail[item.field]}</span>
+                                                                            :
+                                                                            <Input style={{ borderColor: this.state.errors[item.field] ? 'red' : '' }} key={index} className='rp-app-table-value' type="text" placeholder={`Add ${item.header}`} id={item.field} name={item.field} value={this.state.addTC && this.state.addTC[item.field]}
+                                                                                onChange={(e) => this.setState({ addTC: { ...this.state.addTC, [item.field]: e.target.value }, errors: { ...this.state.errors, [item.field]: null } })} >
+
+                                                                            </Input>
+                                                                    }
+                                                                </FormGroup>
+                                                            </Col>
+                                                        ))
+                                                    }
+                                                    <Col xs="6" md="3" lg="3">
+                                                        <FormGroup className='rp-app-table-value'>
+                                                            <Label className='rp-app-table-label' htmlFor='TAG'>Tag {
+                                                                this.state.errors.Tag &&
+                                                                <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors.Tag}</i>
+                                                            }</Label>
+                                                            {
+                                                                !this.props.isEditing ?
+                                                                    <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail.Tag}</span>
+                                                                    :
+                                                                    <Input style={{ borderColor: this.state.errors.Tag ? 'red' : '' }} className='rp-app-table-value' type="select" id="TAG" name="TAG" value={this.state.addTC && this.state.addTC.Tag}
+                                                                        onChange={(e) => this.setState({ addTC: { ...this.state.addTC, Tag: e.target.value }, errors: { ...this.state.errors, Tag: null } })} >
+                                                                        {
+                                                                            ['DAILY', 'WEEKLY', 'SANITY'].map(item => <option value={item}>{item}</option>)
+                                                                        }
+                                                                    </Input>
+                                                            }
+                                                        </FormGroup>
+                                                    </Col>
+
+
+                                                    {
+                                                        [
+                                                            { field: 'Assignee', header: 'Assignee' },
+                                                            // { field: 'AutoAssignee', header: 'AutoAssignee' },
+                                                            // { field: 'DevAssignee', header: 'DevAssignee' },
+                                                            // { field: 'Status', header: 'Status' },
+                                                        ].map(item => (
+                                                            <Col xs="6" md="3" lg="3">
+                                                                <FormGroup className='rp-app-table-value'>
+                                                                    <Label className='rp-app-table-label' htmlFor={item.field}>{item.header} {
+                                                                        this.state.errors[item.field] &&
+                                                                        <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
+                                                                    }</Label>
+                                                                    {
+                                                                        !this.props.isEditing ?
+                                                                            <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail[item.field]}</span>
+                                                                            :
+                                                                            <Input style={{ borderColor: this.state.errors[item.field] ? 'red' : '' }} className='rp-app-table-value' type="select" id={item.field} name={item.field} value={this.state.addTC && this.state.addTC[item.field]} onChange={(e) =>
+                                                                                this.setState(
+                                                                                    {
+                                                                                        addTC: { ...this.state.addTC, [item.field]: e.target.value },
+                                                                                        errors: { ...this.state.errors, [item.field]: null }
+                                                                                    })} >
+                                                                                <option value=''>{`Select ${item.header}`}</option>
+                                                                                <option value='ADMIN'>ADMIN</option>
+                                                                                {
+                                                                                    users &&
+                                                                                    users.map(item => <option value={item}>{item}</option>)
+                                                                                }
+                                                                            </Input>
+                                                                    }
+                                                                </FormGroup>
+                                                            </Col>))
+                                                    }
+
+                                                </React.Fragment>
+                                            }
+                                        </FormGroup>
+                                        {
+                                            this.state.addTC.Domain && this.state.addTC.SubDomain &&
+                                            <FormGroup row className="my-0" style={{ marginTop: '1rem' }}>
+                                                {
+                                                    [
+
+                                                        { field: 'Description', header: 'Description', type: 'text' },
+                                                        { field: 'Steps', header: 'Steps', type: 'text' },
+                                                        { field: 'ExpectedBehaviour', header: 'Expected Behaviour', type: 'text' },
+                                                        { field: 'Notes', header: 'Notes', type: 'text' },
+
+                                                    ].map((item, index) => (
+                                                        <Col xs="12" md="6" lg="6">
+                                                            <FormGroup className='rp-app-table-value'>
+                                                                <Label className='rp-app-table-label' htmlFor={item.field}>{item.header} {
+                                                                    this.state.errors.Master &&
+                                                                    <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors.Master}</i>
+                                                                }</Label>
+                                                                {
+                                                                    !this.props.isEditing ?
+                                                                        <Input style={{ borderColor: this.state.errors[item.field] ? 'red' : '' }} className='rp-app-table-value' type='textarea' rows='9' readOnly={true}>{this.props.testcaseDetail && this.props.testcaseDetail[item.field]}</Input>
+                                                                        :
+                                                                        <Input className='rp-app-table-value' placeholder={'Add ' + item.header} type="textarea" rows='9' id={item.field} value={this.state.addTC && this.state.addTC[item.field]}
+                                                                            onChange={(e) => this.setState({ addTC: { ...this.state.addTC, [item.field]: e.target.value }, errors: { ...this.state.errors, [item.field]: null } })} >
+
+                                                                        </Input>
+                                                                }
+                                                            </FormGroup>
+                                                        </Col>
+                                                    ))
+                                                }
+                                            </FormGroup>
                                         }
-                                    </FormGroup>
-                                }
+                                    </TabPane>
+                                    <TabPane tabId="3">
+                                        <UpdateMultiple showLoadingMessage={(show) => this.setState({ showLoading: show })}></UpdateMultiple>
+                                    </TabPane>
+                                </TabContent>
+
                             </Collapse>
                         </Col>
                     </Row>
                 }
                 <Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                     {
-                        !this.state.toggleMessage &&
                         <ModalHeader toggle={() => this.toggle()}>{
                             'Confirmation'
                         }</ModalHeader>
                     }
                     <ModalBody>
                         {
-                            this.state.toggleMessage ? this.state.toggleMessage : `Are you sure you want to make the changes?`
+                            `Are you sure you want to make the changes?`
                         }
                     </ModalBody>
                     <ModalFooter>
-                        <Button color="primary" onClick={() => this.state.toggleMessage ? this.toggle() : this.save()}>Ok</Button>{' '}
+                        <Button color="primary" onClick={() => { this.toggle(); this.save() }}>Ok</Button>{' '}
                         {
-                            !this.state.toggleMessage &&
                             <Button color="secondary" onClick={() => this.toggle()}>Cancel</Button>
                         }
                     </ModalFooter>

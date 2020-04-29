@@ -512,9 +512,6 @@ class GuiTestCases extends Component {
         //             CardType: this.editedRows[item].CardType.newValue
         //         };
         //         if(this.editedRows[item].Priority) {
-        //             if (this.editedRows[item].Priority.newValue === 'Skip') {
-        //                 this.editedRows[item].Priority.newValue = 'Skp';
-        //             }
         //             pushable.Priority = this.editedRows[item].Priority.newValue
         //         }
         //         if(this.editedRows[item].Assignee) {
@@ -533,9 +530,6 @@ class GuiTestCases extends Component {
                 CardType: item.CardType
             };
             if (item.Priority) {
-                if (item.Priority === 'Skip') {
-                    item.Priority = 'Skp';
-                }
                 pushable.Priority = item.Priority
             }
             if (item.Assignee) {
@@ -635,9 +629,6 @@ class GuiTestCases extends Component {
             "RequestType": 'PUT',
             "URL": `/api/tcinfoput/${this.props.selectedRelease.ReleaseNumber}/id/${this.props.tcDetails.TcID}/card/${this.props.tcDetails.CardType}`
         };
-        if (data.Priority === 'Skip') {
-            data.Priority = 'Skp';
-        }
         if (this.props.testcaseEdit.CurrentStatus === 'Pass' || this.props.testcaseEdit.CurrentStatus === 'Fail') {
             let status = {};
             status.Build = this.props.testcaseEdit.Build;

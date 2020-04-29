@@ -8,7 +8,6 @@ export default class SelectionEditor extends Component {
         this.state = {
             value: this.props.value
         }
-        console.log(props);
     }
     componentDidMount() {
         // this.refs.container.addEventListener('keydown', this.checkAndToggleMoodIfLeftRight);

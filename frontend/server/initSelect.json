@@ -1,0 +1,88 @@
+{
+    "id": 12935,
+    "TcID": "NW_OVS_1.44",
+    "TcName": "OverlayNetwork.NegativeTests",
+    "Domain": "NetworkTestCases",
+    "SubDomain": "VXLAN",
+    "Scenario": "Negative",
+    "Description": "Create private network without host network\nShould fail",
+    "Steps": "NO STEPS PROVIDED asd 2",
+    "ExpectedBehaviour": "NO EXPECTED BEHAVIOUR PROVIDED",
+    "Notes": "NOTES NOT PROVIDED",
+    "CardType": "BOS",
+    "ServerType": [
+        "UNKNOWN"
+    ],
+    "WorkingStatus": "DEV_APPROVED",
+    "Date": "2020-02-23T09:33:17.431273Z",
+    "Assignee": "rajat@diamanti.com",
+    "Creator": "ANONYMOUS",
+    "Tag": "NO TAG",
+    "Priority": "P0",
+    "Activity": [
+        {
+            "logNo": 254,
+            "UserName": "achavan@diamanti.com",
+            "Timestamp": "2020-02-23T08:17:18.859928Z",
+            "RequestType": "PUT",
+            "LogData": "{\"Steps\":{\"old\":\"NO STEPS PROVIDED\",\"new\":\"NO STEPS PROVIDED asd\"}}",
+            "URL": "/api/tcinfoput/5.0.0/id/NW_OVS_1.44/card/BOS",
+            "TcID": "NW_OVS_1.44",
+            "CardType": "BOS"
+        },
+        {
+            "logNo": 255,
+            "UserName": "achavan@diamanti.com",
+            "Timestamp": "2020-02-23T08:17:18.870024Z",
+            "RequestType": "PUT",
+            "LogData": "{\"Steps\":{\"old\":\"NO STEPS PROVIDED\",\"new\":\"NO STEPS PROVIDED asd\"}}",
+            "URL": "/api/tcinfoput/5.0.0/id/NW_OVS_1.44/card/BOS",
+            "TcID": "NW_OVS_1.44",
+            "CardType": "BOS"
+        },
+        {
+            "logNo": 256,
+            "UserName": "achavan@diamanti.com",
+            "Timestamp": "2020-02-23T08:17:41.227695Z",
+            "RequestType": "POST",
+            "LogData": "Status Added: Build: asd, Result: Fail, CardType: BOS",
+            "URL": "/api/tcstatus/5.0.0",
+            "TcID": "NW_OVS_1.44",
+            "CardType": "BOS"
+        },
+        {
+            "logNo": 257,
+            "UserName": "achavan@diamanti.com",
+            "Timestamp": "2020-02-23T08:18:32.248277Z",
+            "RequestType": "PUT",
+            "LogData": "{\"Steps\":{\"old\":\"NO STEPS PROVIDED asd\",\"new\":\"NO STEPS PROVIDED asd 2\"}}",
+            "URL": "/api/tcinfoput/5.0.0/id/NW_OVS_1.44/card/BOS",
+            "TcID": "NW_OVS_1.44",
+            "CardType": "BOS"
+        },
+        {
+            "logNo": 258,
+            "UserName": "achavan@diamanti.com",
+            "Timestamp": "2020-02-23T08:18:32.258792Z",
+            "RequestType": "PUT",
+            "LogData": "{\"Steps\":{\"old\":\"NO STEPS PROVIDED asd\",\"new\":\"NO STEPS PROVIDED asd 2\"}}",
+            "URL": "/api/tcinfoput/5.0.0/id/NW_OVS_1.44/card/BOS",
+            "TcID": "NW_OVS_1.44",
+            "CardType": "BOS"
+        }
+    ],
+    "StatusList": [
+        {
+            "id": 9004,
+            "TcID": "NW_OVS_1.44",
+            "TcName": "OverlayNetwork.NegativeTests",
+            "Build": "asd",
+            "Result": "Fail",
+            "Bugs": "",
+            "Date": "2020-02-23T08:17:41.242551Z",
+            "Domain": "NetworkTestCases",
+            "SubDomain": "VXLAN",
+            "CardType": "BOS"
+        }
+    ]
+}

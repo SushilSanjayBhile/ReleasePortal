@@ -1,10 +1,10 @@
 import React, {Component, Fragment} from 'react';
 import { connect } from 'react-redux';
 import {
-    Row, Col, Button, Input, Collapse, FormGroup, Label,Modal, ModalHeader, ModalBody, ModalFooter,
+    Row, Col, Button, Input, Collapse, FormGroup, Label,Modal, ModalHeader, ModalBody, ModalFooter,Badge,
 } from 'reactstrap';
 import Multiselect from 'react-bootstrap-multiselect';
-import { getCurrentRelease, optionSelector } from '../../../reducers/release.reducer';
+import { getCurrentRelease, optionSelector, getDomainStatus } from '../../../reducers/release.reducer';
 import { saveOptions } from '../../../actions';
 import axios from 'axios';
 
@@ -17,36 +17,84 @@ class AddOptions extends Component {
     }
     // {OrchestrationPlatform:[], CardType:[], ServerType:[], ReleaseSpecific:{2.3.0: {domains:{subDomains:[]}}}
     componentDidMount() {
+
         // axios.get(`/api/options/${this.props.selectedRelease.ReleaseNumber}`).then(options => {
         //     this.props.saveOptions(options.data);
         // })
     }
     toggle = () => this.setState({ modal: !this.state.modal });
+    toggleSuccess = () => this.setState({ successModal: !this.state.successModal });
+    
     confirmToggle() {
         this.toggle();
     }
     save() {
-        alert(
-            `Domains: ${this.state.domains}, Selected DOmain: ${this.state.selectedDomain} SubDomains: ${this.state.subDomains} 
-            OP: ${this.state.OrchestrationPlatform}, ServerTypes: ${this.state.ServerType}, CardTypes: ${this.state.CardType}
-            `)
+        if(this.props.selectedRelease && this.props.selectedRelease.ReleaseNumber) {
+
+        this.toggle();
+        console.log(this.state.addedDomains, this.state.addedSubDomains, this.state.selectedDomain, this.state.addedCards)
+        let selected = {
+            domains: this.state.addedDomains ? this.state.addedDomains : [], 
+            selectedDomain: this.state.selectedDomain ? this.state.selectedDomain : null,
+            subdomains: this.state.addedSubDomains ? this.state.addedSubDomains : [],
+        }
+        let data = {
+            Activity: {
+                Release: this.props.selectedRelease.ReleaseNumber,
+                "TcID": '',
+                CardType: '',
+                "UserName": this.props.user.email,
+                LogData: `${this.props.user.email} added Options ${JSON.stringify(selected)}`,
+                "RequestType": 'POST',
+                "URL": `/api/${this.props.selectedRelease.ReleaseNumber}/options/add`
+            },
+            ...selected
+        }
+        axios.post(`/api/${this.props.selectedRelease.ReleaseNumber}/options/add`, {...data})
+        .then(data => {
+            axios.get(`/api/release/all`)
+            .then(res => {
+              res.data.forEach(item => {
+                // this.props.updateNavBar({ id: item.ReleaseNumber });
+                this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
+              });
+            }, error => {
+            });
+            this.edit();
+            this.toggleSuccess();
+        }, err => {
+            alert('unable to edit');
+        })
     }
-    edit(value) {
+    }
+    edit() {
         this.setState({
-            isEditing: value, 
-            domains: this.props.selectedRelease && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions).join(','),
-            selectedDomain: '',
-            OrchestrationPlatform: this.props.selectedRelease && this.props.selectedRelease.OrchestrationPlatform && this.props.selectedRelease.OrchestrationPlatform.join(','),
-            CardType: this.props.selectedRelease && this.props.selectedRelease.CardType && this.props.selectedRelease.CardType.join(','),
-            ServerType: this.props.selectedRelease && this.props.selectedRelease.ServerType && this.props.selectedRelease.ServerType.join(',')
+            addedDomains: null,
+            addedSubDomains: null,
+            addedCards: null,
+            selectedDomain: ''
         })
     }
     render() {
-                    let domains = this.props.options && this.props.options.SpecificRelease[this.props.selectedRelease.ReleaseNumber] && Object.keys(this.props.options.SpecificRelease[this.props.selectedRelease.ReleaseNumber].domains).join(',');
-            let OrchestrationPlatform = this.props.options && Object.keys(this.props.options.OrchestrationPlatform).join(',');
-            let CardType = this.props.options && Object.keys(this.props.options.OrchestrationPlatform).join(',');
-            let ServerType = this.props.options && Object.keys(this.props.options.OrchestrationPlatform).join(',');
-           
+            // let domains = this.props.options && this.props.options.SpecificRelease[this.props.selectedRelease.ReleaseNumber] && Object.keys(this.props.options.SpecificRelease[this.props.selectedRelease.ReleaseNumber].domains).join(',');
+            // let OrchestrationPlatform = this.props.options && Object.keys(this.props.options.OrchestrationPlatform).join(',');
+            // let CardType = this.props.options && Object.keys(this.props.options.OrchestrationPlatform).join(',');
+            // let ServerType = this.props.options && Object.keys(this.props.options.OrchestrationPlatform).join(',');
+           let domains= this.props.selectedRelease && this.props.selectedRelease.TcAggregate ? this.props.selectedRelease.TcAggregate.AvailableDomainOptions : {};
+           let subDomains = [];
+           if(domains) {
+            domains = Object.keys(domains);
+            if(domains) {
+                domains = domains.sort();
+            }
+            subDomains = domains[this.state.domainSelected];
+            if(subDomains) {
+                subDomains =  subDomains.sort();
+            }
+           } else {
+               domains = [];
+           }
+           let cards = this.props.selectedRelease && this.props.selectedRelease.CardType ? this.props.selectedRelease.CardType:[];
         return (
             <div>
                 {
@@ -91,8 +139,6 @@ class AddOptions extends Component {
                 {
                                         this.props.user && this.props.user.email &&
                                         <React.Fragment>
-                                            {
-                                                this.state.isEditing ?
                                                     <Fragment>
                                                         <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggle()} >
                                                             <i className="fa fa-check-square-o"></i>
@@ -101,55 +147,61 @@ class AddOptions extends Component {
                                                             <i className="fa fa-undo"></i>
                                                         </Button>
                                                     </Fragment>
-                                                    :
-                                                    <Fragment>
-
-                                                        <Button size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggleDelete()} >
-                                                            <i className="fa fa-trash-o"></i>
-                                                        </Button>
-                                                        <Button size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.edit(true)} >
-                                                            <i className="fa fa-pencil-square-o"></i>
-                                                        </Button>
-                                                    </Fragment>
-
-                                            }
                                         </React.Fragment>
                                     }
                 <FormGroup row className="my-0" style={{ marginTop: '1rem' }}>
                         <Col xs="6" md="4" lg="3">
-                            <FormGroup className='rp-app-table-value'>
-                                <Label className='rp-app-table-label' htmlFor="Domain">
-                                    Add Domains
-                                    {
-                                        this.props.testcaseEdit.errors['Domain'] &&
-                                        <i className='fa fa-exclamation-circle rp-error-icon'>{this.props.testcaseEdit.errors['Domain']}</i>
-                                    }
-                                </Label>
-                                {
-                                    !this.state.isEditing ? 
-                                        <div className='rp-app-table-value'><span className='rp-edit-TC-span'>{this.state.domains}</span></div>:
-                                        <Input type='text' onChange={(e) => this.setState({domains: e.target.value})} value={this.state.domains}>
+                        {
+                                this.state.addedDomains && this.state.addedDomains.map((item, index) => {
+                                    return (
+                                        <div class='row'>
+                                            <div class='col-md-6'>
+                                        <Input style={{marginTop: '0.2rem', marginBottom: '0.2rem'}} type='text' onChange={(e) => {
+                                            this.state.addedDomains[index] = e.target.value;
+                                            
+                                            this.setState({addedDomains: [...this.state.addedDomains]})
+                                            }} value={item}>
                                         </Input>
+                                        </div>
+                                        <div class='col-md-6'>
+<Button size="md" color='transparent' className='rp-save-btn' onClick={() => {
+    this.state.addedDomains.splice(index,1);
+    this.setState({addedDomains: [...this.state.addedDomains]});
+    }}>  <i className="fa fa-trash"></i></Button>
+                                        </div>
+                                        </div>
+
+                                    )
+                                })
+                            }
+                            <div className='rp-app-table-value' style={{marginTop: '1rem'}}><Button onClick={() => {
+                                let domains = this.state.addedDomains;
+                                if(!domains) {
+                                    domains=['']
+                                } else {
+                                    domains.push('');
                                 }
-                            </FormGroup>
+                                this.setState({addedDomains: domains})
+                                }}>Add Domain</Button></div>
+
+
                         </Col>
                         <Col xs="6" md="4" lg="4">
                         <FormGroup className='rp-app-table-value'>
                                 <Label className='rp-app-table-label' htmlFor="SelectDomain">
                                      Select Domain to add SubDomains
                                 </Label>
+                           
                                 {
-                                    !this.state.isEditing ? 
-                                        <div className='rp-app-table-value'><span className='rp-edit-TC-span'>{this.state.selectedDomain}</span></div>:
+                                    !this.state.isEditing &&
+                                        
                                         <Input type='select' onChange={(e) => 
                                         this.setState({
-                                            selectedDomain: e.target.value, 
-                                            subDomains: this.props.options && this.props.options.SpecificRelease[this.props.selectedRelease.ReleaseNumber] && this.props.options.SpecificRelease[this.props.selectedRelease.ReleaseNumber][e.target.value].join(',')
+                                            selectedDomain: e.target.value, addedSubDomains: null,
                                         })} value={this.state.selectedDomain}>
                                             <option value="">Select Domain</option>
                                             {
-                                            this.props.options && this.props.options.SpecificRelease[this.props.selectedRelease.ReleaseNumber] && 
-                                                Object.keys(this.props.options.SpecificRelease[this.props.selectedRelease.ReleaseNumber]).map(item => (
+                                            domains.map(item => (
                                                 <option value={item}>{item}</option>
                                                 
                                                 ))
@@ -158,30 +210,44 @@ class AddOptions extends Component {
                                 }
                         </FormGroup>
                         {
-                        this.state.subDomains && 
-                        <FormGroup className='rp-app-table-value'>
-                        <Label className='rp-app-table-label' htmlFor="SubDomain">
-                            Add SubDomains
-                            {
-                                this.props.testcaseEdit.errors['Domain'] &&
-                                <i className='fa fa-exclamation-circle rp-error-icon'>{this.props.testcaseEdit.errors['SubDomain']}</i>
+                        this.state.selectedDomain && this.state.addedSubDomains && this.state.addedSubDomains.map((item, index) => {
+                                    return (
+                                        <div class='row'>
+                                            <div class='col-md-6'>
+                                        <Input style={{marginTop: '0.2rem', marginBottom: '0.2rem'}} type='text' onChange={(e) => {
+                                            this.state.addedSubDomains[index] = e.target.value;
+                                            
+                                            this.setState({addedSubDomains: [...this.state.addedSubDomains]})
+                                            }} value={item}>
+                                        </Input>
+                                        </div>
+                                        <div class='col-md-6'>
+<Button size="md" color='transparent' onClick={() => {
+    this.state.addedSubDomains.splice(index,1);
+    this.setState({addedSubDomains: [...this.state.addedSubDomains]});
+    }}><i className="fa fa-trash"></i></Button>
+                                        </div>
+                                        </div>
+
+                                    )
+                                })
                             }
-                        </Label>
-                        {
-                            this.state.subDomains && 
-                        <React.Fragment>
-                        {
-                            !this.state.isEditing ? 
-    <div className='rp-app-table-value'><span className='rp-edit-TC-span'>{this.state.subDomains}</span></div>:
-                                <Input type='text' onChange={(e) => this.setState({subDomains: e.target.value})} value={this.state.subDomains}>
-                                </Input>
-                        }
-                        </React.Fragment>
-    }
-                        </FormGroup>
-                        }
+                            {
+                                this.state.selectedDomain &&
+                                <div className='rp-app-table-value' style={{marginTop: '1rem'}}><Button onClick={() => {
+                                let domains = this.state.addedSubDomains;
+                                if(!domains) {
+                                    domains=['']
+                                } else {
+                                    domains.push('');
+                                }
+                                this.setState({addedSubDomains: domains})
+                                }}>Add Sub-Domain</Button></div>
+                            }
+
+                        
                         </Col>
-                        <Col xs="6" md="4" lg="3">
+                        {/* <Col xs="6" md="4" lg="3">
                             <FormGroup className='rp-app-table-value'>
                                 <Label className='rp-app-table-label' htmlFor="OrchestrationPlatform">
                                     Add Orchestration Platform
@@ -197,25 +263,44 @@ class AddOptions extends Component {
                                         </Input>
                                 }
                             </FormGroup>
-                        </Col>
-                        <Col xs="6" md="4" lg="3">
-                            <FormGroup className='rp-app-table-value'>
-                                <Label className='rp-app-table-label' htmlFor="Cards">
-                                    Add Card Types
-                                    {
-                                        this.props.testcaseEdit.errors['CardType'] &&
-                                        <i className='fa fa-exclamation-circle rp-error-icon'>{this.props.testcaseEdit.errors['CardType']}</i>
-                                    }
-                                </Label>
-                                {
-                                    !this.state.isEditing ? 
-                                        <div className='rp-app-table-value'><span className='rp-edit-TC-span'>{this.state.CardType}</span></div>:
-                                        <Input type='text' onChange={(e) => this.setState({CardType: e.target.value})} value={this.state.CardType}>
+                        </Col> */}
+                        {/* <Col xs="6" md="4" lg="3">
+                        {
+                                this.state.addedCards && this.state.addedCards.map((item, index) => {
+                                    return (
+                                        <div class='row'>
+                                            <div class='col-md-6'>
+                                        <Input style={{marginTop: '0.2rem', marginBottom: '0.2rem'}} type='text' onChange={(e) => {
+                                            this.state.addedCards[index] = e.target.value;
+                                            
+                                            this.setState({addedCards: [...this.state.addedCards]})
+                                            }} value={item}>
                                         </Input>
+                                        </div>
+                                        <div class='col-md-6'>
+<Button size="md" color='transparent' onClick={() => {
+    this.state.addedCards.splice(index,1);
+    this.setState({addedCards: [...this.state.addedCards]});
+    }}><i className="fa fa-trash"></i></Button>
+                                        </div>
+                                        </div>
+
+                                    )
+                                })
+                            }
+                            <div className='rp-app-table-value' style={{marginTop: '1rem'}}><Button onClick={() => {
+                                let domains = this.state.addedCards;
+                                if(!domains) {
+                                    domains=['']
+                                } else {
+                                    domains.push('');
                                 }
-                            </FormGroup>
-                        </Col>
-                        <Col xs="6" md="4" lg="3">
+                                this.setState({addedCards: domains})
+                                }}>Add CardType</Button></div>
+
+
+                        </Col> */}
+                        {/* <Col xs="6" md="4" lg="3">
                             <FormGroup className='rp-app-table-value'>
                                 <Label className='rp-app-table-label' htmlFor="Server">
                                 Add Server Types
@@ -231,7 +316,7 @@ class AddOptions extends Component {
                                         </Input>
                                 }
                             </FormGroup>
-                        </Col>
+                        </Col> */}
                     </FormGroup>
                     </Collapse>
                     </Col>
@@ -257,6 +342,21 @@ class AddOptions extends Component {
                         }
                     </ModalFooter>
                 </Modal>
+                <Modal isOpen={this.state.successModal} toggle={() => this.toggleSuccess()}>
+                    {
+                        <ModalHeader toggle={() => this.toggleSuccess()}>{
+                            'Success'
+                        }</ModalHeader>
+                    }
+                    <ModalBody>
+                        {
+                            `Options updated successfully`
+                        }
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => this.toggleSuccess()}>Ok</Button>{' '}
+                    </ModalFooter>
+                </Modal>
             </div>
 
         )
@@ -267,6 +367,5 @@ const mapStateToProps = (state, ownProps) => ({
     user: state.auth.currentUser,
     users: state.user.users,
     selectedRelease: getCurrentRelease(state, state.release.current.id),
-    options: optionSelector(state)
 })
 export default connect(mapStateToProps, { saveOptions})(AddOptions);

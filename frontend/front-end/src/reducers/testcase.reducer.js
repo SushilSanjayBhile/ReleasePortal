@@ -210,13 +210,14 @@ export const getEachTCStatusScenario = ({ data, domain, all }) => {
     let totalSkip = 0;
     let totalNA = 0;
     let totalNT = 0;
+    let cardSubdomains = 0;
     Object.keys(cardTypes).forEach(cardType => {
         let scenarios = {};
         data.forEach(item => {
             if (scenarios[item.SubDomain]) {
                 scenarios[item.SubDomain].Total += 1;
             } else {
-                scenarios[item.SubDomain] = { Pass: 0, Fail: 0, Skip: 0, Total: 1, Tested: 0, NotTested: 0 }
+                scenarios[item.SubDomain] = { Pass: 0, Fail: 0, Skip: 0, Total: 1, Tested: 0, NotTested: 0, NotApplicable:0 }
             }
         })
         cardTypes[cardType].forEach(item => {
@@ -258,7 +259,7 @@ export const getEachTCStatusScenario = ({ data, domain, all }) => {
         //         "Build": "2.3.0-48", "Result": "Pass", "Bugs": "-1",
         //             "Date": "2019-12-21", "Domain": "StoragePVC", "SubDomain": "PVC_Rbac", "TcID": "PVC_Rbac_S-1.0"
         // },
-        let doughnut = { data: { labels: [], datasets: [] }, title: cardType };
+        let doughnut = { data: { labels: [], datasets: [] }, title: cardType, CardType: cardType, SubDomains:{} };
         let labels = [];
         let datasets = [
             {
@@ -298,8 +299,9 @@ export const getEachTCStatusScenario = ({ data, domain, all }) => {
             let skip = scenarios[item].Skip;
             let fail = scenarios[item].Fail;
             let nottested = scenarios[item].NotTested;
-            let total = scenarios[item].Total;
+            let total = pass+fail+skip+nottested+scenarios[item].NotApplicable;
             labels.push(item + ' (' + total + ')');
+            doughnut.SubDomains[item] ={Pass: pass, Fail: fail, Total: total}
             datasets[0].data.push(pass);
             datasets[1].data.push(skip);
             datasets[2].data.push(fail);

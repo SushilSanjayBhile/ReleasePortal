@@ -351,9 +351,6 @@ class SanityTestCases extends Component {
             url = `/api/wholetcinfo/${this.props.selectedRelease.ReleaseNumber}`;
         }
         if (CardType || domain || subDomain || priority) {
-            if (priority === 'Skip') {
-                priority = 'Skp';
-            }
             url = `/api/wholetcinfo/${this.props.selectedRelease.ReleaseNumber}?`;
             if (CardType) url += ('&CardType=' + CardType);
             if (domain) url += ('&Domain=' + domain);
@@ -406,9 +403,6 @@ class SanityTestCases extends Component {
                 }
             };
             if (item.Priority) {
-                if (item.Priority === 'Skip') {
-                    item.Priority = 'Skp';
-                }
                 pushable.Priority = item.Priority
                 let old = item.Priority;
                 if (this.editedRows[`${item.TcID}_${item.CardType}`] && this.editedRows[`${item.TcID}_${item.CardType}`].Priority) {
@@ -510,9 +504,6 @@ class SanityTestCases extends Component {
             "RequestType": 'PUT',
             "URL": `/api/tcinfoput/${this.props.selectedRelease.ReleaseNumber}/id/${this.props.tcDetails.TcID}/card/${this.props.tcDetails.CardType}`
         };
-        if (data.Priority === 'Skip') {
-            data.Priority = 'Skp';
-        }
         if (this.props.testcaseEdit.CurrentStatus === 'Pass' || this.props.testcaseEdit.CurrentStatus === 'Fail') {
             let status = {};
             status.Build = this.props.testcaseEdit.Build;

@@ -36,6 +36,7 @@ class E2ETestCases extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            sanityDetails: null, 
             selectedRows: 0,
             totalRows: 0,
             allRows: 0,
@@ -79,12 +80,14 @@ class E2ETestCases extends Component {
                 {
                     headerName: "OrchestrationPlatform", field: "OrchestrationPlatform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 },
-                {
-                    headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                },
-                {
-                    headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                },
+                // {
+                //     headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                //     width: 520
+                // },
+                // {
+                //     headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                //     width: 520
+                // },
                 {
                     headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 },
@@ -118,32 +121,34 @@ class E2ETestCases extends Component {
                     editable: true,
                     cellEditor: "datePicker",
                     filter: 'agDateColumnFilter',
-                    width: 180
+                    width: 150
                 },
                 {
-                    headerName: "Card Type", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                    headerName: "Setup Type", field: "Setup", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
                     editable: true,
-                    cellEditor: 'selectionEditor',
-                    cellEditorParams: {
-                        values: ['Select Card', 'NYNJ', 'BOS', 'COMMON', 'SOFTWARE']
-                    }
+                    width:100
+                },
 
+                {
+                    headerName: "Build", field: "Build", 
+                    editable: true, 
+                    sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                    width:100
                 },
                 {
-                    headerName: "E2EFocus", field: "E2EFocus", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-                    cellClass: 'cell-wrap-text',
-                    editable: true,
-                },
-                {
-                    headerName: "Build", field: "Build", editable: true, sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-
-                },
-                {
-                    headerName: "Result", field: "Result", editable: true, sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                    headerName: "Result", field: "Result",
+                     editable: true,
+                      sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
                     cellEditor: 'selectionEditor',
                     cellEditorParams: {
                         values: ['Select Result', 'Fail', 'Pass']
-                    }
+                    },
+                    width:100
+                },
+                {
+                    headerName: "Bugs", field: "Bugs",
+                     editable: true, 
+                     sortable: true, filter: true, cellStyle: this.renderEditedCell, width: 100, cellClass: 'cell-wrap-text',
                 },
                 {
                     headerName: "Passed Tcs", field: "NoOfTCsPassed", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
@@ -152,25 +157,42 @@ class E2ETestCases extends Component {
                     filter: 'agNumberColumnFilter',
                     editable: true,
                 },
+                // {
+                //     headerName: "E2EFocus", field: "E2EFocus", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: 520,
+                //     cellClass: 'cell-wrap-text',
+                //     editable: true,
+                // },
+                // {
+                //     headerName: "E2ESkipList", field: "E2ESkipList", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: 520,
+                //     cellClass: 'cell-wrap-text',
+                //     editable: true,
+                // },
+
                 {
-                    headerName: "Bug", field: "Bug", editable: true, sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
+                    headerName: "Card Type", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell,width: '100',
+                    editable: true,
+                    cellEditor: 'selectionEditor',
+                    cellEditorParams: {
+                        values: ['Select Card', 'NYNJ', 'BOS', 'COMMON', 'SOFTWARE']
+                    }
+
                 },
                 {
-                    headerName: "User", field: "User", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+                    headerName: "User", field: "User", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '150',
                     cellClass: 'cell-wrap-text',
                     editable: true,
                     cellEditor: 'selectionEditor',
                     cellEditorParams: {
-                        values: this.props.users
+                        values: ['Select Assignee', 'Jenkin', ...this.props.users]
                     }
                 },
-                {
-                    headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                    width: '420',
-                    editable: true,
-                    cellClass: 'cell-wrap-text',
-                    autoHeight: true
-                },
+                // {
+                //     headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                //     width: 520,
+                //     editable: true,
+                //     cellClass: 'cell-wrap-text',
+                //     autoHeight: true
+                // },
 
             ],
             defaultColDef: { resizable: true },
@@ -211,11 +233,40 @@ class E2ETestCases extends Component {
     }
     componentDidMount() {
         this.props.updateSanityEdit({});
-        setTimeout(() => this.getTcs(), 1000);
+        this.getTcs();
     }
+
+    getTextAreaHeight = data => {
+        if (data) {
+            let rows = (Math.floor(data.length / 40) + 1);
+            if (rows < 2) {
+                return 2;
+            } else {
+                return rows;
+            }
+        }
+        // assuming 50 characters per line, working how how many lines we need
+        return 2;
+    }
+
     getRowHeight = (params) => {
-        if (params.data && params.data.Notes) {
-            return 28 * (Math.floor(params.data.Notes.length / 60) + 1);
+        // let noteHeight = 0, e2eFocus = 0, skipList = 0;
+        // if (params.data && params.data.Notes) {
+        //     noteHeight = 28 * (Math.floor(params.data.Notes.length / 60) + 1)
+        // }
+        // if (params.data && params.data.E2EFocus) {
+        //     e2eFocus = 28 * (Math.floor(params.data.E2EFocus.length / 60) + 1)
+        // }
+        // if (params.data && params.data.E2ESkipList) {
+        //     skipList = 28 * (Math.floor(params.data.E2ESkipList.length / 60) + 1)
+        // }
+        // // assuming 50 characters per line, working how how many lines we need
+        // if(noteHeight +e2eFocus+skipList === 0) {
+        //     return 28;
+        // }
+        // return Math.max(noteHeight, e2eFocus, skipList);
+        if (params.data && params.data.LogData) {
+            return 28 * (Math.floor(params.data.LogData.length / 60) + 1);
         }
         // assuming 50 characters per line, working how how many lines we need
         return 28;
@@ -247,10 +298,15 @@ class E2ETestCases extends Component {
         this.props.updateE2EEdit({ ...e, errors: {}, original: e });
     }
     componentWillReceiveProps(newProps) {
-        console.log('called')
+        if(this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
+            this.props.updateSanityEdit({});
+            this.getTcs(newProps.selectedRelease.ReleaseNumber);
+        }
         if (newProps && this.props && this.props.e2eCounter && newProps.e2eCounter !== this.props.e2eCounter) {
-            console.log('inside')
             this.getTcs();
+        }
+        if (newProps && this.props && this.props.saveCounter && newProps.saveCounter !== this.props.saveCounter) {
+            this.save();
         }
         if (newProps && this.props && this.props.deleteCounter && newProps.deleteCounter !== this.props.deleteCounter) {
             this.delete();
@@ -269,8 +325,19 @@ class E2ETestCases extends Component {
             alert('Please select atleast one E2E to delete');
             return;
         }
-        items = items.map(each => ({
-            ...each,
+        let sendingItems = items.map(each => ({
+            id:each.id,
+            Date: each.Date,
+            Setup: each.Setup,
+            Build: each.Build,
+            Bugs: each.Bugs,
+            E2EFocus: this.state.sanityDetails && this.state.sanityDetails.id === each.id ? this.state.sanityDetails.E2EFocus : each.E2EFocus,
+            E2ESkipList: this.state.sanityDetails && this.state.sanityDetails.id === each.id ? this.state.sanityDetails.E2ESkipList : each.E2ESkipList,
+            NoOfTCsPassed: each.NoOfTCsPassed,
+            Notes: this.state.sanityDetails && this.state.sanityDetails.id === each.id ? this.state.sanityDetails.Notes : each.Notes,
+            User: each.User,
+            Result: `${each.Result}`,
+            CardType: `${each.CardType}`, 
             Activity: {
                 Release: this.props.selectedRelease.ReleaseNumber,
                 "TcID": each.id,
@@ -280,12 +347,12 @@ class E2ETestCases extends Component {
                 "RequestType": 'DELETE',
                 "URL": `/api/sanity/e2eDelete/${this.props.selectedRelease.ReleaseNumber}`
             }
-        }))
+        }));
 
         this.gridOperations(false);
 
         let url = `/api/sanity/e2eDelete/${this.props.selectedRelease.ReleaseNumber}`;
-        axios.post(url, [...items])
+        axios.post(url, sendingItems)
             .then(all => {
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
@@ -296,15 +363,71 @@ class E2ETestCases extends Component {
                 this.gridOperations(true);
 
             }).catch(err => {
-                alert('failed to delete e2e sanity results');
+                alert('failed to delete e2e results');
                 this.gridOperations(true);
             })
 
     }
-    onSelectionChanged = (event) => {
-        this.setState({ selectedRows: event.api.getSelectedRows().length })
+    save = () => {
+        if (!this.props.selectedRelease.ReleaseNumber) {
+            return;
+        }
+        if (!this.gridApi) {
+            return;
+        }
+        let items = [...this.gridApi.getSelectedRows()];
+        let edited = this.gridApi.getEditingCells();
+        console.log('before save')
+        console.log(edited);
+        if (items.length <= 0) {
+            alert('Please select atleast one E2E to save');
+            return;
+        }
+        let sendingItems = items.map(each => ({
+            id:each.id,
+            Date: each.Date,
+            Setup: each.Setup,
+            Build: each.Build,
+            Bugs: each.Bugs,
+            E2EFocus: this.state.sanityDetails && this.state.sanityDetails.id === each.id ? this.state.sanityDetails.E2EFocus : each.E2EFocus,
+            E2ESkipList: this.state.sanityDetails && this.state.sanityDetails.id === each.id ? this.state.sanityDetails.E2ESkipList : each.E2ESkipList,
+            NoOfTCsPassed: each.NoOfTCsPassed,
+            Notes: each.Notes,
+            User: each.User,
+            Result: `${each.Result}`,
+            CardType: `${each.CardType}`, 
+            Notes: this.state.sanityDetails && this.state.sanityDetails.id === each.id ? this.state.sanityDetails.Notes : each.Notes,
+            Activity: {
+                Release: this.props.selectedRelease.ReleaseNumber,
+                "TcID": each.id,
+                CardType: each.CardType,
+                "UserName": this.props.user.email,
+                LogData: `${this.props.user.email} updated e2e ${each.id}`,
+                "RequestType": 'PUT',
+                "URL": `/api/sanity/e2eUpdate/${this.props.selectedRelease.ReleaseNumber}`
+            }
+        }))
+
+        this.gridOperations(false);
+
+        let url = `/api/sanity/e2eUpdate/${this.props.selectedRelease.ReleaseNumber}`;
+        axios.post(url, sendingItems)
+            .then(all => {
+                // Filters should not go away if data is reloaded
+                //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
+                this.deselect();
+                this.getTcs();
+                setTimeout(this.gridApi.refreshView(), 0)
+
+                this.gridOperations(true);
+
+            }).catch(err => {
+                alert('failed to update e2e results');
+                this.gridOperations(true);
+            })
     }
     deselect(updateTotalRows) {
+        this.editedRows = {};
         if (this.gridApi) {
             this.gridApi.deselectAll();
         }
@@ -317,17 +440,18 @@ class E2ETestCases extends Component {
         }
     }
     renderEditedCell = (params) => {
-        let editedInRow = this.editedRows[`${params.data.id}_${params.data.CardType}`] && this.editedRows[`${params.data.id}_${params.data.CardType}`][params.colDef.field] && this.editedRows[`${params.data.id}_${params.data.CardType}`][params.colDef.field].originalValue !== params.value;
+        let editedInRow = this.editedRows[`id${params.data.id}`] && this.editedRows[`id${params.data.id}`][params.colDef.field] && this.editedRows[`id${params.data.id}`][params.colDef.field].originalValue !== params.value;
         if (editedInRow) {
-            this.editedRows[`${params.data.id}_${params.data.CardType}`].Changed = true;
+            this.editedRows[`id${params.data.id}`].Changed = true;
             return {
                 backgroundColor: 'rgb(209, 255, 82)',
                 borderStyle: 'solid',
                 borderWidth: '1px',
-                borderColor: 'rgb(255, 166, 0)'
+                borderColor: 'rgb(255, 166, 0)',
+                wordWrap: 'break-word'
             };
         }
-        return { backgroundColor: '' };
+        return { backgroundColor: '', wordWrap: 'break-word' };
     }
     onGridReady = params => {
         this.gridApi = params.api;
@@ -335,33 +459,48 @@ class E2ETestCases extends Component {
         params.api.sizeColumnsToFit();
     };
     onCellEditingStarted = params => {
-        if (this.editedRows[`${params.data.id}_${params.data.CardType}`]) {
-            if (this.editedRows[`${params.data.id}_${params.data.CardType}`][params.colDef.field]) {
-                this.editedRows[`${params.data.id}_${params.data.CardType}`][params.colDef.field] =
-                    { ...this.editedRows[`${params.data.id}_${params.data.CardType}`][params.colDef.field], oldValue: params.value }
+        if (this.editedRows[`id${params.data.id}`]) {
+            if (this.editedRows[`id${params.data.id}`][params.colDef.field]) {
+                this.editedRows[`id${params.data.id}`][params.colDef.field] =
+                    { ...this.editedRows[`id${params.data.id}`][params.colDef.field], oldValue: params.value }
             } else {
-                this.editedRows[`${params.data.id}_${params.data.CardType}`] =
-                    { ...this.editedRows[`${params.data.id}_${params.data.CardType}`], [params.colDef.field]: { oldValue: params.value, originalValue: params.value } }
+                this.editedRows[`id${params.data.id}`] =
+                    { ...this.editedRows[`id${params.data.id}`], [params.colDef.field]: { oldValue: params.value, originalValue: params.value } }
             }
         } else {
-            this.editedRows[`${params.data.id}_${params.data.CardType}`] = { [params.colDef.field]: { oldValue: params.value, originalValue: params.value } }
+            this.editedRows[`id${params.data.id}`] = { [params.colDef.field]: { oldValue: params.value, originalValue: params.value } }
         }
     }
     onCellEditing = (params, field, value) => {
-        if (this.editedRows[`${params.id}_${params.CardType}`]) {
-            if (this.editedRows[`${params.id}_${params.CardType}`][field]) {
-                this.editedRows[`${params.id}_${params.CardType}`][field] =
-                    { ...this.editedRows[`${params.id}_${params.CardType}`][field], oldValue: params[field], newValue: value }
+        if (this.editedRows[`id${params.data.id}`]) {
+            if (this.editedRows[`id${params.data.id}`][field]) {
+                this.editedRows[`id${params.data.id}`][field] =
+                    { ...this.editedRows[`id${params.data.id}`][field], oldValue: params[field], newValue: value }
             } else {
-                this.editedRows[`${params.id}_${params.CardType}`] =
-                    { ...this.editedRows[`${params.id}_${params.CardType}`], [field]: { oldValue: params[field], originalValue: params[field], newValue: value } }
+                this.editedRows[`id${params.data.id}`] =
+                    { ...this.editedRows[`id${params.data.id}`], [field]: { oldValue: params[field], originalValue: params[field], newValue: value } }
             }
 
         } else {
-            this.editedRows[`${params.id}_${params.CardType}`] = {
+            this.editedRows[`id${params.data.id}`] = {
                 id: { oldValue: `${params.id}`, originalValue: `${params.id}`, newValue: `${params.id}` },
                 [field]: { oldValue: params[field], originalValue: params[field], newValue: value }
             }
+        }
+    }
+    onSelectionChanged = (event) => {
+        if(event.api.getSelectedRows().length !== 1) {
+            this.setState({sanityDetails: null, isEditing: false, selectedRows: event.api.getSelectedRows().length})
+        } else {
+            let row = event.api.getSelectedRows()[0];
+            if(row) {
+                this.setState({selectedRows: 1, sanityDetails: {
+                    ...row, oldNotes: row.Notes+'', oldE2EFocus: row.E2EFocus, oldE2ESkipList: row.E2ESkipList 
+                }})
+            } else {
+                this.setState({sanityDetails: null, isEditing: false, selectedRows: event.api.getSelectedRows().length})
+            }
+
         }
     }
     onFilterTextBoxChanged(value) {
@@ -372,23 +511,28 @@ class E2ETestCases extends Component {
     toggleDelete = () => {
         this.setState({ delete: !this.state.delete })
     };
-    rowSelect(e) {
-        this.setState({
-            isEditing: false, rowSelect: true, toggleMessage: null, allRows: this.props.tcStrategy ? this.props.tcStrategy.totalTests : 0,
-            selectedRows: this.gridApi.getSelectedRows().length, totalRows: this.gridApi.getModel().rowsToDisplay.length
-        })
-        // this.getTC(e.data);
-    }
-    getTcs() {
+    rowSelect(row) {
+        this.currentSelectedRow = row;
+        let data = row.data
         if (!this.props.selectedRelease.ReleaseNumber) {
+            return;
+        }
+        data.oldE2EFocus = data.Description+'';
+        data.oldE2ESkipList = data.E2ESkipList+'';
+        data.oldNotes = data.Notes+'';
+        this.setState({sanityDetails: data, rowSelect: true});
+    }
+    getTcs(selectedRelease) {
+        let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
+        if (!release) {
             return;
         }
         this.gridOperations(false);
         let startingIndex = this.pageNumber * this.rows;
         this.deselect(true);
         this.props.saveE2E([]);
-        let url = `/api/sanity/e2e/${this.props.selectedRelease.ReleaseNumber}`;
-        axios.get(url)
+        let url = `/api/sanity/e2e/${release}`;
+        setTimeout(() => axios.get(url)
             .then(all => {
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
@@ -400,7 +544,7 @@ class E2ETestCases extends Component {
             }).catch(err => {
                 this.deselect();
                 this.gridOperations(true);
-            })
+            }), 300);
     }
     toggle = () => this.setState({ modal: !this.state.modal });
     reset() {
@@ -417,7 +561,7 @@ class E2ETestCases extends Component {
     }
 
     textFields = [
-        'Build', 'Result', 'Notes', 'E2EFocus', 'NoOfTCsPassed', 'Bug',
+        'Build', 'Result', 'Notes', 'E2EFocus', 'E2ESkipList', 'NoOfTCsPassed', 'Bugs',
     ];
     arrayFields = ['CardType', 'User']
     whichFieldsUpdated(old, latest) {
@@ -474,7 +618,7 @@ class E2ETestCases extends Component {
                     Notes: selectedRows[id].Notes,
                     E2EFocus: selectedRows[id].E2EFocus,
                     NoOfTCsPassed: selectedRows[id].NoOfTCsPassed,
-                    Bug: selectedRows[id].Bug,
+                    Bugs: selectedRows[id].Bugs,
                     NoOfTCsPassed: selectedRows[id].NoOfTCsPassed,
                     User: selectedRows[id].User,
                     CardType: selectedRows[id].CardType,
@@ -513,10 +657,14 @@ class E2ETestCases extends Component {
         d = new Date(date).toISOString().split('T');
         return `${d[0]}`;
     }
+    resetSingle() {
+        this.setState({ isEditing: false, sanityDetails: {...this.state.sanityDetails, E2EFocus: this.state.sanityDetails.oldE2EFocus+'', 
+            E2ESkipList: this.state.sanityDetails.E2ESkipList+'', 
+            Notes: this.state.sanityDetails.oldNotes+'' } });
+    }
     render() {
-        console.log('rendering')
-        console.log(this.props.data)
-        let rowData = this.props.data.map(item => ({
+        // let rowData = this.props.data.map(item => ({
+        let rowData = this.props.data.filter(it => it.Tag === this.props.tag).map(item => ({
             ...item,
             Date: this.convertDate(item.Date),
             sanityEdit: this.props.sanityEdit,
@@ -530,7 +678,7 @@ class E2ETestCases extends Component {
             if (this.state.isApiUnderProgress) {
 
                 this.gridApi.showLoadingOverlay();
-            } else if (this.props.data && this.props.data.length === 0) {
+            } else if (rowData && rowData.length === 0) {
                 this.gridApi.showNoRowsOverlay();
             } else {
                 this.gridApi.hideOverlay();
@@ -570,7 +718,7 @@ class E2ETestCases extends Component {
                     } */}
                 </div>
                 <div>
-                    <div style={{ width: '100%', height: '400px', marginBottom: '6rem' }}>
+                    <div style={{ width: '100%', height: '500px', marginBottom: '2rem' }}>
                         <div style={{ width: "100%", height: "100%" }}>
                             <div
                                 id="myGrid"
@@ -582,9 +730,9 @@ class E2ETestCases extends Component {
                             >
                                 <AgGridReact
                                     // suppressScrollOnNewData={true}
-                                    onSelectionChanged={(e) => this.onSelectionChanged(e)}
                                     rowStyle={{ alignItems: 'top' }}
-                                    // onRowClicked={(e) => this.rowSelect(e)}
+                                    onSelectionChanged={(e) => this.onSelectionChanged(e)}
+                                    onRowClicked={(e) => this.rowSelect(e)}
                                     modules={this.state.modules}
                                     columnDefs={this.state.columnDefs}
                                     rowSelection='multiple'
@@ -598,155 +746,63 @@ class E2ETestCases extends Component {
                                     stopEditingWhenGridLosesFocus={true}
                                     overlayLoadingTemplate={this.state.overlayLoadingTemplate}
                                     overlayNoRowsTemplate={this.state.overlayNoRowsTemplate}
-                                // cellDoubleClicked={(e) => this.cellDoubleClicked(e)}
+                                    // cellDoubleClicked={(e) => this.cellDoubleClicked(e)}
                                 />
                             </div>
                         </div>
 
-
                     </div>
-                    <Collapse isOpen={this.state.rowSelect}>
-                        {
-                            this.props.user && this.props.user.email && this.props.E2EDetails && this.props.E2EDetails.Type &&
-                            <React.Fragment>
-                                {
-                                    this.state.isEditing ?
-                                        <Fragment>
-                                            <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.confirmToggle()} >
-                                                <i className="fa fa-save"></i>
-                                            </Button>
-                                            <Button size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.reset()} >
-                                                <i className="fa fa-undo"></i>
-                                            </Button>
-                                        </Fragment>
-                                        :
-                                        <Fragment>
+                </div>
+                <div>Select only one test case to view Notes, E2EFocus and E2ESkipList </div>
+                {
+                                        this.props.user && this.props.user.email && this.state.sanityDetails && 
+                                        <React.Fragment>
+                                            {
+                                               this.state.isEditing &&
+                                                <Fragment>
+                                                    <Button size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.resetSingle()} >
+                                                        <i className="fa fa-undo"></i>
+                                                    </Button>
+                                                </Fragment>
+                                            }
+                                            {!this.state.isEditing &&
+                                                <Fragment>
+                                                    <Button size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.setState({ isEditing: true })} >
+                                                        <i className="fa fa-pencil-square-o"></i>
+                                                    </Button>
+                                                </Fragment>
 
-                                            {/* <Button size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggleDelete()} >
-                                                            <i className="fa fa-trash-o"></i>
-                                                        </Button> */}
-                                            <Button size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.setState({ isEditing: true })} >
-                                                <i className="fa fa-pencil-square-o"></i>
-                                            </Button>
-                                        </Fragment>
-
-                                }
-                            </React.Fragment>
-                        }
-                        {
-                            this.props.E2EDetails && this.props.E2EDetails.Type &&
-                            <React.Fragment>
-                                <FormGroup row className="my-0">
-                                    {
-                                        [
-
-                                            { field: 'Description', header: 'Description', type: 'text' },
-                                            { field: 'Steps', header: 'Steps', type: 'text' },
-                                            { field: 'ExpectedBehaviour', header: 'Expected Behaviour', type: 'text' },
-                                            { field: 'Notes', header: 'Notes', type: 'text' },
-
-                                        ].map((item, index) => (
-                                            <Col xs="12" md="6" lg="6">
-                                                <FormGroup className='rp-app-table-value'>
-                                                    <Label className='rp-app-table-label' htmlFor={item.field}>{item.header} {
-                                                        this.props.E2EEdit.errors.Master &&
-                                                        <i className='fa fa-exclamation-circle rp-error-icon'>{this.props.E2EEdit.errors.Master}</i>
-                                                    }</Label>
-                                                    {
-                                                        !this.state.isEditing ?
-                                                            <Input style={{ borderColor: this.props.E2EEdit.errors[item.field] ? 'red' : '', backgroundColor: 'white' }} className='rp-app-table-value' type='textarea' rows={this.getTextAreaHeight(this.props.E2EDetails && this.props.E2EDetails[item.field])} value={this.props.E2EDetails && this.props.E2EDetails[item.field]}></Input>
-                                                            :
-                                                            <Input style={{ borderColor: this.props.E2EEdit.errors[item.field] ? 'red' : '' }} className='rp-app-table-value' placeholder={'Add ' + item.header} type="textarea" rows={this.getTextAreaHeight(this.props.E2EDetails && this.props.E2EDetails[item.field])} id={item.field} value={this.props.E2EEdit && this.props.E2EEdit[item.field]}
-                                                                onChange={(e) => this.props.updateE2EEdit({
-                                                                    ...this.props.E2EEdit, [item.field]: e.target.value,
-                                                                    errors: { ...this.props.E2EEdit.errors, [item.field]: null }
-                                                                })} >
-
-                                                            </Input>
-                                                    }
-                                                </FormGroup>
-                                            </Col>
-                                        ))
+                                            }
+                                        </React.Fragment>
                                     }
-                                </FormGroup>
-
-
-
-
-                                <Row>
-                                    <Col lg="12">
-                                        <div className='rp-app-table-title'>Test Case History</div>
-                                        {/* <div style={{ width: (window.screen.width * ((1 - 0.418) / 2)) + 'px', height: '150px', marginBottom: '3rem' }}> */}
-                                        <div style={{ width: '100%', height: '250px', marginBottom: '3rem' }}>
-                                            <div style={{ width: "100%", height: "100%" }}>
-                                                <div
-                                                    id="activityGrid"
-                                                    style={{
-                                                        height: "100%",
-                                                        width: "100%",
-                                                    }}
-                                                    className="ag-theme-balham"
-                                                >
-                                                    <AgGridReact
-                                                        onRowClicked={(e) => this.setState({ activity: e.data })}
-                                                        modules={this.state.modules}
-                                                        getRowHeight={this.getActivityRowHeight}
-                                                        columnDefs={this.state.activityColumnDefs}
-                                                        defaultColDef={this.state.defaultColDef}
-                                                        rowData={this.props.E2EDetails ? this.props.E2EDetails.Activity : []}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Col>
-                                </Row>
-                            </React.Fragment>
-                        }
-                    </Collapse>
-                </div >
-
-
-
-
-                <Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
-                    {
-                        !this.state.toggleMessage &&
-                        <ModalHeader toggle={() => this.toggle()}>{
-                            'Confirmation'
-                        }</ModalHeader>
-                    }
-                    <ModalBody>
-                        {
-                            this.state.toggleMessage ? this.state.toggleMessage : `Are you sure you want to make the changes?`
-                        }
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={() => this.state.toggleMessage ? this.toggle() : this.saveAll()}>Ok</Button>{' '}
-                        {
-                            !this.state.toggleMessage &&
-                            <Button color="secondary" onClick={() => this.toggle()}>Cancel</Button>
-                        }
-                    </ModalFooter>
-                </Modal>
-                <Modal isOpen={this.state.delete} toggle={() => this.toggleDelete()}>
-                    {
-                        <ModalHeader toggle={() => this.toggleDelete()}>{
-                            'Delete Confirmation'
-                        }</ModalHeader>
-                    }
-                    <ModalBody>
-                        {
-                            `Are you sure you want to delete ${this.props.E2EEdit.id} ?`
-                        }
-
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={() => { this.delete(); this.toggleDelete(); }}>Ok</Button>{' '}
-                        {
-                            <Button color="secondary" onClick={() => this.toggleDelete()}>Cancel</Button>
-                        }
-                    </ModalFooter>
-                </Modal>
+                {
+                    this.state.sanityDetails && 
+                <FormGroup row className="my-0">
+                                                {
+                                                    [
+                                                        { field: 'E2EFocus', header: 'E2EFocus', type: 'text', size:"6"  },
+                                                        { field: 'E2ESkipList', header: 'E2ESkipList', type: 'text', size:"6"  },
+                                                        { field: 'Notes', header: 'Notes', type: 'text', size:"12" },
+                                                    ].map((item, index) => (
+                                                        <Col xs="12" md={item.size}  lg={item.size}>
+                                                            <FormGroup className='rp-app-table-value'>
+                                                                <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}</Label>
+                                                                {
+                                                                    !this.state.isEditing ?
+                                                                        <Input style={{ backgroundColor: 'white' }} className='rp-app-table-value' type='textarea' rows={this.getTextAreaHeight(this.state.sanityDetails && this.state.sanityDetails[item.field])} value={this.state.sanityDetails && this.state.sanityDetails[item.field]}></Input>
+                                                                        :
+                                                                        <Input className='rp-app-table-value' placeholder={'Add ' + item.header} type="textarea" rows={this.getTextAreaHeight(this.state.sanityDetails && this.state.sanityDetails[item.field])} id={item.field} value={this.state.sanityDetails && this.state.sanityDetails[item.field]}
+                                                                            onChange={(e) => this.setState({
+                                                                                sanityDetails: {...this.state.sanityDetails, [item.field]: e.target.value}
+                                                                            })} >
+                                                                        </Input>
+                                                                }
+                                                            </FormGroup>
+                                                        </Col>
+                                                    ))
+                                                }
+                                            </FormGroup>
+    }
             </div >
 
         )
@@ -755,7 +811,7 @@ class E2ETestCases extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
     user: state.auth.currentUser,
-    users: ['Select Assignee', ...state.user.users.map(item => item.email)],
+    users: state.user.users.map(item => item.email),
     selectedRelease: getCurrentRelease(state, state.release.current.id),
     data: state.testcase.e2e,
     E2EDetails: state.testcase.e2eDetails, //E2EDetails
