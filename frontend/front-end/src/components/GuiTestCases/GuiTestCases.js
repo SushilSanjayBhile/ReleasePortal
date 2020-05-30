@@ -543,7 +543,7 @@ class GuiTestCases extends Component {
 
         this.props.saveTestCase({ data: [], id: this.props.selectedRelease.ReleaseNumber });
         this.props.saveSingleTestCase({});
-        axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
+        axios.put(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, items)
             .then(res => {
                 this.gridOperations(true);
                 this.setState({ errors: {}, toggleMessage: `TCs Updated Successfully` });

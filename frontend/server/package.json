@@ -5,13 +5,17 @@
     "scripts": {
         "ng": "ng",
         "start": "npm run start-all-servers",
+        "startProd": "npm run start-all-servers-Prod",
         "build": "ng build --prod",
         "test": "ng test",
         "lint": "ng lint",
         "e2e": "ng e2e",
         "proxy": "node proxy-server.js",
+        "prod-proxy": "node prod-proxy-server.js",
         "mock-server": "node app-server.js",
-        "start-all-servers": "concurrently --kill-others \"npm run proxy\" \"npm run mock-server\""
+        "prod-mock-server": "node app-serverProd.js",
+        "start-all-servers": "concurrently --kill-others \"npm run proxy\" \"npm run mock-server\"",
+        "start-all-servers-Prod": "concurrently --kill-others \"npm run prod-proxy\" \"npm run prod-mock-server\""
     },
     "private": true,
     "dependencies": {

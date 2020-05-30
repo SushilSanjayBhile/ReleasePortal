@@ -159,6 +159,7 @@ class ReleaseStatus extends Component {
                                                     <th>Summary</th>
                                                     <th  style={{width:'250px'}}>Status</th>
                                                     <th  style={{width:'250px'}}>Priority</th>
+                                                    {/* <th  style={{width:'250px'}}>#TC Blocked</th> */}
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -170,15 +171,27 @@ class ReleaseStatus extends Component {
                                                         return (
                                                             <tr style={{ cursor: 'pointer' }}>
                                                                 <td style={{ width: '250px' }} className='rp-app-table-key'><span onClick={() => window.open(`https://diamanti.atlassian.net/browse/${item.key}`)}>{item.key}</span></td>
+                                                                
                                                                 <td>{item.fields.summary}</td>
                                                                 {/* <td><Badge className={`rp-bug-${item.fields.status.name}-status-badge`}>{item.fields.status.name}</Badge></td> */}
-                                                                <td style={{width:'250px'}}> <div className={`c-callout c-callout-${item.fields.status.name.toLowerCase()} rp-new-badge`}>
-                                                                    <strong class="h5">{item.fields.status.name}</strong>
-                                                                </div></td>
+                                                                
+                                                                <td style={{width:'250px'}}> 
+                                                                    <div className={`c-callout c-callout-${item.fields.status.name.toLowerCase()} rp-new-badge`}>
+                                                                        <strong class="h5">{item.fields.status.name}</strong>
+                                                                    </div>
+                                                                </td>
                                                                 {/* <td><Badge className={`rp-priority-${item.fields.status.name}-status-badge`}>{item.fields.status.name}</Badge></td> */}
                                                                 <div style={{width:'250px'}} className={`c-callout c-callout-${item.fields.priority.name.toLowerCase()} rp-new-badge`}>
                                                                     <strong class="h5">{item.fields.priority.name}</strong>
                                                                 </div>
+
+                                                                <div style={{width:'250px'}} className={`c-callout c-callout-${item.fields.priority.name.toLowerCase()} rp-new-badge`}>
+                                                                    <strong class="h5">{item.fields.priority.name}</strong>
+                                                                </div>
+
+                                                              
+
+
                                                             </tr>
                                                         )
                                                     })

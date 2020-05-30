@@ -42,6 +42,7 @@ class TestCasesAll extends Component {
     editedRows = {};
     isApiUnderProgress = false;
     isAnyChanged = false;
+    isBlockedOrFailed = false;
     constructor(props) {
         super(props);
         this.state = {
@@ -255,7 +256,12 @@ class TestCasesAll extends Component {
         this.setState({ delete: !this.state.delete })
     };
     toggleAll = () => {
+        
+
         this.setState({ multipleChanges: !this.state.multipleChanges })
+
+
+        
     };
     toggle = () => this.setState({ modal: !this.state.modal });
     popoverToggle = () => this.setState({ popoverOpen: !this.state.popoverOpen });
@@ -380,6 +386,7 @@ class TestCasesAll extends Component {
         if (this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
             this.editedRows = {};
             this.isAnyChanged = false;
+            this.isBlockedOrFailed = false;
             this.setState({
                 rowSelect: false, CardType: '', domain: '', subDomain: '', Priority: '',
                 isEditing: false
@@ -604,6 +611,7 @@ class TestCasesAll extends Component {
     resetRows(resetCount) {
         this.editedRows = {};
         this.isAnyChanged = false;
+        this.isBlockedOrFailed = false;
         if (this.gridApi) {
             this.gridApi.deselectAll();
         }
@@ -656,6 +664,7 @@ class TestCasesAll extends Component {
                 status.TcName = this.getTcName(`${item.TcName}`);
                 status.Build = this.state.multi.Build;
                 status.Result = this.state.multi.Result;
+                status.Bugs = this.state.multi.Bugs;
                 status.CardType = item.CardType;
                 status.TcID = item.TcID;
                 status.Activity = {
@@ -671,8 +680,7 @@ class TestCasesAll extends Component {
             }
             items.push(pushable);
         })
-        console.log(statusItems)
-        console.log(items)
+        
         if (items.length === 0 && statusItems.length === 0) {
             return;
         }
@@ -684,6 +692,7 @@ class TestCasesAll extends Component {
     }
     saveMultipleTcStatus(statusItems, items) {
         this.gridOperations(false);
+        console.log("saveMultipleTcStatus",statusItems);
         axios.post(`/api/tcstatusUpdate/${this.props.selectedRelease.ReleaseNumber}`, statusItems)
             .then(res => {
                 this.gridOperations(true);
@@ -691,23 +700,25 @@ class TestCasesAll extends Component {
                     this.saveMultipleTcInfo(items)
                 } else {
                     this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);
-                    alert('successfully updated TCs');
+                    alert('Tc Status updated Successfully');
                 }
             }, error => {
                 this.gridOperations(true);
-                alert('failed to update TCs');
+                alert('Failed To Update TC Status');
             });
     }
     saveMultipleTcInfo(items) {
         this.gridOperations(false);
+        
+
         axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
             .then(res => {
                 this.gridOperations(true);
                 this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
-                alert('successfully updated TCs');
+                alert('Tc Info Updated Successfully');
             }, error => {
                 this.gridOperations(true);
-                alert('failed to update TCs');
+                alert('Failed To Update TC Info');
             });
     }
 
@@ -755,6 +766,14 @@ class TestCasesAll extends Component {
         return array;
     }
     save() {
+
+        if(this.isBlockedOrFailed){
+            console.log(document.getElementById('select_Build').value,document.getElementById('select_Bugs').value)
+            if(document.getElementById('select_Build').value =='' && document.getElementById('select_Bugs').value == ''){
+                alert("Build and bug number mandatory");
+            }
+        }
+
         let data = {};
         // tc info meta fields
         // tc info fields
@@ -1088,10 +1107,13 @@ class TestCasesAll extends Component {
                                                                                     })
                                                                                 }
                                                                                 this.setState({ multi: { ...this.state.multi, Result: e.target.value } })
+                                                                                if(e.target.value == 'Blocked' || e.target.value == 'Fail' ){
+                                                                                    this.isBlockedOrFailed = true
+                                                                                }
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="select" id={`select_Result`}>
                                                                                 {
-                                                                                    [{ value: '', text: 'Select Result...' }, { value: 'Pass', text: 'Pass' }, { value: 'Fail', text: 'Fail' }].map(item => <option value={item.value}>{item.text}</option>)
+                                                                                    [{ value: '', text: 'Select Result...' }, { value: 'Pass', text: 'Pass' }, { value: 'Fail', text: 'Fail' }, { value: 'Blocked', text: 'Blocked' },{ value: 'Unlocked', text: 'Unblocked' }].map(item => <option value={item.value}>{item.text}</option>)
                                                                                 }
                                                                             </Input>
                                                                         </FormGroup>
@@ -1101,7 +1123,7 @@ class TestCasesAll extends Component {
                                                                             <Label className='rp-app-table-label' htmlFor='Build'>
                                                                                 Build
                                                                             </Label>
-                                                                            <Input disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Build} onChange={(e) => {
+                                                                            <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Build} onChange={(e) => {
                                                                                 this.isAnyChanged = true;
                                                                                 let selectedRows = this.gridApi.getSelectedRows();
                                                                                 if (e.target.value && e.target.value !== '') {
@@ -1112,13 +1134,44 @@ class TestCasesAll extends Component {
                                                                                 }
                                                                                 this.setState({ multi: { ...this.state.multi, Build: e.target.value } })
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
-                                                                            }} type="text" id={`select_Build`}>
+                                                                            }} type="text" id={`select_Build`} >
                                                                             </Input>
                                                                         </FormGroup>
                                                                     </Col>
+
                                                                 </Row>
+                                                                
+                                                                {
+                                                                    this.isBlockedOrFailed &&
+                                                                    <Row>
+                                                                        <Col md="8">
+                                                                                <FormGroup className='rp-app-table-value'>
+                                                                                    <Label className='rp-app-table-label' htmlFor='Bugs'>
+                                                                                        Bug No
+                                                                                    </Label>
+                                                                                    <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Bugs} onChange={(e) => {
+                                                                                        this.isAnyChanged = true;
+                                                                                        
+                                                                                        let selectedRows = this.gridApi.getSelectedRows();
+                                                                                        if (e.target.value && e.target.value !== '') {
+                                                                                            selectedRows.forEach(item => {
+                                                                                                this.onCellEditing(item, 'CurrentStatus.Bugs', e.target.value)
+                                                                                                item['CurrentStatus.Bugs'] = e.target.value;
+                                                                                            })
+                                                                                        }
+                                                                                        this.setState({ multi: { ...this.state.multi, Bugs: e.target.value } })
+                                                                                        console.log("bug number e.target.value",e.target.value)
+                                                                                        setTimeout(this.gridApi.redrawRows(), 0);
+                                                                                    }} type="text" id={`select_Bugs`} placeholder='DWS-000/SPEK-000'>
+                                                                                    </Input>
+                                                                                    <p style={{fontSize:'0.9'}}>Build And Bug Number Are Mandatory</p>
+                                                                                </FormGroup>
+                                                                        </Col>
+                                                                    </Row>
+                                                                }
 
                                                                 <div style={{ float: 'right', marginBottom: '0.5rem' }}>
+                                                                     
                                                                     <span>
                                                                         {
                                                                             this.isAnyChanged &&
@@ -1135,6 +1188,7 @@ class TestCasesAll extends Component {
                                                                             </Button>
                                                                         }
                                                                     </span>
+                                                                   
                                                                 </div>
                                                             </PopoverBody>
                                                         </UncontrolledPopover>

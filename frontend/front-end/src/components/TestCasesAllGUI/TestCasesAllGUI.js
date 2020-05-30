@@ -42,6 +42,7 @@ class TestCasesAllGUI extends Component {
     editedRows = {};
     isApiUnderProgress = false;
     isAnyChanged = false;
+    isBlockedOrFailed = false;
     constructor(props) {
         super(props);
         this.state = {
@@ -380,6 +381,7 @@ class TestCasesAllGUI extends Component {
         if (this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
             this.editedRows = {};
             this.isAnyChanged = false;
+            this.isBlockedOrFailed = false;
             this.setState({
                 rowSelect: false, CardType: '', domain: '', subDomain: '', Priority: '',
                 isEditing: false
@@ -487,6 +489,9 @@ class TestCasesAllGUI extends Component {
         status.Result = this.props.testcaseEdit.CurrentStatus;
         status.CardType = this.props.tcDetails.CardType;
         status.TcID = this.props.tcDetails.TcID;
+        console.log(this.props.tcDetails,"save Single ct status")
+        // status.BrowserName = this.props.tcDetails.BrowserName;
+
         status.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
             "TcID": this.props.tcDetails.TcID,
@@ -536,7 +541,9 @@ class TestCasesAllGUI extends Component {
             return;
         }
         this.gridOperations(false);
-        axios.get(`/api/wholeguitcinfo/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${data.CardType}`)
+        let url = `/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/browsername/${data.BrowserName}`
+        console.log("url",url);
+        axios.get(url)
             .then(res => {
                 if (updateRow) {
                     if (this.currentSelectedRow && this.currentSelectedRow.node) {
@@ -604,6 +611,7 @@ class TestCasesAllGUI extends Component {
     resetRows(resetCount) {
         this.editedRows = {};
         this.isAnyChanged = false;
+        this.isBlockedOrFailed = false;
         if (this.gridApi) {
             this.gridApi.deselectAll();
         }
@@ -629,10 +637,12 @@ class TestCasesAllGUI extends Component {
             let pushable = {
                 TcID: item.TcID,
                 CardType: item.CardType,
+                BrowserName:item.BrowserName,
                 Activity: {
                     Release: this.props.selectedRelease.ReleaseNumber,
                     "TcID": item.TcID,
                     CardType: item.CardType,
+                    BrowserName:item.BrowserName,
                     "UserName": this.props.user.email,
                     LogData: ``,
                     "RequestType": 'PUT',
@@ -656,8 +666,11 @@ class TestCasesAllGUI extends Component {
                 status.TcName = this.getTcName(`${item.TcName}`);
                 status.Build = this.state.multi.Build;
                 status.Result = this.state.multi.Result;
+                status.Bugs = this.state.multi.Bugs;
                 status.CardType = item.CardType;
                 status.TcID = item.TcID;
+                status.BrowserName = item.BrowserName;
+                console.log("saveall",item);
                 status.Activity = {
                     Release: this.props.selectedRelease.ReleaseNumber,
                     "TcID": item.TcID,
@@ -672,7 +685,7 @@ class TestCasesAllGUI extends Component {
             items.push(pushable);
         })
         console.log(statusItems)
-        console.log(items)
+        console.log("items",items)
         if (items.length === 0 && statusItems.length === 0) {
             return;
         }
@@ -683,31 +696,48 @@ class TestCasesAllGUI extends Component {
         }
     }
     saveMultipleTcStatus(statusItems, items) {
+        let flag = 0;
         this.gridOperations(false);
-        axios.post(`/api/tcstatusUpdate/${this.props.selectedRelease.ReleaseNumber}`, statusItems)
+        // for(let i = 0; i < statusItems.length ; i++ ){
+            axios.post(`/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`, statusItems)
             .then(res => {
                 this.gridOperations(true);
+                flag = 1
                 if (items.length > 0) {
+                    console.log("post request",items);
                     this.saveMultipleTcInfo(items)
                 } else {
-                    this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);
-                    alert('successfully updated TCs');
+                    console.log("getTC post",this.state.CardType, this.state.domain, this.state.subDomain)
+                    this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);   
                 }
             }, error => {
                 this.gridOperations(true);
-                alert('failed to update TCs');
+                flag = 2
+                // alert('Failed To Update TC Status');
             });
+        // }
+       
+        if(flag == 1){
+            alert('Tc Status updated Successfully');
+        }
+
+        if(flag == 2){
+            alert('Failed To Update TC Status');
+        }
+       
     }
+
+
     saveMultipleTcInfo(items) {
         this.gridOperations(false);
-        axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
+        axios.put(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, items)
             .then(res => {
                 this.gridOperations(true);
                 this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
-                alert('successfully updated TCs');
+                alert('Tc Info Updated Successfully');
             }, error => {
                 this.gridOperations(true);
-                alert('failed to update TCs');
+                alert('Failed To Update TC Info');
             });
     }
 
@@ -734,7 +764,7 @@ class TestCasesAllGUI extends Component {
 
     textFields = [
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus',
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus','BrowserName','CardType'
     ];
     whichFieldsUpdated(old, latest) {
         let changes = {};
@@ -759,6 +789,7 @@ class TestCasesAllGUI extends Component {
         // tc info meta fields
         // tc info fields
         this.textFields.map(item => data[item] = this.props.testcaseEdit[item]);
+        console.log("data fro save",data);
         // this.arrayFields.forEach(item => data[item] = this.joinArrays(this.props.testcaseEdit[item]));
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
@@ -772,8 +803,11 @@ class TestCasesAllGUI extends Component {
 
         if (this.props.testcaseEdit.CurrentStatus === 'Pass' || this.props.testcaseEdit.CurrentStatus === 'Fail' ||  this.props.testcaseEdit.Bugs) {
             this.saveSingleTCStatus(data);
+            console.log("if",data)
         } else {
             this.saveSingleTCInfo(data);
+            console.log("else",data)
+
         }
         // this.toggle();
     }
@@ -785,6 +819,7 @@ class TestCasesAllGUI extends Component {
         status.TcName = this.getTcName(`${this.props.tcDetails.TcName}`);
         status.CardType = this.props.tcDetails.CardType;
         status.TcID = this.props.tcDetails.TcID;
+        status.BrowserName = this.props.tcDetails.BrowserName;
         if (this.props.testcaseEdit.CurrentStatus !== 'Fail' && this.props.testcaseEdit.CurrentStatus !== 'Pass') {
             console.log('passing only bug')
             console.log(this.props.testcaseEdit);
@@ -804,13 +839,13 @@ class TestCasesAllGUI extends Component {
                     "RequestType": 'PUT',
                     "URL": `/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}/${statusList.id}`
                 }
-                axios.put(`/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
+                axios.put(`/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`, [{ ...status }])
                     .then(res => {
                         this.gridOperations(true);
                         console.log('updated status')
                         this.saveSingleTCInfo(data);
                     }, error => {
-                        alert('failed to update tc')
+                        alert('Failed To Update TC')
                         console.log('failed updating status')
                         this.gridOperations(true);
                     });
@@ -822,6 +857,7 @@ class TestCasesAllGUI extends Component {
             status.Build = this.props.testcaseEdit.Build;
             status.Result = this.props.testcaseEdit.CurrentStatus;
             status.Bugs = this.props.testcaseEdit.Bugs;
+            
             status.Activity = {
                 Release: this.props.selectedRelease.ReleaseNumber,
                 "TcID": this.props.tcDetails.TcID,
@@ -829,9 +865,9 @@ class TestCasesAllGUI extends Component {
                 "UserName": this.props.user.email,
                 "LogData": `Status Added: Build: ${this.props.testcaseEdit.Build}, Result: ${this.props.testcaseEdit.CurrentStatus}, CardType: ${this.props.testcaseEdit.CardType}`,
                 "RequestType": 'POST',
-                "URL": `/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`
+                "URL": `/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`
             }
-            axios.post(`/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
+            axios.post(`/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`, [{ ...status }])
                 .then(res => {
                     this.gridOperations(true);
                     console.log('updated status')
@@ -856,7 +892,7 @@ class TestCasesAllGUI extends Component {
             this.onSuccessTcInfo(data);
         } else {
             this.gridOperations(false);
-            setTimeout(() => axios.put(`/api/tcinfoput/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${this.props.tcDetails.CardType}`, { ...data })
+            setTimeout(() => axios.put(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, [{ ...data }])
                 .then(res => {
                     this.gridOperations(true);
                     this.onSuccessTcInfo(data);
@@ -1088,10 +1124,13 @@ class TestCasesAllGUI extends Component {
                                                                                     })
                                                                                 }
                                                                                 this.setState({ multi: { ...this.state.multi, Result: e.target.value } })
+                                                                                if(e.target.value == 'Blocked' || e.target.value == 'Fail' ){
+                                                                                    this.isBlockedOrFailed = true
+                                                                                }
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="select" id={`select_Result`}>
                                                                                 {
-                                                                                    [{ value: '', text: 'Select Result...' }, { value: 'Pass', text: 'Pass' }, { value: 'Fail', text: 'Fail' }].map(item => <option value={item.value}>{item.text}</option>)
+                                                                                    [{ value: '', text: 'Select Result...' }, { value: 'Pass', text: 'Pass' }, { value: 'Fail', text: 'Fail' }, { value: 'Blocked', text: 'Blocked' },{ value: 'Unlocked', text: 'Unblocked' }].map(item => <option value={item.value}>{item.text}</option>)
                                                                                 }
                                                                             </Input>
                                                                         </FormGroup>
@@ -1117,6 +1156,35 @@ class TestCasesAllGUI extends Component {
                                                                         </FormGroup>
                                                                     </Col>
                                                                 </Row>
+
+                                                                {
+                                                                    this.isBlockedOrFailed &&
+                                                                    <Row>
+                                                                        <Col md="8">
+                                                                                <FormGroup className='rp-app-table-value'>
+                                                                                    <Label className='rp-app-table-label' htmlFor='Bugs'>
+                                                                                        Bug No
+                                                                                    </Label>
+                                                                                    <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Bugs} onChange={(e) => {
+                                                                                        this.isAnyChanged = true;
+                                                                                        
+                                                                                        let selectedRows = this.gridApi.getSelectedRows();
+                                                                                        if (e.target.value && e.target.value !== '') {
+                                                                                            selectedRows.forEach(item => {
+                                                                                                this.onCellEditing(item, 'CurrentStatus.Bugs', e.target.value)
+                                                                                                item['CurrentStatus.Bugs'] = e.target.value;
+                                                                                            })
+                                                                                        }
+                                                                                        this.setState({ multi: { ...this.state.multi, Bugs: e.target.value } })
+                                                                                        console.log("bug number e.target.value",e.target.value)
+                                                                                        setTimeout(this.gridApi.redrawRows(), 0);
+                                                                                    }} type="text" id={`select_Bugs`} placeholder='DWS-000/SPEK-000'>
+                                                                                    </Input>
+                                                                                    <p style={{fontSize:'0.9'}}>Build And Bug Number Are Mandatory</p>
+                                                                                </FormGroup>
+                                                                        </Col>
+                                                                    </Row>
+                                                                }
 
                                                                 <div style={{ float: 'right', marginBottom: '0.5rem' }}>
                                                                     <span>

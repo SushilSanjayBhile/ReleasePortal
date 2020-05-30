@@ -92,7 +92,7 @@ function getAggregate(release) {
         release.TcAggregate.all.Tested.manual.Pass + release.TcAggregate.all.Tested.manual.Fail;
     release.TcAggregate.all.SkipAndTested = release.TcAggregate.all.Tested.auto.Skip + release.TcAggregate.all.Tested.manual.Skip;
     release.TcAggregate.all.Skip = release.TcAggregate.all.Skip;
-    release.TcAggregate.all.Blocked = 0;
+    release.TcAggregate.all.Blocked =  release.TcAggregate.all.Blocked;
 
     release.TcAggregate.uidomain = {};
     alldomains.forEach((item, index) => {
@@ -263,6 +263,8 @@ export const getTCForStatus = (state, id) => {
             visibleP.NotTested += p[item].NotTested;
         })
     }
+
+    console.log("check data is comig or not",release.TcAggregate);
     let data = [{
         labels: ['', ''],
         datasets: [{
@@ -293,10 +295,57 @@ export const getTCForStatus = (state, id) => {
             borderWidth: 1,
             data: [release.TcAggregate.all.NotTested, visibleP.NotTested]
         },
+        {
+            label: 'Blocked',
+            backgroundColor: '#d9534f',
+            borderColor: 'white',
+            borderWidth: 1,
+            data: [release.TcAggregate.all.Blocked, visibleP.Blocked]
+        },
         ]
     }];
-    // {
-    // "GUI": { "Tested": { "auto": { "Pass": 199, "Fail": 11, "Skip": 0 }, "manual": { "Pass": 3444, "Fail": 394, "Skip": 0 } }, "NotApplicable": 0, "NotTested": 0 }
+
+    data.push({
+        labels: ['', ''],
+        datasets: [{
+            label: 'Pass',
+            backgroundColor: '#01D251',
+            borderColor: 'white',
+            borderWidth: 1,
+            data: [(release.TcAggregate.allGUI.Pass), 0]
+        },
+        {
+            label: 'Skipped',
+            backgroundColor: '#FFCE56',
+            borderColor: 'white',
+            borderWidth: 1,
+            data: [(release.TcAggregate.allGUI.SkippedFromRelease+ release.TcAggregate.allGUI.SkippedWhileTesting), 0]
+        },
+        {
+            label: 'Fail',
+            backgroundColor: '#d9534f',
+            borderColor: 'white',
+            borderWidth: 1,
+            data: [(release.TcAggregate.allGUI.Fail), 0]
+        },
+        {
+            label: 'Not Tested',
+            backgroundColor: 'rgba(128,128,128,0.3)',
+            borderColor: 'white',
+            borderWidth: 1,
+            data: [release.TcAggregate.allGUI.NotTested, 0]
+        },
+        {
+            label: 'Blocked',
+            backgroundColor: '#d9534f',
+            borderColor: 'white',
+            borderWidth: 1,
+            data: [release.TcAggregate.allGUI.Blocked, 0]
+        },
+       
+        ]
+    })
+    
     if (release.ReleaseNumber === '2.3.0') {
         data.push({
             labels: [''],
@@ -376,16 +425,14 @@ export const getTCForStatus = (state, id) => {
             }
         },
     }
-    // let total = [(release.TcAggregate.all.Tested.auto.Fail + release.TcAggregate.all.Tested.manual.Fail) +
-    //     (release.TcAggregate.all.Tested.auto.Pass + release.TcAggregate.all.Tested.manual.Pass) +
-    //     (release.TcAggregate.all.Tested.auto.Skip + release.TcAggregate.all.Tested.manual.Skip) +
-    //     release.TcAggregate.all.NotTested - release.TcAggregate.all.Skip];
+    
     let total = [release.TcAggregate.all.All - (release.TcAggregate.all.NotApplicable + release.TcAggregate.all.Skip)];
+    
     if (release.ReleaseNumber === '2.3.0') {
         total.push(3876)
     } else {
-        total.push(release.TcAggregate.all.GUI);
-        // total.push(0);
+        let temp =release.TcAggregate.allGUI.TotalTCs - (release.TcAggregate.allGUI.NotApplicable + (release.TcAggregate.allGUI.SkippedFromRelease + release.TcAggregate.allGUI.SkippedWhileTesting))
+        total.push(temp);
     }
     return {
         data,
@@ -496,8 +543,7 @@ export const getTCForTestMetrics = (state, id) => {
             }],
     };
     let total = storage + network + management + others;
-    console.log('data for tc strategy');
-    console.log(data);
+   
     return { data, total };
 }
 
@@ -708,8 +754,6 @@ export const getDomainStatus = (state, id) => {
             }, title: item
         })
     })
-    console.log('data for tc status for domains');
-    console.log(doughnuts);
     return doughnuts;
 
 }

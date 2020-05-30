@@ -34,9 +34,7 @@ import {
   AppBreadcrumb2 as AppBreadcrumb,
   AppSidebarNav2 as AppSidebarNav,
 } from '@coreui/react';
-// sidebar nav config
-// import navigation from '../../_nav';
-// routes config
+
 import routes from '../../routes';
 import { connect } from 'react-redux';
 import { logOut, saveUsers, saveReleaseBasicInfo, releaseChange, saveTestCase, saveTestCaseStatus, logInSuccess, clearUserData, fetchUserNotifications } from '../../actions';
@@ -71,17 +69,16 @@ class DefaultLayout extends Component {
       .catch(err => { })
   }
   setSigninStatus(isSignedIn) {
-    // this.GoogleAuth = gapi.auth2.getAuthInstance();
-    console.log('issigned in')
+    
     console.log(isSignedIn)
     if (this.GoogleAuth) {
       let user = this.GoogleAuth.currentUser.get();
       let isAuthorized = user.hasGrantedScopes(this.SCOPE);
-      console.log('got user ', user)
+      
       if (isAuthorized) {
         this.loginBackend(user)
       } else {
-        console.log('un authorized')
+       
       }
     }
   }
@@ -89,7 +86,7 @@ class DefaultLayout extends Component {
     if (e) {
       e.preventDefault()
     }
-    // this.stopPolling();
+    
     if (this.props.currentUser) {
       this.props.clearUserData();
       this.props.logOut();
@@ -119,12 +116,10 @@ class DefaultLayout extends Component {
         return;
       }
       this.userEmail = newProps.currentUser.email;
-      // this.startPolling(newProps.currentUser.email, new Date().toISOString());
+     
     }
   }
   componentDidMount() {
-    // this.props.logInSuccess({ email: 'yatish@diamati.com', isAdmin: true, role: 'ADMIN', name: 'Yatish' });
-    // this.props.logInSuccess({ email: 'ADMIN', name: 'ADMIN', isAdmin: true, role: 'ADMIN' });
     window.gapi.load('auth2', () => {
       gapi.auth2.init({
         'apiKey': 'AIzaSyCx0M1qs_LyfAgVmkTmDE6qIfgUiDekM-I',
@@ -133,26 +128,21 @@ class DefaultLayout extends Component {
       }).then(() => {
         this.GoogleAuth = gapi.auth2.getAuthInstance();
         this.GoogleAuth.isSignedIn.listen((data) => this.setSigninStatus(data));
-        // Listen for sign-in state changes.
-        // this.GoogleAuth.isSignedIn.listen((data) => this.updateSigninStatus(data));
-        // Handle initial sign-in state. (Determine if user is already signed in.)
         this.setSigninStatus();
       }).catch(err => { console.log('cannot get details') });
     });
     if (this.props.allUsers.length === 0) {
       axios.get(`/api/userinfo`).then(res => {
         this.props.saveUsers(res.data)
+        console.log("userdata from API",res.data);
       })
-      // axios.get(`/users`).then(res => {
-      //   this.props.saveUsers(res.data)
-      // })
+      
     }
     if (this.props.allReleases.length === 0) {
       axios.get(`/api/release/all`)
         .then(res => {
-          console.log(res.data);
+          console.log("123456",res.data);
           res.data.forEach(item => {
-            // this.props.updateNavBar({ id: item.ReleaseNumber });
 
             this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
           });
@@ -168,7 +158,7 @@ class DefaultLayout extends Component {
     this.userNotificationsInterval = setInterval(
       () => {
         console.log(this.props.notifications)
-        // this.props.fetchUserNotifications({ email, startTime })
+        
       },
       6000);
   }
@@ -196,10 +186,10 @@ class DefaultLayout extends Component {
                 console.log(release);
                 if (release) {
                   this.props.releaseChange({ id: release });
-                  // this.props.history.push(`/release/${release}`);
+                  
                 } else {
                   this.props.releaseChange({ id: null });
-                  // this.props.history.push(`/release/manage`);
+                  
                 }
               }}
               onLogout={e => this.signOut(e)} />
@@ -216,14 +206,11 @@ class DefaultLayout extends Component {
             <AppSidebarMinimizer />
           </AppSidebar>
           <main className="main">
-            {/* <AppBreadcrumb appRoutes={routes} router={router} /> */}
+            
             <Container fluid>
               <Suspense fallback={this.loading()}>
                 <Switch>
-                  {/* {
-                    !this.props.currentUser &&
-                    <Redirect to="/login" />
-                  } */}
+                  
                   {routes.map((route, idx) => {
                     return route.component ? (
                       <Route
@@ -248,11 +235,6 @@ class DefaultLayout extends Component {
             </Suspense>
           </AppAside>
         </div>
-        {/* <AppFooter>
-          <Suspense fallback={this.loading()}>
-            <DefaultFooter />
-          </Suspense>
-        </AppFooter> */}
       </div>
     );
   }

@@ -22,7 +22,7 @@ import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../a
 import TestCasesAllGUI from '../../../components/TestCasesAllGUI/TestCasesAllGUI';
 import './ReleaseTestMetricsGUI.scss'
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
-import CreateTCs from '../CreateTCs/CreateTCs';
+import CreateTCs from '../CreateTCs/CreateTCsGUI';
 const options = {
     tooltips: {
         enabled: false,
@@ -87,10 +87,10 @@ class ReleaseTestMetricsGUI extends Component {
         return (
             <div>
                 <TestCasesAllGUI title={'Test Cases'} type='all'></TestCasesAllGUI>
-                {/* {
+                {
                     this.props.currentUser &&
                     <CreateTCs isEditing={true} update={() => this.save()}></CreateTCs>
-                } */}
+                }
 
                 <Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                     <ModalHeader toggle={() => this.toggle()}>Confirmation</ModalHeader>

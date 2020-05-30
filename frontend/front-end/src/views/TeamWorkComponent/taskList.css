@@ -1,0 +1,45 @@
+#title {
+  text-align: center;
+  font-family: arial, sans-serif;
+}
+
+#users {
+  text-align: center;
+  font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+  border-collapse: collapse;
+  border: 3px solid #ddd;
+  overflow-y: scroll;
+  margin-left: 10px;
+}
+
+#users td, #users th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  width: 10px;
+}
+
+#users tr:nth-child(even){background-color: #f2f2f2;}
+
+#users tr:hover {background-color: #ddd;}
+
+#users th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color:#006633;
+  color: white;
+  width: 10px;
+}
+#person td, #users th {
+  border: 1px solid #ddd;
+  padding: 8px;
+  width: 200px;
+}
+#person th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color:#04381a;
+  color: white;
+  width: 40px;
+}

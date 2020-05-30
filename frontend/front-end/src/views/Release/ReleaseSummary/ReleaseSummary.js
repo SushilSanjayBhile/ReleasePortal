@@ -259,17 +259,12 @@ class ReleaseSummary extends Component {
         axios.get('/rest/features/' + temp)
             .then(res => {
                 this.props.saveFeatures({ data: res.data, id: release })
-                console.log('features')
-                console.log(res.data)
                 this.setState({ showFeatures: true })
             }, err => {
                 console.log('err ', err);
             });
         axios.get('/rest/bugs/total/' + temp)
             .then(res => {
-                // console.log('res in bugs')
-                // console.log('total ', res.data.totalBugs.data);
-                // console.log('total ', res.data.openBugs.data);
                 this.props.saveBugs({ data: { total: res.data.total, all: res.data }, id: release })
                 this.setState({ showBugs: true, cntr: 2 })
             }, err => {
@@ -278,9 +273,6 @@ class ReleaseSummary extends Component {
             })
         axios.get('/rest/bugs/open/' + temp)
             .then(res => {
-                // console.log('res in bugs')
-                // console.log('total ', res.data.totalBugs.data);
-                // console.log('total ', res.data.openBugs.data);
                 this.props.saveBugs({ data: { open: res.data.total }, id: release })
                 this.setState({ showBugs: true, cntr: 4 })
             }, err => {
@@ -289,9 +281,6 @@ class ReleaseSummary extends Component {
             })
         axios.get('/rest/bugs/resolved/' + temp)
             .then(res => {
-                // console.log('res in bugs')
-                // console.log('total ', res.data.totalBugs.data);
-                // console.log('total ', res.data.openBugs.data);
                 this.props.saveBugs({ data: { resolved: res.data.total }, id: release})
                 this.setState({ showBugs: true, cntr: 6 })
             }, err => {
@@ -334,7 +323,6 @@ class ReleaseSummary extends Component {
     }
     popoverToggle = () => this.setState({ popoverOpen: !this.state.popoverOpen});
     save() {
-        console.log(this.state.basic.updated);
         let data = { ...this.props.selectedRelease, ...this.state.basic.updated, ...this.state.qaStrategy.updated }
         let dates = [
             'TargetedReleaseDate', 'ActualReleaseDate', 'TargetedCodeFreezeDate',
@@ -344,8 +332,6 @@ class ReleaseSummary extends Component {
 
         dates.forEach(item => {
             if (data[item]) {
-                console.log('item');
-                console.log(data[item]);
                 let date = new Date(data[item]).toISOString().split('T');
                 formattedDates[item] = `${date[0]} ${date[1].substring(0, date[1].length - 1)}`;
             }
@@ -365,16 +351,6 @@ class ReleaseSummary extends Component {
             }
         })
         data = { ...data, ...formattedArrays };
-
-
-        // if (isNaN(data.Engineers)) {
-        //     data.Engineers = 0;
-        // } else {
-        //     data.Engineers = parseInt(data.Engineers);
-        // }
-        // if (!data.Engineers) {
-        //     data.Engineers = 0;
-        // }
         if (isNaN(data.QARateOfProgress)) {
             data.QARateOfProgress = 0;
         } else {
@@ -408,7 +384,15 @@ class ReleaseSummary extends Component {
 
         })
     }
+    componentDidMount(){
+       
+    }
     render() {
+        
+        if(this.props.selectedRelease.TcAggregate){
+            var allGUI = this.props.selectedRelease.TcAggregate.allGUI
+        }
+       
         let featuresCount = 0;
         let statusScenarios = { Open: { total: 0 }, Resolved: { total: 0 } };
         if (this.props.feature && this.props.feature.issues) {
@@ -423,17 +407,14 @@ class ReleaseSummary extends Component {
         }
         let priorities = ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'].map(item => ({ value: item, selected: this.state.selectedPriority && this.state.selectedPriority.includes(item) }));
         let multiselect = { 'Priorities': priorities, };
-            // { key: 'Test Cases', restrictEdit: true, field: 'run', value: this.props.tcStrategy ? this.props.tcStrategy.totalTests : 0 },
+            
         let tcSkipped = `CLI: ${this.props.tcStrategy ? this.props.tcStrategy.skipped : 0 } GUI: 0`;
         let tcNA = `CLI: ${this.props.tcStrategy ? this.props.tcStrategy.notApplicable : 0 } GUI: 0`;
         let tcAutomated = `CLI: ${this.props.tcStrategy ? this.props.tcStrategy.totalAutomated : 0 } GUI: 0`;
 
         return (
             <div className="main-container">
-                {/* <Button onClick={(e) => this.call()}>Click</Button> */}
-                {/* <div>
-                    <SunburstComponent data={this.state.data}></SunburstComponent>
-                </div> */}
+    
                 <Row>
                     <Col xs="12" sm="12" md="5" lg="5" className="rp-summary-tables">
                         {
@@ -525,7 +506,6 @@ class ReleaseSummary extends Component {
                                 }
                             </tbody>
                         </Table>
-                        {/* <Button className='rp-any-button' size='sm' onClick={() => this.setState({ basic: { ...this.state.basic, open: !this.state.basic.open } })}>{this.state.basic.open ? 'Less' : 'More'} </Button> */}
                         {
                             !this.state.basic.open &&
                             <div style={{ textAlign: 'right' }}>
@@ -549,7 +529,7 @@ class ReleaseSummary extends Component {
                                             { key: 'Final Build Number', field: 'BuildNumber', value: this.props.selectedRelease.BuildNumber ? this.props.selectedRelease.BuildNumber : '' },
                                             { key: 'UBoot Number', value: this.props.selectedRelease.UbootVersion, field: 'UbootVersion' },
                                             { key: 'Docker Core RPM Number', value: this.props.selectedRelease.FinalDockerCore, field: 'FinalDockerCore' },
-                                            // { key: 'Priority of TCs', value: this.props.selectedRelease.Priority, field: 'Priority' },
+                                            
                                         ].map((item, index) => {
                                             return (
                                                 <tr>
@@ -592,34 +572,7 @@ class ReleaseSummary extends Component {
                                             )
                                         })
                                     }
-                                    {/* <tr>
-                                        <React.Fragment>
-                                            <td className='rp-app-table-key'>Priority of TCs</td>
-                                            {this.state.basic.editing &&
-                                                <td>
-                                                    <Input className='rp-app-table-value' type="select" id="Priority" name="Priority" value={this.state.basic.updated.Priority !== undefined ?
-                                                        this.state.basic.updated.Priority : this.props.selectedRelease.Priority ? this.props.selectedRelease.Priority : ''}
-                                                        onChange={(e) => this.setState({ basic: { ...this.state.basic, updated: { ...this.state.basic.updated, Priority: e.target.value } } })}>
-                                                        <option value=''>Select Priority</option>
-                                                        {
-                                                            ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'P8', 'P9'].map(item =>
-                                                                <option value={item}>{item}</option>
-                                                            )
-                                                        }
-                                                    </Input>
-                                                </td>
-                                            }
-                                            {
-                                                !this.state.basic.editing &&
-                                                <td>
-                                                    <span>{this.props.selectedRelease.Priority}</span>
-                                                </td>
-                                            }
-
-
-                                        </React.Fragment>
-
-                                    </tr> */}
+                                   
                                 </tbody>
                             </Table>
                         </Collapse>
@@ -632,21 +585,13 @@ class ReleaseSummary extends Component {
                         <Table scroll responsive style={{ overflow: 'hidden', }}>
                             <tbody>
                                 <tr style={{ cursor: 'pointer' }} onClick={() => {
-                                    // this.setState({ bugOpen: !this.state.bugOpen })
+                                    
 
                                     this.props.statusPage({ featureOpen: false, buildOpen: false, bugOpen: true, graphsOpen: false });
                                     this.props.history.push('/release/status');
 
                                 }}>
                                     <td className='rp-app-table-key' style={{ maxWidth: '3rem', width: '0%' }}>
-                                        {/* {
-                                            !this.state.bugOpen &&
-                                            <i className="fa fa-angle-down rp-rs-down-arrow"></i>
-                                        }
-                                        {
-                                            this.state.bugOpen &&
-                                            <i className="fa fa-angle-up rp-rs-down-arrow"></i>
-                                        } */}
                                         Bug Status
                                     </td>
                                     <td style={{ width: '0%', }}>
@@ -672,14 +617,6 @@ class ReleaseSummary extends Component {
                             <tbody>
                                 <tr style={{ cursor: 'pointer' }} onClick={() => this.setState({ featureOpen: !this.state.featureOpen })}>
                                     <td className='rp-app-table-key' style={{ maxWidth: '3rem', width: '0%' }}>
-                                        {/* {
-                                                !this.state.featureOpen &&
-                                                <i className="fa fa-angle-down rp-rs-down-arrow"></i>
-                                            }
-                                            {
-                                                this.state.featureOpen &&
-                                                <i className="fa fa-angle-up rp-rs-down-arrow"></i>
-                                            } */}
                                         Feature Status
                                     </td>
                                     <td style={{ width: '0%' }}>
@@ -731,27 +668,9 @@ class ReleaseSummary extends Component {
                                                     <td className='rp-app-table-key'>{item.key}</td>
                                                     <td>{item.fields.summary}</td>
                                                     <td>
-                                                        {/* <div class="row">
-                                                     <div class="col-sm-3"> */}
                                                         <div className={`c-callout c-callout-open rp-new-badge`}>
-                                                            {/* <small class="text-muted">Total</small><br></br> */}
                                                             <strong class="h5">{item.fields.status.name}</strong>
                                                         </div>
-                                                        {/* </div> */}
-                                                        {/* {
-                                                        Object.keys(statusScenarios).map(item =>
-                                                            <div class="col-sm-3">
-                                                            <div className={`c-callout c-callout-${item.toLowerCase()}`}>
-                                                                <small class="text-muted">{item}</small><br></br>
-                                                                    <strong class="h4">{statusScenarios[item].total}</strong>
-                                                            </div>
-                                                       </div>
-                                                        )
-                                                    } */}
-
-                                                        {/* </div> */}
-                                                        {/* <Badge className='rp-open-status-badge'>{item.fields.status.name}
-                                                            </Badge> */}
                                                     </td>
                                                 </tr>
                                             )
@@ -772,39 +691,6 @@ class ReleaseSummary extends Component {
                                 </tr>
                             </tbody>
                         </Table>
-
-                        {/* <div onClick={() => {
-                            this.props.statusPage({ featureOpen: false, buildOpen: false, bugOpen: true, graphsOpen: false });
-                            this.props.history.push('/release/status');
-                        }}>
-
-                        </div> */}
-                        {/* <Collapse isOpen={this.state.featureOpen}>
-                            <Table scroll responsive style={{ overflow: 'scroll', }}>
-                                <thead>
-                                    <tr>
-                                        <th>Feature</th>
-                                        <th>Summary</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {
-                                        this.props.feature && this.props.feature.issues &&
-                                        this.props.feature.issues.map(item => {
-                                            return (
-                                                <tr onClick={() => this.props.history.push('/release/status')}>
-                                                    <td className='rp-app-table-key'>{item.key}</td>
-                                                    <td>{item.fields.summary}</td>
-                                                    <td><Badge className='rp-open-status-badge'>{item.fields.status.name}</Badge></td>
-                                                </tr>
-                                            )
-                                        })
-                                    }
-                                </tbody>
-                            </Table>
-                        </Collapse> */}
-
                     </Col>
                 </Row>
                 <Row>
@@ -831,18 +717,6 @@ class ReleaseSummary extends Component {
                                     : null
                             }
                         </div>
-
-                        {/* <Link to={'/release/qastrategy'}>
-                            <div>
-                                <div style={this.state.screen.tcStrategyTitleStyle}>
-                                    <div>Total</div>
-                                    <div>{this.props.tcStrategy && this.props.tcStrategy.total}</div>
-                                </div>
-                                <div className="chart-wrapper">
-                                    <Doughnut data={this.props.tcStrategy && this.props.tcStrategy.data} />
-                                </div>
-                            </div>
-                        </Link> */}
                         <Table scroll responsive style={{ overflow: 'scroll', }}>
                             <tbody>
                                 {
@@ -853,11 +727,11 @@ class ReleaseSummary extends Component {
                                         <table>
                                         <tbody>
                                         <tr>
+
                                         <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.totalTests : 0}</span></td>
-                                        <td style={{ borderTop: '0px'}}><span>GUI: {this.props.tcStrategy ? this.props.tcStrategy.totalGUI : 0}</span></td>
-                                            {/* <span>(P0: {this.props.selectedRelease.P0},</span>
-                                            <span>P1: {this.props.selectedRelease.P1},</span>
-                                            <span>P2: {this.props.selectedRelease.P2})</span> */}
+                                        
+                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI  ? allGUI.TotalTCs: 0}</span></td>
+                                           
                                             </tr>
                                         </tbody>
                                         </table>
@@ -872,10 +746,8 @@ class ReleaseSummary extends Component {
                                         <tbody>
                                         <tr>
                                         <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.notApplicable : 0}</span></td>
-                                        <td style={{ borderTop: '0px'}}><span>GUI: {this.props.tcStrategy ? this.props.tcStrategy.GUINotApplicable : 0}</span></td>
-                                            {/* <span>(P0: {this.props.selectedRelease.P0},</span>
-                                            <span>P1: {this.props.selectedRelease.P1},</span>
-                                            <span>P2: {this.props.selectedRelease.P2})</span> */}
+                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI ? allGUI.NotApplicable : 0}</span></td>
+                                           
                                             </tr>
                                         </tbody>
                                         </table>
@@ -890,10 +762,8 @@ class ReleaseSummary extends Component {
                                         <tbody>
                                         <tr>
                                         <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.skipped : 0}</span></td>
-                                        <td style={{ borderTop: '0px'}}><span>GUI: {this.props.tcStrategy ? this.props.tcStrategy.GUISkip : 0}</span></td>
-                                            {/* <span>(P0: {this.props.selectedRelease.P0},</span>
-                                            <span>P1: {this.props.selectedRelease.P1},</span>
-                                            <span>P2: {this.props.selectedRelease.P2})</span> */}
+                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI ? allGUI.SkippedFromRelease : 0}</span></td>
+                                            
                                             </tr>
                                         </tbody>
                                         </table>
@@ -904,17 +774,14 @@ class ReleaseSummary extends Component {
                                     <tr>
                                         <td className='rp-app-table-key'>Test Cases Skipped while Testing</td>
                                         <td>
-                                        <table>
-                                        <tbody>
-                                        <tr>
-                                        <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.SkipAndTested : 0}</span></td>
-                                        <td style={{ borderTop: '0px'}}><span>GUI: {this.props.tcStrategy ? this.props.tcStrategy.GUISkip : 0}</span></td>
-                                            {/* <span>(P0: {this.props.selectedRelease.P0},</span>
-                                            <span>P1: {this.props.selectedRelease.P1},</span>
-                                            <span>P2: {this.props.selectedRelease.P2})</span> */}
-                                            </tr>
-                                        </tbody>
-                                        </table>
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.SkipAndTested : 0}</span></td>
+                                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI ? allGUI.SkippedWhileTesting : 0}</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </td>
                                     </tr>
                                 }
@@ -922,29 +789,21 @@ class ReleaseSummary extends Component {
                                     <tr>
                                         <td className='rp-app-table-key'>Test Cases Automated</td>
                                         <td>
-                                        <table>
-                                        <tbody>
-                                        <tr>
-                                        <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.totalAutomated : 0}</span></td>
-                                        <td style={{ borderTop: '0px'}}><span>GUI: {this.props.tcStrategy ? this.props.tcStrategy.GUIAutomated : 0}</span></td>
-                                            {/* <span>(P0: {this.props.selectedRelease.P0},</span>
-                                            <span>P1: {this.props.selectedRelease.P1},</span>
-                                            <span>P2: {this.props.selectedRelease.P2})</span> */}
-                                            </tr>
-                                        </tbody>
-                                        </table>
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.totalAutomated : 0}</span></td>
+                                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI ? allGUI.Automated : 0}</span></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </td>
                                     </tr>
                                 }
                                 {
                                     [
-                                        // { key: 'Test Cases Automated', restrictEdit: true, field: 'automated', value: tcAutomated },
-                                        // // { key: 'Test Cases', restrictEdit: true, field: 'run', value: this.props.tcStrategy ? this.props.tcStrategy.totalTests : 0 },
-                                        // { key: 'Test Cases Skipped', restrictEdit: true, field: 'skip', value: tcSkipped},
-                                        // { key: 'Test Cases Not Applicable', restrictEdit: true, field: 'na', value: tcNA },
                                         { key: 'QA Start Date', field: 'QAStartDate', value: this.props.selectedRelease.QAStartDate, type: 'date' },
                                         { key: 'Target Code Freeze Date', field: 'TargetedCodeFreezeDate', value: this.props.selectedRelease.TargetedCodeFreezeDate, type: 'date' },
-                                        // { key: 'Expected rate of Progress per week', field: 'QARateOfProgress', value: this.props.selectedRelease.QARateOfProgress ? this.props.selectedRelease.QARateOfProgress : 0 },
 
                                     ].map((item, index) => {
                                         return (
@@ -993,10 +852,6 @@ class ReleaseSummary extends Component {
                                                             {!this.state.basic.editing && !item.restrictEdit &&
                                                                 <span>{this.props.selectedRelease[item.field] === undefined && ''}</span>
                                                             }
-
-                                                            {/* {
-                                                                item.restrictEdit && <td>{item.value}</td>
-                                                            } */}
 
                                                             {item.restrictEdit && item.value}
                                                             {
@@ -1061,57 +916,21 @@ class ReleaseSummary extends Component {
                                 }
                             </tbody>
                         </Table>
-                        {/* <div className='rp-rs-hw-support'>Test Cases</div>
-                        <Row>
-                            <Col sm="12" md="6" lg="3" style={{ margin: '1rem' }}>
-                                <span>Run</span>
-                                <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-key'>{this.props.tcStrategy ? this.props.tcStrategy.totalTestsRun : 0}</span>
-                            </Col>
-                            <Col sm="12" md="6" lg="3" style={{ margin: '1rem' }}>
-                                <span>Skipped </span>
-                                <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-key'>{this.props.tcStrategy ? this.props.tcStrategy.skipped : 0}</span>
-                            </Col>
-                            <Col sm="12" md="6" lg="3" style={{ margin: '1rem' }}>
-                                <span>Not Applicable</span>
-                                <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-key'>{this.props.tcStrategy ? this.props.tcStrategy.notApplicable : 0}</span>
-                            </Col>
-                        </Row> */}
+                        
                     </Col>
                     <Col xs="12" sm="12" md="5" lg="5" className="rp-summary-tables">
                         <div className='rp-app-table-header'>
                             <Link to={'/release/qastatus'}>
                                 <div className='rp-icon-button'><i className="fa fa-area-chart"></i></div><span className='rp-app-table-title'>QA Status</span>
                             </Link>
-                            {/* {
-                                this.props.currentUser && this.props.currentUser.isAdmin && this.state.qaStatus.editOptions && this.state.qaStatus.editOptions.length ?
-                                    this.state.qaStatus.editing ?
-                                        <Fragment>
-                                            <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggle()} >
-                                                <i className="fa fa-save"></i>
-                                            </Button>
-                                            <Button size="md" color="transparent" className="float-right" onClick={() => this.reset()} >
-                                                <i className="fa fa-undo"></i>
-                                            </Button>
-                                        </Fragment>
-                                        :
-                                        <Button size="md" color="transparent" className="float-right" onClick={() => this.setState({ qaStatus: { ...this.state.qaStatus, editing: true } })} >
-                                            <i className="fa fa-pencil-square-o"></i>
-                                        </Button>
-                                    : null
-                            } */}
+                            
                         </div>
                             <div className="chart-wrapper" style={{ textAlign: "center" }}>
 
 
 
                                 <div class='row'>
-                                    {/* <div style={this.state.screen.tcSummaryTitleStyle}>
-                                        <div>Total</div>
-                                        <div>{this.props.tcSummary && this.props.tcSummary.total}</div>
-                                    </div> */}
-                                    {/* <div class='col-md-1 rp-app-table-key'>Total:</div>
-                                    <div class='col-md-1 rp-app-table-key'>{this.props.tcSummary && this.props.tcSummary.total}</div> */}
-                                    {/* <Doughnut data={this.props.tcSummary && this.props.tcSummary.data} options={this.props.tcSummary && this.props.tcSummary.options} style={{ textAlign: 'center' }} /> */}
+                                    
                                     <div class='col-md-6'>
                                         {
                                             this.props.tcSummary &&
@@ -1130,8 +949,7 @@ class ReleaseSummary extends Component {
                                                                 </span>
                                             </div>
                                         }
-                                        {/* <div class='row'>
-                                        <div class='col-md-10'> */}
+                                        
                                         <Link to={'/release/qastatus'}>
                                         <div>
 
@@ -1140,11 +958,7 @@ class ReleaseSummary extends Component {
                                         </div>
                                         </Link>
                                         </div>
-                                        {/* </div> */}
-
-
-
-                                    {/* </div> */}
+                                       
                                     <div class='col-md-6'>
                                         {
                                             this.props.tcSummary &&
@@ -1165,7 +979,6 @@ class ReleaseSummary extends Component {
                             <tbody>
                                 {
                                     [
-                                        // { key: 'Actual rate of Progress per week', field: 'ActualQARateOfProgress', value: this.props.selectedRelease.ReleaseNumber === '2.3.0' ? 87.85 : 0 },
                                         { key: 'Test Cases required to run again', restrictEdit: true, field: 'run', value: this.props.tcStrategy ? this.props.tcStrategy.needToRun : 0 },
                                     ].map((item, index) => {
                                         return (
@@ -1174,30 +987,7 @@ class ReleaseSummary extends Component {
 
                                                     <td className='rp-app-table-key'>{item.key}</td>
                                                     {
-                                                        // this.state.qaStrategy.editing ?
-                                                        // <td style={{ width: '10rem' }}>
-                                                        //     <Input
-                                                        //         type={item.type ? item.type : 'text'}
-                                                        //         key={index}
-                                                        //         onChange={(e) => this.setState({ qaStrategy: { ...this.state.qaStrategy, updated: { ...this.state.qaStrategy.updated, [item.field]: e.target.value } } })}
-                                                        //         placeholder={this.props.selectedRelease[item.field]}
-                                                        //         value={
-
-                                                        //             this.state.qaStrategy.updated[item.field] !== undefined ?
-                                                        //                 this.state.qaStrategy.updated[item.field] : (this.props.selectedRelease[item.field] ? Array.isArray(this.props.selectedRelease[item.field]) ? this.props.selectedRelease[item.field].join(',') : this.props.selectedRelease[item.field] : '')}
-
-                                                        //     />
-                                                        //     {
-                                                        //         <div>
-                                                        //             <div className="progress-group">
-                                                        //                 <div className="progress-group-bars">
-                                                        //                     <Progress className="progress-xs" color="warning" value={this.state.qaStrategy.updated[item.field]} />
-
-                                                        //                 </div>
-                                                        //             </div>
-                                                        //         </div>
-                                                        //     }
-                                                        // </td> :
+                                                        
                                                         <td style={{ width: '10rem' }}>
 
                                                             {item.value}

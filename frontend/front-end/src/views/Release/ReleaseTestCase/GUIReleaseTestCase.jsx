@@ -42,7 +42,7 @@ const options = {
     maintainAspectRatio: false
 }
 const loading = () => <div className="animated fadeIn pt-3 text-center">Loading...</div>;
-class ReleaseTestCase extends Component {
+class GUIReleaseTestCase extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -61,15 +61,16 @@ class ReleaseTestCase extends Component {
             domains: getTCStatusForSunburst(this.props.selectedRelease),
             tcSummaryTitleStyle: window.screen.availWidth > 1400 ?
                 { position: 'absolute', top: '41%', left: '47%', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: '#003168' } :
-                { position: 'absolute', top: '42%', left: '46%', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: '#003168' },
-        }
+                { position: 'absolute', top: '42%', left: '46%', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: '#003168' },       
+        
+            guimetricsOpen:false,
+        
+            }
     }
     componentWillReceiveProps(newProps) {
-        console.log("newprops",this.props,newProps);
         if(this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
-            console.log("this.props.selectedRelease",this.props.selectedRelease,newProps.selectedRelease,this.props.selectedRelease.ReleaseNumber,newProps.selectedRelease.ReleaseNumber)
             // let dough = getTCStatusForUIDomains(newProps.selectedRelease.ReleaseNumber);
-            // let dom = getT"CStatusForSunburst(newProps.selectedRelease.ReleaseNumber);
+            // let dom = getTCStatusForSunburst(newProps.selectedRelease.ReleaseNumber);
             // this.setState({
             //     cntr: this.state.cntr +1,
             //     component: 'all',
@@ -82,11 +83,15 @@ class ReleaseTestCase extends Component {
             //     doughnuts: dough && dough.length>0 ? [...dough]:null,
             //     domains: dom && Object.keys(dom).length>0 ? {...getTCStatusForSunburst(newProps.selectedRelease.ReleaseNumber)}:null,
             // })
+            
+            
             // this.props.history.push('/release/summary');
         }
     }
     componentDidMount() {
         this.setState({ metricsOpen: true })
+        this.setState({ guimetricsOpen: true })
+        
     }
     getTcs() {
         if (this.state.domainSelected) {
@@ -136,8 +141,7 @@ class ReleaseTestCase extends Component {
         this.toggle();
     }
     sunburstClick(node) {
-        console.log('clicked node');
-        console.log(node);
+        console.log('clicked node',node);
         if (alldomains.includes(node.data.name)) {
             this.setState({ doughnuts: getTCStatusForUISubDomains(this.props.selectedRelease, node.data.name), domainSelected: false })
             return true;
@@ -174,27 +178,39 @@ class ReleaseTestCase extends Component {
     render() {
         return (
             <div>
+
+                < Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
+                    <ModalHeader toggle={() => this.toggle()}>Confirmation</ModalHeader>
+                    <ModalBody>
+                        Are you sure you want to make the changes?
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => this.save()}>Ok</Button>{' '}
+                        <Button color="secondary" onClick={() => this.toggle()}>Cancel</Button>
+                    </ModalFooter>
+                </Modal>
+
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'marginLeft': '1.5rem' }}>
-                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ metricsOpen: !this.state.metricsOpen },()=>{console.log("state is set or not",this.state.metricsOpen)})}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ guimetricsOpen: !this.state.guimetricsOpen })}>
                                     <div class='row'>
                                         <div class='col-md-6 col-lg-6'>
                                             {
-                                                !this.state.metricsOpen &&
+                                                !this.state.guimetricsOpen &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
                                             }
                                             {
-                                                this.state.metricsOpen &&
+                                                this.state.guimetricsOpen &&
                                                 <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                             }
 
                                             <div className='rp-icon-button'><i className="fa fa-area-chart"></i></div>
-                                            <span className='rp-app-table-title'>Test Case Status</span>
+                                            <span className='rp-app-table-title'>GUI Test Case Status</span>
                                 
                                         </div>
                                     </div>
                         </div>
-                        <Collapse isOpen={this.state.metricsOpen}>
+                        <Collapse isOpen={this.state.guimetricsOpen}>
                             <React.Fragment>
                                 <Row>
 
@@ -210,13 +226,6 @@ class ReleaseTestCase extends Component {
                                                 labelFunc={(node) => node.data.name}
                                             />
                                         </div>
-                                    
-                                        {/* <div className="main-container">
-                                            <div>
-                                                <SunburstComponent key={this.state.svgKey} sectionSelect={(e) => this.sectionSelect(e)} data={sunburstData[this.state.selected]}></SunburstComponent>
-                                            </div>
-                                        </div> */}
-
                                     </Col>
                                     <Col xs="11" sm="11" md="8">
                                     {
@@ -240,7 +249,6 @@ class ReleaseTestCase extends Component {
                                                         return (
                                                             <Col xs="12" sm="12" md="12" lg="12">
                                                                 <div className="chart-wrapper" style={{ minHeight: '400px' }}>
-                                                                    {/* <Doughnut data={item.data} /> */}
                                                                     <Bar data={item.data} options={options} />
                                                                 </div>
                                                                 <div className='rp-tc-dougnut-text'>
@@ -261,11 +269,7 @@ class ReleaseTestCase extends Component {
                                                             <Col xs="12" sm="12" md="6" lg="6">
                                                                 <div className="chart-wrapper">
                                                                     <div class='row' style={{ padding: '10px', margin: 'auto' }}>
-                                                                        {/* <div style={this.state.tcSummaryTitleStyle}>
-                                                                            <div>Total</div>
-                                                                            <div style={{ fontSize: '15px' }}>{item.data.datasets[0].data[0] + item.data.datasets[0].data[1] + item.data.datasets[0].data[2] + item.data.datasets[0].data[3]}</div>
-                                                                        </div> */}
-
+                                                                       
                                                                         <Doughnut data={item.data} style={{ textAlign: 'center' }} 
                                                                             options = {{
                                                                                 legend: {
@@ -275,11 +279,6 @@ class ReleaseTestCase extends Component {
                                                                         />
 
                                                                     </div>
-                                                                    {/* <div style={this.state.tcSummaryTitleStyle}>
-                                                                <div>Total</div>
-                                                                <div>{item.data.datasets[0].data[0] + item.data.datasets[0].data[1] + item.data.datasets[0].data[2] + item.data.datasets[0].data[3]}</div>
-                                                            </div>
-                                                            <Doughnut data={item.data} /> */}
                                                                 </div>
 
 
@@ -337,7 +336,6 @@ class ReleaseTestCase extends Component {
                                                     return (
                                                         <Col xs="12" sm="12" md="6" lg="6">
                                                             <div className="chart-wrapper" style={{ minHeight: '400px' }}>
-                                                                {/* <Doughnut data={item.data} /> */}
                                                                 <Bar data={item.data} options={options} />
                                                             </div>
                                                             <div className='rp-tc-dougnut-text'>
@@ -361,15 +359,8 @@ class ReleaseTestCase extends Component {
                                                 if (index >= 4) {
                                                     return (<Col xs="12" sm="12" md="4" lg="4">
                                                         <div className="chart-wrapper">
-                                                            {/* <div style={this.state.tcSummaryTitleStyle}>
-                                                                <div>Total</div>
-                                                                <div>{item.data.datasets[0].data[0] + item.data.datasets[0].data[1] + item.data.datasets[0].data[2] + item.data.datasets[0].data[3]}</div>
-                                                            </div> */}
                                                             <Doughnut data={item.data} />
                                                         </div>
-                                                        {/* <div className='rp-tc-dougnut-text'>
-                                                            {item && item.title}
-                                                        </div> */}
                                                         <div className='rp-tc-dougnut-text'>
                                                                     <span>{item && `${item.title}   `}</span><span style={{fontSize:'14px'}}>({item && (item.data.datasets[0].data[0] + item.data.datasets[0].data[1] + item.data.datasets[0].data[2] + item.data.datasets[0].data[3])})</span>
                                                         </div>
@@ -384,164 +375,9 @@ class ReleaseTestCase extends Component {
                     </Col>
                 </Row>
 
-                {/* <Row>
-                    <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                        <div className='rp-rs-hw-support'>Automation Syncup and Meetings</div>
-                        <Input readOnly={true} type="textarea" name="risksRedFlags" id="risksRedFlags" rows="5"
-                            placeholder="Content..." value={this.props.selectedRelease && this.props.selectedRelease.AutomationSyncUp} />
-                    </Col>
-                </Row> */}
-
-                {/* {
-                    this.state.domainSelected &&
-                    <div>
-                        <div>
-                            <Button style={{ marginTop: '0.5rem', marginLeft: '0.5rem' }} className='rp-any-button' onClick={() => this.setState({ open: !this.state.open })}>{this.state.open ? 'Close' : 'Create Test Case'}</Button>
-                        </div>
-                        <Collapse isOpen={this.state.open}>
-                            <Row style={{ marginLeft: '1rem', marginTop: '0.2rem' }}>
-                                <Col xs="12" sm="12" lg="10" className="rp-summary-tables" >
-                                    <div className='rp-app-table-header'>
-                                        <span className='rp-app-table-title'>Add Test Case</span>
-                                        <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.confirmToggle()} >
-                                            <i className="fa fa-check-square-o"></i>
-                                        </Button>
-                                    </div>
-
-                                    <Row>
-                                        <Col xs="12" sm="12" md="5" lg="5">
-                                            <Table scroll responsive style={{ overflow: 'scroll', }}>
-                                                <tbody>
-                                                    {
-                                                        [
-                                                            { field: 'Domain', header: 'Domain *', type: 'text' },
-                                                            { field: 'SubDomain', header: 'Sub Domain *', type: 'text' },
-                                                            { field: 'Setup', header: 'Setup', type: 'text' },
-                                                            { field: 'TcID', header: 'Tc ID *', type: 'text', },
-                                                            { field: 'TcName', header: 'Tc Name', type: 'text', restrictWidth: false },
-                                                            { field: 'Scenario', header: 'Scenario', type: 'text' },
-                                                            { field: 'OrchestrationPlatform', header: 'Orchestration Platform', type: 'text' },
-                                                            { field: 'Status', header: 'Status', type: 'text' }
-                                                        ].map((item, index) => (
-                                                            <tr>
-                                                                <td className='rp-app-table-key'>{item.header}</td>
-                                                                <td>
-                                                                    {
-                                                                        item.field === 'Domain' &&
-                                                                        <td className='rp-app-table-key'>{this.state.domainSelected}</td>
-                                                                    }
-                                                                    {
-                                                                        item.field !== 'Domain' &&
-                                                                        <Input
-                                                                            type="text"
-                                                                            key={index}
-                                                                            onChange={(e) => this.setState({ addTC: { ...this.state.addTC, [item.field]: e.target.value } })}
-                                                                            placeholder={'Add ' + item.header}
-                                                                            value={this.state.addTC[item.field]}
-                                                                        />
-                                                                    }
-
-                                                                </td>
-                                                            </tr>
-                                                        ))
-                                                    }
-                                                </tbody>
-                                            </Table>
-                                        </Col>
-                                        <Col xs="12" sm="12" md="5" lg="5">
-                                            <Table scroll responsive style={{ overflow: 'scroll', }}>
-                                                <tbody>
-                                                    {
-                                                        [
-
-                                                            { field: 'Description', header: 'Description', type: 'text' },
-                                                            { field: 'ExpectedBehaviour', header: 'Expected Behaviour', type: 'text' },
-                                                            { field: 'Notes', header: 'Notes', type: 'text' },
-
-                                                        ].map((item, index) => (
-                                                            <tr>
-                                                                <td className='rp-app-table-key'>{item.header}</td>
-                                                                <td>
-                                                                    <Input
-                                                                        type="textarea"
-                                                                        key={index}
-                                                                        onChange={(e) => this.setState({ addTC: { ...this.state.addTC, [item.field]: e.target.value } })}
-                                                                        placeholder={'Add ' + item.header}
-                                                                        value={this.state.addTC[item.field]}
-                                                                    />
-                                                                </td>
-                                                            </tr>
-                                                        ))
-                                                    }
-                                                </tbody>
-                                            </Table>
-                                        </Col>
-                                    </Row>
-
-                                </Col>
-                            </Row>
-                        </Collapse>
-                    </div>
-                } */}
-                {/* {
-                    this.state.domainSelected &&
-                    <Row>
-                        <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-
-                            <AppTable
-                                // onUpdate={(values) => this.updateTestCase(values)}
-                                // editOptions={this.props.currentUser && this.props.currentUser.isAdmin ? [TABLE_OPTIONS.ADD] : []}
-                                title={`Test cases`}
-                                currentUser={this.props.currentUser}
-                                fieldAndHeader={[
-
-                                    { field: 'TcID', header: 'Tc ID', type: 'text', },
-                                    { field: 'TcName', header: 'Tc Name', type: 'text', restrictWidth: false, },
-                                    { field: 'Build', header: 'Build', type: 'text' },
-                                    { field: 'Result', header: 'Result', type: 'text' },
-                                    // { field: 'Description', header: 'Description', type: 'text', restrictWidth: false },
-                                    // { field: 'ExpectedBehaviour', header: 'Expected Behaviour', type: 'text', restrictWidth: false },
-                                    // { field: 'Notes', header: 'Notes', type: 'text' },
-                                    { field: 'Date', header: 'Date', type: 'text' },
-                                    { field: 'Domain', header: 'Domain', type: 'text', },
-                                    { field: 'SubDomain', header: 'Sub Domain', type: 'text' },
-                                ]}
-                                data={
-                                    this.props.selectedTC
-                                }
-                                restrictHeight="rp-app-table-medium"
-                                addOnTop={true}
-                            />
-
-                        </Col>
-                    </Row>
-
-                } */}
-
-
-                < Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
-                    <ModalHeader toggle={() => this.toggle()}>Confirmation</ModalHeader>
-                    <ModalBody>
-                        Are you sure you want to make the changes?
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={() => this.save()}>Ok</Button>{' '}
-                        <Button color="secondary" onClick={() => this.toggle()}>Cancel</Button>
-                    </ModalFooter>
-                </Modal>
-
             </div >)
 
-        // <Pagination>
-        //                         <PaginationItem disabled><PaginationLink previous tag="button">Prev</PaginationLink></PaginationItem>
-        //                         <PaginationItem active>
-        //                             <PaginationLink tag="button">1</PaginationLink>
-        //                         </PaginationItem>
-        //                         <PaginationItem><PaginationLink tag="button">2</PaginationLink></PaginationItem>
-        //                         <PaginationItem><PaginationLink tag="button">3</PaginationLink></PaginationItem>
-        //                         <PaginationItem><PaginationLink tag="button">4</PaginationLink></PaginationItem>
-        //                         <PaginationItem><PaginationLink next tag="button">Next</PaginationLink></PaginationItem>
-        //                     </Pagination>
+       
     }
 }
 const mapStateToProps = (state, ownProps) => ({
@@ -551,35 +387,5 @@ const mapStateToProps = (state, ownProps) => ({
     // selectedTCStatus: state.testcase.status[state.release.current.id],
     // doughnuts: getTCStatusForUIDomains(state, state.release.current.id)
 })
-export default connect(mapStateToProps, { saveTestCase, saveTestCaseStatus, saveSingleTestCase })(ReleaseTestCase);
+export default connect(mapStateToProps, { saveTestCase, saveTestCaseStatus, saveSingleTestCase })(GUIReleaseTestCase);
 
-
-
-
-
-
-
-
-
-
-
-
-/* <div className="ag-theme-balham" style={{ height: '200px', width: '600px' }}>
-                            <AgGridReact
-                                columnDefs={[
-                                    { field: 'Domain', headerName: 'Domain', sortable: true, filter: true },
-                                    { field: 'SubDomain', headerName: 'Sub Domain', sortable: true, filter: true },
-                                    { field: 'Setup', headerName: 'Setup', sortable: true, filter: true },
-                                    { field: 'TcID', headerName: 'Name', sortable: true, filter: true },
-                                    { field: 'TcName', headerName: 'Tc Name', sortable: true, filter: true },
-                                    { field: 'Scenario', headerName: 'Scenario', sortable: true, filter: true },
-                                    { field: 'Description', headerName: 'Description', sortable: true, filter: true },
-                                    { field: 'ExpectedBehaviour', headerName: 'Expected Behaviour', sortable: true, filter: true },
-                                    { field: 'Notes', headerName: 'Notes', sortable: true, filter: true },
-                                    { field: 'OrchestrationPlatform', headerName: 'Orchestration Platform', sortable: true, filter: true },
-                                    { field: 'Status', headerName: 'Status', sortable: true, filter: true }]}
-                                rowData={this.props.testcases
-                                }
-                            >
-                            </AgGridReact>
-                        </div> */

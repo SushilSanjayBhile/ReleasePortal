@@ -445,27 +445,6 @@ class AdminGrid extends Component {
                                             <span className='rp-app-table-title'>Test Cases</span>
 
                                         </div>
-                                        {/* {
-                                            this.state.rowSelect &&
-                                            <React.Fragment>
-                                                {
-                                                    this.props.user && this.state.isEditing ?
-                                                        <Fragment>
-                                                            <Button style={{ position: 'absolute', right: '1rem' }} title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggle()} >
-                                                                <i className="fa fa-check-square-o"></i>
-                                                            </Button>
-                                                            <Button style={{ position: 'absolute', right: '3rem' }} size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.reset()} >
-                                                                <i className="fa fa-undo"></i>
-                                                            </Button>
-                                                        </Fragment>
-                                                        :
-                                                        <Button style={{ position: 'absolute', right: '1rem' }} size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.setState({ isEditing: true })} >
-                                                            <i className="fa fa-pencil-square-o"></i>
-                                                        </Button>
-                                                }
-                                            </React.Fragment>
-                                        } */}
-
                                     </div>
                                 </div>
 
@@ -527,22 +506,6 @@ class AdminGrid extends Component {
                                                 stopEditingWhenGridLosesFocus={true}
                                             />
                                         </div>
-                                        {/* {
-                                            !this.state.open &&
-                                            this.state.rowSelect &&
-                                            this.props.tcDetails && this.props.tcDetails.TcID &&
-                                            <div style={{ textAlign: 'right', marginTop: '2rem' }}>
-                                                <i className="fa fa-angle-down rp-save-tc-icon" onClick={() => this.setState({ open: !this.state.open })}> More</i>
-                                            </div>
-                                        }
-                                        {
-                                            this.state.open &&
-                                            this.state.rowSelect &&
-                                            this.props.tcDetails && this.props.tcDetails.TcID &&
-                                            <div style={{ textAlign: 'right', marginTop: '2rem' }}>
-                                                <i className="fa fa-angle-up rp-save-tc-icon" onClick={() => this.setState({ open: !this.state.open })}> Less</i>
-                                            </div>
-                                        } */}
                                     </div>
                                 </div>
                                 <Collapse isOpen={this.state.rowSelect}>

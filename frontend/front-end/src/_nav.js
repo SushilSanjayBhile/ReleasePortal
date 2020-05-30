@@ -41,14 +41,29 @@ export default {
       url: '/release/docs',
       icon: 'fa fa-file'
     },
+
+    // {
+    //   name: 'Team Work',
+    //   url: '/release/teamwork',
+    //   icon: 'fa fa-bars',
+    // },
+    
     {
       name: 'Jira Dashboard',
       url: 'https://diamanti.atlassian.net/secure/Dashboard.jspa?selectPageId=12600',
       // url: 'http://dwsjira1.eng.diamanti.com:8080/secure/Dashboard.jspa?selectPageId=11803',
       attributes: { target: '_blank' },
       icon: 'fa fa-bug',
-      class: 'rp-jira'
+      // class: 'rp-jira'
     },
+
+    
+
+    // {
+    //   name: 'select Month',
+    //   url: '/release/month',
+    //   icon: 'fa fa-bars',
+    // }
 
 
   ],

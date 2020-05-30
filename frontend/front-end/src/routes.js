@@ -47,6 +47,8 @@ const ReleaseDocs = React.lazy(() => import('./views/Release/ReleaseDocs/Release
 const ReleaseTestMetricsGUI = React.lazy(() => import('./views/Release/ReleaseTestMetricsGUI/ReleaseTestMetricsGUI'))
 const ReleaseSanityResult = React.lazy(() => import('./views/Release/ReleaseSanityResult/ReleaseSanityResult'))
 const Examples = React.lazy(() => import('./views/Examples/Examples.js'))
+// const teamwork = React.lazy(() => import('./views/TeamWorkComponent/Test'))
+
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
   { path: '/', exact: true, name: 'Release Portal' },
@@ -61,6 +63,8 @@ const routes = [
   { path: '/release/user', name: 'Admin Panel', exact: true, component: ReleaseAdmin },
   { path: '/release/docs', name: 'Documentation Panel', exact: true, component: ReleaseDocs },
   { path: '/release/sanityresults', name: 'sanityresults', exact: true, component: ReleaseSanityResult },
+  // { path: '/release/teamwork', name: 'teamwork', exact: true, component: teamwork },
+  // { path: '/release/month', name: 'teamwork', exact: true, component: month },
   // {path: '/examples', name: 'Examples', exact:true, component:Examples}
   // { path: '/dashboard', name: 'Dashboard', component: Dashboard },
   // { path: '/theme', exact: true, name: 'Theme', component: Colors },

@@ -1,7 +1,6 @@
-FROM alpine
-RUN apk add nodejs npm
+FROM node:10
 WORKDIR /app
 COPY . .
 RUN npm install
-EXPOSE 5051
-ENTRYPOINT npm run start
+EXPOSE 80
+ENTRYPOINT npm run startProd && /bin/bash
