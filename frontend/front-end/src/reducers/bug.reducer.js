@@ -26,11 +26,13 @@ function all(state = initialState.features, action) {
     switch (action.type) {
         case SAVE_BUGS:
             let bug = action.payload.data;
+            console.log("nug reducer",action.payload.data)
             let allBugs = state[action.payload.id] ? state[action.payload.id].bug : {};
-            console.log("all nug data".bug)
+            console.log("all bug data",bug,allBugs)
             if (bug.all) {
                 allBugs = bug.all;
             }
+            
             console.log(bug.all,"bug all");
             // state[action.payload.id] = action.payload.data;
             if (!state[action.payload.id]) {

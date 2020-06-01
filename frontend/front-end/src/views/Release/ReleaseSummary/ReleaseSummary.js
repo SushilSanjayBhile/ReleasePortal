@@ -251,21 +251,32 @@ class ReleaseSummary extends Component {
     initialize(release) {
         this.reset();
         let temp = release;
+        console.log("temp",temp)
         if(temp === 'Spektra 2.4') {
-            temp = '2.4.0'
-        } else if(temp === 'Spektra 3.0') {
-            temp='3.0.0'
+            temp='2.4.0'
+            // temp = temp.split(" ").join("")
+            // console.log(temp,"after trim")
         }
+        
+        if(temp === 'DMC-3.0') {
+            temp="\"Spektra 3.0\""
+        }
+        
         axios.get('/rest/features/' + temp)
+
             .then(res => {
                 this.props.saveFeatures({ data: res.data, id: release })
                 this.setState({ showFeatures: true })
+                console.log("features" ,res.data,release)
             }, err => {
                 console.log('err ', err);
             });
+
+           
         axios.get('/rest/bugs/total/' + temp)
             .then(res => {
                 this.props.saveBugs({ data: { total: res.data.total, all: res.data }, id: release })
+                console.log("totalBUgs",res.data.total)
                 this.setState({ showBugs: true, cntr: 2 })
             }, err => {
                 console.log('getting in TOTAL BUGS')
@@ -322,6 +333,7 @@ class ReleaseSummary extends Component {
                 this.setState({ selectedPriority: obj  });
     }
     popoverToggle = () => this.setState({ popoverOpen: !this.state.popoverOpen});
+    popoverToggleGUI = () => this.setState({ popoverOpengui: !this.state.popoverOpengui});
     save() {
         let data = { ...this.props.selectedRelease, ...this.state.basic.updated, ...this.state.qaStrategy.updated }
         let dates = [
@@ -771,19 +783,19 @@ class ReleaseSummary extends Component {
                                     </tr>
                                 }
                                                                                                                                 {
-                                    <tr>
-                                        <td className='rp-app-table-key'>Test Cases Skipped while Testing</td>
-                                        <td>
-                                            <table>
-                                                <tbody>
-                                                    <tr>
-                                                        <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.SkipAndTested : 0}</span></td>
-                                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI ? allGUI.SkippedWhileTesting : 0}</span></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
+                                    // <tr>
+                                    //     <td className='rp-app-table-key'>Test Cases Skipped while Testing</td>
+                                    //     <td>
+                                    //         <table>
+                                    //             <tbody>
+                                    //                 <tr>
+                                    //                     <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.SkipAndTested : 0}</span></td>
+                                    //                     <td style={{ borderTop: '0px'}}><span>GUI: {allGUI ? allGUI.SkippedWhileTesting : 0}</span></td>
+                                    //                 </tr>
+                                    //             </tbody>
+                                    //         </table>
+                                    //     </td>
+                                    // </tr>
                                 }
                                                                 {
                                     <tr>
@@ -964,14 +976,25 @@ class ReleaseSummary extends Component {
                                             this.props.tcSummary &&
                                             <div className='rp-app-table-key'>
                                                 <span>GUI ({this.props.tcSummary.total[1]})</span>
+                                                <span>
+                                                        <Button  size="sm" style={{backgroundColor: '#2eb85c', borderRadius: '50%', marginLeft: '0.5rem'}} id="PopoverAssign1" type="button">
+                                                            P
+                                                        </Button>
+                                                        <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign1" id="PopoverAssignButton1"  toggle={() => this.popoverToggleGUI()} isOpen={this.state.popoverOpengui}>
+                                                            <PopoverBody>
+                                                            <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect('Priorities', e, checked, select)}
+                                            data={multiselect['Priorities']} multiple /></div>
+                                                                </PopoverBody>
+                                                                </UncontrolledPopover>
+                                                                </span>
                                             </div>
                                         }
-                                        <div>
-                                            <HorizontalBar height={180} data={this.props.tcSummary && this.props.tcSummary.data[1]} options={stackedBarChartOptions}></HorizontalBar>
-                                        </div>
+                                        <Link to={'/release/qastatus'}>
+                                            <div>
+                                                <HorizontalBar height={180} data={this.props.tcSummary && this.props.tcSummary.data[1]} options={stackedBarChartOptions}></HorizontalBar>
+                                            </div>
+                                        </Link>
                                     </div>
-
-
                                 </div>
                             </div>
 

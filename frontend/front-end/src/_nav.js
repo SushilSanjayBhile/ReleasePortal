@@ -11,11 +11,11 @@ export default {
       url: '/release/status',
       icon: 'fa fa-bars',
     },
-    {
-      name: 'QA Updates',
-      url: '/release/qastrategy',
-      icon: 'fa fa-cogs',
-    },
+    // {
+    //   name: 'QA Updates',
+    //   url: '/release/qastrategy',
+    //   icon: 'fa fa-cogs',
+    // },
     {
       name: 'QA Status',
       url: '/release/qastatus',
