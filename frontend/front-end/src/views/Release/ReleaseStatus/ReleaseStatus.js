@@ -20,6 +20,11 @@ import './ReleaseStatus.scss'
 // import sunburst from '../../../reducers/domains.js'
 import Sunburst from '../components/Sunburst';
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
+
+
+
+
+let allBugs = []
 const options = {
     tooltips: {
         enabled: false,
@@ -38,13 +43,18 @@ class ReleaseStatus extends Component {
             featureOpen: true,
             buildOpen: false,
             bugOpen: false,
-            graphsOpen: false
+            graphsOpen: false,
+            blockedBugOpen:false,
+            blockedBugList:[],
+            allBugsList:[],
         }
     }
     initialize() {
         if (!this.props.singleFeature.fields) {
+            console.log("before go inside if",this.props.feature);
             if (this.props.feature && this.props.feature.issues) {
-                this.getFeatureDetails(this.props.feature.issues[0].self)
+                console.log("release status initialize",this.props.feature.issues)
+                // this.getFeatureDetails(this.props.feature.issues[0].self)
             }
         }
         if (this.props.statusPage) {
@@ -68,6 +78,74 @@ class ReleaseStatus extends Component {
 
         })
     }
+
+    handleTcCount = () =>{
+        let list = []
+        let list2 = []
+        let url  = `/api/bugwiseblockedtcs/` + this.props.selectedRelease.ReleaseNumber
+        console.log("bugwise url kay ahe",url)
+        axios.get(url).then(res=>{
+                    console.log("result bugwiseblockedtcs",res)
+                    list.push(res.data);
+                    console.log("asdfghj",list[0])
+                   
+                    
+                    for (let [key, value] of Object.entries(list[0])) {
+                        console.log(`${key}: ${value}`);
+                        list2.push({'bug_no':key,'value':value})
+                        // console.log("list2",list2);
+                        
+                    }
+                    this.setState({blockedBugList:list2})
+
+                    console.log(this.state.blockedBugList,"blockedBugList")
+                    for(let i = 0 ; i < this.state.blockedBugList ; i++){
+                        console.log(this.state.blockedBugList[i]);
+                    }
+
+
+                },
+                error => {
+                console.log('bugwiseblockedtcs',error);
+        }) 
+    }
+
+    
+    renderTableData  = () => {
+        
+        return this.state.blockedBugList === 0 ? (
+            <div>Loading...</div>
+        ) : (
+            this.state.blockedBugList.map((e, i) => {
+            return (
+                        <tr key={i}> 
+                            <td width="100px" height="50px" >{e.bug_no}</td>
+                            <td width="100px" height="50px" >{e.value}</td>
+                        </tr>    
+                );
+            })
+        )
+        
+    }
+
+    makelistAsUWant = (data)=>{
+       
+        console.log("data bhtela ahe",data)
+        allBugs.push({'Bug_No':data.key,'Summary':data.fields.summary,"status":data.fields.status.name.toLowerCase(),'Priority':data.fields.priority.name.toLowerCase()})
+        // this.setState({allBugsList:allBugs})
+        console.log("---------------------------------------------------------------")
+        console.log(allBugs,this.state.blockedBugList)
+        
+        console.log("---------------------------------------------------------------")
+       
+
+       
+    }
+
+
+
+
+    
     render() {
         let featuresCount = 0;
         let statusScenarios = { Open: { total: 0 }, Resolved: { total: 0 } };
@@ -126,31 +204,7 @@ class ReleaseStatus extends Component {
                                 }
                             }>
                                 <Col xs="12" sm="12" md="12" lg="12">
-                                    {/* <div class='row' style={
-                                        {
-
-                                            borderStyle: 'solid',
-                                            borderWidth: '2px 0px 0px 0px',
-                                            paddingTop: '11px',
-                                            borderTop: '1px solid #c8ced3'
-                                        }
-                                    }>
-                                        <div class='col-md-1 rp-app-table-title' style={{ marginLeft: '1rem' }}>Priority</div>
-                                        {
-                                            this.props.bug && Object.keys(this.props.bug.bugCount.category).map(item =>
-                                                // <Badge className={`rp-priority-${item}-status-badge`}>
-                                                //     <span>{item} : </span>
-                                                //     <span>{this.props.bug.bugCount.category[item].total}</span>
-                                                // </Badge>
-                                                <div class='col-md-1'>
-                                                    <div className={`c-callout c-callout-${item.toLowerCase()}`} style={{ marginTop: '0', marginBottom: '0' }}>
-                                                        <small class="text-muted">{item}</small><br></br>
-                                                        <strong class="h5">{this.props.bug.bugCount.category[item].total}</strong>
-                                                    </div>
-                                                </div>
-                                            )
-                                        }
-                                    </div> */}
+                                    
                                     <div style={{ marginLeft: '1rem', marginTop: '1rem', overflowY: 'scroll', maxHeight: '30rem' }}>
                                         <Table scroll responsive style={{ overflow: 'scroll' }}>
                                             <thead>
@@ -163,11 +217,12 @@ class ReleaseStatus extends Component {
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {
-                                                    this.props.bug && this.props.bug.bug && this.props.bug.bug.issues &&
+                                                {  
+                                                    this.props.bug && this.props.bug.bug && this.props.bug.bug.issues && 
                                                     this.props.bug.bug.issues.map(item => {
-                                                        console.log('item here')
-                                                        console.log(item);
+                                                        // console.log('item here')
+                                                        // this.makelistAsUWant(item)
+                                                        // console.log(item);
                                                         return (
                                                             <tr style={{ cursor: 'pointer' }}>
                                                                 <td style={{ width: '250px' }} className='rp-app-table-key'><span onClick={() => window.open(`https://diamanti.atlassian.net/browse/${item.key}`)}>{item.key}</span></td>
@@ -185,13 +240,6 @@ class ReleaseStatus extends Component {
                                                                     <strong class="h5">{item.fields.priority.name}</strong>
                                                                 </div>
 
-                                                                <div style={{width:'250px'}} className={`c-callout c-callout-${item.fields.priority.name.toLowerCase()} rp-new-badge`}>
-                                                                    <strong class="h5">{item.fields.priority.name}</strong>
-                                                                </div>
-
-                                                              
-
-
                                                             </tr>
                                                         )
                                                     })
@@ -202,6 +250,68 @@ class ReleaseStatus extends Component {
                                 </Col>
                             </Row>
                         </Collapse>
+                    </Col>
+                </Row>
+
+
+                <Row>
+                    <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                            <div class="row">
+                                <div class='col-lg-12'>
+                                    <div style={{ display: 'flex' }}>
+                                        <div onClick={() => this.setState({ blockedBugOpen: !this.state.blockedBugOpen },()=>{this.handleTcCount()})} style={{ display: 'inlineBlock' }}>
+                                        
+                                        {
+                                            !this.state.blockedBugOpen &&
+                                            <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                        }
+                                        {
+                                            this.state.blockedBugOpen &&
+                                            <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                        }
+                                        <div className='rp-icon-button'></div>
+                                        <span className='rp-app-table-title'>Blocker Bugs</span>
+                                      
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <Collapse isOpen={this.state.blockedBugOpen}>
+                            <Row style={
+                                {
+                                    marginRight: '0',
+                                    marginLeft: '0'
+                                }
+                                }>
+                                <Col xs="12" sm="12" md="12" lg="12">
+                                    
+                                    <div style={{ marginLeft: '1rem', marginTop: '1rem', overflowY: 'scroll', maxHeight: '30rem' }}>
+                                        <Table scroll responsive style={{ overflow: 'scroll' }}>
+                                            <thead>
+                                                <tr>
+                                                <th style={{width:'250px'}}>Bug</th>
+                                                    {/* <th>Summary</th>
+                                                    <th  style={{width:'250px'}}>Status</th> */}
+                                                    <th  style={{width:'300px'}}>#TC Blocked</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {
+                                                
+                                                
+                                                this. renderTableData()
+                                                }
+                                            </tbody>
+                                        </Table>
+                                    </div>
+                                </Col>
+                            </Row>
+                        </Collapse>
+
                     </Col>
                 </Row>
 
@@ -262,19 +372,6 @@ class ReleaseStatus extends Component {
                         </Collapse>
                     </Col>
                 </Row>
-
-
-
-
-
-
-
-
-
-
-
-
-
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                         <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ featureOpen: !this.state.featureOpen })}>
