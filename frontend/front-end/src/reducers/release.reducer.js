@@ -21,15 +21,8 @@ const initialState = {
     current: {},
     options: { selectedPriority: ['P0', 'P1'] }
 };
-// {'Storage-DrivesetTCs':'Storage-Driveset','StoragePVC':'Storage-PVC','VagrantCluster':'Vagrant Cluster','
-// SoftwareSolution':'Software Solution','ManagementTestcases': "Management", "MultizoneCluster":"Multizone Cluster",  
-// "NetworkTestCases":"Network", "Rbac    ":"RBAC","StorageMirrored-Tests":"Storage-Mirrored","Additionaltests":"Additional",
-//  "HelmTestCases":"Helm","Interfacetestcases":"Interface"    ,"Kubernetes-tests": "Kubernetes",
-//   "ManagementTestcases":"Management", "MultizoneCluster":"Multizone Cluster", "NetworkTestCases":"Network"    
-//   ,"QOSTestcases":"QOS","StorageMirrored-Tests":"Storage-Mirrored","StorageRemote-Tests":"Storage-Remote",
-// "StorageSnapshot-Tests":"Storage-Snapshot","Upgradetests":"Upgrade", "Storage-Tests":"Storage"}
-export const alldomains = ['Storage', 'Network', 'Management', 'Others'];
-const domainDetail = {
+export let alldomains = ['Storage', 'Network', 'Management', 'Others'];
+let domainDetail = {
     'Storage': { name: 'Storage', index: 0 },
     'Storage-Remote': { name: 'Storage', index: 0 },
     'Storage-PVC': { name: 'Storage', index: 0 },
@@ -41,10 +34,28 @@ const domainDetail = {
     'RBAC': { name: 'Management', index: 2 },
 }
 
+
+
 // ////////////////////
 // Modifiers //////////
 // //////////////////
 function getAggregate(release) {
+    if(release.ReleaseNumber == "DMC-3.0"){
+        alldomains = ['Cluster Management', 'Application Management', 'Multizone','Airgaped','ApplicationDR','Tenant', 'Project','User Managment','Service Provider','Others'];
+        domainDetail = {
+            'Cluster Management': { name: 'Cluster Management', index: 0 },
+            'Application Management': { name: 'Application Management', index: 0 },
+            'User Managment':{ name: 'User Managment', index: 0 },
+            'ApplicationDR': { name: 'ApplicationDR', index: 0 },
+            'Airgaped': { name: 'Airgaped', index: 0 },
+            'Multizone': { name: 'Multizone', index: 0 },
+            'Tenant': { name: 'Tenant', index: 0 },
+            'Project': { name: 'Project', index: 0 },
+            'Service Provider':{name: 'Service Provider', index: 0}
+        }
+        
+    
+    }
     if (!release.TcAggregate) {
         release.TcAggregate = {
             all: {
@@ -89,7 +100,7 @@ function getAggregate(release) {
         };
     }
     release.TcAggregate.all.TotalTested = release.TcAggregate.all.Tested.auto.Pass + release.TcAggregate.all.Tested.auto.Fail +
-        release.TcAggregate.all.Tested.manual.Pass + release.TcAggregate.all.Tested.manual.Fail;
+                                          release.TcAggregate.all.Tested.manual.Pass + release.TcAggregate.all.Tested.manual.Fail;
     release.TcAggregate.all.SkipAndTested = release.TcAggregate.all.Tested.auto.Skip + release.TcAggregate.all.Tested.manual.Skip;
     release.TcAggregate.all.Skip = release.TcAggregate.all.Skip;
     release.TcAggregate.all.Blocked =  release.TcAggregate.all.Blocked;
@@ -101,30 +112,55 @@ function getAggregate(release) {
                 "auto": {
                     "Pass": 0,
                     "Fail": 0,
-                    "Skip": 0
+                    "Skip": 0,
+                    "Block":0
+                   
                 },
                 "manual": {
                     "Pass": 0,
                     "Fail": 0,
-                    "Skip": 0
+                    "Skip": 0,
+                    "Block":0
+                   
                 },
             },
             "NotTested": 0,
-            "NotApplicable": 0
+            "NotApplicable": 0,
+           
         }
     });
 
     let relDomain = release.TcAggregate.domain
     Object.keys(relDomain).forEach((item, index) => {
         if (domainDetail[item]) {
+            console.log("domainDetail[item].name",domainDetail[item].name)
             release.TcAggregate.domain[item].tag = domainDetail[item].name;
+
             release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Pass += relDomain[item].Tested.auto.Pass;
             release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Fail += relDomain[item].Tested.auto.Fail;
             release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Skip += relDomain[item].Tested.auto.Skip;
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Block += relDomain[item].Tested.auto.Blocked;
+            console.log(relDomain,"relDomain")
+
+
+            console.log(
+            "===================== Auto===========================",
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Pass += relDomain[item].Tested.auto.Pass,
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Fail += relDomain[item].Tested.auto.Fail,
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Skip += relDomain[item].Tested.auto.Skip,
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Block += relDomain[item].Tested.auto.Blocked,
+            "====================== Manual =======================",
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Pass += relDomain[item].Tested.manual.Pass,
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Fail += relDomain[item].Tested.manual.Fail,
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Skip += relDomain[item].Tested.manual.Skip,
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Block += relDomain[item].Tested.manual.Blocked
+
+            )
 
             release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Pass += relDomain[item].Tested.manual.Pass;
             release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Fail += relDomain[item].Tested.manual.Fail;
             release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Skip += relDomain[item].Tested.manual.Skip;
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Block += relDomain[item].Tested.manual.Blocked;
 
 
             release.TcAggregate.uidomain[domainDetail[item].name].Tested.total =
@@ -239,6 +275,7 @@ export const getCurrentRelease = (state) => {
 
 export const getTCForStatus = (state, id) => {
     let release = state.release.all.filter(item => item.ReleaseNumber === id)[0];
+    
     if (!release) {
         return;
     }
@@ -246,25 +283,55 @@ export const getTCForStatus = (state, id) => {
         return;
     }
     let p = {};
-    ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'].map(item => p[item] = { Pass: 0, Skip: 0, Fail: 0, NotTested: 0 });
-    let visibleP = { Pass: 0, Skip: 0, Fail: 0, NotTested: 0 };
+    ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'].map(item => p[item] = { Pass: 0, Skip: 0, Fail: 0, NotTested: 0,Blocked:0 });
+    let visibleP = { Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
+    let visibleGUIP = { Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
     if (release.Priority) {
         p = { ...p, ...release.Priority }
+        
     }
+    let pGUI = {}
+    if (release.TcAggregate.PriorityGui) {
+        pGUI = { ...pGUI, ...release.TcAggregate.PriorityGui}
+        
+    }
+   
     //TODO: get from backend release site
     // p.P0={...p.P0, Pass: 100, Fail: 200};
     // p.P1 = {...p.P1, Pass:23, Fail:43};
 
     if (state.release.options.selectedPriority) {
+        
         state.release.options.selectedPriority.forEach(item => {
             visibleP.Pass += p[item].Pass;
             visibleP.Skip += p[item].Skip;
             visibleP.Fail += p[item].Fail;
             visibleP.NotTested += p[item].NotTested;
+            visibleP.Blocked += p[item].Blocked;
         })
     }
 
-    console.log("check data is comig or not",release.TcAggregate);
+    if(state.release.options.selectedPriority){
+
+        if (release.ReleaseNumber == "DMC-3.0") {
+            
+            state.release.options.selectedPriority.forEach(item => {
+                
+                visibleGUIP.Pass += pGUI[item].Pass;
+                visibleGUIP.Skip += pGUI[item].Skip;
+                visibleGUIP.Fail += pGUI[item].Fail;
+                visibleGUIP.NotTested += pGUI[item].NotTested;
+                visibleGUIP.Blocked += pGUI[item].Blocked;
+            })
+        }
+
+    }
+    
+    
+    
+
+
+    
     let data = [{
         labels: ['', ''],
         datasets: [{
@@ -274,13 +341,13 @@ export const getTCForStatus = (state, id) => {
             borderWidth: 1,
             data: [(release.TcAggregate.all.Tested.auto.Pass + release.TcAggregate.all.Tested.manual.Pass), visibleP.Pass]
         },
-        {
-            label: 'Skipped (Testing)',
-            backgroundColor: '#FFCE56',
-            borderColor: 'white',
-            borderWidth: 1,
-            data: [(release.TcAggregate.all.Tested.auto.Skip + release.TcAggregate.all.Tested.manual.Skip), visibleP.Skip]
-        },
+        // {
+        //     label: 'Skipped (Testing)',
+        //     backgroundColor: '#FFCE56',
+        //     borderColor: 'white',
+        //     borderWidth: 1,
+        //     data: [(release.TcAggregate.all.Tested.auto.Skip + release.TcAggregate.all.Tested.manual.Skip), visibleP.Skip]
+        // },
         {
             label: 'Fail',
             backgroundColor: '#d9534f',
@@ -312,35 +379,35 @@ export const getTCForStatus = (state, id) => {
             backgroundColor: '#01D251',
             borderColor: 'white',
             borderWidth: 1,
-            data: [(release.TcAggregate.allGUI.Pass), 0]
+            data: [(release.TcAggregate.allGUI.Pass), visibleGUIP.Pass]
         },
-        {
-            label: 'Skipped',
-            backgroundColor: '#FFCE56',
-            borderColor: 'white',
-            borderWidth: 1,
-            data: [(release.TcAggregate.allGUI.SkippedFromRelease+ release.TcAggregate.allGUI.SkippedWhileTesting), 0]
-        },
+        // {
+        //     label: 'Skipped',
+        //     backgroundColor: '#FFCE56',
+        //     borderColor: 'white',
+        //     borderWidth: 1,
+        //     data: [(release.TcAggregate.allGUI.SkippedFromRelease+ release.TcAggregate.allGUI.SkippedWhileTesting), visibleGUIP.Skipped]
+        // },
         {
             label: 'Fail',
             backgroundColor: '#d9534f',
             borderColor: 'white',
             borderWidth: 1,
-            data: [(release.TcAggregate.allGUI.Fail), 0]
+            data: [(release.TcAggregate.allGUI.Fail), visibleGUIP.Fail]
         },
         {
             label: 'Not Tested',
             backgroundColor: 'rgba(128,128,128,0.3)',
             borderColor: 'white',
             borderWidth: 1,
-            data: [release.TcAggregate.allGUI.NotTested, 0]
+            data: [release.TcAggregate.allGUI.NotTested, visibleGUIP.NotTested]
         },
         {
             label: 'Blocked',
             backgroundColor: '#d9534f',
             borderColor: 'white',
             borderWidth: 1,
-            data: [release.TcAggregate.allGUI.Blocked, 0]
+            data: [release.TcAggregate.allGUI.Blocked, visibleGUIP.Blocked]
         },
        
         ]
@@ -356,13 +423,13 @@ export const getTCForStatus = (state, id) => {
                 borderWidth: 1,
                 data: [3643]
             },
-            {
-                label: 'Skipped (Testing)',
-                backgroundColor: '#FFCE56',
-                borderColor: 'white',
-                borderWidth: 1,
-                data: [0]
-            },
+            // {
+            //     label: 'Skipped (Testing)',
+            //     backgroundColor: '#FFCE56',
+            //     borderColor: 'white',
+            //     borderWidth: 1,
+            //     data: [0]
+            // },
             {
                 label: 'Fail',
                 backgroundColor: '#d9534f',
@@ -389,13 +456,13 @@ export const getTCForStatus = (state, id) => {
                 borderWidth: 1,
                 data: [0]
             },
-            {
-                label: 'Skipped (Testing)',
-                backgroundColor: '#FFCE56',
-                borderColor: 'white',
-                borderWidth: 1,
-                data: [0]
-            },
+            // {
+            //     label: 'Skipped (Testing)',
+            //     backgroundColor: '#FFCE56',
+            //     borderColor: 'white',
+            //     borderWidth: 1,
+            //     data: [0]
+            // },
             {
                 label: 'Fail',
                 backgroundColor: '#d9534f',
@@ -449,31 +516,7 @@ export const getTCForStrategy = (state, id) => {
     if (!release.TcAggregate) {
         return;
     }
-    // let data = {
-    //     labels: [
-    //         'Total Test (' + release.TcAggregate.all.TotalTested + ')',
-    //         'Skipped (' + release.TcAggregate.all.Skip + ')',
-    //         'Not Applicable (' + release.TcAggregate.all.NotApplicable + ')'
-    //     ],
-    //     datasets: [
-    //         {
-    //             data: [
-    //                 release.TcAggregate.all.TotalTested,
-    //                 release.TcAggregate.all.Skip,
-    //                 release.TcAggregate.all.NotApplicable,
-    //             ],
-    //             backgroundColor: [
-    //                 '#FF6384',
-    //                 '#36A2EB',
-    //                 '#FFCE56',
-    //             ],
-    //             hoverBackgroundColor: [
-    //                 '#FF6384',
-    //                 '#36A2EB',
-    //                 '#FFCE56',
-    //             ],
-    //         }],
-    // };
+    
     return {
         GUISkip: release.TcAggregate.all.GUISkip ? release.TcAggregate.all.GUISkip : 0,
         GUIAutomated: release.TcAggregate.all.GUIAutomated ? release.TcAggregate.all.GUIAutomated : 0,
@@ -555,62 +598,158 @@ export const getTCStatusForUIDomains = (release) => {
         return;
     }
     let doughnuts = [];
-    let storagePass = release.TcAggregate.uidomain['Storage'].Tested.auto.Pass + release.TcAggregate.uidomain['Storage'].Tested.manual.Pass;
-    let storageFail = release.TcAggregate.uidomain['Storage'].Tested.auto.Fail + release.TcAggregate.uidomain['Storage'].Tested.manual.Fail;
-    let storageSkipped = release.TcAggregate.uidomain['Storage'].Tested.auto.Skip + release.TcAggregate.uidomain['Storage'].Tested.manual.Skip
-    let storageNotTested = release.TcAggregate.uidomain['Storage'].NotTested;
-    let networkPass = release.TcAggregate.uidomain['Network'].Tested.auto.Pass + release.TcAggregate.uidomain['Network'].Tested.manual.Pass
-    let networkFail = release.TcAggregate.uidomain['Network'].Tested.auto.Fail + release.TcAggregate.uidomain['Network'].Tested.manual.Fail
-    let networkSkipped = release.TcAggregate.uidomain['Network'].Tested.auto.Skip + release.TcAggregate.uidomain['Network'].Tested.manual.Skip
-    let networkNotTested = release.TcAggregate.uidomain['Network'].NotTested;
-    let managementPass = release.TcAggregate.uidomain['Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Management'].Tested.manual.Pass
-    let managementFail = release.TcAggregate.uidomain['Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Management'].Tested.manual.Fail
-    let managementSkipped = release.TcAggregate.uidomain['Management'].Tested.auto.Skip + release.TcAggregate.uidomain['Management'].Tested.manual.Skip
-    let managementNotTested = release.TcAggregate.uidomain['Management'].NotTested;
-    let othersPass = release.TcAggregate.uidomain['Others'].Tested.auto.Pass + release.TcAggregate.uidomain['Others'].Tested.manual.Pass
-    let othersFail = release.TcAggregate.uidomain['Others'].Tested.auto.Fail + release.TcAggregate.uidomain['Others'].Tested.manual.Fail
-    let othersSkipped = release.TcAggregate.uidomain['Others'].Tested.auto.Skip + release.TcAggregate.uidomain['Others'].Tested.manual.Skip
-    let othersNotTested = release.TcAggregate.uidomain['Others'].NotTested;
-    let each = [
-        { Fail: storageFail, Pass: storagePass, Skip: storageSkipped, NotTested: storageNotTested },
-        { Fail: networkFail, Pass: networkPass, Skip: networkSkipped, NotTested: networkNotTested },
-        { Fail: managementFail, Pass: managementPass, Skip: managementSkipped, NotTested: managementNotTested },
-        { Fail: othersFail, Pass: othersPass, Skip: othersSkipped, NotTested: othersNotTested },
-    ]
+    let each = []
+
+    if(release.ReleaseNumber == "DMC-3.0" ){
+        
+       console.log("******************release.TcAggregate.uidomain['Cluster Management'].Tested",release.TcAggregate.uidomain['Cluster Management'].Tested)
+        let CMPass = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Pass;
+        let CMFail = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Fail;
+        let CMSkipped = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Block + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Block
+        let CMNotTested = release.TcAggregate.uidomain['Cluster Management'].NotTested;
+        // let CMBlocked  = release.TcAggregate.uidomain['Cluster Management'].Blocked;
+        console.log("Cluster management*****************************",CMPass,CMFail,CMSkipped,CMNotTested);
+        
+        let APMPass = release.TcAggregate.uidomain['Application Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Application Management'].Tested.manual.Pass
+        let APMFail = release.TcAggregate.uidomain['Application Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Application Management'].Tested.manual.Fail
+        let APMSkipped = release.TcAggregate.uidomain['Application Management'].Tested.auto.Block + release.TcAggregate.uidomain['Application Management'].Tested.manual.Block
+        let APMNotTested = release.TcAggregate.uidomain['Application Management'].NotTested;
+        // let APMNotBlocked = release.TcAggregate.uidomain['Application Management'].Blocked;
+        
+        let projectPass = release.TcAggregate.uidomain['Project'].Tested.auto.Pass + release.TcAggregate.uidomain['Project'].Tested.manual.Pass
+        let projectFail = release.TcAggregate.uidomain['Project'].Tested.auto.Fail + release.TcAggregate.uidomain['Project'].Tested.manual.Fail
+        let projectSkipped = release.TcAggregate.uidomain['Project'].Tested.auto.Block + release.TcAggregate.uidomain['Project'].Tested.manual.Block
+        let projectNotTested = release.TcAggregate.uidomain['Project'].NotTested;
+        // let projectBlocked = release.TcAggregate.uidomain['Project'].Blocked;
+
+        let tenantPass = release.TcAggregate.uidomain['Tenant'].Tested.auto.Pass + release.TcAggregate.uidomain['Tenant'].Tested.manual.Pass
+        let tenantFail = release.TcAggregate.uidomain['Tenant'].Tested.auto.Fail + release.TcAggregate.uidomain['Tenant'].Tested.manual.Fail
+        let tenantSkipped = release.TcAggregate.uidomain['Tenant'].Tested.auto.Block + release.TcAggregate.uidomain['Tenant'].Tested.manual.Block
+        let tenantNotTested = release.TcAggregate.uidomain['Tenant'].NotTested;
+        // let tenantBlocked = release.TcAggregate.uidomain['Tenant'].Blocked;
+        
+
+        let airgapedPass = release.TcAggregate.uidomain['Airgaped'].Tested.auto.Pass + release.TcAggregate.uidomain['Airgaped'].Tested.manual.Pass
+        let airgapedFail = release.TcAggregate.uidomain['Airgaped'].Tested.auto.Fail + release.TcAggregate.uidomain['Airgaped'].Tested.manual.Fail
+        let airgapedSkipped = release.TcAggregate.uidomain['Airgaped'].Tested.auto.Block + release.TcAggregate.uidomain['Airgaped'].Tested.manual.Block
+        let airgapedNotTested = release.TcAggregate.uidomain['Airgaped'].NotTested;
+        // let airgapedBlocked = release.TcAggregate.uidomain['Airgaped'].Blocked;
+
+        let MultizonePass = release.TcAggregate.uidomain['Multizone'].Tested.auto.Pass + release.TcAggregate.uidomain['Multizone'].Tested.manual.Pass
+        let MultizoneFail = release.TcAggregate.uidomain['Multizone'].Tested.auto.Fail + release.TcAggregate.uidomain['Multizone'].Tested.manual.Fail
+        let MultizoneSkipped = release.TcAggregate.uidomain['Multizone'].Tested.auto.Block + release.TcAggregate.uidomain['Multizone'].Tested.manual.Block
+        let MultizoneNotTested = release.TcAggregate.uidomain['Multizone'].NotTested;
+        // let MultizoneBlocked = release.TcAggregate.uidomain['Multizone'].Blocked;
+
+
+        let appDRPass = release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Pass + release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Pass
+        let appDRFail = release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Fail + release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Fail
+        let appDRSkipped = release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Block + release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Block
+        let appDRNotTested = release.TcAggregate.uidomain['ApplicationDR'].NotTested;
+        // let appDRBlocked = release.TcAggregate.uidomain['ApplicationDR'].Blocked;
+        
+
+        let SPPass = release.TcAggregate.uidomain['Service Provider'].Tested.auto.Pass + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Pass
+        let SPFail = release.TcAggregate.uidomain['Service Provider'].Tested.auto.Fail + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Fail
+        let SPSkipped = release.TcAggregate.uidomain['Service Provider'].Tested.auto.Block + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Block
+        let SPNotTested = release.TcAggregate.uidomain['Service Provider'].NotTested;
+        // let SPBlocked = release.TcAggregate.uidomain['Service Provider'].Blocked;
+
+        let UMPass = release.TcAggregate.uidomain['User Managment'].Tested.auto.Pass + release.TcAggregate.uidomain['User Managment'].Tested.manual.Pass
+        let UMFail = release.TcAggregate.uidomain['User Managment'].Tested.auto.Fail + release.TcAggregate.uidomain['User Managment'].Tested.manual.Fail
+        let UMSkipped = release.TcAggregate.uidomain['User Managment'].Tested.auto.Block + release.TcAggregate.uidomain['User Managment'].Tested.manual.Block
+        let UMNotTested = release.TcAggregate.uidomain['User Managment'].NotTested;
+        // let UMBlocked = release.TcAggregate.uidomain['User Managment'].Blocked;
+        
+        let othersPass = release.TcAggregate.uidomain['Others'].Tested.auto.Pass + release.TcAggregate.uidomain['Others'].Tested.manual.Pass
+        let othersFail = release.TcAggregate.uidomain['Others'].Tested.auto.Fail + release.TcAggregate.uidomain['Others'].Tested.manual.Fail
+        let othersSkipped = release.TcAggregate.uidomain['Others'].Tested.auto.Block + release.TcAggregate.uidomain['Others'].Tested.manual.Block
+        let othersNotTested = release.TcAggregate.uidomain['Others'].NotTested;
+        // let othersBlocked = release.TcAggregate.uidomain['Others'].Blocked;
+        each = [
+            { Fail: CMFail, Pass: CMPass, Skip: CMSkipped, NotTested: CMNotTested },
+            { Fail: APMFail, Pass: APMPass, Skip: APMSkipped, NotTested: APMNotTested},
+            { Fail: projectFail, Pass: projectPass, Skip: projectSkipped, NotTested: projectNotTested},
+            { Fail: othersFail, Pass: othersPass, Skip: othersSkipped, NotTested: othersNotTested},
+            { Fail: tenantFail, Pass: tenantPass, Skip: tenantSkipped, NotTested: tenantNotTested},
+            { Fail: UMFail, Pass: UMPass, Skip: UMSkipped, NotTested: UMNotTested},
+            { Fail: SPFail, Pass: SPPass, Skip: SPSkipped, NotTested: SPNotTested},
+            { Fail: appDRFail, Pass: appDRPass, Skip: appDRSkipped, NotTested: appDRNotTested},
+            { Fail: MultizoneFail, Pass: MultizonePass, Skip: MultizoneSkipped, NotTested: MultizoneNotTested},
+            { Fail: airgapedFail, Pass: airgapedPass, Skip: airgapedSkipped, NotTested: airgapedNotTested },
+
+
+        ]
+       
+
+    }else{
+       
+        let storagePass = release.TcAggregate.uidomain['Storage'].Tested.auto.Pass + release.TcAggregate.uidomain['Storage'].Tested.manual.Pass;
+        let storageFail = release.TcAggregate.uidomain['Storage'].Tested.auto.Fail + release.TcAggregate.uidomain['Storage'].Tested.manual.Fail;
+        let storageSkipped = release.TcAggregate.uidomain['Storage'].Tested.auto.Skip + release.TcAggregate.uidomain['Storage'].Tested.manual.Skip
+        let storageNotTested = release.TcAggregate.uidomain['Storage'].NotTested;
+        let networkPass = release.TcAggregate.uidomain['Network'].Tested.auto.Pass + release.TcAggregate.uidomain['Network'].Tested.manual.Pass
+        let networkFail = release.TcAggregate.uidomain['Network'].Tested.auto.Fail + release.TcAggregate.uidomain['Network'].Tested.manual.Fail
+        let networkSkipped = release.TcAggregate.uidomain['Network'].Tested.auto.Skip + release.TcAggregate.uidomain['Network'].Tested.manual.Skip
+        let networkNotTested = release.TcAggregate.uidomain['Network'].NotTested;
+        let managementPass = release.TcAggregate.uidomain['Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Management'].Tested.manual.Pass
+        let managementFail = release.TcAggregate.uidomain['Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Management'].Tested.manual.Fail
+        let managementSkipped = release.TcAggregate.uidomain['Management'].Tested.auto.Skip + release.TcAggregate.uidomain['Management'].Tested.manual.Skip
+        let managementNotTested = release.TcAggregate.uidomain['Management'].NotTested;
+        let othersPass = release.TcAggregate.uidomain['Others'].Tested.auto.Pass + release.TcAggregate.uidomain['Others'].Tested.manual.Pass
+        let othersFail = release.TcAggregate.uidomain['Others'].Tested.auto.Fail + release.TcAggregate.uidomain['Others'].Tested.manual.Fail
+        let othersSkipped = release.TcAggregate.uidomain['Others'].Tested.auto.Skip + release.TcAggregate.uidomain['Others'].Tested.manual.Skip
+        let othersNotTested = release.TcAggregate.uidomain['Others'].NotTested;
+        each = [
+            { Fail: storageFail, Pass: storagePass, Skip: storageSkipped, NotTested: storageNotTested },
+            { Fail: networkFail, Pass: networkPass, Skip: networkSkipped, NotTested: networkNotTested },
+            { Fail: managementFail, Pass: managementPass, Skip: managementSkipped, NotTested: managementNotTested },
+            { Fail: othersFail, Pass: othersPass, Skip: othersSkipped, NotTested: othersNotTested },
+        ]
+    }
+
+
+    
 
     alldomains.forEach((item, index) => {
-        doughnuts.push({
-            data: {
-                labels: [
-                    'Fail(' + each[index].Fail + ')',
-                    'Pass(' + each[index].Pass + ')',
-                    'Block(' + each[index].Skip + ')',
-                    'Not Tested(' + each[index].NotTested + ')',
-                ],
-                datasets: [
-                    {
-                        data: [
-                            each[index].Fail,
-                            each[index].Pass,
-                            each[index].Skip,
-                            each[index].NotTested
-                        ],
-                        backgroundColor: [
-                            '#FF6384',
-                            '#36A2EB',
-                            '#FFCE56',
-                            '#B5801D',
-                        ],
-                        hoverBackgroundColor: [
-                            '#FF6384',
-                            '#36A2EB',
-                            '#FFCE56',
-                            '#B5801D',
-                        ],
-                    }],
-            }, title: item
-        })
+        if(each[index]){
+
+            doughnuts.push({
+                data: {
+                    labels: [
+                        'Fail(' + each[index].Fail + ')',
+                        'Pass(' + each[index].Pass + ')',
+                        'Block(' + each[index].Skip + ')',
+                        'Not Tested(' + each[index].NotTested + ')',
+                    ],
+                    datasets: [
+                        {
+                            data: [
+                                each[index].Fail,
+                                each[index].Pass,
+                                each[index].Skip,
+                                each[index].NotTested
+                            ],
+                            backgroundColor: [
+                                '#FF6384',
+                                '#36A2EB',
+                                '#FFCE56',
+                                '#B5801D',
+                            ],
+                            hoverBackgroundColor: [
+                                '#FF6384',
+                                '#36A2EB',
+                                '#FFCE56',
+                                '#B5801D',
+                            ],
+                        }],
+                }, title: item
+            })
+
+        }
+       
     })
+   
     return doughnuts;
 
 }
@@ -685,16 +824,35 @@ export const getTCStatusForSunburst = (release) => {
     if (!release.TcAggregate.domain) {
         return;
     }
+
     let domains = {
         name: 'domains', children: [
             {
-                name: 'Storage', children: []
+                name: 'Application Management', children: []
             },
             {
-                name: 'Network', children: []
+                name: 'Cluster Management', children: []
             },
             {
-                name: 'Management', children: []
+                name: 'Multizone', children: []
+            },
+            {
+                name: 'Airgaped', children: []
+            },
+            {
+                name: 'ApplicationDR', children: []
+            },
+            {
+                name: 'Tenant', children: []
+            },
+            {
+                name: 'Project', children: []
+            },
+            {
+                name: 'User Managment', children: []
+            },
+            {
+                name: 'Service Provider', children: []
             },
             {
                 name: 'Others', children: []
@@ -773,18 +931,7 @@ export const getTCStrategyForUISubDomainsDistribution = (release, domain) => {
             backgroundColor: [],
             hoverBackgroundColor: []
         },
-        // {
-        //     label: 'Manual',
-        //     data: [],
-        //     backgroundColor: [],
-        //     hoverBackgroundColor: []
-        // },
-        // {
-        //     label: 'Not Tested',
-        //     data: [],
-        //     backgroundColor: [],
-        //     hoverBackgroundColor: []
-        // }
+        
     ];
     for (let i = 0; i < datasets.length; i++) {
         Object.keys(release.TcAggregate.domain).forEach((item, index) => {
@@ -804,8 +951,7 @@ export const getTCStrategyForUISubDomainsDistribution = (release, domain) => {
             labels.push(item + ' (' + total + ')');
             datasets[0].data.push(total);
             allTotal += total;
-            // datasets[1].data.push(manual);
-            // datasets[2].data.push(nottested);
+            
         }
     });
     datasets[0].label = 'Total (' + allTotal + ')';
@@ -822,43 +968,301 @@ export const getTCStrategyForUIDomainsDistribution = (release) => {
         return;
     }
     let doughnuts = [];
-    let storageAuto = release.TcAggregate.uidomain['Storage'].Tested.auto.Pass + release.TcAggregate.uidomain['Storage'].Tested.auto.Fail + release.TcAggregate.uidomain['Storage'].Tested.auto.Skip;
-    let storageManual = release.TcAggregate.uidomain['Storage'].Tested.manual.Pass + release.TcAggregate.uidomain['Storage'].Tested.manual.Fail + release.TcAggregate.uidomain['Storage'].Tested.manual.Skip;
-    let storageNotTested = release.TcAggregate.uidomain['Storage'].NotTested;
+    let each = [];
+    if(release.ReleaseNumber == 'DMC-3.0'){
+        
 
-    let networkAuto = release.TcAggregate.uidomain['Network'].Tested.auto.Pass + release.TcAggregate.uidomain['Network'].Tested.auto.Fail + release.TcAggregate.uidomain['Network'].Tested.auto.Skip;
-    let networkManual = release.TcAggregate.uidomain['Network'].Tested.manual.Pass + release.TcAggregate.uidomain['Network'].Tested.manual.Fail + release.TcAggregate.uidomain['Network'].Tested.manual.Skip;
-    let networkNotTested = release.TcAggregate.uidomain['Network'].NotTested;
+        let CMAuto = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Skip;
+        let CMManual = release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Pass + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Fail + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Skip;
+        let CM_NotTested = release.TcAggregate.uidomain['Cluster Management'].NotTested;
 
 
-    let managementAuto = release.TcAggregate.uidomain['Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Management'].Tested.auto.Skip;
-    let managementManual = release.TcAggregate.uidomain['Management'].Tested.manual.Pass + release.TcAggregate.uidomain['Management'].Tested.manual.Fail + release.TcAggregate.uidomain['Management'].Tested.manual.Skip;
-    let managementNotTested = release.TcAggregate.uidomain['Management'].NotTested;
+        let APMAuto = release.TcAggregate.uidomain['Application Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Application Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Application Management'].Tested.auto.Skip;
+        let APMManual = release.TcAggregate.uidomain['Application Management'].Tested.manual.Pass + release.TcAggregate.uidomain['Application Management'].Tested.manual.Fail + release.TcAggregate.uidomain['Application Management'].Tested.manual.Skip;
+        let APM_NotTested = release.TcAggregate.uidomain['Application Management'].NotTested;
 
-    let othersAuto = release.TcAggregate.uidomain['Others'].Tested.auto.Pass + release.TcAggregate.uidomain['Others'].Tested.auto.Fail + release.TcAggregate.uidomain['Others'].Tested.auto.Skip;
-    let othersManual = release.TcAggregate.uidomain['Others'].Tested.manual.Pass + release.TcAggregate.uidomain['Others'].Tested.manual.Fail + release.TcAggregate.uidomain['Others'].Tested.manual.Skip;
-    let othersNotTested = release.TcAggregate.uidomain['Others'].NotTested;
+        let UMAuto = release.TcAggregate.uidomain['User Managment'].Tested.auto.Pass + release.TcAggregate.uidomain['User Managment'].Tested.auto.Fail + release.TcAggregate.uidomain['User Managment'].Tested.auto.Skip;
+        let UMManual = release.TcAggregate.uidomain['User Managment'].Tested.manual.Pass + release.TcAggregate.uidomain['User Managment'].Tested.manual.Fail + release.TcAggregate.uidomain['User Managment'].Tested.manual.Skip;
+        let UM_NotTested = release.TcAggregate.uidomain['User Managment'].NotTested;
 
-    let each = [
-        {
-            auto: storageAuto, manual: storageManual, NotTested: storageNotTested,
-            total: storageAuto + storageManual + storageNotTested
-        },
-        {
-            auto: networkAuto, manual: networkManual, NotTested: networkNotTested,
-            total: networkAuto + networkManual + networkNotTested
-        },
-        {
-            auto: managementAuto, manual: managementManual, NotTested: managementNotTested,
-            total: managementAuto + managementManual + managementNotTested
-        },
-        {
-            auto: othersAuto, manual: othersManual, NotTested: othersNotTested,
-            total: othersAuto + othersManual + othersNotTested
-        },
-    ]
+      
 
-    // alldomains.forEach((item, index) => {
+        let SPAuto = release.TcAggregate.uidomain['Service Provider'].Tested.auto.Pass + release.TcAggregate.uidomain['Service Provider'].Tested.auto.Fail + release.TcAggregate.uidomain['Service Provider'].Tested.auto.Skip;
+        let SPManual = release.TcAggregate.uidomain['Service Provider'].Tested.manual.Pass + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Fail + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Skip;
+        let SP_NotTested = release.TcAggregate.uidomain['Service Provider'].NotTested;
+
+        let appDRAuto = release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Pass + release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Fail + release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Skip;
+        let appDRManual = release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Pass + release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Fail + release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Skip;
+        let appDR_NotTested = release.TcAggregate.uidomain['ApplicationDR'].NotTested;
+
+        let multizoneAuto = release.TcAggregate.uidomain['Multizone'].Tested.auto.Pass + release.TcAggregate.uidomain['Multizone'].Tested.auto.Fail + release.TcAggregate.uidomain['Multizone'].Tested.auto.Skip;
+        let multizoneManual = release.TcAggregate.uidomain['Multizone'].Tested.manual.Pass + release.TcAggregate.uidomain['Multizone'].Tested.manual.Fail + release.TcAggregate.uidomain['Multizone'].Tested.manual.Skip;
+        let multizone_NotTested = release.TcAggregate.uidomain['Multizone'].NotTested;
+
+        let airgapedAuto = release.TcAggregate.uidomain['Airgaped'].Tested.auto.Pass + release.TcAggregate.uidomain['Airgaped'].Tested.auto.Fail + release.TcAggregate.uidomain['Airgaped'].Tested.auto.Skip;
+        let airgapedManual = release.TcAggregate.uidomain['Airgaped'].Tested.manual.Pass + release.TcAggregate.uidomain['Airgaped'].Tested.manual.Fail + release.TcAggregate.uidomain['Airgaped'].Tested.manual.Skip;
+        let airgaped_NotTested = release.TcAggregate.uidomain['Airgaped'].NotTested;
+        
+
+        let tenantAuto = release.TcAggregate.uidomain['Tenant'].Tested.auto.Pass + release.TcAggregate.uidomain['Tenant'].Tested.auto.Fail + release.TcAggregate.uidomain['Tenant'].Tested.auto.Skip;
+        let tenantManual = release.TcAggregate.uidomain['Tenant'].Tested.manual.Pass + release.TcAggregate.uidomain['Tenant'].Tested.manual.Fail + release.TcAggregate.uidomain['Tenant'].Tested.manual.Skip;
+        let tenant_NotTested = release.TcAggregate.uidomain['Tenant'].NotTested;
+
+        let projectAuto = release.TcAggregate.uidomain['Project'].Tested.auto.Pass + release.TcAggregate.uidomain['Project'].Tested.auto.Fail + release.TcAggregate.uidomain['Project'].Tested.auto.Skip;
+        let projectManual = release.TcAggregate.uidomain['Project'].Tested.manual.Pass + release.TcAggregate.uidomain['Project'].Tested.manual.Fail + release.TcAggregate.uidomain['Project'].Tested.manual.Skip;
+        let project_NotTested = release.TcAggregate.uidomain['Project'].NotTested;
+
+
+
+
+
+        each = [
+
+            {
+                auto: projectAuto, manual: projectManual, NotTested: project_NotTested,
+                total: projectAuto + projectManual + project_NotTested
+            },
+
+            {
+                auto: tenantAuto, manual: tenantManual, NotTested: tenant_NotTested,
+                total: tenantAuto + tenantManual + tenant_NotTested
+            },
+
+            {
+                auto: airgapedAuto, manual: multizoneManual, NotTested: multizone_NotTested,
+                total: airgapedAuto + multizoneManual + multizone_NotTested
+            },
+
+            {
+                auto: multizoneAuto, manual: airgapedManual, NotTested: airgaped_NotTested,
+                total: multizoneAuto + airgapedManual + airgaped_NotTested
+            },
+
+
+            {
+                auto: appDRAuto, manual: appDRManual, NotTested: appDR_NotTested,
+                total: appDRAuto + appDRManual + appDR_NotTested
+            },
+
+            {
+                auto: SPAuto, manual: SPManual, NotTested: SP_NotTested,
+                total: SPAuto + SPManual + SP_NotTested
+            },
+
+            {
+                auto: UMAuto, manual: UMManual, NotTested: UM_NotTested,
+                total: UMAuto + UMManual + UM_NotTested
+            },
+
+           
+            {
+                auto: CMAuto, manual: CMManual, NotTested: CM_NotTested,
+                total: CMAuto + CMManual + CM_NotTested
+            },
+
+            {
+                auto: APMAuto, manual: APMManual, NotTested: APM_NotTested,
+                total: APMAuto + APMManual + APM_NotTested
+            },
+
+          
+
+
+        ]
+    }
+    else{
+
+        let storageAuto = release.TcAggregate.uidomain['Storage'].Tested.auto.Pass + release.TcAggregate.uidomain['Storage'].Tested.auto.Fail + release.TcAggregate.uidomain['Storage'].Tested.auto.Skip;
+        let storageManual = release.TcAggregate.uidomain['Storage'].Tested.manual.Pass + release.TcAggregate.uidomain['Storage'].Tested.manual.Fail + release.TcAggregate.uidomain['Storage'].Tested.manual.Skip;
+        let storageNotTested = release.TcAggregate.uidomain['Storage'].NotTested;
+
+        let networkAuto = release.TcAggregate.uidomain['Network'].Tested.auto.Pass + release.TcAggregate.uidomain['Network'].Tested.auto.Fail + release.TcAggregate.uidomain['Network'].Tested.auto.Skip;
+        let networkManual = release.TcAggregate.uidomain['Network'].Tested.manual.Pass + release.TcAggregate.uidomain['Network'].Tested.manual.Fail + release.TcAggregate.uidomain['Network'].Tested.manual.Skip;
+        let networkNotTested = release.TcAggregate.uidomain['Network'].NotTested;
+
+
+        let managementAuto = release.TcAggregate.uidomain['Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Management'].Tested.auto.Skip;
+        let managementManual = release.TcAggregate.uidomain['Management'].Tested.manual.Pass + release.TcAggregate.uidomain['Management'].Tested.manual.Fail + release.TcAggregate.uidomain['Management'].Tested.manual.Skip;
+        let managementNotTested = release.TcAggregate.uidomain['Management'].NotTested;
+
+        let othersAuto = release.TcAggregate.uidomain['Others'].Tested.auto.Pass + release.TcAggregate.uidomain['Others'].Tested.auto.Fail + release.TcAggregate.uidomain['Others'].Tested.auto.Skip;
+        let othersManual = release.TcAggregate.uidomain['Others'].Tested.manual.Pass + release.TcAggregate.uidomain['Others'].Tested.manual.Fail + release.TcAggregate.uidomain['Others'].Tested.manual.Skip;
+        let othersNotTested = release.TcAggregate.uidomain['Others'].NotTested;
+
+
+        each = [
+            {
+                auto: storageAuto, manual: storageManual, NotTested: storageNotTested,
+                total: storageAuto + storageManual + storageNotTested
+            },
+            {
+                auto: networkAuto, manual: networkManual, NotTested: networkNotTested,
+                total: networkAuto + networkManual + networkNotTested
+            },
+            {
+                auto: managementAuto, manual: managementManual, NotTested: managementNotTested,
+                total: managementAuto + managementManual + managementNotTested
+            },
+            {
+                auto: othersAuto, manual: othersManual, NotTested: othersNotTested,
+                total: othersAuto + othersManual + othersNotTested
+            },
+        ]
+
+    }
+    
+
+    
+    if(release.ReleaseNumber == 'DMC-3.0'){
+        doughnuts.push({
+            data: {
+                labels: [
+                    'Project(' + each[0].total + ')',
+                    'Tenant (' + each[1].total + ')',
+                    'Airgaped (' + each[2].total + ')',
+                    'Multizone (' + each[3].total + ')',
+                    'ApplicationDR (' + each[4].total + ')',
+                    'Service Provider (' + each[5].total + ')',
+                    'User Managment (' + each[6].total + ')',
+                    'Cluster Management (' + each[7].total + ')',
+                    'Application Management (' + each[8].total + ')',
+                    // 'Others (' + each[3].total + ')',
+                ],
+                datasets: [
+                    {
+                        label: 'Auto (' + (each[0].auto + each[1].auto + each[2].auto + each[3].auto + each[4].auto + each[5].auto + each[6].auto + each[7].auto + each[8].auto) + ')',
+                        data: [
+                            each[0].auto,
+                            each[1].auto,
+                            each[2].auto,
+                            each[3].auto,
+                            each[4].auto,
+                            each[5].auto,
+                            each[6].auto,
+                            each[7].auto,
+                            each[8].auto
+                            // each[index].NotTested,
+                            // each[index].auto,
+                            // each[index].manual,
+                        ],
+                        backgroundColor: [
+                           
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+
+                            // '#FFCE56',
+                            // '#B5801D',
+                        ],
+                        hoverBackgroundColor: [
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                        ],
+                    },
+                    {
+                        label: 'Manual (' + (each[0].manual + each[1].manual + each[2].manual + each[3].manual + each[4].manual + each[5].manual + each[6].manual + each[7].manual + each[8].manual) + ')',
+                        data: [
+                            each[0].manual,
+                            each[1].manual,
+                            each[2].manual,
+                            each[3].manual,
+                            each[4].manual,
+                            each[5].manual,
+                            each[6].manual,
+                            each[7].manual,
+                            each[8].manual
+                            // each[index].NotTested,
+                            // each[index].auto,
+                            // each[index].manual,
+                        ],
+                        backgroundColor: [
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                        hoverBackgroundColor: [
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                    },
+                    {
+                        label: 'Not Tested (' + (each[0].NotTested + each[1].NotTested + each[2].NotTested + each[3].NotTested + each[4].NotTested + each[5].NotTested + each[6].NotTested + each[7].NotTested + each[8].NotTested) + ')',
+                        data: [
+                            each[0].NotTested,
+                            each[1].NotTested,
+                            each[2].NotTested,
+                            each[3].NotTested,
+                            each[4].NotTested,
+                            each[5].NotTested,
+                            each[6].NotTested,
+                            each[7].NotTested,
+                            each[8].NotTested
+                            // each[index].NotTested,
+                            // each[index].auto,
+                            // each[index].manual,
+                        ],
+                        backgroundColor: [
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                        hoverBackgroundColor: [
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                    },
+                ],
+            }, title: 'as per Domains'
+        })
+    }
+    else{
+
+        // alldomains.forEach((item, index) => {
     doughnuts.push({
         data: {
             labels: [
@@ -901,73 +1305,12 @@ export const getTCStrategyForUIDomainsDistribution = (release) => {
                         // '#B5801D',
                     ],
                 },
-                // {
-                //     label: 'Manual',
-                //     data: [
-                //         each[0].manual,
-                //         each[1].manual,
-                //         each[2].manual,
-                //         each[3].manual
-                //         // each[index].NotTested,
-                //         // each[index].auto,
-                //         // each[index].manual,
-                //     ],
-                //     backgroundColor: [
-                //         '#FFCE56',
-                //         '#FFCE56',
-                //         '#FFCE56',
-                //         '#FFCE56',
-                //         // '#910727',
-                //         // '#F1E956',
-                //         // '#821F49',
-                //         // '#B5801D',
-                //     ],
-                //     hoverBackgroundColor: [
-                //         '#FFCE56',
-                //         '#FFCE56',
-                //         '#FFCE56',
-                //         '#FFCE56',
-                //         // '#910727',
-                //         // '#F1E956',
-                //         // '#821F49',
-                //         // '#B5801D',
-                //     ],
-                // },
-                // {
-                //     label: 'Not Tested',
-                //     data: [
-                //         each[0].NotTested,
-                //         each[1].NotTested,
-                //         each[2].NotTested,
-                //         each[3].NotTested
-                //         // each[index].NotTested,
-                //         // each[index].auto,
-                //         // each[index].manual,
-                //     ],
-                //     backgroundColor: [
-                //         '#FF6384',
-                //         '#FF6384',
-                //         '#FF6384',
-                //         '#FF6384',
-                //         // '#910727',
-                //         // '#F1E956',
-                //         // '#821F49',
-                //         // '#B5801D',
-                //     ],
-                //     hoverBackgroundColor: [
-                //         '#FF6384',
-                //         '#FF6384',
-                //         '#FF6384',
-                //         '#FF6384',
-                //         // '#910727',
-                //         // '#F1E956',
-                //         // '#821F49',
-                //         // '#B5801D',
-                //     ],
-                // },
             ],
         }, title: 'as per Domains'
     })
+
+    }
+    
 
     // })
     return doughnuts;
@@ -1034,68 +1377,6 @@ export const getTCStrategyForUISubDomains = (release, domain) => {
     doughnuts[0].data.datasets = datasets;
     return doughnuts;
 }
-// export const getTCStrategyForUISubDomains = (release, domain) => {
-//     if (!release) {
-//         return;
-//     }
-//     if (!release.TcAggregate) {
-//         return;
-//     }
-//     let doughnuts = [{ data: { labels: [], datasets: [] }, title: domain + ' (as per Work)' }];
-//     let labels = [];
-//     let datasets = [
-//         {
-//             label: 'Auto',
-//             data: [],
-//             backgroundColor: [],
-//             hoverBackgroundColor: []
-//         },
-//         {
-//             label: 'Manual',
-//             data: [],
-//             backgroundColor: [],
-//             hoverBackgroundColor: []
-//         },
-//         {
-//             label: 'Not Applicable',
-//             data: [],
-//             backgroundColor: [],
-//             hoverBackgroundColor: []
-//         }
-//     ];
-//     for (let i = 0; i < datasets.length; i++) {
-//         Object.keys(release.TcAggregate.domain).forEach((item, index) => {
-//             if (domain === release.TcAggregate.domain[item].tag) {
-//                 datasets[i].backgroundColor.push(colors[i]);
-//                 datasets[i].hoverBackgroundColor.push(colors[i]);
-//             }
-//         })
-//     }
-//     let autoTotal = 0;
-//     let manualTotal = 0;
-//     let notTestedTotal = 0;
-//     Object.keys(release.TcAggregate.domain).forEach((item, index) => {
-//         if (domain === release.TcAggregate.domain[item].tag) {
-//             let auto = release.TcAggregate.domain[item].Tested.auto.Pass + release.TcAggregate.domain[item].Tested.auto.Fail + release.TcAggregate.domain[item].Tested.auto.Skip;
-//             let manual = release.TcAggregate.domain[item].Tested.manual.Pass + release.TcAggregate.domain[item].Tested.manual.Fail + release.TcAggregate.domain[item].Tested.manual.Skip;
-//             let nottested = release.TcAggregate.domain[item].NotApplicable
-//             let total = auto + manual + nottested;
-//             labels.push(item + ' (' + total + ')');
-//             datasets[0].data.push(auto);
-//             autoTotal += auto;
-//             datasets[1].data.push(manual);
-//             manualTotal += manual;
-//             datasets[2].data.push(nottested);
-//             notTestedTotal += nottested;
-//         }
-//     });
-//     datasets[0].label = 'Auto (' + autoTotal + ')';
-//     datasets[1].label = 'Manual (' + manualTotal + ')'
-//     datasets[2].label = 'Not Applicable (' + notTestedTotal + ')'
-//     doughnuts[0].data.labels = labels;
-//     doughnuts[0].data.datasets = datasets;
-//     return doughnuts;
-// }
 export const getTCStrategyForUISubDomainsScenario = (release, domain, scenario, all) => {
     if (!release) {
         return;
@@ -1167,6 +1448,112 @@ export const getTCStrategyForUIDomains = (release) => {
         return;
     }
     let doughnuts = [];
+    let each = []
+    if(release.ReleaseNumber == 'DMC-3.0'){
+        
+
+        let CMAuto = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Skip;
+        let CMManual = release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Pass + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Fail + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Skip;
+        let CM_NotTested = release.TcAggregate.uidomain['Cluster Management'].NotTested;
+
+
+        let APMAuto = release.TcAggregate.uidomain['Application Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Application Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Application Management'].Tested.auto.Skip;
+        let APMManual = release.TcAggregate.uidomain['Application Management'].Tested.manual.Pass + release.TcAggregate.uidomain['Application Management'].Tested.manual.Fail + release.TcAggregate.uidomain['Application Management'].Tested.manual.Skip;
+        let APM_NotTested = release.TcAggregate.uidomain['Application Management'].NotTested;
+
+        let UMAuto = release.TcAggregate.uidomain['User Managment'].Tested.auto.Pass + release.TcAggregate.uidomain['User Managment'].Tested.auto.Fail + release.TcAggregate.uidomain['User Managment'].Tested.auto.Skip;
+        let UMManual = release.TcAggregate.uidomain['User Managment'].Tested.manual.Pass + release.TcAggregate.uidomain['User Managment'].Tested.manual.Fail + release.TcAggregate.uidomain['User Managment'].Tested.manual.Skip;
+        let UM_NotTested = release.TcAggregate.uidomain['User Managment'].NotTested;
+
+        console.log("kay zlay User Managment tula",UMAuto,UMManual,UM_NotTested)
+
+        let SPAuto = release.TcAggregate.uidomain['Service Provider'].Tested.auto.Pass + release.TcAggregate.uidomain['Service Provider'].Tested.auto.Fail + release.TcAggregate.uidomain['Service Provider'].Tested.auto.Skip;
+        let SPManual = release.TcAggregate.uidomain['Service Provider'].Tested.manual.Pass + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Fail + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Skip;
+        let SP_NotTested = release.TcAggregate.uidomain['Service Provider'].NotTested;
+
+        let appDRAuto = release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Pass + release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Fail + release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Skip;
+        let appDRManual = release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Pass + release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Fail + release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Skip;
+        let appDR_NotTested = release.TcAggregate.uidomain['ApplicationDR'].NotTested;
+
+        let multizoneAuto = release.TcAggregate.uidomain['Multizone'].Tested.auto.Pass + release.TcAggregate.uidomain['Multizone'].Tested.auto.Fail + release.TcAggregate.uidomain['Multizone'].Tested.auto.Skip;
+        let multizoneManual = release.TcAggregate.uidomain['Multizone'].Tested.manual.Pass + release.TcAggregate.uidomain['Multizone'].Tested.manual.Fail + release.TcAggregate.uidomain['Multizone'].Tested.manual.Skip;
+        let multizone_NotTested = release.TcAggregate.uidomain['Multizone'].NotTested;
+
+        let airgapedAuto = release.TcAggregate.uidomain['Airgaped'].Tested.auto.Pass + release.TcAggregate.uidomain['Airgaped'].Tested.auto.Fail + release.TcAggregate.uidomain['Airgaped'].Tested.auto.Skip;
+        let airgapedManual = release.TcAggregate.uidomain['Airgaped'].Tested.manual.Pass + release.TcAggregate.uidomain['Airgaped'].Tested.manual.Fail + release.TcAggregate.uidomain['Airgaped'].Tested.manual.Skip;
+        let airgaped_NotTested = release.TcAggregate.uidomain['Airgaped'].NotTested;
+        
+
+        let tenantAuto = release.TcAggregate.uidomain['Tenant'].Tested.auto.Pass + release.TcAggregate.uidomain['Tenant'].Tested.auto.Fail + release.TcAggregate.uidomain['Tenant'].Tested.auto.Skip;
+        let tenantManual = release.TcAggregate.uidomain['Tenant'].Tested.manual.Pass + release.TcAggregate.uidomain['Tenant'].Tested.manual.Fail + release.TcAggregate.uidomain['Tenant'].Tested.manual.Skip;
+        let tenant_NotTested = release.TcAggregate.uidomain['Tenant'].NotTested;
+
+        let projectAuto = release.TcAggregate.uidomain['Project'].Tested.auto.Pass + release.TcAggregate.uidomain['Project'].Tested.auto.Fail + release.TcAggregate.uidomain['Project'].Tested.auto.Skip;
+        let projectManual = release.TcAggregate.uidomain['Project'].Tested.manual.Pass + release.TcAggregate.uidomain['Project'].Tested.manual.Fail + release.TcAggregate.uidomain['Project'].Tested.manual.Skip;
+        let project_NotTested = release.TcAggregate.uidomain['Project'].NotTested;
+
+
+
+
+
+        each = [
+
+            {
+                auto: projectAuto, manual: projectManual, NotTested: project_NotTested,
+                total: projectAuto + projectManual + project_NotTested
+            },
+
+            {
+                auto: tenantAuto, manual: tenantManual, NotTested: tenant_NotTested,
+                total: tenantAuto + tenantManual + tenant_NotTested
+            },
+
+            {
+                auto: airgapedAuto, manual: multizoneManual, NotTested: multizone_NotTested,
+                total: airgapedAuto + multizoneManual + multizone_NotTested
+            },
+
+            {
+                auto: multizoneAuto, manual: airgapedManual, NotTested: airgaped_NotTested,
+                total: multizoneAuto + airgapedManual + airgaped_NotTested
+            },
+
+
+            {
+                auto: appDRAuto, manual: appDRManual, NotTested: appDR_NotTested,
+                total: appDRAuto + appDRManual + appDR_NotTested
+            },
+
+            {
+                auto: SPAuto, manual: SPManual, NotTested: SP_NotTested,
+                total: SPAuto + SPManual + SP_NotTested
+            },
+
+            {
+                auto: UMAuto, manual: UMManual, NotTested: UM_NotTested,
+                total: UMAuto + UMManual + UM_NotTested
+            },
+
+           
+            {
+                auto: CMAuto, manual: CMManual, NotTested: CM_NotTested,
+                total: CMAuto + CMManual + CM_NotTested
+            },
+
+            {
+                auto: APMAuto, manual: APMManual, NotTested: APM_NotTested,
+                total: APMAuto + APMManual + APM_NotTested
+            },
+
+          
+
+
+        ]
+    }
+
+    else{
+
+
     let storageAuto = release.TcAggregate.uidomain['Storage'].Tested.auto.Pass + release.TcAggregate.uidomain['Storage'].Tested.auto.Fail + release.TcAggregate.uidomain['Storage'].Tested.auto.Skip;
     let storageManual = release.TcAggregate.uidomain['Storage'].Tested.manual.Pass + release.TcAggregate.uidomain['Storage'].Tested.manual.Fail + release.TcAggregate.uidomain['Storage'].Tested.manual.Skip;
     let storageNotTested = release.TcAggregate.uidomain['Storage'].NotApplicable;
@@ -1184,7 +1571,7 @@ export const getTCStrategyForUIDomains = (release) => {
     let othersManual = release.TcAggregate.uidomain['Others'].Tested.manual.Pass + release.TcAggregate.uidomain['Others'].Tested.manual.Fail + release.TcAggregate.uidomain['Others'].Tested.manual.Skip;
     let othersNotTested = release.TcAggregate.uidomain['Others'].NotApplicable;
 
-    let each = [
+    each = [
         {
             auto: storageAuto, manual: storageManual, NotTested: storageNotTested,
             total: storageAuto + storageManual + storageNotTested
@@ -1203,116 +1590,277 @@ export const getTCStrategyForUIDomains = (release) => {
         },
     ]
 
+
+
+    }
+    
+
     // alldomains.forEach((item, index) => {
-    doughnuts.push({
-        data: {
-            labels: [
-                // 'Not Tested (' + each[index].NotTested + ')',
-                // 'Auto (' + each[index].auto + ')',
-                // 'Manual (' + each[index].manual + ')',
-                'Storage (' + each[0].total + ')',
-                'Network (' + each[1].total + ')',
-                'Management (' + each[2].total + ')',
-                'Others (' + each[3].total + ')',
-            ],
-            datasets: [
-                {
-                    label: 'Auto (' + (each[0].auto + each[1].auto + each[2].auto + each[3].auto) + ')',
-                    data: [
-                        each[0].auto,
-                        each[1].auto,
-                        each[2].auto,
-                        each[3].auto
-                        // each[index].NotTested,
-                        // each[index].auto,
-                        // each[index].manual,
-                    ],
-                    backgroundColor: [
-                        // '#FF6384',
-                        '#36A2EB',
-                        '#36A2EB',
-                        '#36A2EB',
-                        '#36A2EB',
-                        // '#FFCE56',
-                        // '#B5801D',
-                    ],
-                    hoverBackgroundColor: [
-                        // '#FF6384',
-                        '#36A2EB',
-                        '#36A2EB',
-                        '#36A2EB',
-                        '#36A2EB',
-                        // '#FFCE56',
-                        // '#B5801D',
-                    ],
-                },
-                {
-                    label: 'Manual (' + (each[0].manual + each[1].manual + each[2].manual + each[3].manual) + ')',
-                    data: [
-                        each[0].manual,
-                        each[1].manual,
-                        each[2].manual,
-                        each[3].manual
-                        // each[index].NotTested,
-                        // each[index].auto,
-                        // each[index].manual,
-                    ],
-                    backgroundColor: [
-                        '#FFCE56',
-                        '#FFCE56',
-                        '#FFCE56',
-                        '#FFCE56',
-                        // '#910727',
-                        // '#F1E956',
-                        // '#821F49',
-                        // '#B5801D',
-                    ],
-                    hoverBackgroundColor: [
-                        '#FFCE56',
-                        '#FFCE56',
-                        '#FFCE56',
-                        '#FFCE56',
-                        // '#910727',
-                        // '#F1E956',
-                        // '#821F49',
-                        // '#B5801D',
-                    ],
-                },
-                {
-                    label: 'Not Applicable (' + (each[0].NotTested + each[1].NotTested + each[2].NotTested + each[3].NotTested) + ')',
-                    data: [
-                        each[0].NotTested,
-                        each[1].NotTested,
-                        each[2].NotTested,
-                        each[3].NotTested
-                        // each[index].NotTested,
-                        // each[index].auto,
-                        // each[index].manual,
-                    ],
-                    backgroundColor: [
-                        '#FF6384',
-                        '#FF6384',
-                        '#FF6384',
-                        '#FF6384',
-                        // '#910727',
-                        // '#F1E956',
-                        // '#821F49',
-                        // '#B5801D',
-                    ],
-                    hoverBackgroundColor: [
-                        '#FF6384',
-                        '#FF6384',
-                        '#FF6384',
-                        '#FF6384',
-                        // '#910727',
-                        // '#F1E956',
-                        // '#821F49',
-                        // '#B5801D',
-                    ],
-                },
-            ],
-        }, title: 'as per Work'
-    })
+        if(release.ReleaseNumber == 'DMC-3.0'){
+
+        doughnuts.push({
+            data: {
+                labels: [
+                    'Project(' + each[0].total + ')',
+                    'Tenant (' + each[1].total + ')',
+                    'Airgaped (' + each[2].total + ')',
+                    'Multizone (' + each[3].total + ')',
+                    'ApplicationDR (' + each[4].total + ')',
+                    'Service Provider (' + each[5].total + ')',
+                    'User Managment (' + each[6].total + ')',
+                    'Cluster Management (' + each[7].total + ')',
+                    'Application Management (' + each[8].total + ')',
+                    // 'Others (' + each[3].total + ')',
+                ],
+                datasets: [
+                    {
+                        label: 'Auto (' + (each[0].auto + each[1].auto + each[2].auto + each[3].auto + each[4].auto + each[5].auto + each[6].auto + each[7].auto + each[8].auto) + ')',
+                        data: [
+                            each[0].auto,
+                            each[1].auto,
+                            each[2].auto,
+                            each[3].auto,
+                            each[4].auto,
+                            each[5].auto,
+                            each[6].auto,
+                            each[7].auto,
+                            each[8].auto
+                            // each[index].NotTested,
+                            // each[index].auto,
+                            // each[index].manual,
+                        ],
+                        backgroundColor: [
+                           
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+
+                            // '#FFCE56',
+                            // '#B5801D',
+                        ],
+                        hoverBackgroundColor: [
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                        ],
+                    },
+                    {
+                        label: 'Manual (' + (each[0].manual + each[1].manual + each[2].manual + each[3].manual + each[4].manual + each[5].manual + each[6].manual + each[7].manual + each[8].manual) + ')',
+                        data: [
+                            each[0].manual,
+                            each[1].manual,
+                            each[2].manual,
+                            each[3].manual,
+                            each[4].manual,
+                            each[5].manual,
+                            each[6].manual,
+                            each[7].manual,
+                            each[8].manual
+                            // each[index].NotTested,
+                            // each[index].auto,
+                            // each[index].manual,
+                        ],
+                        backgroundColor: [
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                        hoverBackgroundColor: [
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                    },
+                    {
+                        label: 'Not Tested (' + (each[0].NotTested + each[1].NotTested + each[2].NotTested + each[3].NotTested + each[4].NotTested + each[5].NotTested + each[6].NotTested + each[7].NotTested + each[8].NotTested) + ')',
+                        data: [
+                            each[0].NotTested,
+                            each[1].NotTested,
+                            each[2].NotTested,
+                            each[3].NotTested,
+                            each[4].NotTested,
+                            each[5].NotTested,
+                            each[6].NotTested,
+                            each[7].NotTested,
+                            each[8].NotTested
+                            // each[index].NotTested,
+                            // each[index].auto,
+                            // each[index].manual,
+                        ],
+                        backgroundColor: [
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                        hoverBackgroundColor: [
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                    },
+                ],
+            }, title: 'as per Work'
+        })
+
+    }
+    
+    else{
+
+        doughnuts.push({
+            data: {
+                labels: [
+                    // 'Not Tested (' + each[index].NotTested + ')',
+                    // 'Auto (' + each[index].auto + ')',
+                    // 'Manual (' + each[index].manual + ')',
+                    'Storage (' + each[0].total + ')',
+                    'Network (' + each[1].total + ')',
+                    'Management (' + each[2].total + ')',
+                    'Others (' + each[3].total + ')',
+                ],
+                datasets: [
+                    {
+                        label: 'Auto (' + (each[0].auto + each[1].auto + each[2].auto + each[3].auto) + ')',
+                        data: [
+                            each[0].auto,
+                            each[1].auto,
+                            each[2].auto,
+                            each[3].auto
+                            // each[index].NotTested,
+                            // each[index].auto,
+                            // each[index].manual,
+                        ],
+                        backgroundColor: [
+                            // '#FF6384',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            // '#FFCE56',
+                            // '#B5801D',
+                        ],
+                        hoverBackgroundColor: [
+                            // '#FF6384',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            '#36A2EB',
+                            // '#FFCE56',
+                            // '#B5801D',
+                        ],
+                    },
+                    {
+                        label: 'Manual (' + (each[0].manual + each[1].manual + each[2].manual + each[3].manual) + ')',
+                        data: [
+                            each[0].manual,
+                            each[1].manual,
+                            each[2].manual,
+                            each[3].manual
+                            // each[index].NotTested,
+                            // each[index].auto,
+                            // each[index].manual,
+                        ],
+                        backgroundColor: [
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                        hoverBackgroundColor: [
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            '#FFCE56',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                    },
+                    {
+                        label: 'Not Applicable (' + (each[0].NotTested + each[1].NotTested + each[2].NotTested + each[3].NotTested) + ')',
+                        data: [
+                            each[0].NotTested,
+                            each[1].NotTested,
+                            each[2].NotTested,
+                            each[3].NotTested
+                            // each[index].NotTested,
+                            // each[index].auto,
+                            // each[index].manual,
+                        ],
+                        backgroundColor: [
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                        hoverBackgroundColor: [
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            '#FF6384',
+                            // '#910727',
+                            // '#F1E956',
+                            // '#821F49',
+                            // '#B5801D',
+                        ],
+                    },
+                ],
+            }, title: 'as per Work'
+        })
+
+
+    }
+    
     // })
     return doughnuts;
 

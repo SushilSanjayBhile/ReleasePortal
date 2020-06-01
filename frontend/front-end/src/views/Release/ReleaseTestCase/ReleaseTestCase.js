@@ -82,7 +82,7 @@ class ReleaseTestCase extends Component {
             //     doughnuts: dough && dough.length>0 ? [...dough]:null,
             //     domains: dom && Object.keys(dom).length>0 ? {...getTCStatusForSunburst(newProps.selectedRelease.ReleaseNumber)}:null,
             // })
-            // this.props.history.push('/release/summary');
+            this.props.history.push('/release/summary');
         }
     }
     componentDidMount() {
@@ -135,6 +135,7 @@ class ReleaseTestCase extends Component {
         }
         this.toggle();
     }
+    
     sunburstClick(node) {
         console.log('clicked node');
         console.log(node);
