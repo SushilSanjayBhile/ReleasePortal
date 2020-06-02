@@ -1,6 +1,23 @@
 from rest_framework import serializers
 from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, E2E, STRESS, LONGEVITY, \
-        LATEST_TC_STATUS, DEFAULT_DOMAIN_SUBDOMAIN
+        LATEST_TC_STATUS, DEFAULT_DOMAIN_SUBDOMAIN, TC_INFO_GUI
+
+from .models import TC_INFO_GUI, GUI_LATEST_TC_STATUS, TC_STATUS_GUI
+
+class TC_STATUS_GUI_SERIALIZER(serializers.ModelSerializer):
+    class Meta:
+        model = TC_STATUS_GUI
+        fields = '__all__'
+
+class LATEST_TC_STATUS_GUI_SERIALIZER(serializers.ModelSerializer):
+    class Meta:
+        model = GUI_LATEST_TC_STATUS
+        fields = '__all__'
+
+class TC_INFO_GUI_SERIALIZER(serializers.ModelSerializer):
+    class Meta:
+        model = TC_INFO_GUI
+        fields = '__all__'
 
 class DOMAIN_SUBDOMAIN_SERIALIZER(serializers.ModelSerializer):
     class Meta:

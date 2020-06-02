@@ -1,0 +1,233 @@
+[
+    {
+        "Test class": "Check different Bind DN entry points",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "Use dev.adexample.com auth server and specify binddn as adexample.com",
+        "Pre-requisite": "Working at least single auth server",
+        "Description": "AD tree can have Users on different levels. adexample.com, dev.adexample.com, in.qa.adexample.com.  If you set BindDN to the upper levels, user should be searched in entire sub-tree under binddn"
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "Configuration of remote servers",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "Testing the limits",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "One record per domain",
+        "Pre-requisite": "",
+        "Description": "In 2.0 we allowed more than 1 server per domain due to user search order. Starting 2.1 we set a requirement one server per domain."
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "More than max number of servers",
+        "Pre-requisite": "",
+        "Description": "In 2.0 we culd create only 1 auth server from GUI and up to 4 server from dctl. Starting 2.1 we increased that limit for both to 64"
+    },
+    {
+        "Test class": "",
+        "Test group": "Mis-configured server",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "Wrong base dn",
+        "Pre-requisite": "",
+        "Description": "You can configure server adexample.com but as binddn use non existent dev.adexample.com (if there is no trust to dev.adexample.com established) or just non existent dev2.adexample.com. Since we don't check for validity of BaseDN at the time of server creation, it may be an issue"
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "Wrong password",
+        "Pre-requisite": "",
+        "Description": "We don't check for proper password on server save, only when test is pressed."
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "Wrong bind dn",
+        "Pre-requisite": "",
+        "Description": "We don't check for bind dn on server save, only when test is pressed."
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "Wrong user filter",
+        "Pre-requisite": "",
+        "Description": "We don't check for proper filter on server save, only when test is pressed."
+    },
+    {
+        "Test class": "",
+        "Test group": "Secured server option",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "Wrong certificate (format)",
+        "Pre-requisite": "",
+        "Description": "When using a wrong type of certificate"
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "Wrong certificate (chain of trust)",
+        "Pre-requisite": "",
+        "Description": "When using a certificate signed by a wrong trustee"
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "Expired certificate",
+        "Pre-requisite": "",
+        "Description": "When using an expired certificate - cannot enter"
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "Certificate got expired after got configured",
+        "Pre-requisite": "",
+        "Description": "Certificate got expired after being used"
+    },
+    {
+        "Test class": "Configuration of local users",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "Adding and using local users",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "Removing local users",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "Configuration of remote users",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "Configuration of remote groups",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "Proper events generation",
+        "Test group": "",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "Upgrade form 2.0 to 2.1",
+        "Test": "",
+        "Pre-requisite": "",
+        "Description": ""
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "When multiple servers with the same domain exists",
+        "Pre-requisite": "",
+        "Description": "Should generate event to admin stating there are multiple servers pointing to the same domain"
+    },
+    {
+        "Test class": "",
+        "Test group": "",
+        "Test": "When more than one server but multiple local users with remote auth exist",
+        "Pre-requisite": "",
+        "Description": "Should generate event to admin stating there are multiple auth servers and remote users should be assigned to a proper servers"
+    }
+]

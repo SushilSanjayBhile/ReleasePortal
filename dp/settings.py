@@ -84,6 +84,31 @@ DATABASES = {
         'HOST': hostName,
         'PORT': portNumber,
         },
+    'DCX-3.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DCX-3.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'DMC Master': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DMC Master',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'DMC-3.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DMC-3.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+
     'universal': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'universal',
@@ -100,17 +125,9 @@ DATABASES = {
         'HOST': hostName,
         'PORT': portNumber,
         },
-    '2.4.0': {
+    'Spektra 2.4': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': '2.4.0',
-        'USER': userName,
-        'PASSWORD': passwd,
-        'HOST': hostName,
-        'PORT': portNumber,
-        },
-    'Spektra': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': '3.0',
         'USER': userName,
         'PASSWORD': passwd,
         'HOST': hostName,
@@ -124,7 +141,7 @@ DATABASES = {
         'HOST': hostName,
         'PORT': portNumber,
         },
-    '5.0.0': {
+    'TestDatabase': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'TestDatabase',
         'USER': userName,

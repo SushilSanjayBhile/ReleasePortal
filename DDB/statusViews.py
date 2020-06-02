@@ -8,10 +8,11 @@ from django.views.decorators.http import require_http_methods
 
 # imports from django app
 from constraints import *
-from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, LATEST_TC_STATUS
-from .forms import TcInfoForm, TcStatusForm, UserInfoForm, LogForm, ReleaseInfoForm, AggregationForm, GuiTcInfoForm, LatestStatusForm
+from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, LATEST_TC_STATUS, TC_INFO_GUI
+from .forms import TcInfoForm, TcStatusForm, UserInfoForm, LogForm, ReleaseInfoForm, AggregationForm, GuiTcInfoForm, LatestStatusForm, \
+        GuiStatusForm
 from DDB.serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, USER_SERIALIZER, LOG_SERIALIZER, \
-    RELEASE_SERIALIZER, AGGREGATION_SERIALIZER, TC_STATUS_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER
+    RELEASE_SERIALIZER, AGGREGATION_SERIALIZER, TC_STATUS_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER, TC_INFO_GUI_SERIALIZER
 from .latestStatusUpdate import latestResultUpdateFunction
 import datetime
 from .forms import LogForm
@@ -37,6 +38,39 @@ def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
         data.save(using = Release)
     else:
         print("INVALID", fd.errors)
+
+@csrf_exempt
+def GUI_TC_STATUS_UPDATE_VIEW(request, Release):
+    if request.method == "POST":
+        errRecords = []
+        request = json.loads(request.body.decode("utf-8"))
+
+        for req in request:
+            print(req)
+            data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'])
+            serializer = TC_INFO_GUI_SERIALIZER(data, many = True)
+            data = json.dumps(serializer.data)
+            data = json.loads(data)
+            print(data)
+            #req['TcName'] = data[0]['TcName']
+
+            fd = GuiStatusForm(req)
+            if fd.is_valid():
+                data = fd.save(commit = False)
+                data.save(using = Release)
+                print("Save", Release)
+                if "Activity" in req:
+                    AD = req['Activity']
+                    GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+            else:
+                print(req, fd.errors)
+                errRecords.append(req)
+
+        latestResultUpdateFunction(Release)
+
+        if len(errRecords) > 0:
+            return HttpResponse("Error occured", status = 500)
+        return HttpResponse("All records updated successfully", status  = 200)
 
 @csrf_exempt
 def TC_STATUS_UPDATE_VIEW(request, Release):
@@ -67,4 +101,3 @@ def TC_STATUS_UPDATE_VIEW(request, Release):
         if len(errRecords) > 0:
             return HttpResponse(fd.errors, status = 500)
         return HttpResponse("All records updated successfully", status  = 200)
-

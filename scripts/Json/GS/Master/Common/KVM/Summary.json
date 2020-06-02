@@ -1,0 +1,32 @@
+[
+    {
+        "Subgroup": "Standard",
+        "Total TCs": 29.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 19.0,
+        "Automated %": 65.52
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": ""
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 29.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 19.0,
+        "Automated %": 65.52
+    }
+]

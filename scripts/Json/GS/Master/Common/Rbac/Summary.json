@@ -1,0 +1,72 @@
+[
+    {
+        "Subgroup": "Standard",
+        "Total TCs": 58.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 44.0,
+        "Automated %": 75.86206897
+    },
+    {
+        "Subgroup": "Remote User on Linux LDAP",
+        "Total TCs": 37.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 36.0,
+        "Automated %": 97.3
+    },
+    {
+        "Subgroup": "Remote User on Windows LDAP",
+        "Total TCs": 38.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 37.0,
+        "Automated %": 97.37
+    },
+    {
+        "Subgroup": "Multiple Auths",
+        "Total TCs": 9.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 9.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Remote User Group",
+        "Total TCs": 19.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 1.0,
+        "Automated %": 5.26
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": ""
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 161.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 118.0,
+        "Automated %": 73.29
+    }
+]

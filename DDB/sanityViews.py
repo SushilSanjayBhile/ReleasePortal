@@ -103,7 +103,7 @@ def updateE2E(updatedData, data, Release):
         data.Build = updatedData['Build']
         data.Tag = updatedData['Tag']
         data.Result = updatedData['Result']
-        data.Bug = updatedData['Bug']
+        data.Bugs = updatedData['Bugs']
         data.CardType = updatedData['CardType']
         data.NoOfTCsPassed = updatedData['NoOfTCsPassed']
         data.E2EFocus = updatedData['E2EFocus']

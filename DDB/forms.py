@@ -2,6 +2,23 @@ from django.forms import ModelForm
 from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, E2E, STRESS, LONGEVITY, \
         DEFAULT_DOMAIN_SUBDOMAIN, LATEST_TC_STATUS
 
+from .models import TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS
+
+class GuiStatusForm(ModelForm):
+    class Meta:
+        model = GUI_TC_STATUS
+        fields = "__all__"
+
+class GuiLatestStatusForm(ModelForm):
+    class Meta:
+        model = GUI_LATEST_TC_STATUS
+        fields = "__all__"
+
+class GuiInfoForm(ModelForm):
+    class Meta:
+        model = TC_INFO_GUI
+        fields = "__all__"
+
 class LatestStatusForm(ModelForm):
     class Meta:
         model = LATEST_TC_STATUS

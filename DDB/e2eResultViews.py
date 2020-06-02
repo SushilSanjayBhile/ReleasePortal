@@ -75,8 +75,11 @@ def e2eResultUpdate(request):
             Release = "master"
         elif "ga-" in req["drive_dir_name"].lower():
             Release = req["drive_dir_name"].split("-")[-1]
+        elif "dcx-" in req["drive_dir_name"].lower():
+            Release = req["drive_dir_name"]
         else:
             return HttpResponse(json.dumps({"ERROR":"UNABLE TO IDENTIFY RELEASE NUMBER. PROVIDE LIKE: GA-2.3.0/GA-<number>/Master"}))
+        print(req, "=============================================")
 
         if 'drive_sub_directory' in req:
             CardType = req['drive_sub_directory']
@@ -139,7 +142,9 @@ def e2eResultUpdate(request):
                         updateStatusFunc("NOT FOUND", "NOT FOUND", "NOT FOUND", tc, build, "Skip", "NOT FOUND", Release)
                         #errorTCs.append(tc)
         else:
+            passcount = 0
             for tc in req['pass_id_list']:
+                passcount += 1
                 try:
                     statusDict = {}
                     singleTc = TC_INFO.objects.using(Release).filter(TcID = tc).get(CardType= CardType)
@@ -157,6 +162,8 @@ def e2eResultUpdate(request):
                     except:
                         updateStatusFunc("NOT FOUND", "NOT FOUND", tc, "NOT FOUND", build, "Pass", "NOT FOUND", Release)
                         #errorTCs.append(tc)
+
+            print(passcount)
 
             for tc in req['fail_id_list']:
                 try:

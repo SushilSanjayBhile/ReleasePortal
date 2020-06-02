@@ -1,0 +1,90 @@
+[
+    {
+        "Date": 43775.0,
+        "Build": "2.3.0-9",
+        "Setup": "bostonTb2(bosserv4/5/6)",
+        "Result": "Fail",
+        "Bug": "-",
+        "Owner": "Kiran Z",
+        "Focused Tag": "Storage",
+        "No of TCs passed": "",
+        "Notes": "One of the cluster did not come up after power cycling it."
+    },
+    {
+        "Date": 43776.0,
+        "Build": "2.3.0-14",
+        "Setup": "bostonTb2(bosserv4/5/6)",
+        "Result": "Fail",
+        "Bug": "DWS-6027, DWS-6116, DWS-4613",
+        "Owner": "Kiran Z",
+        "Focused Tag": "Storage",
+        "No of TCs passed": "",
+        "Notes": ""
+    },
+    {
+        "Date": 43780.0,
+        "Build": "2.3.0-21",
+        "Setup": "bostonTb2(bosserv4/5/6)",
+        "Result": "Fail",
+        "Bug": "DWS-4613, DWS-6116",
+        "Owner": "Kiran Z",
+        "Focused Tag": "Storage",
+        "No of TCs passed": "",
+        "Notes": ""
+    },
+    {
+        "Date": 43781.0,
+        "Build": "2.3.0-22",
+        "Setup": "bostonTb2(bosserv4/5/6)",
+        "Result": "Fail",
+        "Bug": "DWS-6130",
+        "Owner": "Kiran Z",
+        "Focused Tag": "Storage",
+        "No of TCs passed": "",
+        "Notes": "Completed local storage and remote storage test cases."
+    },
+    {
+        "Date": 43783.0,
+        "Build": "2.3.0-30",
+        "Setup": "bostonTb2(bosserv4/5/6)",
+        "Result": "Fail",
+        "Bug": "-",
+        "Owner": "Kiran Z",
+        "Focused Tag": "Mirroring",
+        "No of TCs passed": 1.0,
+        "Notes": "Cluster.json file found after destroing cluster on one of the node."
+    },
+    {
+        "Date": 43787.0,
+        "Build": "2.3.0-36",
+        "Setup": "bostonTb2(bosserv4/5/6)",
+        "Result": "Pass",
+        "Bug": "-",
+        "Owner": "Kiran Z",
+        "Focused Tag": "Mirroring",
+        "No of TCs passed": 4.0,
+        "Notes": ""
+    },
+    {
+        "Date": 43788.0,
+        "Build": "-",
+        "Setup": "bostonTb1(bosserv1/2/3)",
+        "Result": "-",
+        "Bug": "-",
+        "Owner": "Kiran Z",
+        "Focused Tag": "Mirroring",
+        "No of TCs passed": "",
+        "Notes": "Cluter creation failed as time was not in sync on boscntl and bosserv1/2/3."
+    },
+    {
+        "Date": 43789.0,
+        "Build": "2.3.0-40",
+        "Setup": "bostonTb2(bosserv4/5/6)",
+        "Result": "Pass",
+        "Bug": 1.0,
+        "Owner": "Kiran Z",
+        "Focused Tag": "Mirroring",
+        "No of TCs passed": 17.0,
+        "Notes": ""
+    }
+]

@@ -3,8 +3,8 @@ from django.http import HttpResponse, JsonResponse
 from django.db.models.functions import Trunc
 import json, time
 
-from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER
-from .models import TC_INFO, TC_STATUS, LOGS, LATEST_TC_STATUS
+from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER, TC_STATUS_GUI_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, TC_INFO_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER
+from .models import TC_INFO, TC_STATUS, LOGS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LATEST_TC_STATUS
 from .forms import TcInfoForm
 from django.db.models import Q
 
@@ -22,40 +22,141 @@ def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
     else:
         print("INVALID", fd.errors)
 
+#attaching tcid to tcinfo row 
+def createInfoDict(data, Release):
+    infoDict = {}
+
+    for row in data:
+        #d = TC_INFO_GUI.objects.using(Release).get(id = row["id"])
+        #sd = TC_INFO_GUI_SERIALIZER(d)
+        #updatedData = json.dumps(sd.data)
+        #updatedData = json.loads(updatedData)
+
+        #if updatedData["AutomatedTcName"] == "":
+        #    updatedData["AutomatedTcName"] = "TC NOT AUTOMATED"
+
+        #updateGuiData(updatedData, d, Release)
+                
+        infoDict[row["id"]] = row
+
+    return infoDict
+
+def updateGuiData(updatedData, data, Release):
+     data.TcID = updatedData['TcID']
+     data.id = updatedData['id']
+     data.Domain = updatedData['Domain']
+     data.SubDomain = updatedData['SubDomain']
+     data.Scenario = updatedData['Scenario']
+     data.Description = updatedData['Description']
+     data.Steps = updatedData['Steps']
+     data.ExpectedBehaviour = updatedData['ExpectedBehaviour']
+     data.Notes = updatedData['Notes']
+     data.CardType = updatedData['CardType']
+     data.ServerType = updatedData['ServerType']
+     data.WorkingStatus = updatedData['WorkingStatus']
+     data.Date = updatedData['Date']
+     data.Assignee = updatedData['Assignee']
+     data.Creator = updatedData['Creator']
+     data.Priority = updatedData['Priority']
+     data.Tag = updatedData['Tag']
+     data.AutomatedTcName = updatedData['AutomatedTcName']
+     data.BrowserName = updatedData['BrowserName']
+
+     data.save(using = Release)
+     return 1
+
 @csrf_exempt
 def WHOLE_GUI_TC_INFO(request, Release):
     if request.method == "GET":
+        startTime = time.time()
         AllInfoData = []
         statusDict = {}
 
         index = int(request.GET.get('index', 0))
+        Domain = str(request.GET.get('Domain', None))
         SubDomain = str(request.GET.get('SubDomain', None))
         Priority = str(request.GET.get('Priority', None))
 
-        statusdata = TC_STATUS.objects.using(Release).all().order_by('Date')
-        infodata = TC_INFO.objects.all().using(Release).filter(Domain = "GUI")
+        infodata = TC_INFO_GUI.objects.using(Release).all()
 
+        if Domain != 'None':
+            infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':
             infodata = infodata.filter(SubDomain = SubDomain)
         if Priority != 'None':
             infodata = infodata.filter(Priority = Priority)
 
         count = int(request.GET.get('count', len(infodata)))
-        try:
-            infodata = infodata[index : (index + count)]
-        except:
-            allDataCount = info.count()
-            if index < allDataCount and count < allDataCount:
-                infodata = infodata[index:count]
-            elif index < allDataCount:
-                infodata = infodata[index:]
+        #try:
+        #    infodata = infodata[index : (index + count)]
+        #except:
+        #    allDataCount = info.count()
+        #    if index < allDataCount and count < allDataCount:
+        #        infodata = infodata[index:count]
+        #    elif index < allDataCount:
+        #        infodata = infodata[index:]
+        #    else:
+        #        infodata = TC_INFO.objects.using(Release).all()
+
+        infoserializer = TC_INFO_GUI_SERIALIZER(infodata, many = True)
+        infoDict = createInfoDict(infoserializer.data, Release)
+
+        statusdata = GUI_TC_STATUS.objects.using(Release).all().order_by('Date')
+        lateststatusdata = GUI_LATEST_TC_STATUS.objects.using(Release).all().order_by('Date')
+
+        latestSer = LATEST_TC_STATUS_GUI_SERIALIZER(lateststatusdata, many = True)
+
+        for status in latestSer.data:
+            try:
+                status.update(infoDict[status["tcInfoNum"]])
+            except:
+                pass
+
+        for rec in latestSer.data:
+            try:
+                tcid = rec['TcID']
+                card = rec['CardType'].strip('][').strip('\'')
+            except:
+                continue
+
+            if card not in statusDict:
+                statusDict[card]= {}
+            if tcid in statusDict[card]:
+                statusDict[card][tcid].append(rec)
             else:
-                infodata = TC_INFO.objects.using(Release).all()
+                statusDict[card][tcid] = []
+                statusDict[card][tcid].append(rec)
 
-        infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
+        for info in infoserializer.data:
+            #if info["Priority"] == "Skip" and info["Priority"] == "NA":
+            #    continue
+            info = json.loads(json.dumps(info))
+            info["TcName"] =  info["AutomatedTcName"]
+            #info['StatusList'] = {"id": "", "TcID": info['TcID'], "TcName": info['AutomatedTcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
+            #info['CurrentStatus'] = {"id": "", "TcID": info['TcID'], "TcName": info['AutomatedTcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
 
-        return HttpResponse(json.dumps(infoserializer.data))
+            try:
+                card = info['CardType']
+                card = rec['CardType'].strip('][').strip('\'')
+                tcid = info['TcID']
+            except:
+                pass
 
+            try:
+                info['StatusList'] = json.loads(json.dumps(statusDict[card][tcid]))
+                info['CurrentStatus'] = json.loads(json.dumps(statusDict[card][tcid][-1]))
+            except:
+                info["StatusList"] = {}
+                info["CurrentStatus"] = {}
+                pass
+
+            AllInfoData.append(info)
+
+        if count > len(AllInfoData):
+            count = len(AllInfoData)
+
+        requiredData = AllInfoData[index:count]
+        return HttpResponse(json.dumps(requiredData))
 
 @csrf_exempt
 def WHOLE_TC_INFO(request, Release):
@@ -133,6 +234,7 @@ def WHOLE_TC_INFO(request, Release):
 @csrf_exempt
 def TC_INFO_GET_POST_VIEW(request, Release):
     master = "master"
+    dmcMaster = "DMC Master"
     errorMsg = {}
     errorMsg[Release] = []
     errorMsg[master] = []
@@ -164,6 +266,8 @@ def TC_INFO_GET_POST_VIEW(request, Release):
             	        GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
 
             # post request for master release
+            if "dmc" in Release.lower():
+                master = dmcMaster
             if Release != master and Release != "5.0.0":
                 data = TC_INFO.objects.using(master).filter(TcID = req['TcID']).filter(CardType = card)
                 if len(data) != 0:
@@ -261,165 +365,183 @@ def updateStatusData(updatedData, data, Release):
      data.save(using = Release)
      return 1
 
-@csrf_exempt
-def UpdateTcStatusView(request, Release):
-    if request.method == "PUT":
-        print(request.body)
-        req = json.loads(request.body.decode("utf-8"))
-
-        statusData = TC_STATUS.objects.using(Release).get(TcID = req["TcID"], CardType = req["CardType"], Date = req["Date"])
-        statusSer = TC_STATUS_SERIALIZER(statusData)
-        newData = statusSer.data
-
-        for i in req:
-            if i != "id":
-                newData[i] = req[i]
-
-        statusData = LATEST_TC_STATUS.objects.using(Release).get(id = req["id"])
-        statusSer = TC_STATUS_SERIALIZER(statusData)
-        newData = statusSer.data
-
-        for i in req:
-            if i != "id":
-                newData[i] = req[i]
-
-        print(newData)
-
-        return HttpResponse("PUT request", status = 400)
-
-
 def TcCountByFilter(request, Release):
-    try:
-        countDict = {}
-        replaceDict = {'Storage-DrivesetTCs':'Storage-Driveset','StoragePVC':'Storage-PVC','VagrantCluster':'Vagrant Cluster','SoftwareSolution':'Software Solution','ManagementTestcases': "Management", "MultizoneCluster":"Multizone Cluster",  "NetworkTestCases":"Network", "Rbac":"RBAC","StorageMirrored-Tests":"Storage-Mirrored","Additionaltests":"Additional", "HelmTestCases":"Helm","Interfacetestcases":"Interface","Kubernetes-tests": "Kubernetes", "ManagementTestcases":"Management", "MultizoneCluster":"Multizone Cluster", "NetworkTestCases":"Network","QOSTestcases":"QOS","StorageMirrored-Tests":"Storage-Mirrored","StorageRemote-Tests":"Storage-Remote","StorageSnapshot-Tests":"Storage-Snapshot","Upgradetests":"Upgrade", "Storage-Tests":"Storage"}
-        for i in replaceDict:
-            data = TC_INFO.objects.filter(Domain = i).using(Release)
-            serializer = TC_INFO_SERIALIZER(data, many = True)
+    #try:
+    #    countDict = {}
+    #    replaceDict = {'Storage-DrivesetTCs':'Storage-Driveset','StoragePVC':'Storage-PVC','VagrantCluster':'Vagrant Cluster','SoftwareSolution':'Software Solution','ManagementTestcases': "Management", "MultizoneCluster":"Multizone Cluster",  "NetworkTestCases":"Network", "Rbac":"RBAC","StorageMirrored-Tests":"Storage-Mirrored","Additionaltests":"Additional", "HelmTestCases":"Helm","Interfacetestcases":"Interface","Kubernetes-tests": "Kubernetes", "ManagementTestcases":"Management", "MultizoneCluster":"Multizone Cluster", "NetworkTestCases":"Network","QOSTestcases":"QOS","StorageMirrored-Tests":"Storage-Mirrored","StorageRemote-Tests":"Storage-Remote","StorageSnapshot-Tests":"Storage-Snapshot","Upgradetests":"Upgrade", "Storage-Tests":"Storage"}
+    #    for i in replaceDict:
+    #        data = TC_INFO.objects.filter(Domain = i).using(Release)
+    #        serializer = TC_INFO_SERIALIZER(data, many = True)
 
-            for d in serializer.data:
-                card = d['CardType']
-                tcid = d['TcID']
-                dat = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
-                d = json.dumps(d)
-                d = json.loads(d)
-                updatedData = d
+    #        for d in serializer.data:
+    #            card = d['CardType']
+    #            tcid = d['TcID']
+    #            dat = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+    #            d = json.dumps(d)
+    #            d = json.loads(d)
+    #            updatedData = d
 
-                updatedData['Domain'] = replaceDict[i]
-                print(dat.Domain)
-                #print(updatedData, "\n",dat)
-                updateData(updatedData, dat, Release)
+    #            updatedData['Domain'] = replaceDict[i]
+    #            print(dat.Domain)
+    #            #print(updatedData, "\n",dat)
+    #            updateData(updatedData, dat, Release)
 
-        statusData = TC_STATUS.objects.using(Release).all()
-        statusSerializer = TC_STATUS_SERIALIZER(statusData, many = True)
+    #    statusData = TC_STATUS.objects.using(Release).all()
+    #    statusSerializer = TC_STATUS_SERIALIZER(statusData, many = True)
 
-        for status in statusSerializer.data:
-            stat = TC_STATUS.objects.using(Release).get(id = status['id'])
-            serializer = TC_STATUS_SERIALIZER(stat)
-            newData = status
+    #    for status in statusSerializer.data:
+    #        stat = TC_STATUS.objects.using(Release).get(id = status['id'])
+    #        serializer = TC_STATUS_SERIALIZER(stat)
+    #        newData = status
 
-            for rc in replaceDict:
-                if rc in status['Domain']:
-                    for key in serializer.data:
-                        if key == 'Domain':
-                            newData[key] = replaceDict[rc]
-                        else:
-                            newData[key] = status[key]
-                    #print(newData['TcID'], newData['Domain'])
-                    updateStatusData(newData, stat, Release)
-    except:
-        pass
+    #        for rc in replaceDict:
+    #            if rc in status['Domain']:
+    #                for key in serializer.data:
+    #                    if key == 'Domain':
+    #                        newData[key] = replaceDict[rc]
+    #                    else:
+    #                        newData[key] = status[key]
+    #                #print(newData['TcID'], newData['Domain'])
+    #                updateStatusData(newData, stat, Release)
+    #except:
+    #    pass
 
-    #return HttpResponse(json.dumps(countDict))
-    #statusData = TC_STATUS.objects.using(Release).all()
-    #statusSerializer = TC_STATUS_SERIALIZER(statusData, many = True)
+    ##return HttpResponse(json.dumps(countDict))
+    ##statusData = TC_STATUS.objects.using(Release).all()
+    ##statusSerializer = TC_STATUS_SERIALIZER(statusData, many = True)
 
-    #for status in statusSerializer.data:
-    #    stat = TC_INFO.objects.using(Release).filter(TcID = status['TcID']).get(CardType = status['CardType'])
-    #    s = TC_STATUS.objects.using(Release).get(id = status['id'])
+    ##for status in statusSerializer.data:
+    ##    stat = TC_INFO.objects.using(Release).filter(TcID = status['TcID']).get(CardType = status['CardType'])
+    ##    s = TC_STATUS.objects.using(Release).get(id = status['id'])
 
-    #    serializer = TC_INFO_SERIALIZER(stat)
-    #    newData = status
+    ##    serializer = TC_INFO_SERIALIZER(stat)
+    ##    newData = status
 
-    #    for key in status:
-    #        if key == 'Domain' or key == 'SubDomain' or key == 'TcName':
-    #            newData[key] = serializer.data[key]
-    #        else:
-    #            newData[key] = status[key]
-    #    updateStatusData(newData, s, Release)
+    ##    for key in status:
+    ##        if key == 'Domain' or key == 'SubDomain' or key == 'TcName':
+    ##            newData[key] = serializer.data[key]
+    ##        else:
+    ##            newData[key] = status[key]
+    ##    updateStatusData(newData, s, Release)
 
 
 
-    #UNCOMMENT FROM BELOW
+    ##UNCOMMENT FROM BELOW
+    print("FETCHING ALL TC INFO")
     infodata = TC_INFO.objects.using(Release).all()
     ser = TC_INFO_SERIALIZER(infodata, many = True)
 
+    #for i in ser.data:
+    #    try:
+    #        sd = TC_INFO.objects.using(Release).get(TcID = i['TcID'], CardType = i['CardType'])
+    #    except:
+    #        print("COMING INSIDE EXCEPT")
+    #        sd = TC_INFO.objects.using(Release).filter(TcID = i['TcID'], CardType = i['CardType'])
+    #        ss = TC_INFO_SERIALIZER(sd, many = True)
+    #        c = 0
+
+    #        for i in ss.data:
+    #            c += 1
+    #            if c > 1:
+    #                singledata = TC_INFO.objects.using(Release).get(id = i['id'])
+    #                singleserializer = TC_INFO_SERIALIZER(singledata)
+    #                updatedData = singleserializer.data
+    #                if i['CardType'] == "BOS":
+    #                    updatedData['CardType'] = "NYNJ"
+    #                elif i['CardType'] == "NYNJ":
+    #                    updatedData['CardType'] = "BOS"
+
+    #                #print(i['id'], i['TcID'], i['CardType'], updatedData['CardType'])
+    #                #updateData(updatedData, singledata, Release)
+
+    #        #print("\n")
+
+    count = 0
+    diction = {}
+
     for i in ser.data:
-        try:
-            sd = TC_INFO.objects.using(Release).get(TcID = i['TcID'], CardType = i['CardType'])
-        except:
+            break
             sd = TC_INFO.objects.using(Release).filter(TcID = i['TcID'], CardType = i['CardType'])
-            ss = TC_INFO_SERIALIZER(sd, many = True)
-            c = 0
+            ser = TC_INFO_SERIALIZER(sd, many = True)
 
-            for i in ss.data:
-                c += 1
-                if c > 1:
-                    singledata = TC_INFO.objects.using(Release).get(id = i['id'])
-                    singleserializer = TC_INFO_SERIALIZER(singledata)
-                    updatedData = singleserializer.data
-                    if i['CardType'] == "BOS":
-                        updatedData['CardType'] = "NYNJ"
-                    elif i['CardType'] == "NYNJ":
-                        updatedData['CardType'] = "BOS"
+            if len(ser.data) == 1:
+                continue
 
-                    #print(i['id'], i['TcID'], i['CardType'], updatedData['CardType'])
-                    updateData(updatedData, singledata, Release)
+            records = len(ser.data)
+            count+=1
 
-            #print("\n")
+            data = json.dumps(ser.data)
+            data = json.loads(data)
 
-    for i in ser.data:
-        try:
-            sd = TC_INFO.objects.using(Release).get(TcID = i['TcID'], CardType = i['CardType'])
-        except:
+            if i["TcID"] not in diction:
+                diction[i["TcID"]] = {}
+            if "id" not in diction[i["TcID"]]:
+                diction[i["TcID"]]["id"] = {}
+
+            diction[i["TcID"]]["id"][i["Priority"]] = i["id"]
+    c = 0
+    for i in diction:
+        if len(diction[i]["id"]) == 1:
+            for key in diction[i]["id"]:
+                print(diction[i]["id"][key])
+                #TC_INFO.objects.using(Release).get(id = diction[i]["id"][key]).delete()
+
+    guidata = TC_INFO_GUI.objects.using(Release).all()
+    guiser = TC_INFO_GUI_SERIALIZER(guidata, many = True)
+
+    for tc in guiser.data:
+        data = TC_INFO_GUI.objects.using(Release).filter(TcID = tc["TcID"], BrowserName = tc["BrowserName"])
+
+        data = TC_INFO_GUI.objects.using(Release).filter(TcID = tc["TcID"], BrowserName = tc["BrowserName"])
+        dataser = TC_INFO_GUI_SERIALIZER(data, many = True)
+
+        if len(dataser.data) > 1:
+            records = len(dataser.data)
+            for i in dataser.data:
+                if records != 1:
+                    TC_INFO_GUI.objects.using(Release).get(id = i["id"]).delete()
+                    records -= 1
+
 
             # LOGIC TO DELETE DUPLICATE TCS
 
-            c = 0
-            for i in ss.data:
-                c += 1
+            #c = 0
+            #for i in ss.data:
+            #    c += 1
 
-                if c > 1:
-                    #print(i['id'], i['TcID'], i['CardType'])
-                    data = TC_INFO.objects.using(Release).get(id = i['id']).delete()
-                    #print(data, c)
-                    #print(i['TcID'], i['CardType'], len(ss.data), i['id'], c)
-            #print()
+            #    if c > 1:
+            #        continue
+            #        print(i['id'], i['TcID'], i['CardType'], i["Domain"], i["SubDomain"])
+            #        #data = TC_INFO.objects.using(Release).get(id = i['id']).delete()
+            #        #print(data, c)
+            #        #print(i['TcID'], i['CardType'], len(ss.data), i['id'], c)
+            ##print()
 
-    infodata = TC_INFO.objects.using(Release).all()
-    ser = TC_INFO_SERIALIZER(infodata, many = True)
+    #infodata = TC_INFO.objects.using(Release).all()
+    #ser = TC_INFO_SERIALIZER(infodata, many = True)
 
-    for i in ser.data:
-        if i["CardType"] == "BOS" or i["CardType"] == "NYNJ":
-            tcinfo = TC_INFO.objects.using(Release).filter(TcID = i["TcID"])
-            tcinfoser = TC_INFO_SERIALIZER(tcinfo, many = True)
+    #for i in ser.data:
+    #    if i["CardType"] == "BOS" or i["CardType"] == "NYNJ":
+    #        tcinfo = TC_INFO.objects.using(Release).filter(TcID = i["TcID"])
+    #        tcinfoser = TC_INFO_SERIALIZER(tcinfo, many = True)
 
-            if len(tcinfoser.data) != 2:
-                if len(tcinfoser.data) == 1:
-                    data = TC_INFO.objects.using(Release).get(id = tcinfoser.data[0]['id'])
-                    s = TC_INFO_SERIALIZER(data)
-                    newData = s.data
+    #        if len(tcinfoser.data) != 2:
+    #            if len(tcinfoser.data) == 1:
+    #                data = TC_INFO.objects.using(Release).get(id = tcinfoser.data[0]['id'])
+    #                s = TC_INFO_SERIALIZER(data)
+    #                newData = s.data
 
-                    newData['CardType'] = "BOS"
-                    if s.data['CardType'] == "BOS":
-                        newData['CardType'] = "NYNJ"
+    #                newData['CardType'] = "BOS"
+    #                if s.data['CardType'] == "BOS":
+    #                    newData['CardType'] = "NYNJ"
 
-                    del newData['id']
-                    #print(newData['CardType'], s.data['CardType'], newData)
-                    fd = TcInfoForm(newData)
+    #                del newData['id']
+    #                #print(newData['CardType'], s.data['CardType'], newData)
+    #                fd = TcInfoForm(newData)
 
-                    if fd.is_valid():
-                        data = fd.save(commit = False)
-                        data.save(using = Release)
+    #                if fd.is_valid():
+    #                    data = fd.save(commit = False)
+    #                    data.save(using = Release)
 
     return HttpResponse("HELLO")
 
@@ -518,11 +640,39 @@ def GET_TC_INFO_BY_ID(request, Release, id, card):
             return JsonResponse({'Not Found': "Record Not Found"}, status = 404)
         return HttpResponse(json.dumps(tcdata))
 
+
+@csrf_exempt
+def GET_TC_INFO_GUI_ID(request, Release, id, browserName):
+    if request.method == "GET":
+        try:
+            infoData = TC_INFO_GUI.objects.using(Release).filter(TcID = id).get(BrowserName = browserName)
+        except:
+            return JsonResponse({'Not Found': "Record Not Found"}, status = 404)
+        #activityData = LOGS.objects.using(Release).filter(TcID = id).filter(BrowserName = browserName)
+
+        #activitySerializer = LOG_SERIALIZER(activityData, many = True)
+        infoSerializer = TC_INFO_GUI_SERIALIZER(infoData)
+        tcdata = infoSerializer.data
+
+        try:
+            statusData = TC_STATUS_GUI.objects.using(Release).filter(TcID = id).filter(CardType = card).order_by('Date')
+            statusSerializer = TC_STATUS_GUI_SERIALIZER(statusData, many=True)
+
+            #tcdata['Activity'] = activitySerializer.data
+            tcdata['StatusList'] = []
+            for status in statusSerializer.data:
+                tcdata['StatusList'].append(status)
+        except:
+            return HttpResponse(json.dumps(tcdata))
+
+
 @csrf_exempt
 def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
     if request.method == "PUT":
         errRecords = []
+        print(request.body)
         req = json.loads(request.body.decode("utf-8"))
+        print(req)
 
         data = TC_INFO.objects.using(Release).filter(TcID = id)
         serializer = TC_INFO_SERIALIZER(data, many = True)
@@ -557,7 +707,10 @@ def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
                 return JsonResponse({'Conflict': errRecords}, status = 409)
             return JsonResponse({'message': 'Success'}, status = 200)
 
-        Release = "master"
+        if "dmc" in Release.lower():
+            Release = "DMC Master"
+        else:
+            Release = "master"
         data = TC_INFO.objects.using(Release).filter(TcID = id)
         serializer = TC_INFO_SERIALIZER(data, many = True)
 

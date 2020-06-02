@@ -1,0 +1,1 @@
+python3 manage.py makemigrations; python3 manage.py migrate; python3 manage.py migrate --database=2.3.0; python3 manage.py migrate --database=master; python3 manage.py migrate --database="Spektra 2.4"; python3 manage.py migrate --database="TestDatabase"; python3 manage.py migrate --database="Spektra 3.0";

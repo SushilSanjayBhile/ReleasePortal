@@ -1,0 +1,52 @@
+[
+    {
+        "Subgroup": "Standard",
+        "Total TCs": 0.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Cluster update",
+        "Total TCs": 12.0,
+        "Ran (Coverage)": 7.0,
+        "Coverage %": 58.33,
+        "Passed": 7.0,
+        "Passed %": 100.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "Upgrade Script",
+        "Total TCs": 5.0,
+        "Ran (Coverage)": 0.0,
+        "Coverage %": 0.0,
+        "Passed": 0.0,
+        "Passed %": 0.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": ""
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 17.0,
+        "Ran (Coverage)": 7.0,
+        "Coverage %": 41.18,
+        "Passed": 7.0,
+        "Passed %": 100.0,
+        "Automated": 0.0,
+        "Automated %": 0.0
+    }
+]

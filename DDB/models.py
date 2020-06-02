@@ -4,36 +4,11 @@ from django.contrib.postgres.fields import ArrayField
 
 # Table per release
 class AGGREGATE_TC_STATE(models.Model):
-    Domain = models.CharField(max_length=200, blank = True)
-
+    Domain = models.CharField(max_length=50, blank = True) #storage, networking
     Total = models.IntegerField(default = 0)
-    NotApplicable = models.IntegerField(default = 0)
-    Skipped = models.IntegerField(default = 0)
     Automated = models.IntegerField(default = 0)
-    NonAutomated = models.IntegerField(default = 0)
-
-    Tested = models.IntegerField(default = 0)
-    NotTested = models.IntegerField(default = 0)
-
-    ManualPass = models.IntegerField(default = 0)
-    ManualFail = models.IntegerField(default = 0)
-    ManualSkip = models.IntegerField(default = 0)
-
-    AutomatedPass = models.IntegerField(default = 0)
-    AutomatedFail = models.IntegerField(default = 0)
-    AutomatedSkip = models.IntegerField(default = 0)
-
-    def __str__(self):
-        return self.Domain
-
-# Table per release
-class PriorityWiseStatus(models.Model):
-    Priority = models.CharField(max_length=5, blank = True)
-
     Pass = models.IntegerField(default = 0)
     Fail = models.IntegerField(default = 0)
-    Skip = models.IntegerField(default = 0)
-    NotTested = models.IntegerField(default = 0)
 
     def __str__(self):
         return self.Domain
@@ -42,7 +17,7 @@ class PriorityWiseStatus(models.Model):
 class TC_INFO(models.Model):
     # TcID = models.CharField(max_length = 200, blank = False, primary_key=True)
     TcID = models.CharField(max_length = 200, blank = False)
-    TcName = models.CharField(max_length = 2000, default = "NOT AUTOMATED", blank = True)
+    TcName = models.CharField(max_length = 2000, default = "TC NOT AUTOMATED", blank = True)
     Domain = models.CharField(max_length=50, default = "UNKNOWN", blank = True)  #storage, nw
     SubDomain = models.CharField(max_length=50, default = "UNKNOWN", blank = True)  #remote, local, mirroring
     Scenario = models.CharField(max_length = 200, blank = True, default = "UNKNOWN") #stress, standard, negative
@@ -58,11 +33,53 @@ class TC_INFO(models.Model):
     Assignee = models.CharField(max_length = 50, blank = True, default = "UNKNOWN")
     Creator = models.CharField(max_length = 50, blank = True, default = "ANONYMOUS")
     Tag = models.CharField(max_length = 20, blank = True, default = "NO TAG")
-    Priority = models.CharField(max_length = 5, blank = True, default = "P7")
+    Priority = models.CharField(max_length = 5, blank = True, default = "P4")
     #deleted = models.BooleanField(default = False)
 
     def __str__(self):
         return self.TcID
+
+# Table per release
+class TC_INFO_GUI(models.Model):
+    TcID = models.CharField(max_length = 200, blank = False)
+    Domain = models.CharField(max_length=50, default = "UNKNOWN", blank = True)  #storage, nw
+    SubDomain = models.CharField(max_length=50, default = "UNKNOWN", blank = True)  #remote, local, mirroring
+    Scenario = models.CharField(max_length = 200, blank = True, default = "UNKNOWN") #stress, standard, negative
+    Description = models.TextField(blank = True, default = "NO DESCRIPTION PROVIDED")
+    Steps = models.TextField(blank = True, default = "NO STEPS PROVIDED")
+    ExpectedBehaviour = models.CharField(max_length = 5000, blank = True, default = "NO EXPECTED BEHAVIOUR PROVIDED")
+    Notes = models.TextField(blank = True, default = "NO NOTES PROVIDED")
+    CardType = models.CharField(max_length = 100, blank = True, default=None)
+    ServerType = ArrayField(models.CharField(max_length = 10, blank = True, default=None), blank = True)
+    WorkingStatus = models.CharField(max_length = 50, blank = True, default = "CREATED")
+    Date = models.DateTimeField(auto_now = True, blank = True)
+    Assignee = models.CharField(max_length = 50, blank = True, default = "UNKNOWN")
+    Creator = models.CharField(max_length = 50, blank = True, default = "ANONYMOUS")
+    Tag = models.CharField(max_length = 20, blank = True, default = "NO TAG")
+    Priority = models.CharField(max_length = 5, blank = True, default = "P4")
+    #deleted = models.BooleanField(default = False)
+
+    AutomatedTcName = models.CharField(max_length = 2000, default = "TC NOT AUTOMATED", blank = True)
+    BrowserName = models.CharField(max_length = 100, blank = True, default=None)
+
+    def __str__(self):
+        return self.TcID
+
+# table to store GUI test case result
+class GUI_TC_STATUS(models.Model):
+    tcInfoNum = models.IntegerField(blank = True, null = True)
+    Build = models.CharField(max_length = 1000, blank = True)
+    Result = models.CharField(max_length = 14, blank = True)
+    Bugs = models.CharField(max_length = 500, blank = True) # we can make this as list field also
+    Date = models.DateTimeField(auto_now = True, blank = True)
+
+# table to store GUI test case result
+class GUI_LATEST_TC_STATUS(models.Model):
+    tcInfoNum = models.IntegerField(blank = True, null = True)
+    Build = models.CharField(max_length = 1000, blank = True)
+    Result = models.CharField(max_length = 14, blank = True)
+    Bugs = models.CharField(max_length = 500, blank = True) # we can make this as list field also
+    Date = models.DateTimeField(auto_now = True, blank = True)
 
 class DEFAULT_DOMAIN_SUBDOMAIN(models.Model):
     Domain = models.CharField(max_length = 200, blank = False, default = "NOT PROVIDED")
@@ -199,7 +216,7 @@ class E2E(models.Model):
     Build = models.CharField(max_length = 100, blank = True, null = True)
     Tag = models.CharField(max_length = 100, blank = True, null = True)
     Result = models.CharField(max_length = 14, blank = True, null = True)
-    Bug = models.CharField(max_length = 500, blank = True, null = True) # we can make this as list field also
+    Bugs = models.CharField(max_length = 500, blank = True, null = True) # we can make this as list field also
     CardType = models.CharField(max_length = 100, blank = True, null = True) # we can make this as list field also
     NoOfTCsPassed = models.IntegerField(blank = True, null = True)
     #E2EFocus = models.CharField(max_length = 100, blank = True, null = True)
@@ -237,7 +254,7 @@ class STRESS(models.Model):
 
 # UNIVERSAL DATABASE ENTITY
 class RELEASES(models.Model):
-    ReleaseNumber = models.CharField(max_length = 10, blank = False, primary_key = True)
+    ReleaseNumber = models.CharField(max_length = 50, blank = False, primary_key = True)
     BuildNumberList = ArrayField(models.CharField(max_length = 50, blank = True), blank = True)
     Engineers = ArrayField(models.CharField(max_length = 50, blank = True, null = True), blank = True, null = True)
     CardType = ArrayField(models.CharField(max_length = 100, blank = True), blank = True)

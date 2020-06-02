@@ -1,0 +1,22 @@
+[
+    {
+        "Role": "",
+        "Operation allowed": ""
+    },
+    {
+        "Role": "Node-edit",
+        "Operation allowed": "Cluster-edit (Cluster create/destroy), drive list, node list, add/remove nodes (dctl cluster add/remove)"
+    },
+    {
+        "Role": "Node-view",
+        "Operation allowed": "Drives list, node get / list."
+    },
+    {
+        "Role": "User-edit",
+        "Operation allowed": "Authserver create, delete, edit. \nGroup create, delete, edit, get, list. \nUser create, delete, edit, get, list\nRole get, list."
+    },
+    {
+        "Role": "User-view",
+        "Operation allowed": "Authserver create, delete, edit. \nGroup  get, list. \nUser get, list\nRole get, list."
+    }
+]

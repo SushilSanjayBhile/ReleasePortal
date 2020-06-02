@@ -5,6 +5,7 @@ from psycopg2 import sql
 import os
 
 def createReleaseDB(release):
+    return 1
     con = psycopg2.connect(dbname='postgres',
         user=userName, host=hostName,
         password=passwd, port=portNumber)
@@ -71,4 +72,3 @@ def createReleaseDB(release):
     os.system("cp dp/settings.py dp/oldsettings.py")
     os.system("mv dp/newsettings.py dp/settings.py")
     return 1
-

@@ -1,0 +1,90 @@
+[
+    {
+        "Subgroup": "StandardScenarios",
+        "Total TCs": 19.0,
+        "Ran (Coverage)": 19.0,
+        "Coverage %": 100.0,
+        "Passed": 19.0,
+        "Passed %": 100.0,
+        "Automated": 11.0,
+        "Automated %": 57.89,
+        "Manual Tcs": 8.0
+    },
+    {
+        "Subgroup": "Reboot",
+        "Total TCs": 13.0,
+        "Ran (Coverage)": 13.0,
+        "Coverage %": 100.0,
+        "Passed": 12.0,
+        "Passed %": 92.31,
+        "Automated": 8.0,
+        "Automated %": 61.54,
+        "Manual Tcs": 5.0
+    },
+    {
+        "Subgroup": "KubernetesSnapshot",
+        "Total TCs": 13.0,
+        "Ran (Coverage)": 13.0,
+        "Coverage %": 100.0,
+        "Passed": 11.0,
+        "Passed %": 84.62,
+        "Automated": 7.0,
+        "Automated %": 53.85,
+        "Manual Tcs": 6.0
+    },
+    {
+        "Subgroup": "Stress",
+        "Total TCs": 8.0,
+        "Ran (Coverage)": 8.0,
+        "Coverage %": 100.0,
+        "Passed": 8.0,
+        "Passed %": 100.0,
+        "Automated": 2.0,
+        "Automated %": 25.0,
+        "Manual Tcs": 6.0
+    },
+    {
+        "Subgroup": "Negative",
+        "Total TCs": 6.0,
+        "Ran (Coverage)": 6.0,
+        "Coverage %": 100.0,
+        "Passed": 6.0,
+        "Passed %": 100.0,
+        "Automated": 5.0,
+        "Automated %": 83.33,
+        "Manual Tcs": 1.0
+    },
+    {
+        "Subgroup": "BackupController",
+        "Total TCs": 46.0,
+        "Ran (Coverage)": 45.0,
+        "Coverage %": 97.83,
+        "Passed": 39.0,
+        "Passed %": 86.67,
+        "Automated": 6.0,
+        "Automated %": 13.04,
+        "Manual Tcs": 40.0
+    },
+    {
+        "Subgroup": "",
+        "Total TCs": "",
+        "Ran (Coverage)": "",
+        "Coverage %": "",
+        "Passed": "",
+        "Passed %": "",
+        "Automated": "",
+        "Automated %": "",
+        "Manual Tcs": ""
+    },
+    {
+        "Subgroup": "Total",
+        "Total TCs": 105.0,
+        "Ran (Coverage)": 104.0,
+        "Coverage %": 99.05,
+        "Passed": 95.0,
+        "Passed %": 91.35,
+        "Automated": 39.0,
+        "Automated %": 37.14,
+        "Manual Tcs": 66.0
+    }
+]
