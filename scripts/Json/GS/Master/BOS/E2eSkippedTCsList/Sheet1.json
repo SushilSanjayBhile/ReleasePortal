@@ -1,9 +1,0 @@
-[
-    {
-        "TC Name": "ReplicationController.NetworkPodEvacuation",
-        "TC Tag": "Weekly",
-        "Reason": "Autotmation bug",
-        "Owner": "Kiran",
-        "Bug No.": "DWS-3713"
-    }
-]
