@@ -860,7 +860,7 @@ def RELEASEINFO(request, Release):
                 data = json.dumps(i)
                 data = json.loads(data)
     
-                if(i['ReleaseNumber'] != "universal") and (i['ReleaseNumber'] != "TestDatabase"):
+                if(i['ReleaseNumber'] != "universal"):
                     #tcaggr(i['ReleaseNumber'])
                     #latestResultUpdateFunction(i['ReleaseNumber'])
                     a = TCAGGREGATE(i['ReleaseNumber'])
