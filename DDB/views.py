@@ -342,7 +342,7 @@ def TCAGGREGATE(Release):
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Blocked'] = tccount
                 totalblocked += tccount
 
-                tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Unlocked").count()
+                tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Unblocked").count()
                 domainallcount += tccount
 
                 tcinfocount = TC_INFO.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain']).count()
@@ -368,7 +368,7 @@ def TCAGGREGATE(Release):
                 totalblocked += tccount
                 autoblocked += tccount
 
-                tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Unlocked").count()
+                tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Unblocked").count()
                 domainallcount += tccount
 
                 dictionary['domain'][tc['Domain']]['NotTested'] = domainallcount
@@ -483,8 +483,8 @@ def TCAGGREGATE(Release):
         GuiPass = GuiLatestResult.filter(Result = "Pass").count()
         GuiFail = GuiLatestResult.filter(Result = "Fail").count()
         GuiBlocked = GuiLatestResult.filter(Result = "Blocked").count()
-        GuiUnlocked = GuiLatestResult.filter(Result = "Unlocked").count()
-        GuiNotTested = (guiApplicable - GuiTested) + GuiUnlocked
+        GuiUnblocked = GuiLatestResult.filter(Result = "Unblocked").count()
+        GuiNotTested = (guiApplicable - GuiTested) + GuiUnblocked
 
         dictionary['allGUI']['TotalTCs'] = guiTotalTc
 
