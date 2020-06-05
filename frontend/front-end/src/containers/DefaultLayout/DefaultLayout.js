@@ -1,21 +1,4 @@
 
-// p9=not applicable
-// p8=priority is skipped
-// p4 is default priority
-
-// allowing p8 to all test cases on one click
-// priority for adding default testcase priority in release create in dropdown 
-// tc count for new tc is wrong
-// multiselect for tc table, assignee update
-//  qa strategy edit option
-//  name of build e2e 
-//  status should be pass, fail, blocked, etc.
-// 
-// setinterval, 
-// user if in app-server
-// yatish checking
-
-
 import React, { Component, Suspense } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
@@ -39,11 +22,13 @@ import routes from '../../routes';
 import { connect } from 'react-redux';
 import { logOut, saveUsers, saveReleaseBasicInfo, releaseChange, saveTestCase, saveTestCaseStatus, logInSuccess, clearUserData, fetchUserNotifications } from '../../actions';
 import { getCurrentRelease } from '../../reducers/release.reducer';
+import { timeout } from 'd3';
 
 const DefaultAside = React.lazy(() => import('./DefaultAside'));
 const DefaultFooter = React.lazy(() => import('./DefaultFooter'));
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
-
+let selectedRelease1 = [];
+  
 /* global gapi */
 class DefaultLayout extends Component {
   GoogleAuth;
@@ -53,36 +38,10 @@ class DefaultLayout extends Component {
   userNotificationsInterval = null;
   userEmail = null;
   loading = () => <div className="animated fadeIn pt-1 text-center">Loading...</div>
-  loginBackend(user) {
-    let email = user.profileObj.email;
-    let name = user.profileObj.name;
-    axios.post('/user/login', { email: email, name: name })
-      .then(res => {
-        console.log('received from user')
-        console.log(res);
-        if (res.data && res.data.role === 'ADMIN') {
-          this.props.logInSuccess({ email: email, isAdmin: true, role: res.data.role, name: name });
-        } else {
-          this.props.logInSuccess({ email: email, isAdmin: false, role: res.data.role, name: name });
-        }
-      })
-      .catch(err => { })
-  }
-  setSigninStatus(isSignedIn) {
-    
-    console.log(isSignedIn)
-    if (this.GoogleAuth) {
-      let user = this.GoogleAuth.currentUser.get();
-      let isAuthorized = user.hasGrantedScopes(this.SCOPE);
-      
-      if (isAuthorized) {
-        this.loginBackend(user)
-      } else {
-       
-      }
-    }
-  }
+  
   signOut(e) {
+    localStorage.setItem('user',false);
+    localStorage.setItem('isAuthorized',false);
     if (e) {
       e.preventDefault()
     }
@@ -110,7 +69,7 @@ class DefaultLayout extends Component {
     return this.GoogleAuth ? this.GoogleAuth.isSignedIn.get() : false;
   }
   componentWillReceiveProps(newProps) {
-    console.log('new ', newProps);
+    
     if (newProps.currentUser && newProps.currentUser.email) {
       if (newProps.currentUser.email === this.userEmail) {
         return;
@@ -120,39 +79,46 @@ class DefaultLayout extends Component {
     }
   }
   componentDidMount() {
-    window.gapi.load('auth2', () => {
-      gapi.auth2.init({
-        'apiKey': 'AIzaSyCx0M1qs_LyfAgVmkTmDE6qIfgUiDekM-I',
-        'client_id': '271454306292-q477q7slv0vpe1gep84habq5m2gv58k3.apps.googleusercontent.com',
-        'scope': this.SCOPE
-      }).then(() => {
-        this.GoogleAuth = gapi.auth2.getAuthInstance();
-        this.GoogleAuth.isSignedIn.listen((data) => this.setSigninStatus(data));
-        this.setSigninStatus();
-      }).catch(err => { console.log('cannot get details') });
-    });
     if (this.props.allUsers.length === 0) {
       axios.get(`/api/userinfo`).then(res => {
         this.props.saveUsers(res.data)
-        console.log("userdata from API",res.data);
+        
       })
       
     }
     if (this.props.allReleases.length === 0) {
-      axios.get(`/api/release/all`)
+      let releaseAllURL = `/api/release/all`;
+      // let releaseInfoURL = `/api/release/info`;
+      axios.get(releaseAllURL,{timeout: 1000*30})
         .then(res => {
-          console.log("123456",res.data);
           res.data.forEach(item => {
-
             this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
           });
           if (res.data[0]) {
             this.props.releaseChange({ id: res.data[0].ReleaseNumber });
           }
+          
         }, error => {
+          alert("VPN is disconnected or Something went wrong")
         });
     }
   }
+
+  // getReleaseData = (release) =>{
+  //   let releaseSpecificURL =  `/api/release/` + release;
+  //   // console.log("releaseSpecificURL",releaseSpecificURL)
+  //   axios.get(releaseSpecificURL)
+  //       .then(res => {
+  //         // console.log("releaseSpecificURL",res.data);
+  //         selectedRelease1  =res.data.ReleaseNumber
+  //         // console.log("set state of release",selectedRelease1)
+
+          
+  //       }, error => {
+  //         // console.log("error while getting data");
+  //       });
+
+  // }
   startPolling(email, startTime) {
     this.stopPolling();
     this.userNotificationsInterval = setInterval(
@@ -183,8 +149,9 @@ class DefaultLayout extends Component {
                 this.props.allReleases.map(item => item.ReleaseNumber)
               }
               onReleaseChange={(release) => {
-                console.log(release);
+                
                 if (release) {
+                  // this.getReleaseData(release)
                   this.props.releaseChange({ id: release });
                   
                 } else {

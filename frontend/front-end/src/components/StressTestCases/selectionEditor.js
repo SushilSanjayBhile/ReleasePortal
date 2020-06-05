@@ -9,34 +9,19 @@ import { updateSanityEdit } from '../../actions';
 export default class SelectionEditor extends Component {
     constructor(props) {
         super(props);
-        console.log('props for selection')
-        console.log(props);
-
+       
         this.state = {
             value: props.value
         }
     }
 
-    // componentWillMount() {
-    //     this.setHappy(this.props.value === "Happy");
-    // }
+   
 
     componentDidMount() {
-        // this.refs.container.addEventListener('keydown', this.checkAndToggleMoodIfLeftRight);
         this.focus();
     }
 
-    componentWillUnmount() {
-        // this.refs.container.removeEventListener('keydown', this.checkAndToggleMoodIfLeftRight);
-    }
-
-    // checkAndToggleMoodIfLeftRight = (event) => {
-    //     if ([37, 39].indexOf(event.keyCode) > -1) { // left and right
-    //         this.toggleMood();
-    //         event.stopPropagation();
-    //     }
-    // }
-
+  
     componentDidUpdate() {
         this.focus();
     }

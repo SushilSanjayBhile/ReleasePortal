@@ -47,7 +47,6 @@ const saveUserJourneyToIndexDB = (journey, userId, latestJournies) => {
 const saveUserTravelToIndexDB = (travel, userId, latestTravel) => {
     // TODO: arrange in descending order of time the incoming feed and save only maximum latest 30 posts in local IndexDb
     // and local state.
-    console.log('travel ', latestTravel);
     return latestTravel; 
 }
 

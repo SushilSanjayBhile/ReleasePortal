@@ -9,9 +9,7 @@ import { updateSanityEdit } from '../../actions';
 export default class SelectionEditor extends Component {
     constructor(props) {
         super(props);
-        console.log('props for selection')
-        console.log(props);
-
+       
         this.state = {
             value: props.value
         }
@@ -112,17 +110,10 @@ export default class SelectionEditor extends Component {
 
         let happyStyle = this.state.happy ? selected : unselected;
         let sadStyle = !this.state.happy ? selected : unselected;
-        console.log('for ')
-        console.log(this.props.multiple)
+       
         return (
-            // <div ref="container"
-            //     style={mood}
-            //     tabIndex={1} // important - without this the keypresses wont be caught
-            // >
-
             this.props.multiple ?
                 <Input type='select' multiple onKeyDown={(e) => {
-                    console.log('enter ', e.target.value)
                     if (e.target.value === 'Enter') {
                         this.setState(() => this.props.api.stopEditing())
                     }

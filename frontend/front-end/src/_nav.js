@@ -50,7 +50,7 @@ export default {
     
     {
       name: 'Jira Dashboard',
-      url: 'https://diamanti.atlassian.net/secure/Dashboard.jspa?selectPageId=12600',
+      url: 'https://diamanti.atlassian.net/secure/Dashboard.jspa?selectPageId=12400',
       // url: 'http://dwsjira1.eng.diamanti.com:8080/secure/Dashboard.jspa?selectPageId=11803',
       attributes: { target: '_blank' },
       icon: 'fa fa-bug',

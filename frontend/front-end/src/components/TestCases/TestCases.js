@@ -404,7 +404,6 @@ class TestCases extends Component {
             if (subDomain) url += ('&SubDomain=' + subDomain);
             if (priority) url += ('&Priority=' + priority);
         }
-        console.log(url);
         axios.get(url)
             .then(all => {
                 // Filters should not go away if data is reloaded
@@ -506,8 +505,6 @@ class TestCases extends Component {
         }
         this.props.saveTestCase({ data: [], id: this.props.selectedRelease.ReleaseNumber });
         this.props.saveSingleTestCase({});
-        console.log(statusItems)
-        console.log(items)
         if(statusItems.length>0) {
             this.gridOperations(false);
             axios.post(`/api/tcstatusUpdate/${this.props.selectedRelease.ReleaseNumber}`, statusItems)
@@ -634,7 +631,6 @@ class TestCases extends Component {
             }
             axios.post(`/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
                 .then(res => {
-                    console.log('updated status')
                     if (this.props.testcaseEdit.NewTcID) {
                         data.NewTcID = this.props.testcaseEdit.NewTcID
                         data.Activity.LogData += `NewTcId: ${this.props.testcaseEdit.NewTcID} updated`
@@ -665,6 +661,7 @@ class TestCases extends Component {
                             .then(res => {
                               res.data.forEach(item => {
                                 // this.props.updateNavBar({ id: item.ReleaseNumber });
+
                                 this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
                               });
                             }, error => {
@@ -680,7 +677,6 @@ class TestCases extends Component {
                     }
                 }, error => {
                     alert('failed to update tc')
-                    console.log('failed updating status')
                     this.gridOperations(true);
                 });
         } else {
@@ -706,10 +702,7 @@ class TestCases extends Component {
         // this.toggle();
     }
     confirmToggle() {
-        console.log('tc edit')
-        console.log(this.props.testcaseEdit);
         this.changeLog = {};
-        console.log('noerror find')
         this.changeLog = this.whichFieldsUpdated(this.props.tcDetails, this.props.testcaseEdit);
         this.setState({ toggleMessage: null })
         this.toggle();

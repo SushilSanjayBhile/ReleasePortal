@@ -1,19 +1,11 @@
-// CUSTOMER USING THIS RELEASE (OPTIONAL) (M)
-// Issues faced on customer side (jira - list)
-// customers to be given to
-
-// TODO: list descending order: CUrretnStatus and statuslist
-// ExpectedBehaviour and Steps not updating
-//  Working Status: Deleted, and others
-// User list from backend
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { getCurrentRelease, getTCForStrategy } from '../../reducers/release.reducer';
 import { saveSingleTestCase, saveTestCase, updateTCEdit } from '../../actions';
 import {
-    Badge, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table, Button,
-    UncontrolledPopover, PopoverHeader, PopoverBody,
+   Col,Row,Button,
+    UncontrolledPopover,PopoverBody,
     Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Collapse
 } from 'reactstrap';
 import './GuiTestCases.scss';
@@ -25,11 +17,9 @@ import MoodEditor from "./moodEditor";
 import MoodRenderer from "./moodRenderer";
 import NumericEditor from "./numericEditor";
 import SelectionEditor from './selectionEditor';
-import { getDatePicker } from './datepicker';
 import DatePickerEditor from './datePickerEditor';
 import EditTC from '../../views/Release/ReleaseTestMetrics/EditTC';
-// import { data, domains, subDomains } from './constants';
-// "Description": "Enable helm", "ExpectedBehaviour": "dctl feature list should display helm as enabled", "Notes": "NOTES NOT PROVIDED"
+
 class GuiTestCases extends Component {
     cntr = 0;
     pageNumber = 0;
@@ -174,24 +164,11 @@ class GuiTestCases extends Component {
                     headerName: "Working Status", field: "WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
                     cellClass: 'cell-wrap-text',
                 },
-                // {
-                //     headerName: "Server Type", field: "ServerType", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-
-                //     cellEditor: 'selectionEditor',
-                //     cellClass: 'cell-wrap-text',
-                //     cellEditorParams: {
-                //         values: ['UNKNOWN']
-                //     }
-                // },
+                
                 {
                     headerName: "Tc Name", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
                 },
-                // {
-                //     headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                // },
-                // {
-                //     headerName: "SubDomain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                // }
+               
             ],
             defaultColDef: { resizable: true },
 
@@ -263,7 +240,6 @@ class GuiTestCases extends Component {
                 return rows;
             }
         }
-        // assuming 50 characters per line, working how how many lines we need
         return 2;
     }
     getTC(e) {
@@ -304,13 +280,7 @@ class GuiTestCases extends Component {
         }
     }
     renderEditedCell = (params) => {
-        // if(params.data) {
-        //     console.log(this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field]);
-        //     console.log(params.value)
-        // }
-        console.log(params);
         let editedInRow = this.editedRows[`${params.data.TcID}_${params.data.CardType}`] && this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field] && this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field].originalValue !== params.value;
-        // let restored = this.editedRows[`${params.data.TcID}_${params.data.CardType}`] && this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field] && this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field].originalValue === params.value;
         if (editedInRow) {
             this.editedRows[`${params.data.TcID}_${params.data.CardType}`].Changed = true;
             return {
@@ -320,10 +290,7 @@ class GuiTestCases extends Component {
                 borderColor: 'rgb(255, 166, 0)'
             };
         }
-        // if (restored) {
-        //     console.log('restoried')
-        //     this.editedRows[`${params.data.TcID}_${params.data.CardType}`].Changed = false;
-        // }
+        
         return { backgroundColor: '' };
     }
     numberParser(params) {
@@ -355,8 +322,7 @@ class GuiTestCases extends Component {
         }
     }
     onCellEditing = (params, field, value) => {
-        console.log('current')
-        console.log(this.editedRows);
+       
         if (this.editedRows[`${params.TcID}_${params.CardType}`]) {
             if (this.editedRows[`${params.TcID}_${params.CardType}`][field]) {
                 this.editedRows[`${params.TcID}_${params.CardType}`][field] =
@@ -373,13 +339,12 @@ class GuiTestCases extends Component {
                 [field]: { oldValue: params[field], originalValue: params[field], newValue: value }
             }
         }
-        console.log('upadred')
-        console.log(this.editedRows);
+      
     }
 
     getEditedCells() {
         var cellDefs = this.gridApi.getEditingCells();
-        console.log('edited cells ', cellDefs);
+       
     }
     onFilterTextBoxChanged(value) {
         this.setState({ rowSelect: false });
@@ -405,7 +370,6 @@ class GuiTestCases extends Component {
         if (domain === '') {
             domain = null;
         }
-        // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
         this.setState({ domain: domain, subDomain: '' });
         this.getTcs(this.state.CardType, domain, '', this.state.Priority);
 
@@ -416,7 +380,6 @@ class GuiTestCases extends Component {
         if (subDomain === '') {
             subDomain = null;
         }
-        // let data = this.filterData({ Domain: this.state.domain, SubDomain: subDomain, CardType: this.state.CardType })
         this.setState({ subDomain: subDomain });
         this.getTcs(this.state.CardType, this.state.domain, subDomain, this.state.Priority);
 
@@ -427,7 +390,6 @@ class GuiTestCases extends Component {
         if (cardType === '') {
             cardType = null;
         }
-        //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ CardType: cardType });
         this.getTcs(cardType, this.state.domain, this.state.subDomain, this.state.Priority);
 
@@ -437,13 +399,11 @@ class GuiTestCases extends Component {
         if (priority === '') {
             priority = null;
         }
-        //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ Priority: priority });
         this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, priority);
     }
     rowSelect(e) {
-        console.log('model')
-        console.log(this.gridApi.getModel())
+        
         this.setState({
             isEditing: false, rowSelect: true, toggleMessage: null, allRows: this.props.tcStrategy ? this.props.tcStrategy.totalTests : 0,
             selectedRows: this.gridApi.getSelectedRows().length, totalRows: this.gridApi.getModel().rowsToDisplay.length
@@ -462,17 +422,13 @@ class GuiTestCases extends Component {
         let url = `/api/wholeguitcinfo/${this.props.selectedRelease.ReleaseNumber}`;
         if (CardType || domain || subDomain || priority) {
             url = `/api/wholeguitcinfo/${this.props.selectedRelease.ReleaseNumber}?`;
-            // if (CardType) url += ('&CardType=' + CardType);
-            // if (domain) url += ('&Domain=' + domain);
+            
             if (subDomain) url += ('&SubDomain=' + subDomain);
             if (priority) url += ('&Priority=' + priority);
         }
-        console.log(url);
+       
         axios.get(url)
             .then(all => {
-
-                // Filters should not go away if data is reloaded
-                //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
                 this.props.saveTestCase({ data: all.data, id: this.props.selectedRelease.ReleaseNumber });
                 setTimeout(this.gridApi.refreshView(), 0)
                 this.deselect();
@@ -482,9 +438,6 @@ class GuiTestCases extends Component {
                 this.deselect();
                 this.gridOperations(true);
             })
-        // .then(all => {
-
-        // })
     }
     toggle = () => this.setState({ modal: !this.state.modal });
     reset() {
@@ -502,27 +455,6 @@ class GuiTestCases extends Component {
     saveAll() {
         this.gridOperations(false);
         let items = [];
-        // Object.keys(this.editedRows).forEach(item => {
-        //     if (this.editedRows[item] && this.editedRows[item].Changed) {
-        //         // let assignee = this.editedRows[item].Assignee.newValue && this.editedRows[item].Assignee.newValue !== 'ADMIN' 
-        //         // ? this.editedRows[item].Assignee.newValue : 'ADMIN';
-        //         // let ws = assignee === 'ADMIN' ? 'UNASSIGNED' : 'MANUAL_ASSIGNED'
-        //         let pushable = {
-        //             TcID: this.editedRows[item].TcID.newValue,
-        //             CardType: this.editedRows[item].CardType.newValue
-        //         };
-        //         if(this.editedRows[item].Priority) {
-        //             pushable.Priority = this.editedRows[item].Priority.newValue
-        //         }
-        //         if(this.editedRows[item].Assignee) {
-        //             pushable.Assignee = this.editedRows[item].Assignee.newValue
-        //         }
-        //         if(this.editedRows[item].WorkingStatus) {
-        //             pushable.WorkingStatus = this.editedRows[item].WorkingStatus.newValue
-        //         }
-        //         items.push(pushable);
-        //     }
-        // });
         let selectedRows = this.gridApi.getSelectedRows();
         selectedRows.forEach(item => {
             let pushable = {
@@ -564,7 +496,7 @@ class GuiTestCases extends Component {
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'Tag', 'Priority',
         'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus'
     ];
-    // arrayFields = ['CardType','ServerType', 'OrchestrationPlatform']
+    
     whichFieldsUpdated(old, latest) {
         let changes = {};
         this.textFields.forEach(item => {
@@ -572,18 +504,7 @@ class GuiTestCases extends Component {
                 changes[item] = { old: old[item], new: latest[item] }
             }
         });
-        // this.arrayFields.forEach(item => {
-        //     if(!old[item] && latest[item]) {
-        //         changes[item] = {old: '', new: latest[item]}
-        //     } else if(!latest[item] && old[item]) {
-        //         changes[item] = {old: old[item], new: ''}
-        //     } else if(old[item] && latest[item]){
-        //         let arrayChange = latest[item].filter(each => old[item].includes(each));
-        //         if(arrayChange.length > 0) {
-        //             changes[item] = {old: old[item], new: latest[item]}
-        //         }
-        //     }
-        // });
+        
         return changes;
     }
     joinArrays(array) {
@@ -616,10 +537,7 @@ class GuiTestCases extends Component {
         this.toggle();
         this.gridOperations(false);
         let data = {};
-        // tc info meta fields
-        // tc info fields
         this.textFields.map(item => data[item] = this.props.testcaseEdit[item]);
-        // this.arrayFields.forEach(item => data[item] = this.joinArrays(this.props.testcaseEdit[item]));
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
             "TcID": this.props.tcDetails.TcID,
@@ -646,26 +564,21 @@ class GuiTestCases extends Component {
             }
             axios.post(`/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
                 .then(res => {
-                    console.log('updated status')
                     setTimeout(() => axios.put(`/api/tcinfoput/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${this.props.tcDetails.CardType}`, { ...data })
                         .then(res => {
                             this.setState({ addTC: { Master: true, Domain: '' }, errors: {}, toggleMessage: `TC ${this.props.testcaseEdit.TcID} Updated Successfully` });
                             this.deselect();
                             this.toggle();
-
                             setTimeout(() => {
-
                                 this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain);
                                 this.gridOperations(true);
                             }, 1000);
                         }, error => {
-
-                            alert('failed to update tc')
+                            alert('Failed To Update TC')
                             this.gridOperations(true);
                         }, 1000));
                 }, error => {
-                    alert('failed to update tc')
-                    console.log('failed updating status')
+                    alert('Failed To Update TC')
                     this.gridOperations(true);
                 });
         } else {
@@ -679,7 +592,7 @@ class GuiTestCases extends Component {
                         this.gridOperations(true);
                     }, 1000);
                 }, error => {
-                    alert('failed to update tc')
+                    alert('Failed To Update TC')
                     this.deselect();
                     setTimeout(() => {
                         this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain)
@@ -691,10 +604,8 @@ class GuiTestCases extends Component {
         // this.toggle();
     }
     confirmToggle() {
-        console.log('tc edit')
-        console.log(this.props.testcaseEdit);
+        
         this.changeLog = {};
-        console.log('noerror find')
         this.changeLog = this.whichFieldsUpdated(this.props.tcDetails, this.props.testcaseEdit);
         this.setState({ toggleMessage: null })
         this.toggle();
@@ -787,32 +698,12 @@ class GuiTestCases extends Component {
                                                     <span className='rp-app-table-value'>Selected: {this.state.selectedRows}</span>
                                                     <span className='rp-app-table-value'>{`    Rows Displayed: ${this.state.totalRows}`}</span>
                                                     <span className='rp-app-table-value'>{`    Total: ${this.state.allRows}`}</span>
-                                                    {/* <span className='rp-app-table-value'>{`    All Tcs: ${this.state.allRows}`}</span> */}
                                                 </div>
                                             }
 
 
                                         </div>
-                                        {/* {
-                                            this.state.rowSelect &&
-                                            <React.Fragment>
-                                                {
-                                                    this.props.user && this.state.isEditing ?
-                                                        <Fragment>
-                                                            <Button style={{ position: 'absolute', right: '1rem' }} title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggle()} >
-                                                                <i className="fa fa-check-square-o"></i>
-                                                            </Button>
-                                                            <Button style={{ position: 'absolute', right: '3rem' }} size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.reset()} >
-                                                                <i className="fa fa-undo"></i>
-                                                            </Button>
-                                                        </Fragment>
-                                                        :
-                                                        <Button style={{ position: 'absolute', right: '1rem' }} size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.setState({ isEditing: true })} >
-                                                            <i className="fa fa-pencil-square-o"></i>
-                                                        </Button>
-                                                }
-                                            </React.Fragment>
-                                        } */}
+                                       
 
                                     </div>
                                 </div>
@@ -821,22 +712,11 @@ class GuiTestCases extends Component {
                         </div>
                         <Collapse isOpen={this.state.tcOpen}>
                             <div>
-                                {/* <div style={{ width: (window.screen.width * (1 - 0.248) - 20) + 'px', height: '250px', marginBottom: '6rem' }}> */}
                                 <div style={{ width: '100%', height: '400px', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
 
-                                            {/* {
-                                                this.props.data &&
-                                                <div class="col-md-2">
-                                                    <Input disabled={this.state.isApiUnderProgress} style={{ fontSize: '12px' }} value={this.state.domain} onChange={(e) => this.onSelectDomain(e.target.value)} type="select" name="selectDomain" id="selectDomain">
-                                                        <option value=''>Select Domain</option>
-                                                        {
-                                                            domains && domains.map(item => <option value={item}>{item}</option>)
-                                                        }
-                                                    </Input>
-                                                </div>
-                                            } */}
+                                            
                                             {
                                                 this.props.data &&
                                                 <div class="col-md-2">
@@ -848,17 +728,7 @@ class GuiTestCases extends Component {
                                                     </Input>
                                                 </div>
                                             }
-                                            {/* {
-                                                this.props.data &&
-                                                <div class="col-md-2">
-                                                    <Input disabled={this.state.isApiUnderProgress} style={{ fontSize: '12px' }} value={this.state.CardType} onChange={(e) => this.onSelectCardType(e.target.value)} type="select" name="selectCardType" id="selectCardType">
-                                                        <option value=''>Select Card Type</option>
-                                                        {
-                                                            ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(item => <option value={item}>{item}</option>)
-                                                        }
-                                                    </Input>
-                                                </div>
-                                            } */}
+                                            
                                             {
                                                 this.props.data &&
                                                 <div class="col-md-2">
@@ -899,13 +769,7 @@ class GuiTestCases extends Component {
 
                                                                                     this.onCellEditing(item, 'Priority', e.target.value)
                                                                                     item.Priority = e.target.value;
-                                                                                    // let ws = e.target.value && e.target.value !== 'ADMIN'? 'MANUAL_ASSIGNED' : 'UNASSIGNED';
-                                                                                    // this.onCellEditing(item, ['Assignee', 'WorkingStatus'], [
-                                                                                    //     e.target.value,
-                                                                                    //     ws
-                                                                                    // ])
-                                                                                    // item.Assignee = e.target.value;
-                                                                                    // item.WorkingStatus = ws;
+                                                                                    
                                                                                 })
                                                                             }
                                                                             this.setState({ multi: { ...this.state.multi, [each.labels]: e.target.value } })
@@ -915,10 +779,7 @@ class GuiTestCases extends Component {
                                                                             {
                                                                                 ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(item => <option value={item}>{item}</option>)
                                                                             }
-                                                                            {/* <option value='ADMIN'>ADMIN</option>
-                                                                        {
-                                                                            this.props.users && this.props.users.map(item => <option value={item.email}>{item.email}</option>)
-                                                                        } */}
+                                                                           
                                                                         </Input>
                                                                     </FormGroup>)
                                                                 }
@@ -937,21 +798,13 @@ class GuiTestCases extends Component {
 
                                                                                     this.onCellEditing(item, 'Assignee', e.target.value)
                                                                                     item.Assignee = e.target.value;
-                                                                                    // let ws = e.target.value && e.target.value !== 'ADMIN'? 'MANUAL_ASSIGNED' : 'UNASSIGNED';
-                                                                                    // this.onCellEditing(item, ['Assignee', 'WorkingStatus'], [
-                                                                                    //     e.target.value,
-                                                                                    //     ws
-                                                                                    // ])
-                                                                                    // item.Assignee = e.target.value;
-                                                                                    // item.WorkingStatus = ws;
+                                                                                    
                                                                                 })
                                                                             }
                                                                             this.setState({ multi: { ...this.state.multi, [each.labels]: e.target.value } })
                                                                             setTimeout(this.gridApi.refreshView(), 0);
                                                                         }} type="select" id={`select_assignee${each.labels}`}>
-                                                                            {/* {
-                                                                            ['P0','P1','P2','P3','P4','P5','P6','P7','P8','P9'].map(item => <option value={item}>{item}</option>)
-                                                                        } */}
+                                                                            
                                                                             <option value=''>Select Assignee</option>
                                                                             {
                                                                                 this.props.users.map(item => <option value={item}>{item}</option>)
@@ -974,13 +827,7 @@ class GuiTestCases extends Component {
 
                                                                                     this.onCellEditing(item, 'WorkingStatus', e.target.value)
                                                                                     item.WorkingStatus = e.target.value;
-                                                                                    // let ws = e.target.value && e.target.value !== 'ADMIN'? 'MANUAL_ASSIGNED' : 'UNASSIGNED';
-                                                                                    // this.onCellEditing(item, ['Assignee', 'WorkingStatus'], [
-                                                                                    //     e.target.value,
-                                                                                    //     ws
-                                                                                    // ])
-                                                                                    // item.Assignee = e.target.value;
-                                                                                    // item.WorkingStatus = ws;
+                                                                                    
                                                                                 })
                                                                             }
                                                                             this.setState({ multi: { ...this.state.multi, [each.labels]: e.target.value } })
@@ -1058,22 +905,7 @@ class GuiTestCases extends Component {
 
                                             />
                                         </div>
-                                        {/* {
-                                            !this.state.open &&
-                                            this.state.rowSelect &&
-                                            this.props.tcDetails && this.props.tcDetails.TcID &&
-                                            <div style={{ textAlign: 'right', marginTop: '2rem' }}>
-                                                <i className="fa fa-angle-down rp-save-tc-icon" onClick={() => this.setState({ open: !this.state.open })}> More</i>
-                                            </div>
-                                        }
-                                        {
-                                            this.state.open &&
-                                            this.state.rowSelect &&
-                                            this.props.tcDetails && this.props.tcDetails.TcID &&
-                                            <div style={{ textAlign: 'right', marginTop: '2rem' }}>
-                                                <i className="fa fa-angle-up rp-save-tc-icon" onClick={() => this.setState({ open: !this.state.open })}> Less</i>
-                                            </div>
-                                        } */}
+                                        
                                     </div>
                                     <div style={{ float: 'right', display: this.state.isApiUnderProgress || this.state.CardType || this.state.domain || this.state.subDomain ? 'none' : '' }}>
                                         <Button onClick={() => this.paginate(-1)}>Previous</Button>
@@ -1105,9 +937,7 @@ class GuiTestCases extends Component {
                                                     :
                                                     <Fragment>
 
-                                                        {/* <Button size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggleDelete()} >
-                                                            <i className="fa fa-trash-o"></i>
-                                                        </Button> */}
+                                                        
                                                         <Button size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.setState({ isEditing: true })} >
                                                             <i className="fa fa-pencil-square-o"></i>
                                                         </Button>
@@ -1246,24 +1076,7 @@ class GuiTestCases extends Component {
 
 
                                                     </div>
-                                                    {/* <span className='rp-app-table-value'>TC ID: {this.props.tcDetails.TcID}</span>
-                                <span style={{marginLeft: '2rem'}} className='rp-app-table-value'>Current Status: {this.props.tcDetails.StatusList[0].Result}</span>
-                                <span style={{marginLeft: '2rem'}} className='rp-app-table-value'>Current Build: {this.props.tcDetails.StatusList[0].Build}</span>
-                                <span style={{marginLeft: '2rem'}} className='rp-app-table-value'>Card Type: {this.props.tcDetails.StatusList[0].CardType}</span> */}
-                                                    {/* <div style={{ display: 'inline', marginLeft: '2rem' }}>
-                                    <div style={{ display: 'inline' }}>
-                                        <span>Created on </span><span style={{
-                                            fontSize: '16px',
-                                            color: '#04381a',
-                                            marginRight: '1rem'
-                                        }}>{this.props.tcDetails.Date}</span>
-                                        <span>Created by</span><span style={{
-                                            fontSize: '16px',
-                                            color: '#04381a',
-                                            marginRight: '1rem'
-                                        }}> {this.props.tcDetails.Created}</span>
-                                    </div>
-                                </div> */}
+                                                   
                                                 </div>
                                             </div>
                                             <FormGroup row className="my-0">
@@ -1335,7 +1148,6 @@ class GuiTestCases extends Component {
                                             <Row>
                                                 <Col lg="12">
                                                     <div className='rp-app-table-title'>Test Case History</div>
-                                                    {/* <div style={{ width: (window.screen.width * ((1 - 0.418) / 2)) + 'px', height: '150px', marginBottom: '3rem' }}> */}
                                                     <div style={{ width: '100%', height: '250px', marginBottom: '3rem' }}>
                                                         <div style={{ width: "100%", height: "100%" }}>
                                                             <div
@@ -1475,53 +1287,3 @@ const mapStateToProps = (state, ownProps) => ({
     testcaseEdit: state.testcase.testcaseEdit
 })
 export default connect(mapStateToProps, { saveTestCase, getCurrentRelease, saveSingleTestCase, updateTCEdit })(GuiTestCases);
-
-
-
-
-
-                // {
-                //     headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                //     editable: true,
-                //     cellEditor: 'selectionEditor',
-                //     cellEditorParams: {
-                //         values: ['achavan@diamanti.com']
-                //     }
-                // },
-                // {
-                //     headerName: "Orchestration Platform", field: "OrchestrationPlatform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                //     editable: true,
-                //     cellEditor: 'selectionEditor',
-                //     cellEditorParams: {
-                //         values: ['dcx-k8s']
-                //     }
-                // },
-                // {
-                //     headerName: 'Mood', field: "mood", cellRenderer: "moodRenderer",
-                //     cellEditorParams: {
-                //         values: ['Toyota', 'Ford', 'Porsche']
-                //     },
-                //     cellEditor: "moodEditor",
-                //     editable: true,
-                // },
-                // {
-                //     headerName: 'Date', field: "date",
-                //     cellEditor: "datePicker",
-                //     filter: 'agDateColumnFilter',
-                //     sortable: true,
-                //     editable: true,
-                // },
-                // {
-                //     headerName: "Model", field: "model", sortable: true, filter: true, editable: true, cellStyle: this.renderEditedCell,
-                //     cellEditor: 'agLargeTextCellEditor',
-                //     cellEditorParams: {
-                //         maxLength: '300',   // override the editor defaults
-                //         cols: '50',
-                //         rows: '6'
-                //     }
-                // },
-                // {
-                //     headerName: "Price", field: "price", sortable: true, filter: 'agNumberColumnFilter', valueParser: this.numberParser,
-                //     cellStyle: this.renderEditedCell, editable: true,
-                //     cellEditor: 'numericEditor'
-                // }

@@ -1,20 +1,10 @@
-// CUSTOMER USING THIS RELEASE (OPTIONAL) (M)
-// Issues faced on customer side (jira - list)
-// customers to be given to
-
-// TODO: list descending order: CUrretnStatus and statuslist
-// ExpectedBehaviour and Steps not updating
-//  Working Status: Deleted, and others
-// User list from backend
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
-import { getCurrentRelease, getTCForStrategy } from '../../reducers/release.reducer';
+import { getCurrentRelease } from '../../reducers/release.reducer';
 import { saveLongevity, saveSingleE2E, updateE2EEdit, updateSanityEdit } from '../../actions';
 import {
-    Badge, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table, Button,
-    UncontrolledPopover, PopoverHeader, PopoverBody,
-    Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Collapse
+   Col, Button,Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label
 } from 'reactstrap';
 import './LongevityTestCases.scss';
 import { AgGridReact } from 'ag-grid-react';
@@ -23,7 +13,6 @@ import "@ag-grid-community/all-modules/dist/styles/ag-grid.css";
 import "@ag-grid-community/all-modules/dist/styles/ag-theme-balham.css";
 import NumericEditor from "./numericEditor";
 import SelectionEditor from './selectionEditor';
-import { getDatePicker } from './datepicker';
 import DatePickerEditor from './datePickerEditor';
 
 class LongevityTestCases extends Component {
@@ -178,14 +167,6 @@ class LongevityTestCases extends Component {
                     width:80
 
                 },
-                // {
-                //     headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                //     width: '420',
-                //     editable: true,
-                //     cellClass: 'cell-wrap-text',
-                //     autoHeight: true
-                // },
-
             ],
             defaultColDef: { resizable: true },
 
@@ -261,13 +242,11 @@ class LongevityTestCases extends Component {
         this.props.updateE2EEdit({ ...e, errors: {}, original: e });
     }
     componentWillReceiveProps(newProps) {
-        console.log('called')
         if(this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
             this.props.updateSanityEdit({});
             this.getTcs(newProps.selectedRelease.ReleaseNumber);
         }
         if (newProps && this.props && this.props.e2eCounter && newProps.e2eCounter !== this.props.e2eCounter) {
-            console.log('inside')
             this.getTcs();
         }
         if (newProps && this.props && this.props.deleteCounter && newProps.deleteCounter !== this.props.deleteCounter) {
@@ -602,7 +581,6 @@ class LongevityTestCases extends Component {
         this.toggle();
     }
     convertDate = (date) => {
-        console.log(date);
         if (!date) {
             return ''
         }
@@ -615,8 +593,6 @@ class LongevityTestCases extends Component {
             Notes: this.state.sanityDetails.oldNotes+'' } });
     }
     render() {
-        console.log('rendering')
-        console.log(this.props.data)
         let rowData = this.props.data.map(item => ({
             ...item,
             Date: this.convertDate(item.Date),

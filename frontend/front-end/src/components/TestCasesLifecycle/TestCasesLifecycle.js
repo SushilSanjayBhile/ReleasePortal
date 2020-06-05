@@ -204,8 +204,6 @@ class TestCasesLifecycle extends Component {
     toggle = () => this.setState({ modal: !this.state.modal });
     confirmStatusDeleteToggle = () => this.setState({deleteStatusModal: !this.state.deleteStatusModal});
     confirmToggle() {
-        console.log('tc edit')
-        console.log(this.props.testcaseEdit);
         this.changeLog = {};
         let errors = this.props.type.isInValid(this.props.testcaseEdit);
         if(errors) {
@@ -215,7 +213,6 @@ class TestCasesLifecycle extends Component {
         }
         let updatedRequest = this.props.type.processRequest(this.props.testcaseEdit);
         this.props.updateTCEdit({...this.props.testcaseEdit, ...updatedRequest, errors: {}});
-        console.log('noerror find')
         this.changeLog = this.whichFieldsUpdated(this.props.tcDetails, this.props.testcaseEdit);
         this.toggle();
     }
@@ -453,7 +450,6 @@ class TestCasesLifecycle extends Component {
             if (subDomain) url += ('&SubDomain=' + subDomain);
             if (priority) url += ('&Priority=' + priority);
         }
-        console.log(url);
         axios.get(url)
             .then(all => {
                 // Filters should not go away if data is reloaded
@@ -543,8 +539,6 @@ class TestCasesLifecycle extends Component {
             }
             items.push(pushable);
         })
-        console.log(statusItems)
-        console.log(items)
         if (items.length === 0 && statusItems.length === 0) {
             return;
         }
@@ -668,11 +662,9 @@ class TestCasesLifecycle extends Component {
         axios.post(`/dummy/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
             .then(res => {
                 this.gridOperations(true);
-                console.log('updated status')
                 this.saveSingleTCInfo(data);
             }, error => {
                 alert('failed to update tc')
-                console.log('failed updating status')
                 this.gridOperations(true);
             });
     }
@@ -915,7 +907,7 @@ class TestCasesLifecycle extends Component {
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="select" id={`select_Result`}>
                                                                                 {
-                                                                                    [{ value: '', text: 'Select Result...' }, { value: 'Pass', text: 'Pass' }, { value: 'Fail', text: 'Fail' }].map(item => <option value={item.value}>{item.text}</option>)
+                                                                                    [{ value: '', text: 'Select Result...' }, { value: 'Pass', text: 'Pass' }, { value: 'Fail', text: 'Fail' },{ value:'Blocked',text:'Unblocked'}].map(item => <option value={item.value}>{item.text}</option>)
                                                                                 }
                                                                             </Input>
                                                                         </FormGroup>

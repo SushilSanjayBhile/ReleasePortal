@@ -4,8 +4,6 @@ import ReactDOM from "react-dom";
 export default class MoodEditor extends Component {
     constructor(props) {
         super(props);
-        console.log('props for selection')
-        console.log(props);
         this.onHappyClick = this.onHappyClick.bind(this);
         this.onSadClick = this.onSadClick.bind(this);
 

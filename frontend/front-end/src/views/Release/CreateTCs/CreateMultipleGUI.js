@@ -221,7 +221,6 @@ class CreateMultiple extends Component {
             }, error => {
                 this.gridOperations(true)
                 this.props.showLoadingMessage(false);
-                console.log('entered here')
                 if (!this.globalErrors) this.globalErrors = {}
                 this.globalErrors = { ...this.globalErrors, [this.state.multiple[this.currentID].TABLEID]: { uploadError: true } }
                 this.currentID += 1;
@@ -238,7 +237,6 @@ class CreateMultiple extends Component {
             });
     }
     confirmMultipleToggle() {
-        console.log(this.state.multiple);
         let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
         if (domains) {
             domains.sort();

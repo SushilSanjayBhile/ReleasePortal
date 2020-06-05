@@ -164,7 +164,7 @@ class UpdateMultiple extends Component {
     arrayFields = ['CardType']
     getTcName(name) {
         let tcName = name;
-        if (!tcName || tcName === 'NOT AUTOMATED' || tcName === undefined || tcName === null) {
+        if (!tcName || tcName === 'NOT AUTOMATED' || tcName === undefined || tcName === "undefined" || tcName === null) {
             tcName = 'TC NOT AUTOMATED';
         }
         return tcName;
@@ -190,6 +190,7 @@ class UpdateMultiple extends Component {
             "URL": `/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${data.CardType}`
         };
         data.TcName = this.getTcName(`${data.TcName}`);
+        console.log("updateMultiple",data)
 
         axios.put(`/api/tcinfoput/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${data.CardType}`, { ...data })
             .then(res => {

@@ -80,6 +80,12 @@ class TestCasesAll extends Component {
                     width: 180
                 },
                 {
+                    headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                    width: '180',
+                    editable: false,
+                    cellClass: 'cell-wrap-text',
+                },
+                {
                     headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                     width: '520',
                     editable: false,
@@ -267,10 +273,7 @@ class TestCasesAll extends Component {
     popoverToggle = () => this.setState({ popoverOpen: !this.state.popoverOpen });
     confirmStatusDeleteToggle = () => this.setState({ deleteStatusModal: !this.state.deleteStatusModal });
     confirmToggle() {
-        console.log('tc edit')
-        console.log(this.props.testcaseEdit);
         this.changeLog = {};
-        console.log('noerror find')
         this.changeLog = this.whichFieldsUpdated(this.props.tcDetails, this.props.testcaseEdit);
         this.toggle();
     }
@@ -320,24 +323,13 @@ class TestCasesAll extends Component {
             }
         }
     }
-    // onCellFocused = (params) => {
-    //     console.log(params)
-    //     if(this.gridApi) {
-    //         if(params.column && params.column.colId !== "TcID"){
-    //             this.gridApi.suppressRowClickSelection = true;
-    //             } else {
-    //             this.gridApi.suppressRowClickSelection = false;
-    //             }
-    //     }
-    // }
+    
     onRowSelected = (params) => {
-        console.log(params)
+       
         if (this.gridApi) {
             if (params.column && params.column.colId !== "TcID") {
-                // this.gridApi.suppressRowClickSelection = true;
                 return false
             } else {
-                // this.gridApi.suppressRowClickSelection = false;
                 return true
             }
         }
@@ -489,6 +481,7 @@ class TestCasesAll extends Component {
         let status = {};
         status.Domain = this.props.tcDetails.Domain;
         status.SubDomain = this.props.tcDetails.SubDomain;
+        status.Scenario = this.props.tcDetails.Scenario;
         status.TcName = this.getTcName(`${this.props.tcDetails.TcName}`);
         status.Build = this.props.testcaseEdit.Build;
         status.Result = this.props.testcaseEdit.CurrentStatus;
@@ -506,11 +499,9 @@ class TestCasesAll extends Component {
         axios.post(`/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
             .then(res => {
                 this.gridOperations(true);
-                console.log('updated status')
                 this.saveSingleTCInfo(data);
             }, error => {
                 alert('failed to update tc')
-                console.log('failed updating status')
                 this.gridOperations(true);
             });
     }
@@ -588,7 +579,7 @@ class TestCasesAll extends Component {
             if (subDomain) url += ('&SubDomain=' + subDomain);
             if (priority) url += ('&Priority=' + priority);
         }
-        console.log(url);
+      
         axios.get(url)
             .then(all => {
                 // Filters should not go away if data is reloaded
@@ -661,6 +652,7 @@ class TestCasesAll extends Component {
                 let status = {};
                 status.Domain = item.Domain;
                 status.SubDomain = item.SubDomain;
+                status.Scenario = item.Scenario;
                 status.TcName = this.getTcName(`${item.TcName}`);
                 status.Build = this.state.multi.Build;
                 status.Result = this.state.multi.Result;
@@ -692,7 +684,6 @@ class TestCasesAll extends Component {
     }
     saveMultipleTcStatus(statusItems, items) {
         this.gridOperations(false);
-        console.log("saveMultipleTcStatus",statusItems);
         axios.post(`/api/tcstatusUpdate/${this.props.selectedRelease.ReleaseNumber}`, statusItems)
             .then(res => {
                 this.gridOperations(true);
@@ -766,19 +757,15 @@ class TestCasesAll extends Component {
         return array;
     }
     save() {
-
         if(this.isBlockedOrFailed){
-            console.log(document.getElementById('select_Build').value,document.getElementById('select_Bugs').value)
             if(document.getElementById('select_Build').value =='' && document.getElementById('select_Bugs').value == ''){
                 alert("Build and bug number mandatory");
             }
         }
 
         let data = {};
-        // tc info meta fields
-        // tc info fields
+        
         this.textFields.map(item => data[item] = this.props.testcaseEdit[item]);
-        // this.arrayFields.forEach(item => data[item] = this.joinArrays(this.props.testcaseEdit[item]));
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
             "TcID": this.props.tcDetails.TcID,
@@ -789,24 +776,27 @@ class TestCasesAll extends Component {
             "URL": `/api/tcinfoput/${this.props.selectedRelease.ReleaseNumber}/id/${this.props.tcDetails.TcID}/card/${this.props.tcDetails.CardType}`
         };
 
-        if (this.props.testcaseEdit.CurrentStatus === 'Pass' || this.props.testcaseEdit.CurrentStatus === 'Fail' ||  this.props.testcaseEdit.Bugs) {
+        if (this.props.testcaseEdit.CurrentStatus === 'Pass' || this.props.testcaseEdit.CurrentStatus === 'Fail' || this.props.testcaseEdit.CurrentStatus == 'Blocked' || this.props.testcaseEdit.CurrentStatus == 'Unblocked' ||  this.props.testcaseEdit.Bugs) {
             this.saveSingleTCStatus(data);
         } else {
             this.saveSingleTCInfo(data);
         }
-        // this.toggle();
     }
+    
     saveSingleTCStatus(data) {
         this.gridOperations(false);
         let status = {};
         status.Domain = this.props.tcDetails.Domain;
         status.SubDomain = this.props.tcDetails.SubDomain;
+        status.Scenario = this.props.tcDetails.Scenario;
         status.TcName = this.getTcName(`${this.props.tcDetails.TcName}`);
+        status.Build = this.props.testcaseEdit.Build;
+        status.Result = this.props.testcaseEdit.CurrentStatus;
         status.CardType = this.props.tcDetails.CardType;
         status.TcID = this.props.tcDetails.TcID;
-        if (this.props.testcaseEdit.CurrentStatus !== 'Fail' && this.props.testcaseEdit.CurrentStatus !== 'Pass') {
-            console.log('passing only bug')
-            console.log(this.props.testcaseEdit);
+
+       
+        if (this.props.testcaseEdit.CurrentStatus !== 'Fail' && this.props.testcaseEdit.CurrentStatus !== 'Pass' && this.props.testcaseEdit.CurrentStatus !== 'Blocked'  && this.props.testcaseEdit.CurrentStatus !== 'Unblocked') {
             let statusList = this.props.testcaseEdit.StatusList;
             if(statusList && statusList.length>0) {
                 statusList = statusList[statusList.length-1];
@@ -826,11 +816,9 @@ class TestCasesAll extends Component {
                 axios.put(`/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
                     .then(res => {
                         this.gridOperations(true);
-                        console.log('updated status')
                         this.saveSingleTCInfo(data);
                     }, error => {
                         alert('failed to update tc')
-                        console.log('failed updating status')
                         this.gridOperations(true);
                     });
             } else {
@@ -853,11 +841,9 @@ class TestCasesAll extends Component {
             axios.post(`/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
                 .then(res => {
                     this.gridOperations(true);
-                    console.log('updated status')
                     this.saveSingleTCInfo(data);
                 }, error => {
                     alert('failed to update tc')
-                    console.log('failed updating status')
                     this.gridOperations(true);
                 });
         }
@@ -880,7 +866,7 @@ class TestCasesAll extends Component {
                     this.gridOperations(true);
                     this.onSuccessTcInfo(data);
                 }, error => {
-                    alert('failed to update tc')
+                    alert('Failed To Update TC')
                     this.gridOperations(true);
                 }, 400));
         }
@@ -949,36 +935,7 @@ class TestCasesAll extends Component {
                 }
             })
             total = this.gridApi.getModel().rowsToDisplay.length;
-            // if (this.state.CardType) {
-            //     let card = this.state.doughnuts.filter(d => d.CardType === this.state.CardType)[0];
-            //     if (card) {
-            //         if (this.state.subDomain && card.SubDomains[this.state.subDomain]) {
-            //             pass = card.SubDomains[this.state.subDomain].Pass;
-            //             fail = card.SubDomains[this.state.subDomain].Fail;
-            //             total = card.SubDomains[this.state.subDomain].Total;
-            //         } else {
-            //             Object.keys(card.SubDomains).forEach(subdomain => {
-            //                 pass += card.SubDomains[subdomain].Pass;
-            //                 fail += card.SubDomains[subdomain].Fail;
-            //                 total += card.SubDomains[subdomain].Total;
-            //             })
-            //         }
-            //     }
-            // } else {
-            //     this.state.doughnuts.forEach(card => {
-            //         if (this.state.subDomain && card.SubDomains[this.state.subDomain]) {
-            //             pass += card.SubDomains[this.state.subDomain].Pass;
-            //             fail += card.SubDomains[this.state.subDomain].Fail;
-            //             total += card.SubDomains[this.state.subDomain].Total;
-            //         } else {
-            //             Object.keys(card.SubDomains).forEach(subdomain => {
-            //                 pass += card.SubDomains[subdomain].Pass;
-            //                 fail += card.SubDomains[subdomain].Fail;
-            //                 total += card.SubDomains[subdomain].Total;
-            //             })
-            //         }
-            //     });
-            // }
+            
         } else {
             if (this.props.selectedRelease && this.props.selectedRelease.TcAggregate) {
                 let tcAggr = this.props.selectedRelease.TcAggregate.all;
@@ -1113,7 +1070,7 @@ class TestCasesAll extends Component {
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="select" id={`select_Result`}>
                                                                                 {
-                                                                                    [{ value: '', text: 'Select Result...' }, { value: 'Pass', text: 'Pass' }, { value: 'Fail', text: 'Fail' }, { value: 'Blocked', text: 'Blocked' },{ value: 'Unlocked', text: 'Unblocked' }].map(item => <option value={item.value}>{item.text}</option>)
+                                                                                    [{ value: '', text: 'Select Result...' }, { value: 'Pass', text: 'Pass' }, { value: 'Fail', text: 'Fail' }, { value: 'Blocked', text: 'Blocked' },{ value: 'Unblocked', text: 'Unblocked' }].map(item => <option value={item.value}>{item.text}</option>)
                                                                                 }
                                                                             </Input>
                                                                         </FormGroup>
@@ -1160,7 +1117,6 @@ class TestCasesAll extends Component {
                                                                                             })
                                                                                         }
                                                                                         this.setState({ multi: { ...this.state.multi, Bugs: e.target.value } })
-                                                                                        console.log("bug number e.target.value",e.target.value)
                                                                                         setTimeout(this.gridApi.redrawRows(), 0);
                                                                                     }} type="text" id={`select_Bugs`} placeholder='DWS-000/SPEK-000'>
                                                                                     </Input>

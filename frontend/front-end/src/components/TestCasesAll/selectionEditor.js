@@ -6,33 +6,15 @@ import { Input } from 'reactstrap';
 export default class SelectionEditor extends Component {
     constructor(props) {
         super(props);
-        console.log('props for selection')
-        console.log(props);
-
         this.state = {
             value: props.value
         }
     }
 
-    // componentWillMount() {
-    //     this.setHappy(this.props.value === "Happy");
-    // }
-
+  
     componentDidMount() {
-        // this.refs.container.addEventListener('keydown', this.checkAndToggleMoodIfLeftRight);
         this.focus();
     }
-
-    componentWillUnmount() {
-        // this.refs.container.removeEventListener('keydown', this.checkAndToggleMoodIfLeftRight);
-    }
-
-    // checkAndToggleMoodIfLeftRight = (event) => {
-    //     if ([37, 39].indexOf(event.keyCode) > -1) { // left and right
-    //         this.toggleMood();
-    //         event.stopPropagation();
-    //     }
-    // }
 
     componentDidUpdate() {
         this.focus();
@@ -56,7 +38,6 @@ export default class SelectionEditor extends Component {
     }
 
     onSelect(item) {
-        console.log(item);
         this.setState({
             value: item
         },
@@ -99,13 +80,7 @@ export default class SelectionEditor extends Component {
 
         let happyStyle = this.state.happy ? selected : unselected;
         let sadStyle = !this.state.happy ? selected : unselected;
-        console.log('for ')
-        console.log(this.props.multiple)
         return (
-            // <div ref="container"
-            //     style={mood}
-            //     tabIndex={1} // important - without this the keypresses wont be caught
-            // >
 
             this.props.multiple ?
                 <Input type='select' multiple onKeyDown={(e) => {

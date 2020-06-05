@@ -79,26 +79,34 @@ class ReleaseStatus extends Component {
         })
     }
 
+    sortBugList = (list) =>{
+        return list.sort(function(a, b){
+            return b.value - a.value
+        })
+    }
+
     handleTcCount = () =>{
         let list = []
         let list2 = []
         let url  = `/api/bugwiseblockedtcs/` + this.props.selectedRelease.ReleaseNumber
-        console.log("bugwise url kay ahe",url)
+        
         axios.get(url).then(res=>{
-                    console.log("result bugwiseblockedtcs",res)
+                    
                     list.push(res.data);
-                    console.log("asdfghj",list[0])
-                   
+                    
+                    
                     
                     for (let [key, value] of Object.entries(list[0])) {
                         console.log(`${key}: ${value}`);
                         list2.push({'bug_no':key,'value':value})
-                        // console.log("list2",list2);
+                       
                         
                     }
+                    let a = this.sortBugList(list2)
+
                     this.setState({blockedBugList:list2})
 
-                    console.log(this.state.blockedBugList,"blockedBugList")
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
                     for(let i = 0 ; i < this.state.blockedBugList ; i++){
                         console.log(this.state.blockedBugList[i]);
                     }
@@ -128,22 +136,7 @@ class ReleaseStatus extends Component {
         
     }
 
-    makelistAsUWant = (data)=>{
-       
-        console.log("data bhtela ahe",data)
-        allBugs.push({'Bug_No':data.key,'Summary':data.fields.summary,"status":data.fields.status.name.toLowerCase(),'Priority':data.fields.priority.name.toLowerCase()})
-        // this.setState({allBugsList:allBugs})
-        console.log("---------------------------------------------------------------")
-        console.log(allBugs,this.state.blockedBugList)
-        
-        console.log("---------------------------------------------------------------")
-       
-
-       
-    }
-
-
-
+   
 
     
     render() {

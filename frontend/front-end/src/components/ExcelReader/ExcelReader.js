@@ -42,7 +42,6 @@ class ExcelReader extends Component {
       /* Update state */
       this.setState({ data: data, cols: make_cols(ws['!ref']) }, () => {
         this.props.onFileLoaded(this.state.data);
-        // console.log(JSON.stringify(this.state.data, null, 2));
       });
  
     };
@@ -61,10 +60,7 @@ class ExcelReader extends Component {
         {/* <Link to="/files/myfile.pdf" target="_blank" download>Download Format</Link> */}
         <a href='/assets/create_tc_format.xls' download>Download TC Format</a>
         <br />
-        {/* <input type='submit' 
-          value="Process Triggers"
-          onClick={this.handleFile} /> */}
-          </div>
+      </div>
       
     )
   }

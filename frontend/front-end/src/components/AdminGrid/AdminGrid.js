@@ -260,7 +260,6 @@ class AdminGrid extends Component {
 
     getEditedCells() {
         var cellDefs = this.gridApi.getEditingCells();
-        console.log('edited cells ', cellDefs);
     }
     onFilterTextBoxChanged(value) {
         this.deselect();
@@ -297,9 +296,6 @@ class AdminGrid extends Component {
                     if (this.props.user && this.props.user.isAdmin) {
                         axios.get(`/user/${this.props.selectedRelease.ReleaseNumber}/assigned/ADMIN`)
                             .then(admin => {
-                                console.log('user data');
-                                console.log(admin.data)
-                                console.log(res.data);
                                 this.props.saveUserDetails([...admin.data, ...res.data]);
                             })
                             .catch(err => this.props.saveUserDetails(res.data))
@@ -316,8 +312,6 @@ class AdminGrid extends Component {
     }
     save() {
         let data = { ...this.props.testcaseEdit };
-        console.log('data for creating tc');
-        console.log(data);
         let dates = [
             'TargetedReleaseDate', 'ActualReleaseDate', 'TargetedCodeFreezeDate',
             'UpgradeTestingStartDate', 'QAStartDate', 'ActualCodeFreezeDate', 'TargetedQAStartDate'

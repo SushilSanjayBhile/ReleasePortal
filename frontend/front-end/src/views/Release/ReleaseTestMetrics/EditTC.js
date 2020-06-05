@@ -42,25 +42,7 @@ class EditTC extends Component {
         console.log(value);
         let updated = {};
         switch (field) {
-            // case 'CardType':
-            //     let cardType = [];
-            //     if (checked && this.props.testcaseEdit.CardType) {
-            //         console.log(this.props.testcaseEdit.CardType)
-            //         cardType = [...this.props.testcaseEdit.CardType, value];
-            //     }
-            //     if (checked && !this.props.testcaseEdit.CardType) {
-            //         cardType = [value];
-            //     }
-            //     if (!checked && this.props.testcaseEdit.CardType) {
-            //         let array = this.props.testcaseEdit.CardType;
-            //         array.splice(array.indexOf(value), 1);
-            //         cardType = array;
-            //     }
-
-            //     console.log(cardType)
-            //     let updated = { ...this.props.testcaseEdit, CardType: cardType, errors: { ...this.props.testcaseEdit.errors, CardType: null } };
-            //     this.props.updateTCEdit(updated);
-            //     break;
+            
             case 'OrchestrationPlatform':
                 let op = null;
                 if (checked && this.props.testcaseEdit.OrchestrationPlatform) {
@@ -137,6 +119,8 @@ class EditTC extends Component {
                                                 <option value=''>Select Status</option>
                                                 <option value='Fail'>Fail</option>
                                                 <option value='Pass'>Pass</option>
+                                                <option value='Blocked'>Blocked</option>
+                                                <option value='Unblocked'>Unblocked</option>
                                             </Input>
                                     }
                                 </FormGroup>
@@ -176,104 +160,7 @@ class EditTC extends Component {
 
                         </FormGroup>
                     }
-                    {/* <FormGroup row className="my-0" style={{ marginTop: '1rem' }}>
-                        <Col xs="6" md="4" lg="3">
-                            <FormGroup className='rp-app-table-value'>
-                                <Label className='rp-app-table-label' htmlFor="WorkingStatus">
-                                    Working Status
-                                    {
-                                        this.props.testcaseEdit.errors['WorkingStatus'] &&
-                                        <i className='fa fa-exclamation-circle rp-error-icon'>{this.props.testcaseEdit.errors['WorkingStatus']}</i>
-                                    }
-                                </Label>
-                                {
-                                    !this.props.isEditing || (!this.props.currentUser.isAdmin && (this.props.testcaseDetail.WorkingStatus === 'CREATED' || this.props.testcaseDetail.WorkingStatus === 'UNAPPROVED')) ?
-                                        <div className='rp-app-table-value'><span className='rp-edit-TC-span'>{this.props.testcaseDetail && this.props.testcaseDetail.WorkingStatus}</span></div>
-                                        :
-                                        <Input style={{ borderColor: this.props.testcaseEdit.errors['WorkingStatus'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="WorkingStatus" name="WorkingStatus" value={this.props.testcaseEdit && this.props.testcaseEdit.WorkingStatus}
-                                            onChange={(e) => {
-                                                this.setState({ statusChange: true });
-                                                this.props.updateTCEdit({ ...this.props.testcaseEdit, WorkingStatus: e.target.value, errors: { ...this.props.testcaseEdit.errors, WorkingStatus: null } })
-                                            }} >
-                                            {
-                                                this.WorkingStatusOptions &&
-                                                this.WorkingStatusOptions.map(item => <option value={item}>{item}</option>)
-                                            }
-                                        </Input>
-                                }
-                            </FormGroup>
-                            <Collapse isOpen={this.state.statusChange}>
-                                {
-                                    this.props.testcaseEdit.WorkingStatus && this.props.testcaseEdit.WorkingStatus.search('COMPLETED') > 0 ?
-                                        <React.Fragment>
-                                            <div>
-                                                <span className='rp-app-table-label'>Result</span>
-                                                <div style={{ display: 'inlineBlock' }}>
-                                                    <Input type="select" onChange={(e) => this.props.updateTCEdit({ ...this.props.testcaseEdit, Status: e.target.value, StatusChangeComments: { ...this.props.StatusChangeComments, Result: e.target.value }, errors: { ...this.props.testcaseEdit.errors, StatusChangeComments: null } })} >
-                                                        <option value="Fail">Fail</option>
-                                                        <option value="Pass">Pass</option>
-                                                    </Input>
-                                                </div>
-                                            </div>
-                                            <div>
-                                                <span className='rp-app-table-label'>Log Url</span>
-                                                <div style={{ display: 'inlineBlock' }}>
-                                                    <Input type="text" onChange={(e) => this.props.updateTCEdit({ ...this.props.testcaseEdit, StatusChangeComments: { ...this.props.StatusChangeComments, logURL: e.target.value }, errors: { ...this.props.testcaseEdit.errors, StatusChangeComments: null } })} >
-
-                                                    </Input>
-                                                </div>
-                                            </div>
-                                            <FormGroup className='rp-app-table-value'>
-                                                <Label className='rp-app-table-label' htmlFor="StatusChangeComments">
-                                                    Notes
-                                            </Label>
-                                                {
-                                                    <Input className='rp-app-table-value' placeholder={'Add Comments'} type="textarea" rows='4' id='StatusComments'
-                                                        value={this.props.testcaseEdit && this.props.testcaseEdit.StatusChangeComments && this.props.testcaseEdit.StatusChangeComments.Notes}
-                                                        onChange={(e) => this.props.updateTCEdit({ ...this.props.testcaseEdit, StatusChangeComments: { ...this.props.StatusChangeComments, Notes: e.target.value }, errors: { ...this.props.testcaseEdit.errors, StatusChangeComments: null } })} >
-
-                                                    </Input>
-                                                }
-                                            </FormGroup>
-                                        </React.Fragment> :
-                                        this.props.testcaseEdit.Status && this.props.testcaseEdit.Status === 'BUG' ?
-                                            <React.Fragment>
-                                                <div>
-                                                    <span className='rp-app-table-label'>DWS Url</span>
-                                                    <div style={{ display: 'inlineBlock' }}>
-                                                        <Input type="text" onChange={(e) => this.props.updateTCEdit({ ...this.props.testcaseEdit, StatusChangeComments: { ...this.props.StatusChangeComments, logURL: e.target.value }, errors: { ...this.props.testcaseEdit.errors, StatusChangeComments: null } })} >
-                                                        </Input>
-                                                    </div>
-                                                </div>
-                                                <FormGroup className='rp-app-table-value'>
-                                                    <Label className='rp-app-table-label' htmlFor="StatusChangeComments">
-                                                        Notes
-                                            </Label>
-                                                    {
-                                                        <Input className='rp-app-table-value' placeholder={'Add Notes'} type="textarea" rows='4' id='StatusComments'
-                                                            value={this.props.testcaseEdit && this.props.testcaseEdit.StatusChangeComments && this.props.testcaseEdit.StatusChangeComments.Notes}
-                                                            onChange={(e) => this.props.updateTCEdit({ ...this.props.testcaseEdit, StatusChangeComments: { ...this.props.StatusChangeComments, Notes: e.target.value }, errors: { ...this.props.testcaseEdit.errors, StatusChangeComments: null } })} >
-
-                                                        </Input>
-                                                    }
-                                                </FormGroup>
-                                            </React.Fragment> :
-                                            <FormGroup className='rp-app-table-value'>
-                                                <Label className='rp-app-table-label' htmlFor="StatusChangeComments">
-                                                    Add Comments for changing Status
-                                            </Label>
-                                                {
-                                                    <Input className='rp-app-table-value' placeholder={'Add Comments'} type="textarea" rows='4' id='StatusComments' value={this.props.testcaseEdit && this.props.testcaseEdit.StatusChangeComments}
-                                                        onChange={(e) => this.props.updateTCEdit({ ...this.props.testcaseEdit, StatusChangeComments: e.target.value, errors: { ...this.props.testcaseEdit.errors, StatusChangeComments: null } })} >
-
-                                                    </Input>
-                                                }
-                                            </FormGroup>
-                                }
-
-                            </Collapse>
-                        </Col>
-                    </FormGroup> */}
+                    
                     <div>TC Information</div>
                     <FormGroup row className="my-0" style={{ marginTop: '1rem' }}>
                         {/* add or remove if there are errors */}

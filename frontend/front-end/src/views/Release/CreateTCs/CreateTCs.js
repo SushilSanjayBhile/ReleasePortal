@@ -81,7 +81,7 @@ class CreateTCs extends Component {
     }
     getTcName(name) {
         let tcName = name;
-        if (!tcName || tcName === 'NOT AUTOMATED' || tcName === undefined || tcName === null) {
+        if (!tcName || tcName === 'NOT AUTOMATED' || tcName === undefined || tcName === "undefined" || tcName === null) {
             tcName = 'TC NOT AUTOMATED';
         }
         return tcName;
@@ -118,9 +118,12 @@ class CreateTCs extends Component {
         }
         data = { ...data, ...request }
         data.TcName = this.getTcName(`${data.TcName}`);
+        console.log("before post request check data",data);
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 // this.getTcs();
+                console.log("after post request check data",res.data);
+
                 this.setState({ addTC: { Master: true, Domain: this.state.Domain, SubDomain: this.state.SubDomain, CardType: this.state.CardType }, errors: {} });
                 alert(`TC ${data.TcID} Added Successfully`)
             }, error => {

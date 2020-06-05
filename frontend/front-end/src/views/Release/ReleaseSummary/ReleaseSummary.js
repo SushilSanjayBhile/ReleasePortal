@@ -3,16 +3,14 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import {
     Button,
-    Card,
-    CardBody,
-    CardHeader,
+    
     Col,
     FormGroup,
     Input,
     Label,
     Row,
     Modal, ModalHeader, ModalBody, ModalFooter, Table, Collapse, Progress, Badge,
-    UncontrolledPopover, PopoverHeader, PopoverBody,
+    UncontrolledPopover, PopoverBody,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { updateSelectedPriority, saveReleaseBasicInfo, saveFeatures, saveBugs, saveSingleFeature, statusPage } from '../../../actions';
@@ -46,32 +44,7 @@ const DeviceType = {
     dev3: 'dev3',
     dev4: 'dev4'
 }
-// const line = {
-//     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-//     datasets: [
-//         {
-//             label: 'Feature Completion',
-//             fill: false,
-//             lineTension: 0.1,
-//             backgroundColor: 'rgba(75,192,192,0.4)',
-//             borderColor: 'rgba(75,192,192,1)',
-//             borderCapStyle: 'butt',
-//             borderDash: [],
-//             borderDashOffset: 0.0,
-//             borderJoinStyle: 'miter',
-//             pointBorderColor: 'rgba(75,192,192,1)',
-//             pointBackgroundColor: '#fff',
-//             pointBorderWidth: 1,
-//             pointHoverRadius: 5,
-//             pointHoverBackgroundColor: 'rgba(75,192,192,1)',
-//             pointHoverBorderColor: 'rgba(220,220,220,1)',
-//             pointHoverBorderWidth: 2,
-//             pointRadius: 1,
-//             pointHitRadius: 10,
-//             data: [65, 59, 80, 81, 56, 55, 40],
-//         },
-//     ],
-// };
+
 const options = {
     tooltips: {
         enabled: false,
@@ -141,6 +114,7 @@ class ReleaseSummary extends Component {
 
         this.state = {
             selectedPriority: ['P0', 'P1'],
+            selectedPriorityGUI: ['P0', 'P1'],
             cntr: 0,
             isEditing: false,
             isReleaseStatusEditing: false,
@@ -251,35 +225,33 @@ class ReleaseSummary extends Component {
     initialize(release) {
         this.reset();
         let temp = release;
-        console.log("temp",temp)
         if(temp === 'Spektra 2.4') {
             temp='2.4.0'
-            // temp = temp.split(" ").join("")
-            // console.log(temp,"after trim")
         }
-        
         if(temp === 'DMC-3.0') {
             temp="\"Spektra 3.0\""
         }
+
+        if(temp == 'DCX-3.0'){
+            this.setState({selectedPriority:['P0']})
+        }
+        else{
+            this.setState({selectedPriority:['P0','P1']})
+        }
         
         axios.get('/rest/features/' + temp)
-
             .then(res => {
                 this.props.saveFeatures({ data: res.data, id: release })
                 this.setState({ showFeatures: true })
-                console.log("features" ,res.data,release)
+               
             }, err => {
                 console.log('err ', err);
             });
-
-           
         axios.get('/rest/bugs/total/' + temp)
             .then(res => {
                 this.props.saveBugs({ data: { total: res.data.total, all: res.data }, id: release })
-                console.log("totalBUgs",res.data.total)
                 this.setState({ showBugs: true, cntr: 2 })
             }, err => {
-                console.log('getting in TOTAL BUGS')
                 console.log('err ', err);
             })
         axios.get('/rest/bugs/open/' + temp)
@@ -287,7 +259,6 @@ class ReleaseSummary extends Component {
                 this.props.saveBugs({ data: { open: res.data.total }, id: release })
                 this.setState({ showBugs: true, cntr: 4 })
             }, err => {
-                console.log('getting in OPEN BUGS')
                 console.log('err ', err);
             })
         axios.get('/rest/bugs/resolved/' + temp)
@@ -295,7 +266,6 @@ class ReleaseSummary extends Component {
                 this.props.saveBugs({ data: { resolved: res.data.total }, id: release})
                 this.setState({ showBugs: true, cntr: 6 })
             }, err => {
-                console.log('getting in RESOLVED BUGS')
                 console.log('err ', err);
             })
     }
@@ -371,9 +341,11 @@ class ReleaseSummary extends Component {
         if (!data.QARateOfProgress) {
             data.QARateOfProgress = 0;
         }
-        console.log('saved data ', data);
+       
+        data.Priority = 'P0' // if not set then giving error to update basic info 
         axios.put(`/api/release/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
+                console.log("data set hotoy ka?",res.data)
                 this.props.saveReleaseBasicInfo({ id: data.ReleaseNumber, data: data });
                 this.reset();
             }, error => {
@@ -397,6 +369,8 @@ class ReleaseSummary extends Component {
         })
     }
     componentDidMount(){
+
+        
        
     }
     render() {
@@ -473,8 +447,6 @@ class ReleaseSummary extends Component {
                                             <tr>
                                                 <React.Fragment>
                                                     <td className='rp-app-table-key'>{item.key}</td>
-
-
                                                     {this.state.basic.editing && !item.restrictEdit &&
                                                         <td>
                                                             <Input
@@ -964,9 +936,7 @@ class ReleaseSummary extends Component {
                                         
                                         <Link to={'/release/qastatus'}>
                                         <div>
-
-                                            <HorizontalBar height={180} data={this.props.tcSummary && this.props.tcSummary.data[0]} options={stackedBarChartOptions}></HorizontalBar>
-                                           
+                                            <HorizontalBar height={180} data={this.props.tcSummary && this.props.tcSummary.data[0]} options={stackedBarChartOptions} label="2345"></HorizontalBar>
                                         </div>
                                         </Link>
                                         </div>

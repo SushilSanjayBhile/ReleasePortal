@@ -62,54 +62,7 @@ class ManageRelease extends Component {
             });
         this.delToggle();
     }
-    // save() {
-    //     let data = { ...this.state.updatedValues }
-    //     console.log('saved data ', data);
-    //     // axios.post(`/api/release`, { ...data })
-    //     //     .then(res => {
-    //     //         alert('success');
-    //     //         this.props.saveReleaseBasicInfo({ id: data.ReleaseNumber, data: data });
-    //     //         this.reset();
-    //     //     }, error => {
-    //     //         alert('error adding new release');
-    //     //     });
-    //     if (this.state.modal) {
-    //         this.toggle();
-    //     }
-    //     if (this.state.momModal) {
-    //         this.momToggle();
-    //     }
-    // }
-    // save() {
-    //     let data = { ...this.state.updatedValues }
-    //     let dates = [
-    //         'TargetedReleaseDate', 'ActualReleaseDate', 'TargetedCodeFreezeDate',
-    //         'UpgradeTestingStartDate', 'QAStartDate', 'ActualCodeFreezeDate', 'TargetedQAStartDate'
-    //     ]
-    //     let formattedDates = {};
-    //     dates.forEach(item => {
-    //         if (data[item]) {
-    //             let date = new Date(data[item]);
-    //             formattedDates[item] = date.toISOString()
-    //         }
-    //     })
-    //     data = { ...data, ...formattedDates };
-    //     console.log('saved data ', data);
-    //     axios.post(`/api/release`, { ...data })
-    //         .then(res => {
-    //             alert('success');
-    //             this.props.saveReleaseBasicInfo({ id: data.ReleaseNumber, data: data });
-    //             this.setState({ isEditing: false });
-    //         }, error => {
-    //             alert('error in updating');
-    //         });
-    //     if (this.state.modal) {
-    //         this.toggle();
-    //     }
-    //     if (this.state.momModal) {
-    //         this.momToggle();
-    //     }
-    // }
+    
     confirm() {
         this.save();
     }

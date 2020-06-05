@@ -479,6 +479,7 @@ export const stackedBarChartOptions = {
             stacked: true,
             gridLines: {
                 display: false,
+                text:'abc'
                 // color: '#fff',
                 // lineColor: '#fff',
                 // zeroLineColor: '#fff',
@@ -497,20 +498,14 @@ export const stackedBarChartOptions = {
             var chartInstance = this.chart;
             var ctx = chartInstance.ctx;
             ctx.textAlign = "left";
+            ctx.text = 'a'
             ctx.font = "14px Open Sans";
             ctx.fillStyle = "rgb(4, 56, 26)";
 
             Chart.helpers.each(this.data.datasets.forEach(function (dataset, i) {
                 var meta = chartInstance.controller.getDatasetMeta(i);
-                // let total = 0;
-                // Chart.helpers.each(meta.data.forEach(function (bar, index) {
-                //     total  += dataset.data[index];
-                // }), this)
                 Chart.helpers.each(meta.data.forEach(function (bar, index) {
                     let data = dataset.data[index];
-                    // if (i === 0) {
-                    //     ctx.fillText(data, 50, bar._model.y + 4);
-                    // } else {
                     if (bar._model.x - bar._model.base > 50) {
                         ctx.fillText(data, bar._model.x - 30, bar._model.y + 4);
                     }

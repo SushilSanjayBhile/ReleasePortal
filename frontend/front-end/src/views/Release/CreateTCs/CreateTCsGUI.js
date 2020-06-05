@@ -81,7 +81,7 @@ class CreateTCs extends Component {
     }
     getTcName(name) {
         let tcName = name;
-        if (!tcName || tcName === 'NOT AUTOMATED' || tcName === undefined || tcName === null) {
+        if (!tcName || tcName === 'NOT AUTOMATED' || tcName === undefined || tcName === 'undefined' || tcName === null) {
             tcName = 'TC NOT AUTOMATED';
         }
         return tcName;

@@ -8,23 +8,13 @@ export default class SelectionEditor extends Component {
         this.state = {
             value: this.props.value
         }
-        console.log(props);
     }
     componentDidMount() {
-        // this.refs.container.addEventListener('keydown', this.checkAndToggleMoodIfLeftRight);
         this.focus();
     }
 
     componentWillUnmount() {
-        // this.refs.container.removeEventListener('keydown', this.checkAndToggleMoodIfLeftRight);
     }
-
-    // checkAndToggleMoodIfLeftRight = (event) => {
-    //     if ([37, 39].indexOf(event.keyCode) > -1) { // left and right
-    //         this.toggleMood();
-    //         event.stopPropagation();
-    //     }
-    // }
 
     componentDidUpdate() {
         this.focus();

@@ -174,7 +174,7 @@ class CreateMultiple extends Component {
     arrayFields = ['CardType']
     getTcName(name) {
         let tcName = name;
-        if (!tcName || tcName === 'NOT AUTOMATED' || tcName === undefined || tcName === null) {
+        if (!tcName || tcName === 'NOT AUTOMATED' || tcName === "undefined" || tcName === null) {
             tcName = 'TC NOT AUTOMATED';
         }
         return tcName;
@@ -200,9 +200,10 @@ class CreateMultiple extends Component {
         };
         data.WorkingStatus = 'CREATED'
         data.TcName = this.getTcName(`${data.TcName}`);
-
+        
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
+
                 this.currentID += 1;
                 if (this.currentID < this.state.multiple.length) {
                     this.save()
@@ -219,7 +220,6 @@ class CreateMultiple extends Component {
             }, error => {
                 this.gridOperations(true)
                 this.props.showLoadingMessage(false);
-                console.log('entered here')
                 if (!this.globalErrors) this.globalErrors = {}
                 this.globalErrors = { ...this.globalErrors, [this.state.multiple[this.currentID].TABLEID]: { uploadError: true } }
                 this.currentID += 1;
@@ -236,7 +236,6 @@ class CreateMultiple extends Component {
             });
     }
     confirmMultipleToggle() {
-        console.log(this.state.multiple);
         let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
         if (domains) {
             domains.sort();
@@ -296,8 +295,6 @@ class CreateMultiple extends Component {
     }
     renderEditedCell = (params) => {
         if (params.data) {
-            console.log('errors inside')
-            console.log(this.state.multipleErrors)
             if (this.state.multipleErrors && this.state.multipleErrors[params.data.TABLEID] && this.state.multipleErrors[params.data.TABLEID].uploadError) {
                 return {
                     backgroundColor: 'rgb(237,102,72)',

@@ -388,7 +388,6 @@ class SanityTestCases extends Component {
         let items = [];
         let selectedRows = this.gridApi.getSelectedRows();
         selectedRows.forEach(item => {
-            console.log(item);
             let pushable = {
                 TcID: item.TcID,
                 CardType: item.CardType,
@@ -521,7 +520,6 @@ class SanityTestCases extends Component {
             }
             axios.post(`/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
                 .then(res => {
-                    console.log('updated status')
                     setTimeout(() => axios.put(`/api/tcinfoput/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${this.props.tcDetails.CardType}`, { ...data })
                         .then(res => {
                             this.setState({ addTC: { Master: true, Domain: '' }, errors: {}, toggleMessage: `TC ${this.props.testcaseEdit.TcID} Updated Successfully` });
@@ -535,12 +533,11 @@ class SanityTestCases extends Component {
                             }, 1000);
                         }, error => {
 
-                            alert('failed to update tc')
+                            alert('Failed To Update TC')
                             this.gridOperations(true);
                         }, 1000));
                 }, error => {
-                    alert('failed to update tc')
-                    console.log('failed updating status')
+                    alert('Failed To Update TC')
                     this.gridOperations(true);
                 });
         } else {
@@ -554,7 +551,7 @@ class SanityTestCases extends Component {
                         this.gridOperations(true);
                     }, 1000);
                 }, error => {
-                    alert('failed to update tc')
+                    alert('Failed To Update TC')
                     this.deselect();
                     setTimeout(() => {
                         this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain)
@@ -566,10 +563,7 @@ class SanityTestCases extends Component {
         // this.toggle();
     }
     confirmToggle() {
-        console.log('tc edit')
-        console.log(this.props.testcaseEdit);
         this.changeLog = {};
-        console.log('noerror find')
         this.changeLog = this.whichFieldsUpdated(this.props.tcDetails, this.props.testcaseEdit);
         this.setState({ toggleMessage: null })
         this.toggle();

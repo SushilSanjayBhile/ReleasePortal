@@ -19,13 +19,17 @@ class Login extends Component {
     }
   }
   loginBackend(user) {
+    
+    localStorage.setItem('user',JSON.stringify(user));
+
     let email = user.profileObj.email;
     let name = user.profileObj.name;
-    // let email =user.w3.me
-    // let name=user.m3.bs
+   
     axios.post('/user/login', { email: email, name: name })
       .then(res => {
+        localStorage.setItem('isAuthorized', true);
         if (res.data && res.data.role === 'ADMIN') {
+          
           this.props.logInSuccess({ email: email, name: name, isAdmin: true, role: res.data.role });
         } else {
           this.props.logInSuccess({ email: email, name: name, isAdmin: false, role: res.data.role });
@@ -33,8 +37,8 @@ class Login extends Component {
         this.props.history.push('/');
       })
       .catch(err => {
-        alert('login failed')
-        console.log('post error')
+        localStorage.setItem('isAuthorized', false);
+        alert('Login Failed')
       })
   }
   onLoginFailed = (err) => {
@@ -44,27 +48,29 @@ class Login extends Component {
   componentDidMount() {
     // this.props.logInSuccess({ email: 'ADMIN', name: 'ADMIN', isAdmin: true, role: 'ADMIN' });
     // this.props.history.push('/');
-    window.gapi.load('auth2', () => {
-      // this.GoogleAuth.isSignedIn.listen((data) => this.setSigninStatus(data));
-      this.auth2 = gapi.auth2.init({
-        'apiKey': 'AIzaSyCx0M1qs_LyfAgVmkTmDE6qIfgUiDekM-I',
-        'client_id': '271454306292-q477q7slv0vpe1gep84habq5m2gv58k3.apps.googleusercontent.com',
-        'scope': this.SCOPE
-      }).then(() => {
-        this.GoogleAuth = gapi.auth2.getAuthInstance();
-        this.setState({ googleAuthLoaded: true })
-        this.setSigninStatus();
-      })
-    });
-
+   
+      window.gapi.load('auth2', () => {
+        // alert("component Did mount")
+        this.auth2 = gapi.auth2.init({
+          'apiKey': 'AIzaSyCx0M1qs_LyfAgVmkTmDE6qIfgUiDekM-I',
+          'client_id': '271454306292-q477q7slv0vpe1gep84habq5m2gv58k3.apps.googleusercontent.com',
+          'scope': this.SCOPE
+        }).then(() => {
+          this.GoogleAuth = gapi.auth2.getAuthInstance();
+          this.setState({ googleAuthLoaded: true })
+          console.log("googleAuthLoaded",this.state.googleAuthLoaded)
+          this.setSigninStatus();
+          // this.GoogleAuth.isSignedIn.listen((data) => this.setSigninStatus(data));
+  
+        })
+      });
   }
   setSigninStatus(isSignedIn) {
-    console.log(isSignedIn);
     if (this.GoogleAuth) {
       let user = this.GoogleAuth.currentUser.get();
       let isAuthorized = user.hasGrantedScopes(this.SCOPE);
       if (isAuthorized) {
-        this.loginBackend(user)
+        this.loginBackend(user) 
       } else {
         console.log('could not login')
       }
@@ -84,6 +90,7 @@ class Login extends Component {
                 boxShadow: '2px 4px 8px 4px rgba(1, 210, 81, 0.4)'
               }}>
                 <CardBody>
+                
                   <div>
                     {/* <p>You are not signed in. Click here to sign in.</p> */}
                     <div style={{
@@ -94,9 +101,13 @@ class Login extends Component {
                       height: '48px'
                     }}></div>
                     {/* <div id="loginButton">Login with Google</div> */}
+                    {/* <div class="g-signin2" data-onsuccess="onSignIn" 
+                    clientId="271454306292-q477q7slv0vpe1gep84habq5m2gv58k3.apps.googleusercontent.com"
+                    >Login</div> */}
                     {
                       this.state.googleAuthLoaded &&
                       <div style={{ textAlign: 'center' }}>
+                       
                         <GoogleLogin
                           clientId="271454306292-q477q7slv0vpe1gep84habq5m2gv58k3.apps.googleusercontent.com"
                           buttonText="Login"

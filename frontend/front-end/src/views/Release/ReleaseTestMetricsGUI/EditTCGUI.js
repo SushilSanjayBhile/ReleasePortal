@@ -137,6 +137,8 @@ class EditTCGUI extends Component {
                                                 <option value=''>Select Status</option>
                                                 <option value='Fail'>Fail</option>
                                                 <option value='Pass'>Pass</option>
+                                                <option value='Blocked'>Blocked</option>
+                                                <option value='Unblocked'>Unblocked</option>
                                             </Input>
                                     }
                                 </FormGroup>

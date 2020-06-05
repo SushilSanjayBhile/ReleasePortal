@@ -41,7 +41,7 @@ let domainDetail = {
 // //////////////////
 
 function getAggregate(release) {
-    console.log('called for times')
+    
     if(release.ReleaseNumber == "DMC-3.0"){
         alldomains = ['Cluster Management', 'Application Management', 'Multizone','AirGapped','ApplicationDR','Tenant', 'Project','User Management','Service Provider','Others'];
         domainDetail = {
@@ -107,7 +107,10 @@ function getAggregate(release) {
     release.TcAggregate.all.Skip = release.TcAggregate.all.Skip;
     release.TcAggregate.all.Blocked =  release.TcAggregate.all.Blocked;
 
-    release.TcAggregate.uidomain = {};
+   
+
+    release.TcAggregate.uidomain = { ...release.TcAggregate.domain}; 
+
     alldomains.forEach((item, index) => {
         release.TcAggregate.uidomain[item] = {
             "Tested": {
@@ -133,42 +136,24 @@ function getAggregate(release) {
     });
 
     let relDomain = release.TcAggregate.domain
-    console.log('relDomains')
     // release.TcAggregate.uidomain = {...release.TcAggregate.domain};
     Object.keys(relDomain).forEach((item, index) => {
         if (domainDetail[item]) {
-            console.log("domainDetail[item].name",domainDetail[item].name)
             release.TcAggregate.domain[item].tag = domainDetail[item].name;
 
-            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Pass += relDomain[item].Tested.auto.Pass;
-            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Fail += relDomain[item].Tested.auto.Fail;
-            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Skip += relDomain[item].Tested.auto.Skip;
-            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Block += relDomain[item].Tested.auto.Blocked;
-            console.log(relDomain,"relDomain")
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Pass = relDomain[item].Tested.auto.Pass;
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Fail = relDomain[item].Tested.auto.Fail;
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Skip = relDomain[item].Tested.auto.Skip;
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Block = relDomain[item].Tested.auto.Blocked;
 
-
-            // console.log(
-            // "===================== Auto===========================",
-            // release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Pass += relDomain[item].Tested.auto.Pass,
-            // release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Fail += relDomain[item].Tested.auto.Fail,
-            // release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Skip += relDomain[item].Tested.auto.Skip,
-            // release.TcAggregate.uidomain[domainDetail[item].name].Tested.auto.Block += relDomain[item].Tested.auto.Blocked,
-            // "====================== Manual =======================",
-            // release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Pass += relDomain[item].Tested.manual.Pass,
-            // release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Fail += relDomain[item].Tested.manual.Fail,
-            // release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Skip += relDomain[item].Tested.manual.Skip,
-            // release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Block += relDomain[item].Tested.manual.Blocked
-
-            // )
-
-            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Pass += relDomain[item].Tested.manual.Pass;
-            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Fail += relDomain[item].Tested.manual.Fail;
-            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Skip += relDomain[item].Tested.manual.Skip;
-            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Block += relDomain[item].Tested.manual.Blocked;
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Pass = relDomain[item].Tested.manual.Pass;
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Fail = relDomain[item].Tested.manual.Fail;
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Skip = relDomain[item].Tested.manual.Skip;
+            release.TcAggregate.uidomain[domainDetail[item].name].Tested.manual.Block = relDomain[item].Tested.manual.Blocked;
 
 
             release.TcAggregate.uidomain[domainDetail[item].name].Tested.total =
-                release.TcAggregate.uidomain[domainDetail[item].name].NotTested += relDomain[item].NotTested;
+            release.TcAggregate.uidomain[domainDetail[item].name].NotTested += relDomain[item].NotTested;
             release.TcAggregate.uidomain[domainDetail[item].name].NotApplicable += relDomain[item].NotApplicable;
         } else {
             release.TcAggregate.domain[item].tag = "Others";
@@ -184,9 +169,6 @@ function getAggregate(release) {
             release.TcAggregate.uidomain["Others"].NotApplicable += relDomain[item].NotApplicable;
         }
     })
-
-    console.log('ralease')
-    console.log(release);
     return release;
 }
 
@@ -290,9 +272,9 @@ export const getTCForStatus = (state, id) => {
         return;
     }
     let p = {};
-    ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'].map(item => p[item] = { Pass: 0, Skip: 0, Fail: 0, NotTested: 0,Blocked:0 });
-    let visibleP = { Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
-    let visibleGUIP = { Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
+    ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'].map(item => p[item] = { Total:0,Pass: 0, Skip: 0, Fail: 0, NotTested: 0,Blocked:0 });
+    let visibleP = { Total:0,Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
+    let visibleGUIP = { Total:0,Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
     if (release.Priority) {
         p = { ...p, ...release.Priority }
         
@@ -300,15 +282,9 @@ export const getTCForStatus = (state, id) => {
     let pGUI = {}
     if (release.TcAggregate.PriorityGui) {
         pGUI = { ...pGUI, ...release.TcAggregate.PriorityGui}
-        
     }
-   
-    //TODO: get from backend release site
-    // p.P0={...p.P0, Pass: 100, Fail: 200};
-    // p.P1 = {...p.P1, Pass:23, Fail:43};
-
+    
     if (state.release.options.selectedPriority) {
-        
         state.release.options.selectedPriority.forEach(item => {
             visibleP.Pass += p[item].Pass;
             visibleP.Skip += p[item].Skip;
@@ -323,7 +299,6 @@ export const getTCForStatus = (state, id) => {
         if (release.ReleaseNumber == "DMC-3.0") {
             
             state.release.options.selectedPriority.forEach(item => {
-                
                 visibleGUIP.Pass += pGUI[item].Pass;
                 visibleGUIP.Skip += pGUI[item].Skip;
                 visibleGUIP.Fail += pGUI[item].Fail;
@@ -333,28 +308,35 @@ export const getTCForStatus = (state, id) => {
         }
 
     }
+    let PriorityLabel = state.release.options.selectedPriority;
+    let str = ""
     
-    
-    
-
-
-    
+    if(release.ReleaseNumber == "DCX-3.0"){
+        str = "P0"
+    }
+    else{
+        for(let i=0;i<PriorityLabel.length;i++){
+            str += PriorityLabel[i] + " "
+        }
+    }
     let data = [{
-        labels: ['', ''],
-        datasets: [{
+        labels: ['Total', str],
+        datasets: [
+        
+        {
             label: 'Pass',
             backgroundColor: '#01D251',
             borderColor: 'white',
             borderWidth: 1,
             data: [(release.TcAggregate.all.Tested.auto.Pass + release.TcAggregate.all.Tested.manual.Pass), visibleP.Pass]
         },
-        // {
-        //     label: 'Skipped (Testing)',
-        //     backgroundColor: '#FFCE56',
-        //     borderColor: 'white',
-        //     borderWidth: 1,
-        //     data: [(release.TcAggregate.all.Tested.auto.Skip + release.TcAggregate.all.Tested.manual.Skip), visibleP.Skip]
-        // },
+        {
+            label: 'Skipped (Testing)',
+            backgroundColor: '#FFCE56',
+            borderColor: 'white',
+            borderWidth: 1,
+            data: [(release.TcAggregate.all.Tested.auto.Skip + release.TcAggregate.all.Tested.manual.Skip), visibleP.Skip]
+        },
         {
             label: 'Fail',
             backgroundColor: '#d9534f',
@@ -380,21 +362,23 @@ export const getTCForStatus = (state, id) => {
     }];
 
     data.push({
-        labels: ['', ''],
-        datasets: [{
+        labels: ['Total', str],
+        datasets: [
+       
+        {
             label: 'Pass',
             backgroundColor: '#01D251',
             borderColor: 'white',
             borderWidth: 1,
             data: [(release.TcAggregate.allGUI.Pass), visibleGUIP.Pass]
         },
-        // {
-        //     label: 'Skipped',
-        //     backgroundColor: '#FFCE56',
-        //     borderColor: 'white',
-        //     borderWidth: 1,
-        //     data: [(release.TcAggregate.allGUI.SkippedFromRelease+ release.TcAggregate.allGUI.SkippedWhileTesting), visibleGUIP.Skipped]
-        // },
+        {
+            label: 'Skipped',
+            backgroundColor: '#FFCE56',
+            borderColor: 'white',
+            borderWidth: 1,
+            data: [(release.TcAggregate.allGUI.SkippedFromRelease+ release.TcAggregate.allGUI.SkippedWhileTesting), visibleGUIP.Skip]
+        },
         {
             label: 'Fail',
             backgroundColor: '#d9534f',
@@ -430,13 +414,13 @@ export const getTCForStatus = (state, id) => {
                 borderWidth: 1,
                 data: [3643]
             },
-            // {
-            //     label: 'Skipped (Testing)',
-            //     backgroundColor: '#FFCE56',
-            //     borderColor: 'white',
-            //     borderWidth: 1,
-            //     data: [0]
-            // },
+            {
+                label: 'Skipped (Testing)',
+                backgroundColor: '#FFCE56',
+                borderColor: 'white',
+                borderWidth: 1,
+                data: [0]
+            },
             {
                 label: 'Fail',
                 backgroundColor: '#d9534f',
@@ -463,13 +447,13 @@ export const getTCForStatus = (state, id) => {
                 borderWidth: 1,
                 data: [0]
             },
-            // {
-            //     label: 'Skipped (Testing)',
-            //     backgroundColor: '#FFCE56',
-            //     borderColor: 'white',
-            //     borderWidth: 1,
-            //     data: [0]
-            // },
+            {
+                label: 'Skipped (Testing)',
+                backgroundColor: '#FFCE56',
+                borderColor: 'white',
+                borderWidth: 1,
+                data: [0]
+            },
             {
                 label: 'Fail',
                 backgroundColor: '#d9534f',
@@ -501,7 +485,6 @@ export const getTCForStatus = (state, id) => {
     }
     
     let total = [release.TcAggregate.all.All - (release.TcAggregate.all.NotApplicable + release.TcAggregate.all.Skip)];
-    
     if (release.ReleaseNumber === '2.3.0') {
         total.push(3876)
     } else {
@@ -604,75 +587,63 @@ export const getTCStatusForUIDomains = (release) => {
     if (!release.TcAggregate) {
         return;
     }
-    console.log(release.TcAggregate);
     let doughnuts = [];
     let each = []
 
     if(release.ReleaseNumber == "DMC-3.0" ){
-    //    console.log("******************release.TcAggregate.uidomain['Cluster Management'].Tested",release.TcAggregate.uidomain['Cluster Management'].Tested)
         let CMPass = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Pass;
         let CMFail = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Fail;
         let CMSkipped = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Block + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Block
         let CMNotTested = release.TcAggregate.uidomain['Cluster Management'].NotTested;
-        // let CMBlocked  = release.TcAggregate.uidomain['Cluster Management'].Blocked;
-        // console.log("Cluster management*****************************",CMPass,CMFail,CMSkipped,CMNotTested);
+        
         
         let APMPass = release.TcAggregate.uidomain['Application Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Application Management'].Tested.manual.Pass
         let APMFail = release.TcAggregate.uidomain['Application Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Application Management'].Tested.manual.Fail
         let APMSkipped = release.TcAggregate.uidomain['Application Management'].Tested.auto.Block + release.TcAggregate.uidomain['Application Management'].Tested.manual.Block
         let APMNotTested = release.TcAggregate.uidomain['Application Management'].NotTested;
-        // let APMNotBlocked = release.TcAggregate.uidomain['Application Management'].Blocked;
         
         let projectPass = release.TcAggregate.uidomain['Project'].Tested.auto.Pass + release.TcAggregate.uidomain['Project'].Tested.manual.Pass
         let projectFail = release.TcAggregate.uidomain['Project'].Tested.auto.Fail + release.TcAggregate.uidomain['Project'].Tested.manual.Fail
         let projectSkipped = release.TcAggregate.uidomain['Project'].Tested.auto.Block + release.TcAggregate.uidomain['Project'].Tested.manual.Block
         let projectNotTested = release.TcAggregate.uidomain['Project'].NotTested;
-        // let projectBlocked = release.TcAggregate.uidomain['Project'].Blocked;
 
         let tenantPass = release.TcAggregate.uidomain['Tenant'].Tested.auto.Pass + release.TcAggregate.uidomain['Tenant'].Tested.manual.Pass
         let tenantFail = release.TcAggregate.uidomain['Tenant'].Tested.auto.Fail + release.TcAggregate.uidomain['Tenant'].Tested.manual.Fail
         let tenantSkipped = release.TcAggregate.uidomain['Tenant'].Tested.auto.Block + release.TcAggregate.uidomain['Tenant'].Tested.manual.Block
         let tenantNotTested = release.TcAggregate.uidomain['Tenant'].NotTested;
-        // let tenantBlocked = release.TcAggregate.uidomain['Tenant'].Blocked;
         
 
         let airgapedPass = release.TcAggregate.uidomain['AirGapped'].Tested.auto.Pass + release.TcAggregate.uidomain['AirGapped'].Tested.manual.Pass
         let airgapedFail = release.TcAggregate.uidomain['AirGapped'].Tested.auto.Fail + release.TcAggregate.uidomain['AirGapped'].Tested.manual.Fail
         let airgapedSkipped = release.TcAggregate.uidomain['AirGapped'].Tested.auto.Block + release.TcAggregate.uidomain['AirGapped'].Tested.manual.Block
         let airgapedNotTested = release.TcAggregate.uidomain['AirGapped'].NotTested;
-        // let airgapedBlocked = release.TcAggregate.uidomain['AirGapped'].Blocked;
 
         let MultizonePass = release.TcAggregate.uidomain['Multizone'].Tested.auto.Pass + release.TcAggregate.uidomain['Multizone'].Tested.manual.Pass
         let MultizoneFail = release.TcAggregate.uidomain['Multizone'].Tested.auto.Fail + release.TcAggregate.uidomain['Multizone'].Tested.manual.Fail
         let MultizoneSkipped = release.TcAggregate.uidomain['Multizone'].Tested.auto.Block + release.TcAggregate.uidomain['Multizone'].Tested.manual.Block
         let MultizoneNotTested = release.TcAggregate.uidomain['Multizone'].NotTested;
-        // let MultizoneBlocked = release.TcAggregate.uidomain['Multizone'].Blocked;
 
 
         let appDRPass = release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Pass + release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Pass
         let appDRFail = release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Fail + release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Fail
         let appDRSkipped = release.TcAggregate.uidomain['ApplicationDR'].Tested.auto.Block + release.TcAggregate.uidomain['ApplicationDR'].Tested.manual.Block
         let appDRNotTested = release.TcAggregate.uidomain['ApplicationDR'].NotTested;
-        // let appDRBlocked = release.TcAggregate.uidomain['ApplicationDR'].Blocked;
         
 
         let SPPass = release.TcAggregate.uidomain['Service Provider'].Tested.auto.Pass + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Pass
         let SPFail = release.TcAggregate.uidomain['Service Provider'].Tested.auto.Fail + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Fail
         let SPSkipped = release.TcAggregate.uidomain['Service Provider'].Tested.auto.Block + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Block
         let SPNotTested = release.TcAggregate.uidomain['Service Provider'].NotTested;
-        // let SPBlocked = release.TcAggregate.uidomain['Service Provider'].Blocked;
 
         let UMPass = release.TcAggregate.uidomain['User Management'].Tested.auto.Pass + release.TcAggregate.uidomain['User Management'].Tested.manual.Pass
         let UMFail = release.TcAggregate.uidomain['User Management'].Tested.auto.Fail + release.TcAggregate.uidomain['User Management'].Tested.manual.Fail
         let UMSkipped = release.TcAggregate.uidomain['User Management'].Tested.auto.Block + release.TcAggregate.uidomain['User Management'].Tested.manual.Block
         let UMNotTested = release.TcAggregate.uidomain['User Management'].NotTested;
-        // let UMBlocked = release.TcAggregate.uidomain['User Management'].Blocked;
         
         let othersPass = release.TcAggregate.uidomain['Others'].Tested.auto.Pass + release.TcAggregate.uidomain['Others'].Tested.manual.Pass
         let othersFail = release.TcAggregate.uidomain['Others'].Tested.auto.Fail + release.TcAggregate.uidomain['Others'].Tested.manual.Fail
         let othersSkipped = release.TcAggregate.uidomain['Others'].Tested.auto.Block + release.TcAggregate.uidomain['Others'].Tested.manual.Block
         let othersNotTested = release.TcAggregate.uidomain['Others'].NotTested;
-        // let othersBlocked = release.TcAggregate.uidomain['Others'].Blocked;
         each = [
             { Fail: CMFail, Pass: CMPass, Skip: CMSkipped, NotTested: CMNotTested },
             { Fail: APMFail, Pass: APMPass, Skip: APMSkipped, NotTested: APMNotTested},
@@ -689,8 +660,6 @@ export const getTCStatusForUIDomains = (release) => {
 
 
         ]
-        console.log('each afer')
-       console.log(each)
 
     }else{
        
@@ -717,9 +686,6 @@ export const getTCStatusForUIDomains = (release) => {
             { Fail: othersFail, Pass: othersPass, Skip: othersSkipped, NotTested: othersNotTested },
         ]
     }
-
-
-    
 
     alldomains.forEach((item, index) => {
         if(each[index]){
@@ -886,8 +852,7 @@ export const getTCStatusForSunburst = (release) => {
 
         }
     });
-    console.log('domains')
-    console.log(domains)
+   
     return domains;
 }
 
@@ -1029,9 +994,7 @@ export const getTCStrategyForUIDomainsDistribution = (release) => {
         let projectManual = release.TcAggregate.uidomain['Project'].Tested.manual.Pass + release.TcAggregate.uidomain['Project'].Tested.manual.Fail + release.TcAggregate.uidomain['Project'].Tested.manual.Skip;
         let project_NotTested = release.TcAggregate.uidomain['Project'].NotTested;
 
-        console.log('ddddd')
-        console.log(release.TcAggregate.uidomain)
-
+      
 
         // 'Project(' + each[0].total + ')',
         //     'Tenant (' + each[1].total + ')',
@@ -1338,8 +1301,7 @@ export const getTCStrategyForUIDomainsDistribution = (release) => {
 
     }
     
-    console.log('doughnuts')
-    console.log(doughnuts);
+   
     // })
     return doughnuts;
 }
@@ -1493,7 +1455,7 @@ export const getTCStrategyForUIDomains = (release) => {
         let UMManual = release.TcAggregate.uidomain['User Management'].Tested.manual.Pass + release.TcAggregate.uidomain['User Management'].Tested.manual.Fail + release.TcAggregate.uidomain['User Management'].Tested.manual.Skip;
         let UM_NotTested = release.TcAggregate.uidomain['User Management'].NotTested;
 
-        console.log("kay zlay User Management tula",UMAuto,UMManual,UM_NotTested)
+       
 
         let SPAuto = release.TcAggregate.uidomain['Service Provider'].Tested.auto.Pass + release.TcAggregate.uidomain['Service Provider'].Tested.auto.Fail + release.TcAggregate.uidomain['Service Provider'].Tested.auto.Skip;
         let SPManual = release.TcAggregate.uidomain['Service Provider'].Tested.manual.Pass + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Fail + release.TcAggregate.uidomain['Service Provider'].Tested.manual.Skip;

@@ -302,7 +302,6 @@ app.use(express.json());
 app.use('/rest/features/:id', (req, res) => {
     var str = `?jql=type%20in%20("New%20Feature")%20AND%20fixVersion%20in%20(${req.params.id})&fields=key,summary,status&maxResults=2000`
     // /rest/api/2/search?jql=type%20in%20("New%20Feature")%20AND%20fixVersion%20in%20(2.3.0)&fields=key,summary
-    console.log(jiraHeaders);
     // var searchArgs = {
     //     headers: jiraHeaders,
     //     data: {
