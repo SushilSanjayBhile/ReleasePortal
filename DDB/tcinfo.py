@@ -87,16 +87,6 @@ def WHOLE_GUI_TC_INFO(request, Release):
             infodata = infodata.filter(Priority = Priority)
 
         count = int(request.GET.get('count', len(infodata)))
-        #try:
-        #    infodata = infodata[index : (index + count)]
-        #except:
-        #    allDataCount = info.count()
-        #    if index < allDataCount and count < allDataCount:
-        #        infodata = infodata[index:count]
-        #    elif index < allDataCount:
-        #        infodata = infodata[index:]
-        #    else:
-        #        infodata = TC_INFO.objects.using(Release).all()
 
         infoserializer = TC_INFO_GUI_SERIALIZER(infodata, many = True)
         infoDict = createInfoDict(infoserializer.data, Release)
@@ -136,19 +126,13 @@ def WHOLE_GUI_TC_INFO(request, Release):
             #info['CurrentStatus'] = {"id": "", "TcID": info['TcID'], "TcName": info['AutomatedTcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
 
             try:
-                card = info['CardType']
-                card = rec['CardType'].strip('][').strip('\'')
+                card = info['CardType'].strip('][').strip('\'')
                 tcid = info['TcID']
-            except:
-                pass
-
-            try:
                 info['StatusList'] = json.loads(json.dumps(statusDict[card][tcid]))
                 info['CurrentStatus'] = json.loads(json.dumps(statusDict[card][tcid][-1]))
             except:
                 info["StatusList"] = {}
                 info["CurrentStatus"] = {}
-                pass
 
             AllInfoData.append(info)
 

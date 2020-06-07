@@ -456,7 +456,7 @@ def TCAGGREGATE(Release):
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Skip'] += autoSkip
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Blocked'] += autoBlocked
 
-                dictionary['domain'][tc['Domain']]['NotTested'] = domainallcount
+                dictionary['domain'][tc['Domain']]['NotTested'] += domainallcount
                 totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
 
         notapplicable = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI")).filter(Priority = "NA").count()
