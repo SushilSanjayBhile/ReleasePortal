@@ -223,16 +223,6 @@ def createInfoDict(data, Release):
     infoDict = {}
 
     for row in data:
-        #d = TC_INFO_GUI.objects.using(Release).get(id = row["id"])
-        #sd = TC_INFO_GUI_SERIALIZER(d)
-        #updatedData = json.dumps(sd.data)
-        #updatedData = json.loads(updatedData)
-
-        #if updatedData["AutomatedTcName"] == "":
-        #    updatedData["AutomatedTcName"] = "TC NOT AUTOMATED"
-
-        #updateGuiData(updatedData, d, Release)
-                
         infoDict[row["id"]] = row
 
     return infoDict
@@ -316,8 +306,8 @@ def TCAGGREGATE(Release):
                 dictionary['domain'][domain]['Tested'] = {}
 
                 domainallcount = TC_INFO.objects.using(Release).filter(Domain = tc['Domain']).filter(~Q(Priority = 'Skip')).filter(~Q(Priority = 'NA')).count()
-                if Release == "DMC-3.0":
-                    print("\n", tc["Domain"], domainallcount)
+                #if Release == "DMC-3.0":
+                #    print("\n", tc["Domain"], domainallcount)
                 dictionary['domain'][tc['Domain']]['NotApplicable'] = 0
 
                 dictionary['domain'][tc['Domain']]['Tested']['auto'] = {}
@@ -341,7 +331,7 @@ def TCAGGREGATE(Release):
                 totalskipped += tccount
 
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Blocked").count()
-                print("Cli manyal blocked", domain, tccount)
+                #print("Cli manyal blocked", domain, tccount)
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Blocked'] = tccount
                 totalblocked += tccount
                 domainallcount -= tccount
@@ -367,7 +357,7 @@ def TCAGGREGATE(Release):
                 autoskipped += tccount
 
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Blocked").count()
-                print("Cli auto blocked", domain, tccount)
+                #print("Cli auto blocked", domain, tccount)
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Blocked'] = tccount
                 totalblocked += tccount
                 autoblocked += tccount
@@ -376,9 +366,186 @@ def TCAGGREGATE(Release):
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Unblocked").count()
 
                 dictionary['domain'][tc['Domain']]['NotTested'] = domainallcount
-                if Release == "DMC-3.0":
-                    print(domain, domainallcount)
+                #if Release == "DMC-3.0":
+                #    print(domain, domainallcount)
                 totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
+
+        ###################################################################################
+        tcinfo = TC_INFO.objects.using(Release).filter(~Q(Priority = "NA")).filter(~Q(Priority = "Skip"))
+        tcinfoserializer = TC_INFO_SERIALIZER(tcinfo, many=True)
+
+        status = LATEST_TC_STATUS.objects.using(Release).all()
+        statusserializer = LATEST_TC_STATUS_SERIALIZER(status, many=True) 
+
+        d = {}
+
+        for tc in tcinfoserializer.data:
+            domain = tc["Domain"]
+            card = tc["CardType"]
+            tcid = tc["TcID"]
+
+            if domain not in d:
+                d[domain]= {}
+
+            if card not in d[domain]:
+                d[domain][card] = {}
+
+            if tcid not in d[domain][card]:
+                d[domain][card][tcid] = tc
+
+
+        dictionary['domain'] = {}
+
+        for stat in statusserializer.data:
+            scard = stat["CardType"]
+            stcid = stat["TcID"]
+            sdomain = stat["Domain"]
+            tcname = stat["TcName"]
+
+
+            if sdomain not in dictionary["domain"]:
+                dictionary["domain"][sdomain] = {}
+            if "Tested" not in dictionary["domain"][sdomain]:
+                dictionary["domain"][sdomain]["Tested"] = {}
+
+            #manual variables
+            if "manual" not in dictionary["domain"][sdomain]["Tested"]:
+                dictionary["domain"][sdomain]["Tested"]["manual"] = {}
+            if "Pass" not in dictionary["domain"][sdomain]["Tested"]["manual"]:
+                dictionary["domain"][sdomain]["Tested"]["manual"]["Pass"] = 0
+            if "Fail" not in dictionary["domain"][sdomain]["Tested"]["manual"]:
+                dictionary["domain"][sdomain]["Tested"]["manual"]["Fail"] = 0
+            if "Skip" not in dictionary["domain"][sdomain]["Tested"]["manual"]:
+                dictionary["domain"][sdomain]["Tested"]["manual"]["Skip"] = 0
+            if "Blocked" not in dictionary["domain"][sdomain]["Tested"]["manual"]:
+                dictionary["domain"][sdomain]["Tested"]["manual"]["Blocked"] = 0
+            
+            #auto variables
+            if "auto" not in dictionary["domain"][sdomain]["Tested"]:
+                dictionary["domain"][sdomain]["Tested"]["auto"] = {}
+            if "Pass" not in dictionary["domain"][sdomain]["Tested"]["auto"]:
+                dictionary["domain"][sdomain]["Tested"]["auto"]["Pass"] = 0
+            if "Fail" not in dictionary["domain"][sdomain]["Tested"]["auto"]:
+                dictionary["domain"][sdomain]["Tested"]["auto"]["Fail"] = 0
+            if "Skip" not in dictionary["domain"][sdomain]["Tested"]["auto"]:
+                dictionary["domain"][sdomain]["Tested"]["auto"]["Skip"] = 0
+            if "Blocked" not in dictionary["domain"][sdomain]["Tested"]["auto"]:
+                dictionary["domain"][sdomain]["Tested"]["auto"]["Blocked"] = 0
+            
+
+            try:
+                a = d[sdomain][scard][stcid]
+                res = stat["Result"]
+
+                if tcname == "TC NOT AUTOMATED":
+                    if res == "Pass":
+                        dictionary["domain"][sdomain]["Tested"]["manual"]["Pass"] += 1
+                    if res == "Fail":
+                        dictionary["domain"][sdomain]["Tested"]["manual"]["Fail"] += 1
+                    if res == "Blocked":
+                        dictionary["domain"][sdomain]["Tested"]["manual"]["Blocked"] += 1
+                else:
+                    if res == "Pass":
+                        dictionary["domain"][sdomain]["Tested"]["auto"]["Pass"] += 1
+                    if res == "Fail":
+                        dictionary["domain"][sdomain]["Tested"]["auto"]["Fail"] += 1
+                    if res == "Blocked":
+                        dictionary["domain"][sdomain]["Tested"]["auto"]["Blocked"] += 1
+            except:
+                continue
+
+        for sdomain in dictionary["domain"]:
+            if "NotApplicable" not in dictionary["domain"][sdomain]:
+                dictionary["domain"][sdomain]["NotApplicable"] = TC_INFO.objects.using(Release).filter(Priority = "NA", Domain = sdomain).count()
+            if "NotTested" not in dictionary["domain"][sdomain]:
+                allcount = TC_INFO.objects.using(Release).filter(~Q(Priority = "NA")).filter(~Q(Priority = "Ski     p")).filter(Domain = sdomain).count()
+                passcounter = dictionary["domain"][sdomain]["Tested"]["manual"]["Pass"] + dictionary["domain"][sdomain]["Tested"]["auto"]["Pass"]
+                failcounter = dictionary["domain"][sdomain]["Tested"]["manual"]["Fail"] + dictionary["domain"][sdomain]["Tested"]["auto"]["Fail"]
+                blockedcounter = dictionary["domain"][sdomain]["Tested"]["manual"]["Blocked"] + dictionary["domain"][sdomain]["Tested"]["auto"]["Blocked"]
+
+                dictionary["domain"][sdomain]["NotTested"] = allcount - (passcounter + failcounter + blockedcounter)
+
+        if Release == "DMC-3.0":
+            for i in dictionary["domain"]:
+               print(i, dictionary["domain"][i])
+
+        ##CLI NEW CODE
+        #for tc in domains:
+        #    domain = tc['Domain']
+        #    tccount = 0
+
+        #    if domain not in dictionary['domain']:
+        #        dictionary['domain'][domain] = {}
+
+        #        dictionary['domain'][domain]['Tested'] = {}
+
+        #        domainallcount = TC_INFO.objects.using(Release).filter(Domain = tc['Domain']).filter(~Q(Priority = 'Skip')).filter(~Q(Priority = 'NA')).count()
+        #        if Release == "DMC-3.0":
+        #            print("\n", tc["Domain"], domainallcount)
+        #        dictionary['domain'][tc['Domain']]['NotApplicable'] = 0
+
+        #        dictionary['domain'][tc['Domain']]['Tested']['auto'] = {}
+        #        dictionary['domain'][tc['Domain']]['Tested']['manual'] = {}
+
+        #        tcinfocount = TC_INFO.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain']).count()
+        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Pass").count()
+        #        if Release == "2.3.0":
+        #            d = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'])
+        #        dictionary['domain'][tc['Domain']]['Tested']['manual']['Pass'] = tccount
+        #        totalpass += tccount
+        #        domainallcount -= tccount
+
+        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Fail").count()
+        #        dictionary['domain'][tc['Domain']]['Tested']['manual']['Fail'] = tccount
+        #        totalfail += tccount
+        #        domainallcount -= tccount
+
+        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "NotTested").count()
+        #        dictionary['domain'][tc['Domain']]['Tested']['manual']['Skip'] = tccount
+        #        totalskipped += tccount
+
+        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Blocked").count()
+        #        print("Cli manyal blocked", domain, tccount)
+        #        dictionary['domain'][tc['Domain']]['Tested']['manual']['Blocked'] = tccount
+        #        totalblocked += tccount
+        #        domainallcount -= tccount
+
+        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Unblocked").count()
+
+        #        tcinfocount = TC_INFO.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain']).count()
+        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Pass").count()
+        #        dictionary['domain'][tc['Domain']]['Tested']['auto']['Pass'] = tccount
+        #        totalpass += tccount
+        #        autopass += tccount
+        #        domainallcount -= tccount
+
+        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Fail").count()
+        #        dictionary['domain'][tc['Domain']]['Tested']['auto']['Fail'] = tccount
+        #        totalfail += tccount
+        #        autofail += tccount
+        #        domainallcount -= tccount
+
+        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "NotTested").count()
+        #        dictionary['domain'][tc['Domain']]['Tested']['auto']['Skip'] = tccount
+        #        totalskipped += tccount
+        #        autoskipped += tccount
+
+        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Blocked").count()
+        #        print("Cli auto blocked", domain, tccount)
+        #        dictionary['domain'][tc['Domain']]['Tested']['auto']['Blocked'] = tccount
+        #        totalblocked += tccount
+        #        autoblocked += tccount
+        #        domainallcount -= tccount
+
+        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Unblocked").count()
+
+        #        dictionary['domain'][tc['Domain']]['NotTested'] = domainallcount
+        #        if Release == "DMC-3.0":
+        #            print(domain, domainallcount)
+        #        totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
+        ####################################################################################
+
+
 
         #GUI aggregation
         if Release == "DMC-3.0":
@@ -408,7 +575,7 @@ def TCAGGREGATE(Release):
                 tccount = 0
 
                 domainallcount = TC_INFO_GUI.objects.using(Release).filter(Domain = tc['Domain']).filter(~Q(Priority = 'NA')).filter(~Q(Priority = "Skip")).count()
-                print("\nGUI",domain, domainallcount)
+                #print("\nGUI",domain, domainallcount)
                 tcinfocount = TC_INFO_GUI.objects.using(Release).filter(AutomatedTcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain']).count()
                 tccount = 0
                 manualPass = 0
@@ -462,13 +629,13 @@ def TCAGGREGATE(Release):
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Fail'] += manualFail
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Skip'] += manualSkip
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Blocked'] += manualBlocked
-                print("gui manual blocked", domain, manualBlocked)
+                #print("gui manual blocked", domain, manualBlocked)
 
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Pass'] += autoPass
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Fail'] += autoFail
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Skip'] += autoSkip
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Blocked'] += autoBlocked
-                print("gui auto blocked", domain, autoBlocked)
+                #print("gui auto blocked", domain, autoBlocked)
 
                 dictionary['domain'][tc['Domain']]['NotTested'] += domainallcount
                 totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
