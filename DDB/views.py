@@ -315,7 +315,9 @@ def TCAGGREGATE(Release):
 
                 dictionary['domain'][domain]['Tested'] = {}
 
-                domainallcount = TC_INFO.objects.using(Release).filter(Domain = tc['Domain']).filter(~Q(Priority = 'NA')).count()
+                domainallcount = TC_INFO.objects.using(Release).filter(Domain = tc['Domain']).filter(~Q(Priority = 'Skip')).filter(~Q(Priority = 'NA')).count()
+                if Release == "DMC-3.0":
+                    print("\n", tc["Domain"], domainallcount)
                 dictionary['domain'][tc['Domain']]['NotApplicable'] = 0
 
                 dictionary['domain'][tc['Domain']]['Tested']['auto'] = {}
@@ -339,11 +341,12 @@ def TCAGGREGATE(Release):
                 totalskipped += tccount
 
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Blocked").count()
+                print("Cli manyal blocked", domain, tccount)
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Blocked'] = tccount
                 totalblocked += tccount
+                domainallcount -= tccount
 
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Unblocked").count()
-                domainallcount += tccount
 
                 tcinfocount = TC_INFO.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain']).count()
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Pass").count()
@@ -364,14 +367,17 @@ def TCAGGREGATE(Release):
                 autoskipped += tccount
 
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Blocked").count()
+                print("Cli auto blocked", domain, tccount)
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Blocked'] = tccount
                 totalblocked += tccount
                 autoblocked += tccount
+                domainallcount -= tccount
 
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Unblocked").count()
-                domainallcount += tccount
 
                 dictionary['domain'][tc['Domain']]['NotTested'] = domainallcount
+                if Release == "DMC-3.0":
+                    print(domain, domainallcount)
                 totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
 
         #GUI aggregation
@@ -402,6 +408,7 @@ def TCAGGREGATE(Release):
                 tccount = 0
 
                 domainallcount = TC_INFO_GUI.objects.using(Release).filter(Domain = tc['Domain']).filter(~Q(Priority = 'NA')).filter(~Q(Priority = "Skip")).count()
+                print("\nGUI",domain, domainallcount)
                 tcinfocount = TC_INFO_GUI.objects.using(Release).filter(AutomatedTcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain']).count()
                 tccount = 0
                 manualPass = 0
@@ -415,6 +422,11 @@ def TCAGGREGATE(Release):
                 autoBlocked = 0
                 for status in serializer.data:
                     try:
+                        if status["Priority"] == "Skip":
+                            continue
+                        if status["Priority"] == "NA":
+                            continue
+
                         if status["Domain"] == tc["Domain"]:
                             domainallcount -= 1
                             if status["AutomatedTcName"] == "TC NOT AUTOMATED":
@@ -426,9 +438,9 @@ def TCAGGREGATE(Release):
                                     manualFail += 1
                                 if "skip" in status["Result"].lower():
                                     manualSkip += 1
-                                if "blocked" in status["Result"].lower():
+                                if "blocked" == status["Result"].lower():
                                     manualBlocked += 1
-                                if "unlocked" in status["Result"].lower():
+                                if "unblocked" in status["Result"].lower():
                                     domainallcount += 1
                             elif status["AutomatedTcName"] != "TC NOT AUTOMATED":
                                 tccount +=1
@@ -439,9 +451,9 @@ def TCAGGREGATE(Release):
                                     autoFail += 1
                                 if "skip" in status["Result"].lower():
                                     autoSkip += 1
-                                if "blocked" in status["Result"].lower():
+                                if "blocked" == status["Result"].lower():
                                     autoBlocked += 1
-                                if "unlocked" in status["Result"].lower():
+                                if "unblocked" in status["Result"].lower():
                                     domainallcount += 1
                     except:
                         pass
@@ -450,13 +462,15 @@ def TCAGGREGATE(Release):
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Fail'] += manualFail
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Skip'] += manualSkip
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Blocked'] += manualBlocked
+                print("gui manual blocked", domain, manualBlocked)
 
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Pass'] += autoPass
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Fail'] += autoFail
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Skip'] += autoSkip
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Blocked'] += autoBlocked
+                print("gui auto blocked", domain, autoBlocked)
 
-                dictionary['domain'][tc['Domain']]['NotTested'] = domainallcount
+                dictionary['domain'][tc['Domain']]['NotTested'] += domainallcount
                 totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
 
         notapplicable = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI")).filter(Priority = "NA").count()
