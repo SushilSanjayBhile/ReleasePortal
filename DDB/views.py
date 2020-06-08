@@ -458,7 +458,7 @@ def TCAGGREGATE(Release):
             if "NotApplicable" not in dictionary["domain"][sdomain]:
                 dictionary["domain"][sdomain]["NotApplicable"] = TC_INFO.objects.using(Release).filter(Priority = "NA", Domain = sdomain).count()
             if "NotTested" not in dictionary["domain"][sdomain]:
-                allcount = TC_INFO.objects.using(Release).filter(~Q(Priority = "NA")).filter(~Q(Priority = "Ski     p")).filter(Domain = sdomain).count()
+                allcount = TC_INFO.objects.using(Release).filter(~Q(Priority = "NA")).filter(~Q(Priority = "Skip")).filter(Domain = sdomain).count()
                 passcounter = dictionary["domain"][sdomain]["Tested"]["manual"]["Pass"] + dictionary["domain"][sdomain]["Tested"]["auto"]["Pass"]
                 failcounter = dictionary["domain"][sdomain]["Tested"]["manual"]["Fail"] + dictionary["domain"][sdomain]["Tested"]["auto"]["Fail"]
                 blockedcounter = dictionary["domain"][sdomain]["Tested"]["manual"]["Blocked"] + dictionary["domain"][sdomain]["Tested"]["auto"]["Blocked"]
@@ -468,84 +468,6 @@ def TCAGGREGATE(Release):
         if Release == "DMC-3.0":
             for i in dictionary["domain"]:
                print(i, dictionary["domain"][i])
-
-        ##CLI NEW CODE
-        #for tc in domains:
-        #    domain = tc['Domain']
-        #    tccount = 0
-
-        #    if domain not in dictionary['domain']:
-        #        dictionary['domain'][domain] = {}
-
-        #        dictionary['domain'][domain]['Tested'] = {}
-
-        #        domainallcount = TC_INFO.objects.using(Release).filter(Domain = tc['Domain']).filter(~Q(Priority = 'Skip')).filter(~Q(Priority = 'NA')).count()
-        #        if Release == "DMC-3.0":
-        #            print("\n", tc["Domain"], domainallcount)
-        #        dictionary['domain'][tc['Domain']]['NotApplicable'] = 0
-
-        #        dictionary['domain'][tc['Domain']]['Tested']['auto'] = {}
-        #        dictionary['domain'][tc['Domain']]['Tested']['manual'] = {}
-
-        #        tcinfocount = TC_INFO.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain']).count()
-        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Pass").count()
-        #        if Release == "2.3.0":
-        #            d = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'])
-        #        dictionary['domain'][tc['Domain']]['Tested']['manual']['Pass'] = tccount
-        #        totalpass += tccount
-        #        domainallcount -= tccount
-
-        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Fail").count()
-        #        dictionary['domain'][tc['Domain']]['Tested']['manual']['Fail'] = tccount
-        #        totalfail += tccount
-        #        domainallcount -= tccount
-
-        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "NotTested").count()
-        #        dictionary['domain'][tc['Domain']]['Tested']['manual']['Skip'] = tccount
-        #        totalskipped += tccount
-
-        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Blocked").count()
-        #        print("Cli manyal blocked", domain, tccount)
-        #        dictionary['domain'][tc['Domain']]['Tested']['manual']['Blocked'] = tccount
-        #        totalblocked += tccount
-        #        domainallcount -= tccount
-
-        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Unblocked").count()
-
-        #        tcinfocount = TC_INFO.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain']).count()
-        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Pass").count()
-        #        dictionary['domain'][tc['Domain']]['Tested']['auto']['Pass'] = tccount
-        #        totalpass += tccount
-        #        autopass += tccount
-        #        domainallcount -= tccount
-
-        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Fail").count()
-        #        dictionary['domain'][tc['Domain']]['Tested']['auto']['Fail'] = tccount
-        #        totalfail += tccount
-        #        autofail += tccount
-        #        domainallcount -= tccount
-
-        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "NotTested").count()
-        #        dictionary['domain'][tc['Domain']]['Tested']['auto']['Skip'] = tccount
-        #        totalskipped += tccount
-        #        autoskipped += tccount
-
-        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Blocked").count()
-        #        print("Cli auto blocked", domain, tccount)
-        #        dictionary['domain'][tc['Domain']]['Tested']['auto']['Blocked'] = tccount
-        #        totalblocked += tccount
-        #        autoblocked += tccount
-        #        domainallcount -= tccount
-
-        #        tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Unblocked").count()
-
-        #        dictionary['domain'][tc['Domain']]['NotTested'] = domainallcount
-        #        if Release == "DMC-3.0":
-        #            print(domain, domainallcount)
-        #        totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
-        ####################################################################################
-
-
 
         #GUI aggregation
         if Release == "DMC-3.0":
