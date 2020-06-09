@@ -43,22 +43,26 @@ def BUG_WISE_BLOCKED_TCS(request, Release):
         serializer = LATEST_TC_STATUS_SERIALIZER(data, many=True)
 
         for tc in serializer.data:
-            if tc["Bugs"] != '':
-                if tc["Bugs"] in blockedDict:
-                    blockedDict[tc["Bugs"]] += 1
-                else:
-                    blockedDict[tc["Bugs"]] = 1
+            if tc["Result"] == 'Blocked':
+                if tc["Bugs"] != '':
+                    print(tc["Result"], tc["Bugs"])
+                    if tc["Bugs"] in blockedDict:
+                        blockedDict[tc["Bugs"]] += 1
+                    else:
+                        blockedDict[tc["Bugs"]] = 1
 
         # GUI blocker bugs
         data = GUI_LATEST_TC_STATUS.objects.using(Release).all()
         serializer = LATEST_TC_STATUS_GUI_SERIALIZER(data, many=True)
 
         for tc in serializer.data:
-            if tc["Bugs"] != '':
-                if tc["Bugs"] in blockedDict:
-                    blockedDict[tc["Bugs"]] += 1
-                else:
-                    blockedDict[tc["Bugs"]] = 1
+            if tc["Result"] == 'Blocked':
+                if tc["Bugs"] != '':
+                    if tc["Bugs"] in blockedDict:
+                        blockedDict[tc["Bugs"]] += 1
+                    else:
+                        blockedDict[tc["Bugs"]] = 1
+        print("blocked dict value",blockedDict)
 
         #blockedDict = sorted(blockedDict.items(), key=lambda x: x[1], reverse=True)
         return HttpResponse(json.dumps(blockedDict))
