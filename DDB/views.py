@@ -313,7 +313,6 @@ def TCAGGREGATE(Release):
                 dictionary['domain'][tc['Domain']]['Tested']['auto'] = {}
                 dictionary['domain'][tc['Domain']]['Tested']['manual'] = {}
 
-                tcinfocount = TC_INFO.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain']).count()
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Pass").count()
                 if Release == "2.3.0":
                     d = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'])
@@ -338,7 +337,6 @@ def TCAGGREGATE(Release):
 
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(TcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain'], Result = "Unblocked").count()
 
-                tcinfocount = TC_INFO.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain']).count()
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Pass").count()
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Pass'] = tccount
                 totalpass += tccount
@@ -366,8 +364,6 @@ def TCAGGREGATE(Release):
                 tccount = LATEST_TC_STATUS.objects.using(Release).filter(~Q(TcName = "TC NOT AUTOMATED")).filter(Domain = tc['Domain'], Result = "Unblocked").count()
 
                 dictionary['domain'][tc['Domain']]['NotTested'] = domainallcount
-                #if Release == "DMC-3.0":
-                #    print(domain, domainallcount)
                 totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
 
         ###################################################################################
@@ -395,6 +391,8 @@ def TCAGGREGATE(Release):
 
 
         dictionary['domain'] = {}
+        dictionary['domain-cli'] = {}
+        dictionary['domain-gui'] = {}
 
         for stat in statusserializer.data:
             scard = stat["CardType"]
@@ -402,13 +400,20 @@ def TCAGGREGATE(Release):
             sdomain = stat["Domain"]
             tcname = stat["TcName"]
 
-
+            # aggregation for cli+gui
             if sdomain not in dictionary["domain"]:
                 dictionary["domain"][sdomain] = {}
             if "Tested" not in dictionary["domain"][sdomain]:
                 dictionary["domain"][sdomain]["Tested"] = {}
 
-            #manual variables
+            # aggregation for cli
+            if sdomain not in dictionary["domain-cli"]:
+                dictionary["domain-cli"][sdomain] = {}
+            if "Tested" not in dictionary["domain-cli"][sdomain]:
+                dictionary["domain-cli"][sdomain]["Tested"] = {}
+
+
+            #manual variables for all (cli + gui)
             if "manual" not in dictionary["domain"][sdomain]["Tested"]:
                 dictionary["domain"][sdomain]["Tested"]["manual"] = {}
             if "Pass" not in dictionary["domain"][sdomain]["Tested"]["manual"]:
@@ -420,7 +425,7 @@ def TCAGGREGATE(Release):
             if "Blocked" not in dictionary["domain"][sdomain]["Tested"]["manual"]:
                 dictionary["domain"][sdomain]["Tested"]["manual"]["Blocked"] = 0
             
-            #auto variables
+            #auto variables for all (cli + gui)
             if "auto" not in dictionary["domain"][sdomain]["Tested"]:
                 dictionary["domain"][sdomain]["Tested"]["auto"] = {}
             if "Pass" not in dictionary["domain"][sdomain]["Tested"]["auto"]:
@@ -432,6 +437,30 @@ def TCAGGREGATE(Release):
             if "Blocked" not in dictionary["domain"][sdomain]["Tested"]["auto"]:
                 dictionary["domain"][sdomain]["Tested"]["auto"]["Blocked"] = 0
             
+            #manual variables for cli
+            if "manual" not in dictionary["domain-cli"][sdomain]["Tested"]:
+                dictionary["domain-cli"][sdomain]["Tested"]["manual"] = {}
+            if "Pass" not in dictionary["domain-cli"][sdomain]["Tested"]["manual"]:
+                dictionary["domain-cli"][sdomain]["Tested"]["manual"]["Pass"] = 0
+            if "Fail" not in dictionary["domain-cli"][sdomain]["Tested"]["manual"]:
+                dictionary["domain-cli"][sdomain]["Tested"]["manual"]["Fail"] = 0
+            if "Skip" not in dictionary["domain-cli"][sdomain]["Tested"]["manual"]:
+                dictionary["domain-cli"][sdomain]["Tested"]["manual"]["Skip"] = 0
+            if "Blocked" not in dictionary["domain-cli"][sdomain]["Tested"]["manual"]:
+                dictionary["domain-cli"][sdomain]["Tested"]["manual"]["Blocked"] = 0
+            
+            #auto variables for cli
+            if "auto" not in dictionary["domain-cli"][sdomain]["Tested"]:
+                dictionary["domain-cli"][sdomain]["Tested"]["auto"] = {}
+            if "Pass" not in dictionary["domain-cli"][sdomain]["Tested"]["auto"]:
+                dictionary["domain-cli"][sdomain]["Tested"]["auto"]["Pass"] = 0
+            if "Fail" not in dictionary["domain-cli"][sdomain]["Tested"]["auto"]:
+                dictionary["domain-cli"][sdomain]["Tested"]["auto"]["Fail"] = 0
+            if "Skip" not in dictionary["domain-cli"][sdomain]["Tested"]["auto"]:
+                dictionary["domain-cli"][sdomain]["Tested"]["auto"]["Skip"] = 0
+            if "Blocked" not in dictionary["domain-cli"][sdomain]["Tested"]["auto"]:
+                dictionary["domain-cli"][sdomain]["Tested"]["auto"]["Blocked"] = 0
+            
 
             try:
                 a = d[sdomain][scard][stcid]
@@ -440,21 +469,28 @@ def TCAGGREGATE(Release):
                 if tcname == "TC NOT AUTOMATED":
                     if res == "Pass":
                         dictionary["domain"][sdomain]["Tested"]["manual"]["Pass"] += 1
+                        dictionary["domain-cli"][sdomain]["Tested"]["manual"]["Pass"] += 1
                     if res == "Fail":
                         dictionary["domain"][sdomain]["Tested"]["manual"]["Fail"] += 1
+                        dictionary["domain-cli"][sdomain]["Tested"]["manual"]["Fail"] += 1
                     if res == "Blocked":
                         dictionary["domain"][sdomain]["Tested"]["manual"]["Blocked"] += 1
+                        dictionary["domain-cli"][sdomain]["Tested"]["manual"]["Blocked"] += 1
                 else:
                     if res == "Pass":
                         dictionary["domain"][sdomain]["Tested"]["auto"]["Pass"] += 1
+                        dictionary["domain-cli"][sdomain]["Tested"]["auto"]["Pass"] += 1
                     if res == "Fail":
                         dictionary["domain"][sdomain]["Tested"]["auto"]["Fail"] += 1
+                        dictionary["domain-cli"][sdomain]["Tested"]["auto"]["Fail"] += 1
                     if res == "Blocked":
                         dictionary["domain"][sdomain]["Tested"]["auto"]["Blocked"] += 1
+                        dictionary["domain-cli"][sdomain]["Tested"]["auto"]["Blocked"] += 1
             except:
                 continue
 
         for sdomain in dictionary["domain"]:
+            # aggregate calculation for all (cli + gui)
             if "NotApplicable" not in dictionary["domain"][sdomain]:
                 dictionary["domain"][sdomain]["NotApplicable"] = TC_INFO.objects.using(Release).filter(Priority = "NA", Domain = sdomain).count()
             if "NotTested" not in dictionary["domain"][sdomain]:
@@ -465,9 +501,16 @@ def TCAGGREGATE(Release):
 
                 dictionary["domain"][sdomain]["NotTested"] = allcount - (passcounter + failcounter + blockedcounter)
 
-        if Release == "DMC-3.0":
-            for i in dictionary["domain"]:
-               print(i, dictionary["domain"][i])
+            # aggregate calculation for cli
+            if "NotApplicable" not in dictionary["domain-cli"][sdomain]:
+                dictionary["domain-cli"][sdomain]["NotApplicable"] = TC_INFO.objects.using(Release).filter(Priority = "NA", Domain = sdomain).count()
+            if "NotTested" not in dictionary["domain-cli"][sdomain]:
+                allcount = TC_INFO.objects.using(Release).filter(~Q(Priority = "NA")).filter(~Q(Priority = "Skip")).filter(Domain = sdomain).count()
+                passcounter = dictionary["domain-cli"][sdomain]["Tested"]["manual"]["Pass"] + dictionary["domain-cli"][sdomain]["Tested"]["auto"]["Pass"]
+                failcounter = dictionary["domain-cli"][sdomain]["Tested"]["manual"]["Fail"] + dictionary["domain-cli"][sdomain]["Tested"]["auto"]["Fail"]
+                blockedcounter = dictionary["domain-cli"][sdomain]["Tested"]["manual"]["Blocked"] + dictionary["domain-cli"][sdomain]["Tested"]["auto"]["Blocked"]
+
+                dictionary["domain-cli"][sdomain]["NotTested"] = allcount - (passcounter + failcounter + blockedcounter)
 
         #GUI aggregation
         if Release == "DMC-3.0":
@@ -492,13 +535,85 @@ def TCAGGREGATE(Release):
                     pass
 
             domains = tcinfo.values('Domain').distinct()
+
+            # domain wise GUI statistics
             for tc in domains:
+                sdomain = tc["Domain"]
+
+                # aggregation for cli+gui
+                if sdomain not in dictionary["domain"]:
+                    dictionary["domain"][sdomain] = {}
+                if "Tested" not in dictionary["domain"][sdomain]:
+                    dictionary["domain"][sdomain]["Tested"] = {}
+                if "NotTested" not in dictionary["domain"][sdomain]:
+                    dictionary["domain"][sdomain]["NotTested"] = 0
+                if "NotApplicable" not in dictionary["domain"][sdomain]:
+                    dictionary["domain"][sdomain]["NotApplicable"] = 0
+
+                # aggregation for cli
+                if sdomain not in dictionary["domain-gui"]:
+                    dictionary["domain-gui"][sdomain] = {}
+                if "Tested" not in dictionary["domain-gui"][sdomain]:
+                    dictionary["domain-gui"][sdomain]["Tested"] = {}
+                if "NotTested" not in dictionary["domain-gui"][sdomain]:
+                    dictionary["domain-gui"][sdomain]["NotTested"] = 0
+                if "NotApplicable" not in dictionary["domain-gui"][sdomain]:
+                    dictionary["domain-gui"][sdomain]["NotApplicable"] = 0
+
+
+                #manual variables for all (cli + gui)
+                if "manual" not in dictionary["domain"][sdomain]["Tested"]:
+                    dictionary["domain"][sdomain]["Tested"]["manual"] = {}
+                if "Pass" not in dictionary["domain"][sdomain]["Tested"]["manual"]:
+                    dictionary["domain"][sdomain]["Tested"]["manual"]["Pass"] = 0
+                if "Fail" not in dictionary["domain"][sdomain]["Tested"]["manual"]:
+                    dictionary["domain"][sdomain]["Tested"]["manual"]["Fail"] = 0
+                if "Skip" not in dictionary["domain"][sdomain]["Tested"]["manual"]:
+                    dictionary["domain"][sdomain]["Tested"]["manual"]["Skip"] = 0
+                if "Blocked" not in dictionary["domain"][sdomain]["Tested"]["manual"]:
+                    dictionary["domain"][sdomain]["Tested"]["manual"]["Blocked"] = 0
+                
+                #auto variables for all (cli + gui)
+                if "auto" not in dictionary["domain"][sdomain]["Tested"]:
+                    dictionary["domain"][sdomain]["Tested"]["auto"] = {}
+                if "Pass" not in dictionary["domain"][sdomain]["Tested"]["auto"]:
+                    dictionary["domain"][sdomain]["Tested"]["auto"]["Pass"] = 0
+                if "Fail" not in dictionary["domain"][sdomain]["Tested"]["auto"]:
+                    dictionary["domain"][sdomain]["Tested"]["auto"]["Fail"] = 0
+                if "Skip" not in dictionary["domain"][sdomain]["Tested"]["auto"]:
+                    dictionary["domain"][sdomain]["Tested"]["auto"]["Skip"] = 0
+                if "Blocked" not in dictionary["domain"][sdomain]["Tested"]["auto"]:
+                    dictionary["domain"][sdomain]["Tested"]["auto"]["Blocked"] = 0
+                
+                #manual variables for gui
+                if "manual" not in dictionary["domain-gui"][sdomain]["Tested"]:
+                    dictionary["domain-gui"][sdomain]["Tested"]["manual"] = {}
+                if "Pass" not in dictionary["domain-gui"][sdomain]["Tested"]["manual"]:
+                    dictionary["domain-gui"][sdomain]["Tested"]["manual"]["Pass"] = 0
+                if "Fail" not in dictionary["domain-gui"][sdomain]["Tested"]["manual"]:
+                    dictionary["domain-gui"][sdomain]["Tested"]["manual"]["Fail"] = 0
+                if "Skip" not in dictionary["domain-gui"][sdomain]["Tested"]["manual"]:
+                    dictionary["domain-gui"][sdomain]["Tested"]["manual"]["Skip"] = 0
+                if "Blocked" not in dictionary["domain-gui"][sdomain]["Tested"]["manual"]:
+                    dictionary["domain-gui"][sdomain]["Tested"]["manual"]["Blocked"] = 0
+                
+                #auto variables for gui
+                if "auto" not in dictionary["domain-gui"][sdomain]["Tested"]:
+                    dictionary["domain-gui"][sdomain]["Tested"]["auto"] = {}
+                if "Pass" not in dictionary["domain-gui"][sdomain]["Tested"]["auto"]:
+                    dictionary["domain-gui"][sdomain]["Tested"]["auto"]["Pass"] = 0
+                if "Fail" not in dictionary["domain-gui"][sdomain]["Tested"]["auto"]:
+                    dictionary["domain-gui"][sdomain]["Tested"]["auto"]["Fail"] = 0
+                if "Skip" not in dictionary["domain-gui"][sdomain]["Tested"]["auto"]:
+                    dictionary["domain-gui"][sdomain]["Tested"]["auto"]["Skip"] = 0
+                if "Blocked" not in dictionary["domain-gui"][sdomain]["Tested"]["auto"]:
+                    dictionary["domain-gui"][sdomain]["Tested"]["auto"]["Blocked"] = 0
+            
                 domain = tc['Domain']
                 tccount = 0
 
-                domainallcount = TC_INFO_GUI.objects.using(Release).filter(Domain = tc['Domain']).filter(~Q(Priority = 'NA')).filter(~Q(Priority = "Skip")).count()
-                #print("\nGUI",domain, domainallcount)
-                tcinfocount = TC_INFO_GUI.objects.using(Release).filter(AutomatedTcName = "TC NOT AUTOMATED").filter(Domain = tc['Domain']).count()
+                domainallcount = TC_INFO_GUI.objects.using(Release).filter(Domain = tc['Domain']).filter(~Q(Priority = 'NA')).filter(~Q(Priority = "Skip")).count()     #all applicable
+
                 tccount = 0
                 manualPass = 0
                 manualFail = 0
@@ -547,20 +662,37 @@ def TCAGGREGATE(Release):
                     except:
                         pass
 
+                # aggregation summation with previously calculated cli stats (cli + gui)
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Pass'] += manualPass
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Fail'] += manualFail
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Skip'] += manualSkip
                 dictionary['domain'][tc['Domain']]['Tested']['manual']['Blocked'] += manualBlocked
-                #print("gui manual blocked", domain, manualBlocked)
 
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Pass'] += autoPass
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Fail'] += autoFail
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Skip'] += autoSkip
                 dictionary['domain'][tc['Domain']]['Tested']['auto']['Blocked'] += autoBlocked
-                #print("gui auto blocked", domain, autoBlocked)
 
                 dictionary['domain'][tc['Domain']]['NotTested'] += domainallcount
                 totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
+
+                dictionary["domain"][tc["Domain"]]["NotApplicable"] += TC_INFO_GUI.objects.using(Release).filter(Domain = tc['Domain']).filter(Priority = 'NA').count()
+
+                # aggregation for GUI
+                dictionary['domain-gui'][tc['Domain']]['Tested']['manual']['Pass'] += manualPass
+                dictionary['domain-gui'][tc['Domain']]['Tested']['manual']['Fail'] += manualFail
+                dictionary['domain-gui'][tc['Domain']]['Tested']['manual']['Skip'] += manualSkip
+                dictionary['domain-gui'][tc['Domain']]['Tested']['manual']['Blocked'] += manualBlocked
+
+                dictionary['domain-gui'][tc['Domain']]['Tested']['auto']['Pass'] += autoPass
+                dictionary['domain-gui'][tc['Domain']]['Tested']['auto']['Fail'] += autoFail
+                dictionary['domain-gui'][tc['Domain']]['Tested']['auto']['Skip'] += autoSkip
+                dictionary['domain-gui'][tc['Domain']]['Tested']['auto']['Blocked'] += autoBlocked
+
+                dictionary['domain-gui'][tc['Domain']]['NotTested'] += domainallcount
+                totalnottested += dictionary['domain-gui'][tc['Domain']]['NotTested']
+
+                dictionary["domain-gui"][tc["Domain"]]["NotApplicable"] += TC_INFO_GUI.objects.using(Release).filter(Domain = tc['Domain']).filter(Priority = 'NA').count()
 
         notapplicable = TC_INFO.objects.using(Release).filter(~Q(Domain = "GUI")).filter(Priority = "NA").count()
 
