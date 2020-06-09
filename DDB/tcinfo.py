@@ -103,6 +103,8 @@ def WHOLE_GUI_TC_INFO(request, Release):
                 pass
 
         for rec in latestSer.data:
+            if rec["Result"] == "Unblocked":
+                continue
             try:
                 tcid = rec['TcID']
                 card = rec['CardType'].strip('][').strip('\'')
@@ -186,6 +188,9 @@ def WHOLE_TC_INFO(request, Release):
         data = json.loads(data)
 
         for rec in data:
+            if rec["Result"] == "Unblocked":
+                continue
+
             tcid = rec['TcID']
             card = rec['CardType'].strip('][').strip('\'')
 
