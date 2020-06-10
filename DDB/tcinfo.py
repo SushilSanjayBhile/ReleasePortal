@@ -131,7 +131,12 @@ def WHOLE_GUI_TC_INFO(request, Release):
                 card = info['CardType'].strip('][').strip('\'')
                 tcid = info['TcID']
                 info['StatusList'] = json.loads(json.dumps(statusDict[card][tcid]))
-                info['CurrentStatus'] = json.loads(json.dumps(statusDict[card][tcid][-1]))
+                print(statusDict[card][tcid][-1]["Result"])
+                if statusDict[card][tcid][-1]["Result"] == "Unblocked":
+                    info["CurrentStatus"] = {}
+                else:
+                    #info['CurrentStatus'] = statusDict[card][tcid][-1]
+                    info['CurrentStatus'] = json.loads(json.dumps(statusDict[card][tcid][-1]))
             except:
                 info["StatusList"] = {}
                 info["CurrentStatus"] = {}
@@ -188,9 +193,6 @@ def WHOLE_TC_INFO(request, Release):
         data = json.loads(data)
 
         for rec in data:
-            #if rec["Result"] == "Unblocked":
-            #    continue
-
             tcid = rec['TcID']
             card = rec['CardType'].strip('][').strip('\'')
 
@@ -211,7 +213,10 @@ def WHOLE_TC_INFO(request, Release):
 
             try:
                 info['StatusList'] = statusDict[card][tcid]
-                info['CurrentStatus'] = statusDict[card][tcid][-1]
+                if statusDict[card][tcid][-1]["Result"] == "Unblocked":
+                    info["CurrentStatus"] = {}
+                else:
+                    info['CurrentStatus'] = statusDict[card][tcid][-1]
             except:
                 pass
 
