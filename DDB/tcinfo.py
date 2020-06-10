@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.db.models.functions import Trunc
 import json, time
 
-from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER, TC_STATUS_GUI_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, TC_INFO_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER
+from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER, TC_STATUS_GUI_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, TC_INFO_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER
 from .models import TC_INFO, TC_STATUS, LOGS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LATEST_TC_STATUS
 from .forms import TcInfoForm
 from django.db.models import Q
@@ -103,8 +103,8 @@ def WHOLE_GUI_TC_INFO(request, Release):
                 pass
 
         for rec in latestSer.data:
-            if rec["Result"] == "Unblocked":
-                continue
+           # if rec["Result"] == "Unblocked":
+           #    continue
             try:
                 tcid = rec['TcID']
                 card = rec['CardType'].strip('][').strip('\'')
@@ -188,8 +188,8 @@ def WHOLE_TC_INFO(request, Release):
         data = json.loads(data)
 
         for rec in data:
-            if rec["Result"] == "Unblocked":
-                continue
+            #if rec["Result"] == "Unblocked":
+            #    continue
 
             tcid = rec['TcID']
             card = rec['CardType'].strip('][').strip('\'')
@@ -296,6 +296,7 @@ def TC_INFO_GET_POST_VIEW(request, Release):
             return JsonResponse({'message': 'Records no found at given index'}, status = 400)
 
         serializer = TC_INFO_SERIALIZER(data, many=True)
+        print(json.dumps(serializer.data))
         return HttpResponse(json.dumps(serializer.data))
     """
     elif request.method == "DELETE":
@@ -642,17 +643,19 @@ def GET_TC_INFO_GUI_ID(request, Release, id, browserName):
         #activitySerializer = LOG_SERIALIZER(activityData, many = True)
         infoSerializer = TC_INFO_GUI_SERIALIZER(infoData)
         tcdata = infoSerializer.data
+        tcinfonum = tcdata["id"]
 
         try:
-            statusData = TC_STATUS_GUI.objects.using(Release).filter(TcID = id).filter(CardType = card).order_by('Date')
-            statusSerializer = TC_STATUS_GUI_SERIALIZER(statusData, many=True)
-
+            statusData = GUI_TC_STATUS.objects.using(Release).filter(tcInfoNum = tcinfonum).order_by('Date')
+            statusSerializer = LATEST_TC_STATUS_GUI_SERIALIZER(statusData, many = True)
+    
             #tcdata['Activity'] = activitySerializer.data
             tcdata['StatusList'] = []
             for status in statusSerializer.data:
                 tcdata['StatusList'].append(status)
         except:
-            return HttpResponse(json.dumps(tcdata))
+            pass
+        return HttpResponse(json.dumps(tcdata))
 
 
 @csrf_exempt
