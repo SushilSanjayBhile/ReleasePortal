@@ -745,13 +745,15 @@ def TCAGGREGATE(Release):
         latestStatusData = LATEST_TC_STATUS.objects.using(Release).all()
         blocked = latestStatusData.filter(Result = "Blocked").count()
         latestStatusSer = LATEST_TC_STATUS_SERIALIZER(latestStatusData, many=True)
+        notTestedCount = totalCount
 
         for status in latestStatusSer.data:
             for tc in infoSerializer.data:
-                if status["TcID"] == tc["TcID"] and status["CardType"] == tc["CardType"]:
-                    totalCount -= 1
+                if status["TcID"] == tc["TcID"] and status["CardType"] == tc["CardType"] and status["Result"] != "Unblocked":
+                    if tc["Priority"] != "NA" or tc["Priority"] != "Skip":
+                        notTestedCount -= 1
 
-        dictionary['all']['NotTested'] = totalCount
+        dictionary['all']['NotTested'] = notTestedCount
         dictionary['all']['Blocked'] = blocked
         dictionary['all']['NonAutomated'] = nonautomated
         dictionary['all']['Automated'] = automated
