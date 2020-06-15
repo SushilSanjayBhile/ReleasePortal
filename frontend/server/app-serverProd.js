@@ -70,6 +70,48 @@ app.use('/rest/features/:id', (req, res) => {
         console.log('cannot get features due to error in fetching JIRA')
     })
 }, err => { })
+app.use('/rest/epic/:id', (req, res) => {
+    var str = `?jql=issuetype%20%3D%20Epic%20AND%20project%20%3D%20SPEK%20order%20by%20created%20&fields=key,summary,status&maxResults=2000`
+    
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult, response) {
+        if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult2, response2) {
+                    console.log("calling this function",searchResult2)
+                    res.send(searchResult2);
+                }, err => { console.log(err) });
+            }).catch(err => { console.log('rpomise failed'); console.log(err) })
+        } else {
+            res.send(searchResult);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { })
+
+app.use('/rest/DMCfeaturedetail/:id', (req, res) => {
+    var str = `?jql=project%3D%20SPEK%20and%20%22Epic%20Link%22%20%3D%20${req.params.id}%20order%20by%20created%20DESC&fields=key,summary,subtasks,created,progress,status,updated,priority`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult, response) {
+        if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult2, response2) {
+                    
+                    res.send(searchResult2);
+                }, err => { console.log(err) });
+            }).catch(err => { console.log('rpomise failed'); console.log(err) })
+        } else {
+            res.send(searchResult);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { })
 
 app.use('/rest/bugs/total/:id', (req, res) => {
     var totalBugsStr = `?jql=fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug")&fields=key,status,priority,summary&maxResults=2000`
@@ -77,6 +119,7 @@ app.use('/rest/bugs/total/:id', (req, res) => {
         if (response.statusCode === 401) {
             loginJIRA().then(function () {
                 client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal2, responseTotal) {
+                    console.log("searchResultTotal2",searchResultTotal2);
                     res.send(searchResultTotal2);
                 }, err1 => { console.log('cannot get jira') });
             }).catch(err => { console.log('rpomise failed'); console.log(err) })
@@ -90,6 +133,8 @@ app.use('/rest/bugs/total/:id', (req, res) => {
         console.log('cannot get features due to error in fetching JIRA')
     })
 }, err => { });
+
+
 app.use('/rest/bugs/open/:id', (req, res) => {
     var openBugsStr = `?jql=status%20in%20("Open","In Progress","To Do","Done")%20AND%20fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug")%20AND%20(Component!=Automation%20OR%20Component=EMPTY)&fields=key,status,priority,summary&maxResults=2000`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + openBugsStr, searchArgs, function (searchResultTotal, response) {
@@ -225,38 +270,6 @@ app.delete('/api/:release/tcinfo/id/:id', (req, res) => {
         res.status(404).send({ 'message': 'TC not found' })
     }
 });
-
-
-
-
-// only create TC will use this api
-// Status: CREATED -> /pendingForApproval
-// Test cases:
-// TcID: role,assignee: workingstatus,assignee
-// D10: QA,NULL : CREATED,ADMIN  /pendingForApproval /myPendingApproval
-// D11: QA,achavan: CREATED,achavan /pendingForApproval /myPendingApproval
-// D12: ADMIN,NULL: UNASSIGNED,ADMIN /assignTcs
-// D13: ADMIN,achavan: MANUAL_ASSIGNED,achavan /myRegression
-// D14: ADMIN,ADMIN: UNASSIGNED,ADMIN /assignTcs
-// ACTUAL
-// app.post('/api/tcinfo/:release', (req, res) => {
-//     if (allTcs && allTcs[req.params.release]) {
-//         if (allTcs[req.params.release][req.body.TcID]) {
-//             res.status(401).send({ 'message': 'Duplicate TcID' });
-//             return;
-//         } else {
-//             allTcs[req.params.release][req.body.TcID] = {...req.body, Activity: [req.body.Activity], LatestE2EBuilds: []};
-//         }
-//     } else {
-//         allTcs[req.params.release] = { [req.body.TcID]: {...req.body, Activity: [req.body.Activity], LatestE2EBuilds: [] } };
-//     }
-//     if(req.body.Role === 'ADMIN') {
-//         allTcs['master'][req.body.TcID] = {...req.body, WorkingStatus: 'UNASSIGNED', Assignee: 'ADMIN'};
-//     }
-//     addAssignee(allTcs[req.params.release][req.body.TcID], req.params.release)
-//     res.send({ message: 'ok' });
-// });
-
 
 // GET ALL PENDING TCS FOR APPROVAL TO ADMIN FROM OTHER USERS
 app.get('/user/:release/pendingApproval/user/:email', (req, res) => {

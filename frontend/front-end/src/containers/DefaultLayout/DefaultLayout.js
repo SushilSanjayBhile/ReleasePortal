@@ -99,7 +99,7 @@ class DefaultLayout extends Component {
           }
           
         }, error => {
-          alert("VPN is disconnected or Something went wrong")
+          
         });
     }
   }

@@ -12,32 +12,6 @@ import axios from 'axios';
 import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../actions';
 // import './AddTestCase.scss'
 class AddTestCase extends Component {
-    // "TcID": "PVC_Mirrored-3.3",
-    // "TcName": "MirroringStaticProvisioning.RebootAllNodes",
-    // "Domain": "StoragePVC",
-    // "SubDomain": "Mirrored",
-    // "Scenario": "Reboot Tests",
-    // "Description": "Create fio pods with pvcs for mirrored volumes. Reboot all nodes.",
-    // "ExpectedBehaviour": "After rebooting the nodes,\nPod should go into running state and\nvolumes should go into attached state",
-    // "Notes": "NOTES NOT PROVIDED",
-    // "Setup": [
-    //   "BOS",
-    //   "NYNJ",
-    //   "OS"
-    // ],
-    // "OrchestrationPlatform": [
-    //   "dcx-k8s",
-    //   "dcx-k8s",
-    //   "oc-k8s"
-    // ],
-    // "Status": "UNDERWORK"
-
-    // Bugs: "-1"
-    // Build: "9.9.1 (151)"
-    // Date: "2019-12-13"
-    // Result: "Pass"
-    // TcID: "PVC_Mirrored-3.0"
-    // id: 288
     constructor(props) {
         super(props);
         this.state = {
@@ -83,7 +57,6 @@ class AddTestCase extends Component {
             }
         })
         data = { ...data, ...formattedDates };
-        console.log('saved data ', data);
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 alert('success');

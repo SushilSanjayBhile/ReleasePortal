@@ -285,7 +285,7 @@ export const saveFeatures = payload => ({
 })
 export const saveBugs = payload => ({
   type: SAVE_BUGS,
-  payload
+  payload,
 })
 export const saveSingleFeature = payload => ({
   type: SAVE_SINGLE_FEATURE,

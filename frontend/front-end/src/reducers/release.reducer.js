@@ -42,7 +42,7 @@ let domainDetail = {
 
 function getAggregate(release) {
     
-    if(release.ReleaseNumber == "DMC-3.0"){
+    if(release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master" ){
         alldomains = ['Cluster Management', 'Application Management', 'Multizone','AirGapped','ApplicationDR','Tenant', 'Project','User Management','Service Provider','Others'];
         domainDetail = {
             'Cluster Management': { name: 'Cluster Management', index: 0 },
@@ -136,7 +136,6 @@ function getAggregate(release) {
     });
 
     let relDomain = release.TcAggregate.domain
-    // release.TcAggregate.uidomain = {...release.TcAggregate.domain};
     Object.keys(relDomain).forEach((item, index) => {
         if (domainDetail[item]) {
             release.TcAggregate.domain[item].tag = domainDetail[item].name;
@@ -296,7 +295,7 @@ export const getTCForStatus = (state, id) => {
 
     if(state.release.options.selectedPriority){
 
-        if (release.ReleaseNumber == "DMC-3.0") {
+        if (release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master" ) {
             
             state.release.options.selectedPriority.forEach(item => {
                 visibleGUIP.Pass += pGUI[item].Pass;
@@ -330,13 +329,13 @@ export const getTCForStatus = (state, id) => {
             borderWidth: 1,
             data: [(release.TcAggregate.all.Tested.auto.Pass + release.TcAggregate.all.Tested.manual.Pass), visibleP.Pass]
         },
-        {
-            label: 'Skipped (Testing)',
-            backgroundColor: '#FFCE56',
-            borderColor: 'white',
-            borderWidth: 1,
-            data: [(release.TcAggregate.all.Tested.auto.Skip + release.TcAggregate.all.Tested.manual.Skip), visibleP.Skip]
-        },
+        // {
+        //     label: 'Skipped (Testing)',
+        //     backgroundColor: '#FFCE56',
+        //     borderColor: 'white',
+        //     borderWidth: 1,
+        //     data: [(release.TcAggregate.all.Tested.auto.Skip + release.TcAggregate.all.Tested.manual.Skip), visibleP.Skip]
+        // },
         {
             label: 'Fail',
             backgroundColor: '#d9534f',
@@ -372,13 +371,13 @@ export const getTCForStatus = (state, id) => {
             borderWidth: 1,
             data: [(release.TcAggregate.allGUI.Pass), visibleGUIP.Pass]
         },
-        {
-            label: 'Skipped',
-            backgroundColor: '#FFCE56',
-            borderColor: 'white',
-            borderWidth: 1,
-            data: [(release.TcAggregate.allGUI.SkippedFromRelease+ release.TcAggregate.allGUI.SkippedWhileTesting), visibleGUIP.Skip]
-        },
+        // {
+        //     label: 'Skipped (Testing)',
+        //     backgroundColor: '#FFCE56',
+        //     borderColor: 'white',
+        //     borderWidth: 1,
+        //     data: [(release.TcAggregate.allGUI.SkippedWhileTesting), visibleGUIP.Skip]
+        // },
         {
             label: 'Fail',
             backgroundColor: '#d9534f',
@@ -414,13 +413,13 @@ export const getTCForStatus = (state, id) => {
                 borderWidth: 1,
                 data: [3643]
             },
-            {
-                label: 'Skipped (Testing)',
-                backgroundColor: '#FFCE56',
-                borderColor: 'white',
-                borderWidth: 1,
-                data: [0]
-            },
+            // {
+            //     label: 'Skipped (Testing)',
+            //     backgroundColor: '#FFCE56',
+            //     borderColor: 'white',
+            //     borderWidth: 1,
+            //     data: [0]
+            // },
             {
                 label: 'Fail',
                 backgroundColor: '#d9534f',
@@ -590,7 +589,7 @@ export const getTCStatusForUIDomains = (release) => {
     let doughnuts = [];
     let each = []
 
-    if(release.ReleaseNumber == "DMC-3.0" ){
+    if(release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master"  ){
         let CMPass = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Pass;
         let CMFail = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Fail;
         let CMSkipped = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Block + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Block
@@ -654,11 +653,7 @@ export const getTCStatusForUIDomains = (release) => {
             { Fail: projectFail, Pass: projectPass, Skip: projectSkipped, NotTested: projectNotTested },
             { Fail: UMFail, Pass: UMPass, Skip: UMSkipped, NotTested: UMNotTested},
             { Fail: SPFail, Pass: SPPass, Skip: SPSkipped, NotTested: SPNotTested},
-
-            
             { Fail: othersFail, Pass: othersPass, Skip: othersSkipped, NotTested: othersNotTested },
-
-
         ]
 
     }else{
@@ -844,7 +839,7 @@ export const getTCStatusForSunburst = (release) => {
         if (domainDetail[item]) {
             domains.children[domainDetail[item].index].children.push({ name: item, size: total })
         } else {
-            if (release.ReleaseNumber == "DMC-3.0") {
+            if (release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master" ) {
                 domains.children[9].children.push({ name: item, size: total })
             } else {
                 domains.children[3].children.push({ name: item, size: total })
@@ -951,7 +946,7 @@ export const getTCStrategyForUIDomainsDistribution = (release) => {
     }
     let doughnuts = [];
     let each = [];
-    if(release.ReleaseNumber == 'DMC-3.0'){
+    if(release.ReleaseNumber == 'DMC-3.0' || release.ReleaseNumber == "DMC Master" ){
         
 
         let CMAuto = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Skip;
@@ -993,18 +988,6 @@ export const getTCStrategyForUIDomainsDistribution = (release) => {
         let projectAuto = release.TcAggregate.uidomain['Project'].Tested.auto.Pass + release.TcAggregate.uidomain['Project'].Tested.auto.Fail + release.TcAggregate.uidomain['Project'].Tested.auto.Skip;
         let projectManual = release.TcAggregate.uidomain['Project'].Tested.manual.Pass + release.TcAggregate.uidomain['Project'].Tested.manual.Fail + release.TcAggregate.uidomain['Project'].Tested.manual.Skip;
         let project_NotTested = release.TcAggregate.uidomain['Project'].NotTested;
-
-      
-
-        // 'Project(' + each[0].total + ')',
-        //     'Tenant (' + each[1].total + ')',
-        //     'AirGapped (' + each[2].total + ')',
-        //     'Multizone (' + each[3].total + ')',
-        //     'ApplicationDR (' + each[4].total + ')',
-        //     'Service Provider (' + each[5].total + ')',
-        //     'User Management (' + each[6].total + ')',
-        //     'Cluster Management (' + each[7].total + ')',
-        //     'Application Management (' + each[8].total + ')',
 
         each = [
 
@@ -1054,10 +1037,6 @@ export const getTCStrategyForUIDomainsDistribution = (release) => {
                 auto: APMAuto, manual: APMManual, NotTested: APM_NotTested,
                 total: APMAuto + APMManual + APM_NotTested
             },
-
-          
-
-
         ]
     }
     else{
@@ -1103,7 +1082,7 @@ export const getTCStrategyForUIDomainsDistribution = (release) => {
     
 
     
-    if(release.ReleaseNumber == 'DMC-3.0'){
+    if(release.ReleaseNumber == 'DMC-3.0' || release.ReleaseNumber == "DMC Master" ){
         doughnuts.push({
             data: {
                 labels: [
@@ -1439,7 +1418,7 @@ export const getTCStrategyForUIDomains = (release) => {
     }
     let doughnuts = [];
     let each = []
-    if(release.ReleaseNumber == 'DMC-3.0'){
+    if(release.ReleaseNumber == 'DMC-3.0' || release.ReleaseNumber == "DMC Master" ){
         
 
         let CMAuto = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Skip;
@@ -1481,10 +1460,6 @@ export const getTCStrategyForUIDomains = (release) => {
         let projectAuto = release.TcAggregate.uidomain['Project'].Tested.auto.Pass + release.TcAggregate.uidomain['Project'].Tested.auto.Fail + release.TcAggregate.uidomain['Project'].Tested.auto.Skip;
         let projectManual = release.TcAggregate.uidomain['Project'].Tested.manual.Pass + release.TcAggregate.uidomain['Project'].Tested.manual.Fail + release.TcAggregate.uidomain['Project'].Tested.manual.Skip;
         let project_NotTested = release.TcAggregate.uidomain['Project'].NotTested;
-
-
-
-
 
         each = [
 
@@ -1534,10 +1509,6 @@ export const getTCStrategyForUIDomains = (release) => {
                 auto: APMAuto, manual: APMManual, NotTested: APM_NotTested,
                 total: APMAuto + APMManual + APM_NotTested
             },
-
-          
-
-
         ]
     }
 
@@ -1586,7 +1557,7 @@ export const getTCStrategyForUIDomains = (release) => {
     
 
     // alldomains.forEach((item, index) => {
-        if(release.ReleaseNumber == 'DMC-3.0'){
+        if(release.ReleaseNumber == 'DMC-3.0' || release.ReleaseNumber == "DMC Master" ){
 
         doughnuts.push({
             data: {

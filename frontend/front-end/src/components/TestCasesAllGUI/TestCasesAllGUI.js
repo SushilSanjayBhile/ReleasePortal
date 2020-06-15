@@ -79,6 +79,7 @@ class TestCasesAllGUI extends Component {
                     editable: false,
                     width: 180
                 },
+                
                 {
                     headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                     width: '180',
@@ -143,54 +144,27 @@ class TestCasesAllGUI extends Component {
                 {
                     headerName: "TcName", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
                 },
-                // {
-                //     headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                //     hide: true,
-                // },
-                // {
-                //     headerName: "SubDomain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                //     hide: true,
-                // },
-                // {
-                //     headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                //     hide: true,
-                // },
-                // {
-                //     headerName: "ExpectedBehaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                //     hide: true,
-                // },
-                // {
-                //     headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                //     hide: true,
-                // },
-                // {
-                //     headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                //     hide: true,
-                // },
-                // {
-                //     headerName: "Tag", field: "Tag", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                //     hide: true,
-                // },
+                {
+                    headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                    width: '180',
+                    editable: false,
+                    cellClass: 'cell-wrap-text',
+                },
+                {
+                    headerName: "SubDomain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                    width: '180',
+                    editable: false,
+                    cellClass: 'cell-wrap-text',
+                },
+                {
+                    headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                    width: '180',
+                    editable: false,
+                    cellClass: 'cell-wrap-text',
+                },
+               
+                
             ],
-
-            //             TcID: "PVC_Rbac_S-2.1"
-            // TcName: "RbacStaticProvision.PodWithLSAndValidateIOPSWithMultipleQosforLocalNRemoteAuth"
-            // Domain: "Storage-PVC"
-            // SubDomain: "PVC_Rbac"
-            // Scenario: "Local Storage"
-            // Description: "Create a Remote-auth user with container-edit role in a namespace. Start fio pods with custom and high QoS and see whether pods are getting expected IOPS"
-            // Steps: "NO STEPS PROVIDED"
-            // ExpectedBehaviour: "NO EXPECTED BEHAVIOUR PROVIDED"
-            // Notes: "NOTES NOT PROVIDED"
-            // CardType: "BOS"
-            // ServerType: ["UNKNOWN"]
-            // WorkingStatus: "UNDERWORK"
-            // Date: "2020-02-07T09:25:56.811198Z"
-            // Assignee: "UNKNOWN"
-            // Creator: "ANONYMOUS"
-            // Tag: "NO TAG"
-            // Priority: "P2"
-            // CurrentStatus
             defaultColDef: { resizable: true },
 
             e2eColumnDefs: [{
@@ -470,37 +444,37 @@ class TestCasesAllGUI extends Component {
         }
         return tcName;
     }
-    saveSingleTCStatus(data) {
-        this.gridOperations(false);
-        let status = {};
-        status.Domain = this.props.tcDetails.Domain;
-        status.SubDomain = this.props.tcDetails.SubDomain;
-        status.Scenario = this.props.tcDetails.Scenario;
-        status.TcName = this.getTcName(`${this.props.tcDetails.TcName}`);
-        status.Build = this.props.testcaseEdit.Build;
-        status.Result = this.props.testcaseEdit.CurrentStatus;
-        status.CardType = this.props.tcDetails.CardType;
-        status.TcID = this.props.tcDetails.TcID;
-        // status.BrowserName = this.propsstatus.tcDetails.BrowserName;
+    // saveSingleTCStatus(data) {
+    //     this.gridOperations(false);
+    //     let status = {};
+    //     status.Domain = this.props.tcDetails.Domain;
+    //     status.SubDomain = this.props.tcDetails.SubDomain;
+    //     status.Scenario = this.props.tcDetails.Scenario;
+    //     status.TcName = this.getTcName(`${this.props.tcDetails.TcName}`);
+    //     status.Build = this.props.testcaseEdit.Build;
+    //     status.Result = this.props.testcaseEdit.CurrentStatus;
+    //     status.CardType = this.props.tcDetails.CardType;
+    //     status.TcID = this.props.tcDetails.TcID;
+    //     // status.BrowserName = this.propsstatus.tcDetails.BrowserName;
 
-        status.Activity = {
-            Release: this.props.selectedRelease.ReleaseNumber,
-            "TcID": this.props.tcDetails.TcID,
-            "CardType": this.props.tcDetails.CardType,
-            "UserName": this.props.user.email,
-            "LogData": `Status Added: Build: ${this.props.testcaseEdit.Build}, Result: ${this.props.testcaseEdit.CurrentStatus}, CardType: ${this.props.testcaseEdit.CardType}`,
-            "RequestType": 'POST',
-            "URL": `/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`
-        }
-        axios.post(`/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
-            .then(res => {
-                this.gridOperations(true);
-                this.saveSingleTCInfo(data);
-            }, error => {
-                alert('failed to update tc')
-                this.gridOperations(true);
-            });
-    }
+    //     status.Activity = {
+    //         Release: this.props.selectedRelease.ReleaseNumber,
+    //         "TcID": this.props.tcDetails.TcID,
+    //         "CardType": this.props.tcDetails.CardType,
+    //         "UserName": this.props.user.email,
+    //         "LogData": `Status Added: Build: ${this.props.testcaseEdit.Build}, Result: ${this.props.testcaseEdit.CurrentStatus}, CardType: ${this.props.testcaseEdit.CardType}`,
+    //         "RequestType": 'POST',
+    //         "URL": `/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`
+    //     }
+    //     axios.post(`/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
+    //         .then(res => {
+    //             this.gridOperations(true);
+    //             this.saveSingleTCInfo(data);
+    //         }, error => {
+    //             alert('failed to update tc')
+    //             this.gridOperations(true);
+    //         });
+    // }
 
     // VIEW TC
     getTcByDomain(domain) {
@@ -526,6 +500,7 @@ class TestCasesAllGUI extends Component {
         if (!this.props.selectedRelease.ReleaseNumber) {
             return;
         }
+       
         this.gridOperations(false);
         let url = `/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/browsername/${data.BrowserName}`
         axios.get(url)
@@ -575,6 +550,7 @@ class TestCasesAllGUI extends Component {
         }
         axios.get(url)
             .then(all => {
+                console.log("GUI data",all.data);
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
                 this.saveLocalMultipleTC({ data: all.data, id: release }, false, updateRelease)
@@ -647,7 +623,9 @@ class TestCasesAllGUI extends Component {
                 let status = {};
                 status.Domain = item.Domain;
                 status.SubDomain = item.SubDomain;
+                status.Steps = item.Steps;
                 status.Scenario = this.props.tcDetails.Scenario;
+                status.Notes = item.Notes;
                 status.TcName = this.getTcName(`${item.TcName}`);
                 status.Build = this.state.multi.Build;
                 status.Result = this.state.multi.Result;
@@ -780,9 +758,11 @@ class TestCasesAllGUI extends Component {
         };
 
         if (this.props.testcaseEdit.CurrentStatus === 'Pass' || this.props.testcaseEdit.CurrentStatus === 'Fail' || this.props.testcaseEdit.CurrentStatus == 'Blocked' || this.props.testcaseEdit.CurrentStatus == 'Unblocked'||  this.props.testcaseEdit.Bugs) {
+            console.log("if coming")
             this.saveSingleTCStatus(data);
             
         } else {
+            console.log("else coming")
             this.saveSingleTCInfo(data);
             
         }
@@ -793,6 +773,8 @@ class TestCasesAllGUI extends Component {
         let status = {};
         status.Domain = this.props.tcDetails.Domain;
         status.SubDomain = this.props.tcDetails.SubDomain;
+        status.Steps = this.props.tcDetails.Steps;
+        status.Notes = this.props.tcDetails.Notes;
         status.Scenario = this.props.tcDetails.Scenario;
         status.TcName = this.getTcName(`${this.props.tcDetails.TcName}`);
         status.Build = this.props.testcaseEdit.Build;
@@ -818,6 +800,7 @@ class TestCasesAllGUI extends Component {
                     "RequestType": 'PUT',
                     "URL": `/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}/${statusList.id}`
                 }
+                console.log("save single TC Status",status)
                 axios.put(`/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`, [{ ...status }])
                     .then(res => {
                         this.gridOperations(true);
@@ -843,6 +826,7 @@ class TestCasesAllGUI extends Component {
                 "RequestType": 'POST',
                 "URL": `/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`
             }
+            console.log("save single TC Status else",status)
             axios.post(`/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`, [{ ...status }])
                 .then(res => {
                     this.gridOperations(true);
@@ -854,6 +838,7 @@ class TestCasesAllGUI extends Component {
         }
     }
     saveSingleTCInfo(data) {
+        console.log("data",data)
         if (this.props.testcaseEdit.NewTcID) {
             data.NewTcID = this.props.testcaseEdit.NewTcID
             if (data.Activity.LogData.length < 5) {

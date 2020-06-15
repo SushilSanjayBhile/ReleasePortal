@@ -285,7 +285,6 @@ class AgGrid extends Component {
 
     getEditedCells() {
         var cellDefs = this.gridApi.getEditingCells();
-        console.log('edited cells ', cellDefs);
     }
     onFilterTextBoxChanged(value) {
         this.deselect();
@@ -353,8 +352,7 @@ class AgGrid extends Component {
     }
     save() {
         let data = { ...this.props.testcaseEdit };
-        console.log('data for creating tc');
-        console.log(data);
+       
         let dates = [
             'TargetedReleaseDate', 'ActualReleaseDate', 'TargetedCodeFreezeDate',
             'UpgradeTestingStartDate', 'QAStartDate', 'ActualCodeFreezeDate', 'TargetedQAStartDate'

@@ -84,7 +84,6 @@ export default class SelectionEditor extends Component {
 
             this.props.multiple ?
                 <Input type='select' multiple onKeyDown={(e) => {
-                    console.log('enter ', e.target.value)
                     if (e.target.value === 'Enter') {
                         this.setState(() => this.props.api.stopEditing())
                     }

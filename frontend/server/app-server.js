@@ -297,22 +297,15 @@ const app = express();
 const responseDelayQuick = 10;
 const responseDelayModerate = 100;
 const responseDelaySlow = 300;
-
+var featureArray = []
 app.use(express.json());
 app.use('/rest/features/:id', (req, res) => {
     var str = `?jql=type%20in%20("New%20Feature")%20AND%20fixVersion%20in%20(${req.params.id})&fields=key,summary,status&maxResults=2000`
-    // /rest/api/2/search?jql=type%20in%20("New%20Feature")%20AND%20fixVersion%20in%20(2.3.0)&fields=key,summary
-    // var searchArgs = {
-    //     headers: jiraHeaders,
-    //     data: {
-    //         // Provide additional data for the JIRA search. You can modify the JQL to search for whatever you want.
-    //         jql: "type=Bug AND status=Closed"
-    //     }
-    // };
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult, response) {
         if (response.statusCode === 401) {
             loginJIRA().then(function () {
                 client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult2, response2) {
+                    console.log("calling this function",searchResult2)
                     res.send(searchResult2);
                 }, err => { console.log(err) });
             }).catch(err => { console.log('rpomise failed'); console.log(err) })
@@ -326,23 +319,50 @@ app.use('/rest/features/:id', (req, res) => {
         console.log('cannot get features due to error in fetching JIRA')
     })
 }, err => { })
-// app.use('/rest/bugs/:id', (req, res) => {
-//     var str = `?jql=type%20in%20("Bug")%20AND%20fixVersion%20in%20(${req.params.id})&fields=key,status,priority,summary&maxResults=2000`
-//     // /rest/api/2/search?jql=type%20in%20("New%20Feature")%20AND%20fixVersion%20in%20(2.3.0)&fields=key,summary
-//     console.log(jiraHeaders);
-//     // var searchArgs = {
-//     //     headers: jiraHeaders,
-//     //     data: {
-//     //         // Provide additional data for the JIRA search. You can modify the JQL to search for whatever you want.
-//     //         jql: "type=Bug AND status=Closed"
-//     //     }
-//     // };
-//     client.get(JIRA_URL + '/rest/api/2/search' + str, searchArgs, function (searchResult, response) {
-//         console.log('status code:', response.statusCode);
-//         console.log('search result:', searchResult);
-//         res.send(searchResult);
-//     }, err => { console.log('cannot get jira') });
-// }, err => { })
+
+app.use('/rest/epic/:id', (req, res) => {
+    var str = `?jql=issuetype%20%3D%20Epic%20AND%20project%20%3D%20SPEK%20order%20by%20created%20&fields=key,summary,status&maxResults=2000`
+    
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult, response) {
+        if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult2, response2) {
+                    console.log("calling this function",searchResult2)
+                    res.send(searchResult2);
+                }, err => { console.log(err) });
+            }).catch(err => { console.log('rpomise failed'); console.log(err) })
+        } else {
+            res.send(searchResult);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { })
+
+app.use('/rest/DMCfeaturedetail/:id', (req, res) => {
+    var str = `?jql=project%3D%20SPEK%20and%20%22Epic%20Link%22%20%3D%20${req.params.id}%20order%20by%20created%20DESC&fields=key,summary,subtasks,created,progress,status,updated,priority`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult, response) {
+        if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult2, response2) {
+                    
+                    res.send(searchResult2);
+                }, err => { console.log(err) });
+            }).catch(err => { console.log('rpomise failed'); console.log(err) })
+        } else {
+            res.send(searchResult);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { })
+
 app.use('/rest/bugs/total/:id', (req, res) => {
     var totalBugsStr = `?jql=fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug")&fields=key,status,priority,summary&maxResults=2000`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
@@ -351,7 +371,7 @@ app.use('/rest/bugs/total/:id', (req, res) => {
                 client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal2, responseTotal) {
                     res.send(searchResultTotal2);
                 }, err1 => { console.log('cannot get jira') });
-            }).catch(err => { console.log('rpomise failed'); console.log(err) })
+            }).catch(err => { console.log('promise failed'); console.log(err) })
         } else {
             res.send(searchResultTotal);
         }
@@ -370,7 +390,7 @@ app.use('/rest/bugs/open/:id', (req, res) => {
                 client.get(JIRA_URL + '/rest/api/3/search' + openBugsStr, searchArgs, function (searchResultTotal2, responseTotal) {
                     res.send(searchResultTotal2);
                 }, err1 => { console.log('cannot get jira') });
-            }).catch(err => { console.log('rpomise failed'); console.log(err) })
+            }).catch(err => { console.log('promise failed'); console.log(err) })
         } else {
             res.send(searchResultTotal);
         }
@@ -389,7 +409,7 @@ app.use('/rest/bugs/resolved/:id', (req, res) => {
                 client.get(JIRA_URL + '/rest/api/3/search' + resolvedBugsStr, searchArgs, function (searchResultTotal2, responseTotal) {
                     res.send(searchResultTotal2);
                 }, err1 => { console.log('cannot get jira') });
-            }).catch(err => { console.log('rpomise failed'); console.log(err) })
+            }).catch(err => { console.log('promise failed'); console.log(err) })
         } else {
             res.send(searchResultTotal);
         }
@@ -408,7 +428,7 @@ app.use('/rest/featuredetail', (req, res) => {
                 client.get(req.body.data + str, searchArgs, function (searchResultTotal2, responseTotal) {
                     res.send(searchResultTotal2);
                 }, err1 => { console.log('cannot get jira') });
-            }).catch(err => { console.log('rpomise failed'); console.log(err) })
+            }).catch(err => { console.log('promise failed'); console.log(err) })
         } else {
             res.send(searchResultTotal);
         }

@@ -51,10 +51,9 @@ class ReleaseStatus extends Component {
     }
     initialize() {
         if (!this.props.singleFeature.fields) {
-            console.log("before go inside if",this.props.feature);
             if (this.props.feature && this.props.feature.issues) {
-                console.log("release status initialize",this.props.feature.issues)
-                // this.getFeatureDetails(this.props.feature.issues[0].self)
+                console.log("this.props.feature.issues",this.props.feature.issues);
+                this.getFeatureDetails(this.props.feature.issues[0].self)
             }
         }
         if (this.props.statusPage) {
@@ -71,12 +70,25 @@ class ReleaseStatus extends Component {
         }
     }
 
+
+
     getFeatureDetails(dws) {
         axios.post('/rest/featuredetail', { data: dws }).then(res => {
+            let issuesArray = []
+            if (this.props.selectedRelease.ReleaseNumber === "DMC-3.0"){
+                axios.get("/rest/DMCfeaturedetail/"+ res.data.key).then(res1 => {
+                    if(res1.data.issues){
+                        for(let i = 0 ; i < res1.data.issues.length ; i++ ){
+                            issuesArray.push(res1.data.issues[i]);
+                        }
+                    }
+                    res.data.fields.subtasks = issuesArray;
+                    this.props.saveSingleFeature({ data: res.data });
+                })
+                res.data.fields.subtasks = issuesArray;
+            }
             this.props.saveSingleFeature({ data: res.data });
-        }, err => {
-
-        })
+        }, err => {})
     }
 
     sortBugList = (list) =>{
@@ -91,34 +103,27 @@ class ReleaseStatus extends Component {
         let url  = `/api/bugwiseblockedtcs/` + this.props.selectedRelease.ReleaseNumber
         
         axios.get(url).then(res=>{
-                    
                     list.push(res.data);
-                    
-                    
-                    
                     for (let [key, value] of Object.entries(list[0])) {
-                        console.log(`${key}: ${value}`);
+                        // console.log(`${key}: ${value}`);
                         list2.push({'bug_no':key,'value':value})
-                       
-                        
                     }
                     let a = this.sortBugList(list2)
-
                     this.setState({blockedBugList:list2})
-
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-                    for(let i = 0 ; i < this.state.blockedBugList ; i++){
-                        console.log(this.state.blockedBugList[i]);
+                    let arti = []
+                    for(let i = 0 ; i < this.state.blockedBugList.length ; i++){
+                        for(let j = 0 ; j < this.props.bug.bug.issues.length ; j++ ){
+                            if(this.props.bug.bug.issues[j]['key'] == this.state.blockedBugList[i]['bug_no'] ){
+                                console.log(this.props.bug.bug.issues[j]['key'],this.state.blockedBugList[i]['bug_no'])
+                                // arti.push(this.props.bug.bug.issues[j]['key'])
+                            }
+                        }
                     }
-
-
                 },
                 error => {
                 console.log('bugwiseblockedtcs',error);
         }) 
     }
-
-    
     renderTableData  = () => {
         
         return this.state.blockedBugList === 0 ? (
@@ -135,9 +140,6 @@ class ReleaseStatus extends Component {
         )
         
     }
-
-   
-
     
     render() {
         let featuresCount = 0;
@@ -294,8 +296,6 @@ class ReleaseStatus extends Component {
                                             </thead>
                                             <tbody>
                                                 {
-                                                
-                                                
                                                 this. renderTableData()
                                                 }
                                             </tbody>
@@ -307,13 +307,6 @@ class ReleaseStatus extends Component {
 
                     </Col>
                 </Row>
-
-
-
-
-
-
-
 
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
@@ -422,21 +415,21 @@ class ReleaseStatus extends Component {
                                             </thead>
                                             <tbody>
                                                 {
-                                                    this.props.feature && this.props.feature.issues &&
-                                                    this.props.feature.issues.map(item => {
-                                                        return (
-                                                            <tr style={{ cursor: 'pointer' }} onClick={() => this.getFeatureDetails(item.self)}>
-                                                                <td className='rp-app-table-key' onClick={() => window.open(`https://diamanti.atlassian.net/browse/${item.key}`)}>{item.key}</td>
-                                                                <td>{item.fields.summary}</td>
-                                                                <td>
-                                                                    {/* <Badge className='rp-open-status-badge'>{item.fields.status.name}</Badge> */}
-                                                                    <div className={`c-callout c-callout-open rp-new-badge`}>
-                                                                        <strong class="h5">{item.fields.status.name}</strong>
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        )
-                                                    })
+                                                        this.props.feature && this.props.feature.issues &&
+                                                        this.props.feature.issues.map(item => {
+                                                            return (
+                                                                <tr style={{ cursor: 'pointer' }} onClick={() => this.getFeatureDetails(item.self)}>
+                                                                    <td className='rp-app-table-key' onClick={() => window.open(`https://diamanti.atlassian.net/browse/${item.key}`)}>{item.key}</td>
+                                                                    <td>{item.fields.summary}</td>
+                                                                    <td>
+                                                                        {/* <Badge className='rp-open-status-badge'>{item.fields.status.name}</Badge> */}
+                                                                        <div className={`c-callout c-callout-open rp-new-badge`}>
+                                                                            <strong class="h5">{item.fields.status.name}</strong>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            )
+                                                        })
                                                 }
                                             </tbody>
                                         </Table>
@@ -444,8 +437,8 @@ class ReleaseStatus extends Component {
                                 </Col>
                                 <Col xs="11" sm="11" md="11" lg="8">
                                     {
-                                        this.props.singleFeature && !this.props.singleFeature.fields
-                                        && loading()
+                                        (this.props.singleFeature && !this.props.singleFeature.fields
+                                        && loading())
 
                                     }
                                     {
@@ -497,16 +490,20 @@ class ReleaseStatus extends Component {
                                                     </tr>
                                                 </tbody>
                                             </Table>
+
+                                                
                                             <div className='rp-rs-hw-support'>Subtasks</div>
                                             <Table scroll responsive style={{ overflow: 'scroll' }}>
                                                 <tbody>
                                                     {
 
                                                         this.props.singleFeature.fields.subtasks.map(item => {
+                                                            console.log("subtask",item.fields.summary,item.fields.status.name)
                                                             return (
                                                                 <tr>
                                                                     <td style={{ width: '250px' }}><span onClick={() => window.open(`https://diamanti.atlassian.net/browse/${item.key}`)}>{item.key}</span></td>
                                                                     <td>{item.fields.summary}</td>
+                                                                
                                                                     <td  style={{width:'250px'}}>
                                                                         <div className={`c-callout c-callout-${item.fields.status.name.toLowerCase()} rp-new-badge`}>
                                                                             <strong class="h5">{item.fields.status.name}</strong>
@@ -520,7 +517,7 @@ class ReleaseStatus extends Component {
                                                     }
                                                 </tbody>
                                             </Table>
-
+                                            
                                         </Row>
                                     }
                                 </Col>
@@ -528,36 +525,6 @@ class ReleaseStatus extends Component {
                         </Collapse>
                     </Col>
                 </Row>
-
-
-
-                {/* <Row>
-                    <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ graphsOpen: !this.state.graphsOpen })}>
-                            {
-                                !this.state.graphsOpen &&
-                                <i className="fa fa-angle-down rp-rs-down-arrow"></i>
-                            }
-                            {
-                                this.state.graphsOpen &&
-                                <i className="fa fa-angle-up rp-rs-down-arrow"></i>
-                            }
-                            <span className='rp-app-table-title'>Statistics</span>
-                        </div>
-                        <Collapse isOpen={this.state.graphsOpen}>
-                            <Row>
-                                <Col xs="11" sm="11" md="11" lg="8">
-                                    <div style={{ marginLeft: '1rem', marginTop: '1rem', overflowY: 'scroll', maxHeight: '30rem' }}>
-
-                                    </div>
-                                </Col>
-                                <Col xs="11" sm="11" md="11" lg="4">
-                                </Col>
-                            </Row>
-                        </Collapse>
-                    </Col>
-                </Row> */}
-
             </div >)
     }
 }

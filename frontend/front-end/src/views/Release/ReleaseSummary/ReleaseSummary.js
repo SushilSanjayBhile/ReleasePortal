@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import {
     Button,
-    
     Col,
     FormGroup,
     Input,
@@ -95,6 +94,7 @@ const mainChartOpts = {
         },
     },
 };
+
 var elements = 12;
 var data1 = [];
 var data2 = [];
@@ -107,6 +107,25 @@ for (var i = 0; i <= elements; i++) {
     data2.push(random(80, 100));
     data3.push(65);
 }
+
+// var Client = require('node-rest-client').Client;
+// client = new Client();
+// const express = require('express');
+// const jsonfile = require('jsonfile')
+// var jiraHeaders = null;
+// var searchArgs = null;
+// var searchArgs = {
+//     headers: {
+//         "Content-Type": "application/json",
+//         "Authorization": "Basic YWNoYXZhbkBkaWFtYW50aS5jb206Y2VtRDF5UW1ySTIweFNCSWQwUU9DODgw"
+//     }
+// }
+
+// var JIRA_URL = 'https://diamanti.atlassian.net'
+// const app = express();
+
+
+
 
 class ReleaseSummary extends Component {
     constructor(props) {
@@ -227,9 +246,11 @@ class ReleaseSummary extends Component {
         let temp = release;
         if(temp === 'Spektra 2.4') {
             temp='2.4.0'
+
         }
         if(temp === 'DMC-3.0') {
             temp="\"Spektra 3.0\""
+           
         }
 
         if(temp == 'DCX-3.0'){
@@ -238,26 +259,47 @@ class ReleaseSummary extends Component {
         else{
             this.setState({selectedPriority:['P0','P1']})
         }
-        
-        axios.get('/rest/features/' + temp)
+
+        if(release === 'DMC-3.0'){
+            axios.get('/rest/epic/' + temp)
             .then(res => {
                 this.props.saveFeatures({ data: res.data, id: release })
                 this.setState({ showFeatures: true })
-               
+                console.log("saveFeature",res.data) 
             }, err => {
                 console.log('err ', err);
             });
+        }else{
+
+            axios.get('/rest/features/' + temp)
+            .then(res => {
+                this.props.saveFeatures({ data: res.data, id: release })
+                this.setState({ showFeatures: true })
+                console.log("saveFeature",res.data) 
+            }, err => {
+                console.log('err ', err);
+            });
+
+        }
+        
         axios.get('/rest/bugs/total/' + temp)
             .then(res => {
+                
                 this.props.saveBugs({ data: { total: res.data.total, all: res.data }, id: release })
                 this.setState({ showBugs: true, cntr: 2 })
+                console.log("bugs total",res.data)
+
             }, err => {
                 console.log('err ', err);
             })
+
+            
         axios.get('/rest/bugs/open/' + temp)
             .then(res => {
                 this.props.saveBugs({ data: { open: res.data.total }, id: release })
                 this.setState({ showBugs: true, cntr: 4 })
+                // console.log("bugs open",res.data)
+
             }, err => {
                 console.log('err ', err);
             })
@@ -265,10 +307,14 @@ class ReleaseSummary extends Component {
             .then(res => {
                 this.props.saveBugs({ data: { resolved: res.data.total }, id: release})
                 this.setState({ showBugs: true, cntr: 6 })
+                console.log("bugs resolved",res.data)
+
             }, err => {
                 console.log('err ', err);
             })
     }
+
+   
     edit() {
         this.setState({ isEditing: true });
     }

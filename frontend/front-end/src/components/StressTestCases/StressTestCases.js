@@ -279,9 +279,7 @@ class StressTestCases extends Component {
             this.props.updateSanityEdit({});
             this.getTcs(newProps.selectedRelease.ReleaseNumber);
         }
-        console.log('called')
         if (newProps && this.props && this.props.e2eCounter && newProps.e2eCounter !== this.props.e2eCounter) {
-            console.log('inside')
             this.getTcs();
         }
         if (newProps && this.props && this.props.deleteCounter && newProps.deleteCounter !== this.props.deleteCounter) {
@@ -620,7 +618,6 @@ class StressTestCases extends Component {
         this.toggle();
     }
     convertDate = (date) => {
-        console.log(date);
         if (!date) {
             return ''
         }
@@ -633,8 +630,6 @@ class StressTestCases extends Component {
             Notes: this.state.sanityDetails.oldNotes+'' } });
     }
     render() {
-        console.log('rendering')
-        console.log(this.props.data)
         let rowData = this.props.data.map(item => ({
             ...item,
             Date: this.convertDate(item.Date),
