@@ -265,7 +265,6 @@ class ReleaseSummary extends Component {
             .then(res => {
                 this.props.saveFeatures({ data: res.data, id: release })
                 this.setState({ showFeatures: true })
-                console.log("saveFeature",res.data) 
             }, err => {
                 console.log('err ', err);
             });
@@ -275,7 +274,6 @@ class ReleaseSummary extends Component {
             .then(res => {
                 this.props.saveFeatures({ data: res.data, id: release })
                 this.setState({ showFeatures: true })
-                console.log("saveFeature",res.data) 
             }, err => {
                 console.log('err ', err);
             });
@@ -284,11 +282,8 @@ class ReleaseSummary extends Component {
         
         axios.get('/rest/bugs/total/' + temp)
             .then(res => {
-                
                 this.props.saveBugs({ data: { total: res.data.total, all: res.data }, id: release })
                 this.setState({ showBugs: true, cntr: 2 })
-                console.log("bugs total",res.data)
-
             }, err => {
                 console.log('err ', err);
             })
@@ -298,7 +293,6 @@ class ReleaseSummary extends Component {
             .then(res => {
                 this.props.saveBugs({ data: { open: res.data.total }, id: release })
                 this.setState({ showBugs: true, cntr: 4 })
-                // console.log("bugs open",res.data)
 
             }, err => {
                 console.log('err ', err);
@@ -307,7 +301,6 @@ class ReleaseSummary extends Component {
             .then(res => {
                 this.props.saveBugs({ data: { resolved: res.data.total }, id: release})
                 this.setState({ showBugs: true, cntr: 6 })
-                console.log("bugs resolved",res.data)
 
             }, err => {
                 console.log('err ', err);

@@ -30,7 +30,6 @@ function all(state = initialState.features, action) {
             if (bug.all) {
                 allBugs = bug.all;
             }
-            console.log("allBugs",allBugs)
             // state[action.payload.id] = action.payload.data;
             if (!state[action.payload.id]) {
                 state[action.payload.id] = { bugCount: { all: { total: 0, open: 0, resolved: 0, others: 0 }, category: {} }, bug: allBugs }

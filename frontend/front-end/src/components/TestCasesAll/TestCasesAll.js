@@ -14,7 +14,7 @@ import { getCurrentRelease, getTCForStrategy } from '../../reducers/release.redu
 import { getEachTCStatusScenario } from '../../reducers/testcase.reducer';
 import { saveSingleTestCase, saveTestCase, updateTCEdit, saveReleaseBasicInfo } from '../../actions';
 import {
-    Badge, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table, Button,
+    Col, Pagination, PaginationItem, PaginationLink, Row, Table, Button,
     UncontrolledPopover, PopoverHeader, PopoverBody,
     Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Collapse
 } from 'reactstrap';
@@ -32,9 +32,12 @@ import DatePickerEditor from './datePickerEditor';
 import EditTC from '../../views/Release/ReleaseTestMetrics/EditTC';
 import { roles, ws, tcTypes } from '../../constants';
 import TcSummary from './TcSummary';
+import  CheckBox  from './CheckBox';
 
 // import { data, domains, subDomains } from './constants';
 // "Description": "Enable helm", "ExpectedBehaviour": "dctl feature list should display helm as enabled", "Notes": "NOTES NOT PROVIDED"
+
+
 class TestCasesAll extends Component {
     cntr = 0;
     pageNumber = 0;
@@ -45,6 +48,106 @@ class TestCasesAll extends Component {
     isBlockedOrFailed = false;
     constructor(props) {
         super(props);
+        let columnDefDict = {
+            'TcID' : {
+              headerCheckboxSelection: (params) => {
+                  if (this.gridApi) {
+                      this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
+                  }
+                  return true;
+              },
+              headerCheckboxSelectionFilteredOnly: true,
+              checkboxSelection: true,
+              headerName: "TcID", field: "TcID", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              editable: false,
+              width: 180
+          },
+          'Scenario' : {
+              headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              width: '180',
+              editable: false,
+              cellClass: 'cell-wrap-text',
+          },
+          
+          'Description': {
+              headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              width: '520',
+              editable: false,
+              cellClass: 'cell-wrap-text',
+          },
+          'CardType' : {
+              headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+        
+              cellEditor: 'selectionEditor',
+              cellClass: 'cell-wrap-text',
+              cellEditorParams: {
+                  values: ['BOS', 'NYNJ', 'COMMON'],
+                  multiple: true
+              }
+          },
+          'Build' :  {
+              headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+        
+              cellEditor: 'selectionEditor',
+              cellClass: 'cell-wrap-text',
+              cellEditorParams: {
+                  values: ['BOS', 'NYNJ', 'COMMON'],
+                  multiple: true
+              }
+          },
+          
+          'Status' : {
+              headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+        
+              cellEditor: 'selectionEditor',
+              cellClass: 'cell-wrap-text',
+              cellEditorParams: {
+                  values: ['COMPLETED', 'NOT_COMPLETED']
+              }
+          },
+          'Bug' : {
+              headerName: "Bug", field: "CurrentStatus.Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+              cellClass: 'cell-wrap-text'
+          },
+          'Priority' :  {
+              headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
+          }, 
+          'Assignee' : {
+              headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+              cellClass: 'cell-wrap-text',
+        
+              cellEditor: 'selectionEditor',
+              cellEditorParams: {
+                  values: this.props.users.map(item => item.email)
+              }
+          },
+          'WorkingStatus' : {
+              headerName: "WorkingStatus", field: "WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+              cellClass: 'cell-wrap-text',
+          },
+          'TcName' : {
+              headerName: "TcName", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+          },
+          'Domain' : {
+              headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              width: '180',
+              editable: false,
+              cellClass: 'cell-wrap-text',
+          },
+          'SubDomain' : {
+              headerName: "SubDomain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              width: '180',
+              editable: false,
+              cellClass: 'cell-wrap-text',
+          },
+          'Steps' : { 
+              headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              width: '180',
+              editable: false,
+              cellClass: 'cell-wrap-text',
+          },
+        }
+        
         this.state = {
             updateCounter: 1,
             selectedRows: 0,
@@ -54,114 +157,32 @@ class TestCasesAll extends Component {
             rowSelect: false,
             isEditing: false,
             delete: false,
+            tableColumns: [
+                {id: 1, value: "TcID", isChecked: false},
+                {id: 2, value: "Scenario", isChecked: false},
+                {id: 3, value: "Description", isChecked: false},
+                {id: 4, value: "CardType", isChecked: false},
+                {id: 5, value: "Build", isChecked: false},
+                {id: 6, value: "Status", isChecked: false},
+                {id: 7, value: "Bug", isChecked: false},
+                {id: 8, value: "Priority", isChecked: false},
+                {id: 9, value: "Assignee", isChecked: false},
+                {id: 10, value: "WorkingStatus", isChecked: false},
+                {id: 11, value: "TcName", isChecked: false},
+                {id: 12, value: "Domain", isChecked: false},
+                {id: 13, value: "SubDomain", isChecked: false},
+                {id: 14, value: "Steps", isChecked: false},
+              ],
+              
             columnDefs: [
-                // {
-                //     headerCheckboxSelection: (params) => {
-                //         if (this.gridApi) {
-                //             this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
-                //         }
-                //         return true;
-                //     },
-                //     headerCheckboxSelectionFilteredOnly: true,
-                //     checkboxSelection: true,
-                //     width: 50
-                // },
-                {
-                    headerCheckboxSelection: (params) => {
-                        if (this.gridApi) {
-                            this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
-                        }
-                        return true;
-                    },
-                    headerCheckboxSelectionFilteredOnly: true,
-                    checkboxSelection: true,
-                    headerName: "TcID", field: "TcID", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    editable: false,
-                    width: 180
-                },
-                {
-                    headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    width: '180',
-                    editable: false,
-                    cellClass: 'cell-wrap-text',
-                },
-                
-                {
-                    headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    width: '520',
-                    editable: false,
-                    cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-
-                    cellEditor: 'selectionEditor',
-                    cellClass: 'cell-wrap-text',
-                    cellEditorParams: {
-                        values: ['BOS', 'NYNJ', 'COMMON'],
-                        multiple: true
-                    }
-                },
-                {
-                    headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-
-                    cellEditor: 'selectionEditor',
-                    cellClass: 'cell-wrap-text',
-                    cellEditorParams: {
-                        values: ['BOS', 'NYNJ', 'COMMON'],
-                        multiple: true
-                    }
-                },
-                {
-                    headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-
-                    cellEditor: 'selectionEditor',
-                    cellClass: 'cell-wrap-text',
-                    cellEditorParams: {
-                        values: ['COMPLETED', 'NOT_COMPLETED']
-                    }
-                },
-                {
-                    headerName: "Bug", field: "CurrentStatus.Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-                    cellClass: 'cell-wrap-text'
-                },
-                {
-                    headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-                    cellClass: 'cell-wrap-text',
-
-                    cellEditor: 'selectionEditor',
-                    cellEditorParams: {
-                        values: this.props.users.map(item => item.email)
-                    }
-                },
-                {
-                    headerName: "WorkingStatus", field: "WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-                    cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "TcName", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    width: '180',
-                    editable: false,
-                    cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "SubDomain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    width: '180',
-                    editable: false,
-                    cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    width: '180',
-                    editable: false,
-                    cellClass: 'cell-wrap-text',
-                },
+                columnDefDict['TcID'],
+                columnDefDict['Scenario'],
+                columnDefDict['Description'],
+                columnDefDict['CardType'],
+                columnDefDict['Status'],
+                columnDefDict['Build'],
+                columnDefDict['Bug'],
+                columnDefDict['Priority'],
             ],
             
             defaultColDef: { resizable: true },
@@ -205,6 +226,140 @@ class TestCasesAll extends Component {
             },
         }
     }
+
+    handleAllChecked = (event) => {
+        let tableColumns = this.state.tableColumns
+        tableColumns.forEach(columnName => columnName.isChecked = event.target.checked) 
+        this.setState({tableColumns: tableColumns})
+        // console.log("handleAllChecked",this.state.tableColumns)
+
+    }
+
+    handleCheckChieldElement = (event) => {
+        let tableColumns = this.state.tableColumns
+        tableColumns.forEach(columnName => {
+            if (columnName.value === event.target.value)
+                columnName.isChecked =  event.target.checked
+        })
+        this.setState({tableColumns: tableColumns})
+    }
+
+    setSelectedColumns = () => {
+
+        let columnDefDict1 = {
+            'TcID' : {
+              headerCheckboxSelection: (params) => {
+                  if (this.gridApi) {
+                      this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
+                  }
+                  return true;
+              },
+              headerCheckboxSelectionFilteredOnly: true,
+              checkboxSelection: true,
+              headerName: "TcID", field: "TcID", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              editable: false,
+              width: 180
+          },
+          'Scenario' : {
+              headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              width: '180',
+              editable: false,
+              cellClass: 'cell-wrap-text',
+          },
+          
+          'Description': {
+              headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              width: '520',
+              editable: false,
+              cellClass: 'cell-wrap-text',
+          },
+          'CardType' : {
+              headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+        
+              cellEditor: 'selectionEditor',
+              cellClass: 'cell-wrap-text',
+              cellEditorParams: {
+                  values: ['BOS', 'NYNJ', 'COMMON'],
+                  multiple: true
+              }
+          },
+          'Build' :  {
+              headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+        
+              cellEditor: 'selectionEditor',
+              cellClass: 'cell-wrap-text',
+              cellEditorParams: {
+                  values: ['BOS', 'NYNJ', 'COMMON'],
+                  multiple: true
+              }
+          },
+          
+          'Status' : {
+              headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+        
+              cellEditor: 'selectionEditor',
+              cellClass: 'cell-wrap-text',
+              cellEditorParams: {
+                  values: ['COMPLETED', 'NOT_COMPLETED']
+              }
+          },
+          'Bug' : {
+              headerName: "Bug", field: "CurrentStatus.Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+              cellClass: 'cell-wrap-text'
+          },
+          'Priority' :  {
+              headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
+          }, 
+          'Assignee' : {
+              headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+              cellClass: 'cell-wrap-text',
+        
+              cellEditor: 'selectionEditor',
+              cellEditorParams: {
+                  values: this.props.users.map(item => item.email)
+              }
+          },
+          'WorkingStatus' : {
+              headerName: "WorkingStatus", field: "WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+              cellClass: 'cell-wrap-text',
+          },
+          'TcName' : {
+              headerName: "TcName", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+          },
+          'Domain' : {
+              headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              width: '180',
+              editable: false,
+              cellClass: 'cell-wrap-text',
+          },
+          'SubDomain' : {
+              headerName: "SubDomain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              width: '180',
+              editable: false,
+              cellClass: 'cell-wrap-text',
+          },
+          'Steps' : { 
+              headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+              width: '180',
+              editable: false,
+              cellClass: 'cell-wrap-text',
+          },
+        }
+        
+        // console.log("setSelectedColumns",this.state.tableColumns);
+        let tableColumns = this.state.tableColumns;
+        let selectedColumns = []
+        tableColumns.forEach(columnName => {
+            if (columnName.isChecked == true){
+                selectedColumns.push(columnDefDict1[columnName.value])
+            }
+        })
+
+        // console.log("selected columns",selectedColumns);
+        this.setState({columnDefs:selectedColumns});
+        this.setState({ popoverOpen1: !this.state.popoverOpen1 });
+    }
+
     getRowHeight = (params) => {
         if (params.data && params.data.Description) {
             return 28 * (Math.floor(params.data.Description.length / 60) + 2);
@@ -244,6 +399,7 @@ class TestCasesAll extends Component {
     };
     toggle = () => this.setState({ modal: !this.state.modal });
     popoverToggle = () => this.setState({ popoverOpen: !this.state.popoverOpen });
+    popoverToggle1 = () => this.setState({ popoverOpen1: !this.state.popoverOpen1 });
     confirmStatusDeleteToggle = () => this.setState({ deleteStatusModal: !this.state.deleteStatusModal });
     confirmToggle() {
         this.changeLog = {};
@@ -560,7 +716,7 @@ class TestCasesAll extends Component {
             .then(all => {
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
-                console.log("tc data",all.data)
+                // console.log("tc data",all.data)
                 this.saveLocalMultipleTC({ data: all.data, id: release }, false, updateRelease)
                 this.gridOperations(true);
 
@@ -794,7 +950,7 @@ class TestCasesAll extends Component {
                     "RequestType": 'PUT',
                     "URL": `/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}/${statusList.id}`
                 }
-                console.log("save single TC Status",status)
+                // console.log("save single TC Status",status)
                 axios.put(`/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
                     .then(res => {
                         this.gridOperations(true);
@@ -968,16 +1124,17 @@ class TestCasesAll extends Component {
                         </div>
                         <Collapse isOpen={this.state.tcOpen}>
                             <div>
+                                
                                 {/* <div style={{ width: '100%', height: ((window.screen.height * (1 - 0.248)) - 20) + 'px', marginBottom: '6rem' }}> */}
                                 <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
                                             {
                                                 [
-                                                    { style: { width: '9rem', marginLeft: '1.5rem' }, field: 'domain', onChange: (e) => this.onSelectDomain(e), values: [{ value: '', text: 'Select Domain' }, ...(domains && domains.map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '9rem', marginLeft: '0.5rem' }, field: 'subDomain', onChange: (e) => this.onSelectSubDomain(e), values: [{ value: '', text: 'Select SubDomain' }, ...(subdomains && subdomains.map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '9rem', marginLeft: '0.5rem' }, field: 'CardType', onChange: (e) => this.onSelectCardType(e), values: [{ value: '', text: 'Select CardType' }, ...(['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] }
+                                                    { style: { width: '8rem', marginLeft: '1.5rem' }, field: 'domain', onChange: (e) => this.onSelectDomain(e), values: [{ value: '', text: 'Select Domain' }, ...(domains && domains.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'subDomain', onChange: (e) => this.onSelectSubDomain(e), values: [{ value: '', text: 'Select SubDomain' }, ...(subdomains && subdomains.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'CardType', onChange: (e) => this.onSelectCardType(e), values: [{ value: '', text: 'Select CardType' }, ...(['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '7rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] }
                                                 ].map(item => (
                                                     this.props.data &&
                                                     <div style={item.style}>
@@ -992,8 +1149,29 @@ class TestCasesAll extends Component {
                                             <div style={{ width: '5rem', marginLeft: '0.5rem' }}>
                                                 <Input disabled={this.state.isApiUnderProgress} style={{ fontSize: '12px' }} type="text" id="filter-text-box" placeholder="Search..." onChange={(e) => this.onFilterTextBoxChanged(e.target.value)} />
                                             </div>
-                                            <div style={{ width: '3rem', marginLeft: '0.5rem' }}>
+                                            <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
                                                 <Button disabled={this.state.isApiUnderProgress} id="getall" onClick={() => this.getAlltcs()} type="button">All</Button>
+                                            </div>
+                                            <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
+                                                <Button id="PopoverAssign1" type="button"><i class="fa fa-columns" aria-hidden="true"></i>
+                                                {/* Select Columns */}
+                                                </Button>
+                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign1" id="PopoverAssignButton1" toggle={() => this.popoverToggle1()} isOpen={this.state.popoverOpen1}>
+                                                    <PopoverBody>
+                                                        <div>
+                                                            <input type="checkbox" onClick={this.handleAllChecked}  value="checkedall" /> Check / Uncheck All
+                                                                <ul>
+                                                                {
+                                                                this.state.tableColumns.map((columnName) => {
+                                                                    return (<CheckBox handleCheckChieldElement={this.handleCheckChieldElement}  {...columnName} />)
+                                                                })
+                                                                }
+                                                                </ul>
+                                                            <Button onClick={() => this.setSelectedColumns()}>Change Column View</Button>
+                                                           
+                                                        </div>
+                                                    </PopoverBody>
+                                                </UncontrolledPopover>
                                             </div>
                                             {
                                                 this.props.user &&
@@ -1134,7 +1312,8 @@ class TestCasesAll extends Component {
 
                                                 </div>
                                             }
-                                            <div style={{ width: '6rem', marginLeft: '0.5rem' }}>
+                                             
+                                            <div style={{ width: '5rem', marginLeft: '0.5rem' }}>
                                                 <Button disabled={this.state.isApiUnderProgress} title="Only selected TCS will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.gridApi) {
                                                         let selected = this.gridApi.getSelectedRows().length;
@@ -1148,8 +1327,6 @@ class TestCasesAll extends Component {
                                                     Download
                                                 </Button>
                                             </div>
-
-
                                         </div>
                                     </div>
                                     <div style={{ width: "100%", height: "100%" }}>
