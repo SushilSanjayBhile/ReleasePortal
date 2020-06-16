@@ -303,6 +303,21 @@ class LOGS(models.Model):
     def __str__(self):
         return "{0}:-{1}".format(self.RequestType, self.Log)
 
+class LOGSGUI(models.Model):
+    logNo = models.AutoField(primary_key = True)
+    tcInfoNum = models.IntegerField()
+    UserName = models.CharField(max_length = 100, blank = False, default = "UNKNOWN")
+    Timestamp = models.DateTimeField(auto_now = True)
+    RequestType = models.CharField(max_length = 10, blank = False)
+    LogData = models.TextField()
+    URL = models.CharField(max_length = 100, blank = True, null=True)
+    # Link = models.TextField()
+    # Link = models.ForeignKey('self', on_delete = models.PROTECT, blank=True, null=True)
+
+    def __str__(self):
+        return "{0}:-{1}".format(self.RequestType, self.Log)
+
+
 """
 
 need to create this below table because we cannot simply maintain a list of description 
