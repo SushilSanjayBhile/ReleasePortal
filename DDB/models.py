@@ -311,52 +311,6 @@ class LOGSGUI(models.Model):
     RequestType = models.CharField(max_length = 10, blank = False)
     LogData = models.TextField()
     URL = models.CharField(max_length = 100, blank = True, null=True)
-    # Link = models.TextField()
-    # Link = models.ForeignKey('self', on_delete = models.PROTECT, blank=True, null=True)
 
     def __str__(self):
         return "{0}:-{1}".format(self.RequestType, self.Log)
-
-
-"""
-
-need to create this below table because we cannot simply maintain a list of description 
-of features in releases table.
-eg.) 
-row 1)  releaseNumber = 1
-        featureList = ["mirroring", "snapshot", "bakup"]
-        featureDescription = ["suporting mirroring upto 3 nodes", "can take snapshot of volumes", "takes backup of volumes everyday"]
-row 2)  releaseNumber = 2
-        featureList = ["mirroring", "snapshot", "bakup"]
-        featureDescription = ["suporting mirroring upto 3 nodes", "can take snapshot of volumes", "takes backup of volumes everyday"]
-row 3)  releaseNumber = 3
-        featureList = ["mirroring", "snapshot", "bakup"]
-        featureDescription = ["suporting mirroring upto 3 nodes", "can take snapshot of volumes", "takes backup of volumes everyday"]
-
-INSTEAD we can save it as 
-row 1)  RN = r1
-        FeatureList = [f1,f2,f3] #these will be foreign keys from below table
-row 2)  RN = r2
-        FeatureList = [f1,f2,f3] #these will be foreign keys from below table
-row 3)  RN = r3
-        FeatureList = [f1,f2,f3] #these will be foreign keys from below table
-row 4)  RN = r4
-        FeatureList = [f1,f2,f3] #these will be foreign keys from below table
-"""
-
-
-"""
-function which returns same schema to create multile table of same schema
-
-
-def getTcStatusModel(date):
-   class TC_STATUS(models.Model):
-
-    class Meta:
-        TableName = Date
-
-    Bugs = models.IntegerField()
-    LogFilePath = models.CharField(max_length=300, blank = False)
-
-    return TC_STATUS
-"""

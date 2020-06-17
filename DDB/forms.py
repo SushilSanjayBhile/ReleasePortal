@@ -1,8 +1,11 @@
 from django.forms import ModelForm
 from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, E2E, STRESS, LONGEVITY, \
-        DEFAULT_DOMAIN_SUBDOMAIN, LATEST_TC_STATUS
+        DEFAULT_DOMAIN_SUBDOMAIN, LATEST_TC_STATUS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LOGSGUI
 
-from .models import TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS
+class GuiLogsForm(ModelForm):
+    class Meta:
+        model = LOGSGUI
+        fields = "__all__"
 
 class GuiStatusForm(ModelForm):
     class Meta:

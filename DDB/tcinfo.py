@@ -12,7 +12,6 @@ import datetime
 from .forms import LogForm
 
 def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
-    Logs = json.dumps(logData)
     Timestamp = datetime.datetime.now()
     data = {'UserName': UserName, 'RequestType': RequestType, 'LogData': logData, 'Timestamp': Timestamp, 'URL': url, 'TcID': tcid, 'CardType': card}
     fd = LogForm(data)
@@ -64,90 +63,6 @@ def updateGuiData(updatedData, data, Release):
 
      data.save(using = Release)
      return 1
-
-@csrf_exempt
-def WHOLE_GUI_TC_INFO(request, Release):
-    if request.method == "GET":
-        startTime = time.time()
-        AllInfoData = []
-        statusDict = {}
-
-        index = int(request.GET.get('index', 0))
-        Domain = str(request.GET.get('Domain', None))
-        SubDomain = str(request.GET.get('SubDomain', None))
-        Priority = str(request.GET.get('Priority', None))
-
-        infodata = TC_INFO_GUI.objects.using(Release).all()
-
-        if Domain != 'None':
-            infodata = infodata.filter(Domain = Domain)
-        if SubDomain != 'None':
-            infodata = infodata.filter(SubDomain = SubDomain)
-        if Priority != 'None':
-            infodata = infodata.filter(Priority = Priority)
-
-        count = int(request.GET.get('count', len(infodata)))
-
-        infoserializer = TC_INFO_GUI_SERIALIZER(infodata, many = True)
-        infoDict = createInfoDict(infoserializer.data, Release)
-
-        statusdata = GUI_TC_STATUS.objects.using(Release).all().order_by('Date')
-        lateststatusdata = GUI_LATEST_TC_STATUS.objects.using(Release).all().order_by('Date')
-
-        latestSer = LATEST_TC_STATUS_GUI_SERIALIZER(lateststatusdata, many = True)
-
-        for status in latestSer.data:
-            try:
-                status.update(infoDict[status["tcInfoNum"]])
-            except:
-                pass
-
-        for rec in latestSer.data:
-           # if rec["Result"] == "Unblocked":
-           #    continue
-            try:
-                tcid = rec['TcID']
-                card = rec['CardType'].strip('][').strip('\'')
-            except:
-                continue
-
-            if card not in statusDict:
-                statusDict[card]= {}
-            if tcid in statusDict[card]:
-                statusDict[card][tcid].append(rec)
-            else:
-                statusDict[card][tcid] = []
-                statusDict[card][tcid].append(rec)
-
-        for info in infoserializer.data:
-            #if info["Priority"] == "Skip" and info["Priority"] == "NA":
-            #    continue
-            info = json.loads(json.dumps(info))
-            info["TcName"] =  info["AutomatedTcName"]
-            #info['StatusList'] = {"id": "", "TcID": info['TcID'], "TcName": info['AutomatedTcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
-            #info['CurrentStatus'] = {"id": "", "TcID": info['TcID'], "TcName": info['AutomatedTcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
-
-            try:
-                card = info['CardType'].strip('][').strip('\'')
-                tcid = info['TcID']
-                info['StatusList'] = json.loads(json.dumps(statusDict[card][tcid]))
-                print(statusDict[card][tcid][-1]["Result"])
-                if statusDict[card][tcid][-1]["Result"] == "Unblocked":
-                    info["CurrentStatus"] = {}
-                else:
-                    #info['CurrentStatus'] = statusDict[card][tcid][-1]
-                    info['CurrentStatus'] = json.loads(json.dumps(statusDict[card][tcid][-1]))
-            except:
-                info["StatusList"] = {}
-                info["CurrentStatus"] = {}
-
-            AllInfoData.append(info)
-
-        if count > len(AllInfoData):
-            count = len(AllInfoData)
-
-        requiredData = AllInfoData[index:count]
-        return HttpResponse(json.dumps(requiredData))
 
 @csrf_exempt
 def WHOLE_TC_INFO(request, Release):
@@ -634,34 +549,6 @@ def GET_TC_INFO_BY_ID(request, Release, id, card):
         except:
             return JsonResponse({'Not Found': "Record Not Found"}, status = 404)
         return HttpResponse(json.dumps(tcdata))
-
-
-@csrf_exempt
-def GET_TC_INFO_GUI_ID(request, Release, id, browserName):
-    if request.method == "GET":
-        try:
-            infoData = TC_INFO_GUI.objects.using(Release).filter(TcID = id).get(BrowserName = browserName)
-        except:
-            return JsonResponse({'Not Found': "Record Not Found"}, status = 404)
-        #activityData = LOGS.objects.using(Release).filter(TcID = id).filter(BrowserName = browserName)
-
-        #activitySerializer = LOG_SERIALIZER(activityData, many = True)
-        infoSerializer = TC_INFO_GUI_SERIALIZER(infoData)
-        tcdata = infoSerializer.data
-        tcinfonum = tcdata["id"]
-
-        try:
-            statusData = GUI_TC_STATUS.objects.using(Release).filter(tcInfoNum = tcinfonum).order_by('Date')
-            statusSerializer = LATEST_TC_STATUS_GUI_SERIALIZER(statusData, many = True)
-    
-            #tcdata['Activity'] = activitySerializer.data
-            tcdata['StatusList'] = []
-            for status in statusSerializer.data:
-                tcdata['StatusList'].append(status)
-        except:
-            pass
-        return HttpResponse(json.dumps(tcdata))
-
 
 @csrf_exempt
 def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
