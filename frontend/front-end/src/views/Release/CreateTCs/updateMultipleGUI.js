@@ -192,7 +192,7 @@ class UpdateMultiple extends Component {
         data.TcName = this.getTcName(`${data.TcName}`);
         data.BrowserName = 'NB'
 
-        axios.put(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
+        axios.put(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, [{ ...data }])
             .then(res => {
                 this.currentID += 1;
                 if (this.currentID < this.state.multiple.length) {

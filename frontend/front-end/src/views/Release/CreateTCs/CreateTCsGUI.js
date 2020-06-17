@@ -96,6 +96,7 @@ class CreateTCs extends Component {
         this.arrayFields.forEach(item => data[item] = this.state.addTC[item]);
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
+            "tcInfoNum":this.props.id,
             "TcID": data.TcID,
             "CardType": "COMMON",
             "UserName": this.props.currentUser.email,
@@ -120,6 +121,7 @@ class CreateTCs extends Component {
         data.TcName = this.getTcName(`${data.TcName}`);
         data.BrowserName = 'NB'
         data.CardType = 'COMMON'
+        console.log("Create Tcs",data)
         axios.post(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 // this.getTcs();

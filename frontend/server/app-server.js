@@ -382,6 +382,26 @@ app.use('/rest/bugs/total/:id', (req, res) => {
         console.log('cannot get features due to error in fetching JIRA')
     })
 }, err => { });
+
+app.use('/rest/bugs/totalCount/:id/:startAt', (req, res) => {
+    var totalBugsStr = `?jql=fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug")&fields=key,status,priority,summary&maxResults=2000&startAt=${req.params.startAt}`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+        if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
 app.use('/rest/bugs/open/:id', (req, res) => {
     var openBugsStr = `?jql=status%20in%20("Open","In Progress","To Do","Done")%20AND%20fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug")%20AND%20(Component!=Automation%20OR%20Component=EMPTY)&fields=key,status,priority,summary&maxResults=2000`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + openBugsStr, searchArgs, function (searchResultTotal, response) {

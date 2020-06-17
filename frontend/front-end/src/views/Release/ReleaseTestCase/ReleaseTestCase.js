@@ -326,7 +326,7 @@ class ReleaseTestCase extends Component {
                                             }
 
                                             <div className='rp-icon-button'><i className="fa fa-area-chart"></i></div>
-                                            <span className='rp-app-table-title'>Test Case Status</span>
+                                            <span className='rp-app-table-title'>Test Case Status (CLI + GUI)</span>
                                 
                                         </div>
                                     </div>
@@ -514,7 +514,7 @@ class ReleaseTestCase extends Component {
                                                         <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                                     }
                                                     <div className='rp-icon-button'></div>
-                                                    <span className='rp-app-table-title'>Test Case Status</span>
+                                                    <span className='rp-app-table-title'>Test Case Status (CLI + GUI)</span>
                                                 
                                                     </div>
                                                 </div>
@@ -575,7 +575,7 @@ class ReleaseTestCase extends Component {
                                                         <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                                     }
                                                     <div className='rp-icon-button'></div>
-                                                    <span className='rp-app-table-title'>CLI Test Case Status</span>
+                                                    <span className='rp-app-table-title'>Test Case Status (CLI)</span>
                                                 
                                                     </div>
                                                 </div>
@@ -636,7 +636,7 @@ class ReleaseTestCase extends Component {
                                                         <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                                     }
                                                     <div className='rp-icon-button'></div>
-                                                    <span className='rp-app-table-title'>GUI Test Case Status</span>
+                                                    <span className='rp-app-table-title'>Test Case Status (GUI)</span>
                                                 
                                                     </div>
                                                 </div>

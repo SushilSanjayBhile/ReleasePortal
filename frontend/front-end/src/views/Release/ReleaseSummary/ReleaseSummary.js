@@ -140,6 +140,7 @@ class ReleaseSummary extends Component {
             modal: false,
             toggleModal: false,
             jenkinsBuildLink: '',
+            totalBugsList:[],
             editReleaseStatusOptions: [TABLE_OPTIONS.EDIT],
             basic: { editOptions: [TABLE_OPTIONS.EDIT], editing: false, updated: {}, open: false },
             qaStrategy: { editOptions: [TABLE_OPTIONS.EDIT], editing: false, updated: {}, open: false, collapseOpen: { SetupsUsed: false, Engineers: false } },
@@ -244,6 +245,9 @@ class ReleaseSummary extends Component {
     initialize(release) {
         this.reset();
         let temp = release;
+        let totalCount = 0
+        let maxResults = 0
+        let totalBugs = []
         if(temp === 'Spektra 2.4') {
             temp='2.4.0'
 
@@ -280,13 +284,31 @@ class ReleaseSummary extends Component {
 
         }
         
+        // Function to get list of all bugs
         axios.get('/rest/bugs/total/' + temp)
             .then(res => {
-                this.props.saveBugs({ data: { total: res.data.total, all: res.data }, id: release })
+                totalBugs = res;
+                maxResults = res.data.maxResults
+                totalCount = parseInt(res.data.total/res.data.maxResults)
+                let startAt = 0
+
+                for(let i = 0; i < totalCount ; i++){
+                    startAt = startAt + res.data.maxResults + 1
+                    let url = '/rest/bugs/totalCount/'  + temp + "/" + startAt
+                    axios.get(url).then(res1=>{
+                        for(let i = 0 ;i < res1['data']['issues'].length ;i++){
+                            totalBugs['data']['issues'].push(res1['data']['issues'][i])
+                        }
+                    })
+                }
+
+                this.props.saveBugs({ data: { total: totalBugs.data.total, all: totalBugs.data }, id: release })
                 this.setState({ showBugs: true, cntr: 2 })
             }, err => {
                 console.log('err ', err);
             })
+        
+        
 
             
         axios.get('/rest/bugs/open/' + temp)
@@ -419,17 +441,22 @@ class ReleaseSummary extends Component {
         }
        
         let featuresCount = 0;
-        let statusScenarios = { Open: { total: 0 }, Resolved: { total: 0 } };
+        let statusScenarios = { Open: { total: 0 }, Resolved: { total: 0 }};
         if (this.props.feature && this.props.feature.issues) {
             featuresCount = this.props.feature.issues.length;
             this.props.feature.issues.forEach(item => {
-                if (statusScenarios[item.fields.status.name]) {
-                    statusScenarios[item.fields.status.name].total += 1;
-                } else {
-                    statusScenarios[item.fields.status.name] = { total: 1 }
+                if(item.fields.status.name !== 'In Progress'){
+                    if (statusScenarios[item.fields.status.name]) {
+                        statusScenarios[item.fields.status.name].total += 1;
+                    } else {
+                        statusScenarios[item.fields.status.name] = { total: 1 }
+                    }
+
                 }
+                
             })
         }
+
         let priorities = ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'].map(item => ({ value: item, selected: this.state.selectedPriority && this.state.selectedPriority.includes(item) }));
         let multiselect = { 'Priorities': priorities, };
             
@@ -622,7 +649,7 @@ class ReleaseSummary extends Component {
                                             {
                                                 this.props.bug && this.props.bug.bugCount && Object.keys(this.props.bug.bugCount.all).map((item, index) =>
                                                     <div class="col-sm-3">
-                                                        <div className={`c-callout c-callout-${item.toLowerCase()}`}>
+                                                        <div className={`c-callout c-callout-${item.toLowerCase()}`} onClick={()=>{console.log("item is selected",item)}}>
                                                             <small class="text-muted">{item.toUpperCase()}</small><br></br>
                                                             <strong class="h4">{this.props.bug.bugCount.all[item]}</strong>
                                                         </div>
@@ -654,14 +681,13 @@ class ReleaseSummary extends Component {
                                                 {
                                                     Object.keys(statusScenarios).map(item =>
                                                         <div class="col-sm-3">
-                                                            <div className={`c-callout c-callout-${item.toLowerCase()}`}>
+                                                            <div className={`c-callout c-callout-${item.toLowerCase()}`}  >
                                                                 <small class="text-muted">{item.toUpperCase()}</small><br></br>
                                                                 <strong class="h4">{statusScenarios[item].total}</strong>
                                                             </div>
                                                         </div>
                                                     )
                                                 }
-
                                             </div>
                                         }
 

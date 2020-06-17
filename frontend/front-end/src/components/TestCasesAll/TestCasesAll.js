@@ -178,7 +178,6 @@ class TestCasesAll extends Component {
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
                 columnDefDict['Description'],
-                columnDefDict['CardType'],
                 columnDefDict['Status'],
                 columnDefDict['Build'],
                 columnDefDict['Bug'],

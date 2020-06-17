@@ -177,123 +177,12 @@ class TestCasesAllGUI extends Component {
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
                 columnDefDict['Description'],
-                columnDefDict['CardType'],
                 columnDefDict['Status'],
                 columnDefDict['Build'],
                 columnDefDict['Bug'],
                 columnDefDict['Priority'],
             ],
-            columnDefs: [
-                // {
-                //     headerCheckboxSelection: (params) => {
-                //         if (this.gridApi) {
-                //             this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
-                //         }
-                //         return true;
-                //     },
-                //     headerCheckboxSelectionFilteredOnly: true,
-                //     checkboxSelection: true,
-                //     width: 50
-                // },
-                {
-                    headerCheckboxSelection: (params) => {
-                        if (this.gridApi) {
-                            this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
-                        }
-                        return true;
-                    },
-                    headerCheckboxSelectionFilteredOnly: true,
-                    checkboxSelection: true,
-                    headerName: "TcID", field: "TcID", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    editable: false,
-                    width: 180
-                },
-                
-                {
-                    headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    width: '180',
-                    editable: false,
-                    cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    width: '520',
-                    editable: false,
-                    cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-
-                    cellEditor: 'selectionEditor',
-                    cellClass: 'cell-wrap-text',
-                    cellEditorParams: {
-                        values: ['BOS', 'NYNJ', 'COMMON'],
-                        multiple: true
-                    }
-                },
-                {
-                    headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-
-                    cellEditor: 'selectionEditor',
-                    cellClass: 'cell-wrap-text',
-                    cellEditorParams: {
-                        values: ['BOS', 'NYNJ', 'COMMON'],
-                        multiple: true
-                    }
-                },
-                {
-                    headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-
-                    cellEditor: 'selectionEditor',
-                    cellClass: 'cell-wrap-text',
-                    cellEditorParams: {
-                        values: ['COMPLETED', 'NOT_COMPLETED']
-                    }
-                },
-                {
-                    headerName: "Bug", field: "CurrentStatus.Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-                    cellClass: 'cell-wrap-text'
-                },
-                {
-                    headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-                    cellClass: 'cell-wrap-text',
-
-                    cellEditor: 'selectionEditor',
-                    cellEditorParams: {
-                        values: this.props.users.map(item => item.email)
-                    }
-                },
-                {
-                    headerName: "WorkingStatus", field: "WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-                    cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "TcName", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    width: '180',
-                    editable: false,
-                    cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "SubDomain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    width: '180',
-                    editable: false,
-                    cellClass: 'cell-wrap-text',
-                },
-                {
-                    headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                    width: '180',
-                    editable: false,
-                    cellClass: 'cell-wrap-text',
-                },
-               
-                
-            ],
+            
             defaultColDef: { resizable: true },
 
             e2eColumnDefs: [{

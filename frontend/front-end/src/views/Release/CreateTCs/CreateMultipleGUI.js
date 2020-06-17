@@ -189,8 +189,10 @@ class CreateMultiple extends Component {
         // tc info fields
         this.textFields.map(item => data[item] = row[item]);
         this.arrayFields.forEach(item => data[item] = this.joinArrays(row[item]));
+        console.log("data",data)
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
+            "tcInfoNum":this.props.id,
             "TcID": data.TcID,
             "CardType": 'COMMON',
             "UserName": this.props.currentUser.email,
@@ -202,6 +204,7 @@ class CreateMultiple extends Component {
         data.TcName = this.getTcName(`${data.TcName}`);
         data.BrowserName = 'NB'
         data.CardType = 'COMMON'
+        console.log("Create Tcs multiple",data)
 
         axios.post(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {

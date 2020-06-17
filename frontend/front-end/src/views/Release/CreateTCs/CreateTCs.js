@@ -96,6 +96,7 @@ class CreateTCs extends Component {
         this.arrayFields.forEach(item => data[item] = this.state.addTC[item]);
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
+            "tcInfoNum":this.props.id,
             "TcID": data.TcID,
             "CardType": data.CardType,
             "UserName": this.props.currentUser.email,

@@ -105,20 +105,20 @@ class ReleaseStatus extends Component {
         axios.get(url).then(res=>{
                     list.push(res.data);
                     for (let [key, value] of Object.entries(list[0])) {
-                        // console.log(`${key}: ${value}`);
                         list2.push({'bug_no':key,'value':value})
                     }
                     let a = this.sortBugList(list2)
                     this.setState({blockedBugList:list2})
-                    let arti = []
+                    let list3 = []
                     for(let i = 0 ; i < this.state.blockedBugList.length ; i++){
                         for(let j = 0 ; j < this.props.bug.bug.issues.length ; j++ ){
                             if(this.props.bug.bug.issues[j]['key'] == this.state.blockedBugList[i]['bug_no'] ){
-                                console.log(this.props.bug.bug.issues[j]['key'],this.state.blockedBugList[i]['bug_no'])
-                                // arti.push(this.props.bug.bug.issues[j]['key'])
+                                let bug = this.props.bug.bug.issues[j].fields
+                                list3.push({'bug_no':this.props.bug.bug.issues[j]['key'],'value':this.state.blockedBugList[i]['value'],'summary':bug.summary,'status':bug.status.name,'priority':bug.priority.name})
                             }
                         }
                     }
+                    this.setState({blockedBugList:list3})
                 },
                 error => {
                 console.log('bugwiseblockedtcs',error);
@@ -133,7 +133,10 @@ class ReleaseStatus extends Component {
             return (
                         <tr key={i}> 
                             <td width="100px" height="50px" >{e.bug_no}</td>
+                            <td width="100px" height="50px" >{e.summary}</td>
+                            <td width="100px" height="50px" >{e.status}</td>
                             <td width="100px" height="50px" >{e.value}</td>
+                            <td width="100px" height="50px" >{e.priority}</td>
                         </tr>    
                 );
             })
@@ -147,11 +150,14 @@ class ReleaseStatus extends Component {
         if (this.props.feature && this.props.feature.issues) {
             featuresCount = this.props.feature.issues.length;
             this.props.feature.issues.forEach(item => {
-                if (statusScenarios[item.fields.status.name]) {
-                    statusScenarios[item.fields.status.name].total += 1;
-                } else {
-                    statusScenarios[item.fields.status.name] = { total: 1 }
+                if(item.fields.status.name !== 'In Progress'){
+                    if (statusScenarios[item.fields.status.name]) {
+                        statusScenarios[item.fields.status.name].total += 1;
+                    } else {
+                        statusScenarios[item.fields.status.name] = { total: 1 }
+                    }
                 }
+                
             })
         }
         return (
@@ -179,6 +185,7 @@ class ReleaseStatus extends Component {
                                         </div>
                                         {
                                             this.props.bug && Object.keys(this.props.bug.bugCount.all).map(item =>
+                                                
                                                 <div class='col-md-2'>
                                                     <div className={`c-callout c-callout-${item.toLowerCase()}`} style={{ marginTop: '0', marginBottom: '0' }}>
                                                         <small class="text-muted">{item.toUpperCase()}</small><br></br>
@@ -208,29 +215,23 @@ class ReleaseStatus extends Component {
                                                     <th>Summary</th>
                                                     <th  style={{width:'250px'}}>Status</th>
                                                     <th  style={{width:'250px'}}>Priority</th>
-                                                    {/* <th  style={{width:'250px'}}>#TC Blocked</th> */}
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 {  
                                                     this.props.bug && this.props.bug.bug && this.props.bug.bug.issues && 
                                                     this.props.bug.bug.issues.map(item => {
-                                                        // console.log('item here')
-                                                        // this.makelistAsUWant(item)
-                                                        // console.log(item);
                                                         return (
                                                             <tr style={{ cursor: 'pointer' }}>
                                                                 <td style={{ width: '250px' }} className='rp-app-table-key'><span onClick={() => window.open(`https://diamanti.atlassian.net/browse/${item.key}`)}>{item.key}</span></td>
                                                                 
                                                                 <td>{item.fields.summary}</td>
-                                                                {/* <td><Badge className={`rp-bug-${item.fields.status.name}-status-badge`}>{item.fields.status.name}</Badge></td> */}
                                                                 
                                                                 <td style={{width:'250px'}}> 
                                                                     <div className={`c-callout c-callout-${item.fields.status.name.toLowerCase()} rp-new-badge`}>
                                                                         <strong class="h5">{item.fields.status.name}</strong>
                                                                     </div>
                                                                 </td>
-                                                                {/* <td><Badge className={`rp-priority-${item.fields.status.name}-status-badge`}>{item.fields.status.name}</Badge></td> */}
                                                                 <div style={{width:'250px'}} className={`c-callout c-callout-${item.fields.priority.name.toLowerCase()} rp-new-badge`}>
                                                                     <strong class="h5">{item.fields.priority.name}</strong>
                                                                 </div>
@@ -288,10 +289,11 @@ class ReleaseStatus extends Component {
                                         <Table scroll responsive style={{ overflow: 'scroll' }}>
                                             <thead>
                                                 <tr>
-                                                <th style={{width:'250px'}}>Bug</th>
-                                                    {/* <th>Summary</th>
-                                                    <th  style={{width:'250px'}}>Status</th> */}
-                                                    <th  style={{width:'300px'}}>#TC Blocked</th>
+                                                    <th style={{width:'100px'}}>Bug</th>
+                                                    <th style={{width:'450px'}}>Summary</th>
+                                                    <th  style={{width:'150px'}}>Status</th>
+                                                    <th  style={{width:'80px'}}>#TC Blocked</th>
+                                                    <th  style={{width:'150px'}}>Priority</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
