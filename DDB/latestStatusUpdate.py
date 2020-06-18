@@ -93,7 +93,7 @@ def latestResultUpdateFunction(Release):
     for CardType in statusDict:
         for TcID in statusDict[CardType]:
             updateLatestStatus(Release, CardType, TcID, statusDict[CardType][TcID])
-    updateDomainSubDomain(Release)
+    #updateDomainSubDomain(Release)
     
     latestData = LATEST_TC_STATUS.objects.using(Release).all()
     latestSerializer = LATEST_TC_STATUS_SERIALIZER(latestData, many = True)
