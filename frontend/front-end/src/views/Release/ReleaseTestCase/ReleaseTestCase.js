@@ -188,24 +188,27 @@ class ReleaseTestCase extends Component {
         axios.get(url).then(res=>{
             console.log("result",res.data,res.data.TcAggregate,res.data.TcAggregate['domain-cli'])
             let domainData =[]
-            for (const [key, value] of Object.entries(res.data.TcAggregate['domain-cli'])) {
-                let arr = {}
-                arr['Domain'] = key
-                for(const [key1, value1] of Object.entries(value)){
-                    if(key1 == 'Tested'){
-                        for(const [key2, value2] of Object.entries(value1)){
-                            for(const [key3, value3] of Object.entries(value2)){
-                                let str = key2 + key3
-                                arr[str] = value3;
+            if(res.data.TcAggregate['domain-cli']){
+                for (const [key, value] of Object.entries(res.data.TcAggregate['domain-cli'])) {
+                    let arr = {}
+                    arr['Domain'] = key
+                    for(const [key1, value1] of Object.entries(value)){
+                        if(key1 == 'Tested'){
+                            for(const [key2, value2] of Object.entries(value1)){
+                                for(const [key3, value3] of Object.entries(value2)){
+                                    let str = key2 + key3
+                                    arr[str] = value3;
+                                }
                             }
                         }
+                        else{
+                            arr[key1] = value1;
+                        }
                     }
-                    else{
-                        arr[key1] = value1;
-                    }
+                    domainData.push(arr);
                 }
-                domainData.push(arr);
             }
+            
             // console.log("Domaindata cli",domainData);
             this.setState({allTestCaseStatusCLI:domainData})
         },
@@ -219,23 +222,25 @@ class ReleaseTestCase extends Component {
         axios.get(url).then(res=>{
             console.log("result",res.data,res.data.TcAggregate,res.data.TcAggregate['domain-gui'])
             let domainData =[]
-            for (const [key, value] of Object.entries(res.data.TcAggregate['domain-gui'])) {
-                let arr = {}
-                arr['Domain'] = key
-                for(const [key1, value1] of Object.entries(value)){
-                    if(key1 == 'Tested'){
-                        for(const [key2, value2] of Object.entries(value1)){
-                            for(const [key3, value3] of Object.entries(value2)){
-                                let str = key2 + key3
-                                arr[str] = value3;
+            if(res.data.TcAggregate['domain-gui']){
+                for (const [key, value] of Object.entries(res.data.TcAggregate['domain-gui'])) {
+                    let arr = {}
+                    arr['Domain'] = key
+                    for(const [key1, value1] of Object.entries(value)){
+                        if(key1 == 'Tested'){
+                            for(const [key2, value2] of Object.entries(value1)){
+                                for(const [key3, value3] of Object.entries(value2)){
+                                    let str = key2 + key3
+                                    arr[str] = value3;
+                                }
                             }
                         }
+                        else{
+                            arr[key1] = value1;
+                        }
                     }
-                    else{
-                        arr[key1] = value1;
-                    }
+                    domainData.push(arr);
                 }
-                domainData.push(arr);
             }
             // console.log("Domaindata gui",domainData);
             this.setState({allTestCaseStatusGUI:domainData})
@@ -258,7 +263,6 @@ class ReleaseTestCase extends Component {
                             <td>{e.autoBlocked + e.manualBlocked}</td>
                             <td>{e.NotTested}</td>
                             <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
-
                         </tr>    
                 );
             })
@@ -279,7 +283,6 @@ class ReleaseTestCase extends Component {
                             <td>{e.autoBlocked + e.manualBlocked}</td>
                             <td>{e.NotTested}</td>
                             <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
-
                         </tr>    
                 );
             })
@@ -289,7 +292,7 @@ class ReleaseTestCase extends Component {
     renderTableDataGUI  = () => {
         
         return this.state.allTestCaseStatusGUI === 0 ? (
-            <div>Loading...</div>
+            <div>Loading...1234</div>
         ) : (
             this.state.allTestCaseStatusGUI.map((e, i) => {
             return (
@@ -494,8 +497,8 @@ class ReleaseTestCase extends Component {
                     </Col>
                 </Row>
 
-                {this.props.selectedRelease.ReleaseNumber === 'DMC-3.0' || this.props.selectedRelease == "DMC Master" ?       //TODO 
-                        <>
+                {/* {this.props.selectedRelease.ReleaseNumber === 'DMC-3.0' || this.props.selectedRelease == "DMC Master" ?       //TODO 
+                        <> */}
                             <div>
                             <Row>
                                 <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
@@ -545,7 +548,7 @@ class ReleaseTestCase extends Component {
                                                         </thead>
                                                         <tbody>
                                                             {
-                                                                this.renderTableDataAll()
+                                                                this.state.allTestCaseStatus.length > 1 ? this.renderTableDataAll() : <span class="ag-overlay-loading-center">Loading ...</span>
                                                             }
                                                         </tbody>
                                                     </Table>
@@ -606,7 +609,7 @@ class ReleaseTestCase extends Component {
                                                         </thead>
                                                         <tbody>
                                                             {
-                                                                this.renderTableDataCLI()
+                                                                this.state.allTestCaseStatusCLI.length > 1 ? this.renderTableDataCLI() : <span class="ag-overlay-loading-center">Loading ...</span>
                                                             }
                                                         </tbody>
                                                     </Table>
@@ -667,7 +670,7 @@ class ReleaseTestCase extends Component {
                                                         </thead>
                                                         <tbody>
                                                             {
-                                                                this.renderTableDataGUI()
+                                                                this.state.allTestCaseStatusGUI.length > 1 ? this.renderTableDataGUI() : <span class="ag-overlay-loading-center">Loading ...</span>
                                                             }
                                                         </tbody>
                                                     </Table>
@@ -678,9 +681,9 @@ class ReleaseTestCase extends Component {
                                 </Col>
                             </Row>
                             </div>
-                    </>
+                    {/* </>
                 : null
-                }
+                } */}
 
                 
 

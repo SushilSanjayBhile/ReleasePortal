@@ -155,6 +155,11 @@ class TestCasesAllGUI extends Component {
             rowSelect: false,
             isEditing: false,
             delete: false,
+            tableColumnsTcs: [
+                {id: 1, value: "Show Skip", isChecked: false},
+                {id: 2, value: "Show Not Applicable", isChecked: false},
+                {id: 3, value: "Applicable", isChecked: true},
+            ],
             tableColumns: [
                 {id: 1, value: "TcID", isChecked: false},
                 {id: 2, value: "Scenario", isChecked: false},
@@ -224,6 +229,32 @@ class TestCasesAllGUI extends Component {
             },
         }
     }
+    handleAllCheckedTCs = (event) => {
+        let tableColumnsTcs = this.state.tableColumnsTcs
+        tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked) 
+        this.setState({tableColumnsTcs: tableColumnsTcs})
+        console.log("handleAllChecked",this.state.tableColumns)
+
+    }
+
+    handleCheckChieldElementTcs = (event) => {
+        let tableColumnsTcs = this.state.tableColumnsTcs
+        tableColumnsTcs.forEach(columnName => {
+            if (columnName.value === event.target.value)
+                columnName.isChecked =  event.target.checked
+        })
+        this.setState({tableColumnsTcs: tableColumnsTcs})
+        console.log("tableColumnsTcs",this.state.tableColumnsTcs);
+    }
+
+    showSelectedTCs = () =>{
+        console.log("setSelectedColumns",this.state.tableColumnsTcs)
+        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain);
+        this.setState({ popoverOpen2: !this.state.popoverOpen2 });
+
+    }
+
+
     handleAllChecked = (event) => {
         let tableColumns = this.state.tableColumns
         tableColumns.forEach(columnName => columnName.isChecked = event.target.checked) 
@@ -388,6 +419,7 @@ class TestCasesAllGUI extends Component {
     toggle = () => this.setState({ modal: !this.state.modal });
     popoverToggle = () => this.setState({ popoverOpen: !this.state.popoverOpen });
     popoverToggle1 = () => this.setState({ popoverOpen1: !this.state.popoverOpen1 });
+    popoverToggle2 = () => this.setState({ popoverOpen2: !this.state.popoverOpen2 });
     confirmStatusDeleteToggle = () => this.setState({ deleteStatusModal: !this.state.deleteStatusModal });
     confirmToggle() {
         this.changeLog = {};
@@ -627,20 +659,20 @@ class TestCasesAllGUI extends Component {
     // VIEW TC
     getTcByDomain(domain) {
         this.gridOperations(false);
-        axios.get('/api/' + this.props.selectedRelease.ReleaseNumber + '/wholeguitcinfo/domain/' + domain)
-            .then(all => {
-                if (all && all.data.length) {
-                    axios.get('/api/' + this.props.selectedRelease.ReleaseNumber + '/tcstatus/domain/' + domain)
-                        .then(res => {
-                            this.gridOperations(true);
-                            this.setState({ doughnuts: getEachTCStatusScenario({ data: res.data, domain: domain, all: all.data }) })
-                        }, error => {
-                            this.gridOperations(true);
-                        });
-                }
-            }, error => {
-                this.gridOperations(true);
-            })
+        // axios.get('/api/' + this.props.selectedRelease.ReleaseNumber + '/wholeguitcinfo/domain/' + domain)
+        //     .then(all => {
+        //         if (all && all.data.length) {
+        //             axios.get('/api/' + this.props.selectedRelease.ReleaseNumber + '/tcstatus/domain/' + domain)
+        //                 .then(res => {
+        //                     this.gridOperations(true);
+        //                     this.setState({ doughnuts: getEachTCStatusScenario({ data: res.data, domain: domain, all: all.data }) })
+        //                 }, error => {
+        //                     this.gridOperations(true);
+        //                 });
+        //         }
+        //     }, error => {
+        //         this.gridOperations(true);
+        //     })
     }
     getTC(row, updateRow, updateRelease) {
         this.currentSelectedRow = row;
@@ -696,14 +728,53 @@ class TestCasesAllGUI extends Component {
             if (subDomain) url += ('&SubDomain=' + subDomain);
             if (priority) url += ('&Priority=' + priority);
         }
+
+        let skipTcs = []
+        let NATcs = []
+        let ApplicableTcs = []
+        let skipCount = 0;
+        let NACount = 0;
+        let applicableCount = 0;
+        console.log("check box data",this.state.tableColumnsTcs);
+      
         axios.get(url)
             .then(all => {
-                // console.log("GUI data",all.data);
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
-                this.saveLocalMultipleTC({ data: all.data, id: release }, false, updateRelease)
-                this.gridOperations(true);
+                
+                for(let i=-0;i<all.data.length;i++){
 
+                    if(all.data[i].Priority == 'Skip' ){
+                        skipCount+=1
+                        skipTcs.push(all.data[i])
+                        // console.log('Tc with Skip and NA status',all.data[i]);
+                    }
+                    if(all.data[i].Priority == 'NA'){
+                        NACount += 1
+                        NATcs.push(all.data[i])
+                    }
+                    if(all.data[i].Priority != 'NA' && all.data[i].Priority != 'Skip'){
+                        applicableCount+=1
+                        ApplicableTcs.push(all.data[i])
+                    }
+                }
+
+                this.state.tableColumnsTcs.forEach(item=>{
+                    if(item.isChecked == true && item.value == 'Applicable'){
+                        this.saveLocalMultipleTC({ data: ApplicableTcs, id: release }, false, updateRelease)
+                        this.gridOperations(true);
+                    } 
+                    if(item.isChecked == true && item.value == 'Show Not Applicable'){
+                        this.saveLocalMultipleTC({ data: NATcs, id: release }, false, updateRelease)
+                        this.gridOperations(true);
+                    } 
+                    if(item.isChecked == true && item.value == 'Show Skip'){
+                        this.saveLocalMultipleTC({ data: skipTcs, id: release }, false, updateRelease)
+                        this.gridOperations(true);
+                    } 
+                })
+
+                console.log("Skip Count = ",skipCount , "Na Count = ",NACount,"applicable COunt = ",applicableCount);
             }).catch(err => {
                 this.saveLocalMultipleTC({ data: [], id: release }, true, updateRelease);
                 this.gridOperations(true);
@@ -1138,12 +1209,14 @@ class TestCasesAllGUI extends Component {
                                             }
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
                                             <span className='rp-app-table-title'>{this.props.title}</span>
-                                            {
+                                            <span style={{ 'marginLeft': '2rem', fontWeight:'500', color: 'red'  }}>Table Showing Only Applicable TC's. To see Skip Or NA TC's Use Filter [<i class="fa fa-filter" aria-hidden="true"></i>] Below</span>
+
+                                            {/* {
                                                 this.state.loading && <span style={{ 'marginLeft': '2rem' }}>Please Wait for approx 3 mins to load complete table...</span>
                                             }
                                             {
                                                 !this.state.loading && <span style={{ 'marginLeft': '2rem', fontWeight:'500', color: 'red' }}>TcName is Automated TC Name. It should contain '.' in its name. Please dont add description/scenario in TcName.</span>
-                                            }
+                                            } */}
                                             {
                                                 this.state.tcOpen &&
                                                 <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
@@ -1188,8 +1261,24 @@ class TestCasesAllGUI extends Component {
                                                 <Button disabled={this.state.isApiUnderProgress} id="getall" onClick={() => this.getAlltcs()} type="button">All</Button>
                                             </div>
                                             <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
+                                                <Button id="PopoverAssign2" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
+                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2" id="PopoverAssignButton2" toggle={() => this.popoverToggle2()} isOpen={this.state.popoverOpen2}>
+                                                    <PopoverBody>
+                                                        <div>
+                                                                <ul>
+                                                                {
+                                                                this.state.tableColumnsTcs.map((columnName) => {
+                                                                    return (<CheckBox handleCheckChieldElement={this.handleCheckChieldElementTcs}  {...columnName} />)
+                                                                })
+                                                                }
+                                                                </ul>
+                                                            <Button onClick={() => this.showSelectedTCs()}>Show Selected TC</Button>
+                                                        </div>
+                                                    </PopoverBody>
+                                                </UncontrolledPopover>
+                                            </div>
+                                            <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
                                                 <Button id="PopoverAssign1" type="button"><i class="fa fa-columns" aria-hidden="true"></i>
-                                                    {/* Select Columns */}
                                                     </Button>
                                                 <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign1" id="PopoverAssignButton1" toggle={() => this.popoverToggle1()} isOpen={this.state.popoverOpen1}>
                                                     <PopoverBody>

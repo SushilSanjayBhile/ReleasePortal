@@ -972,12 +972,8 @@ class ReleaseSummary extends Component {
                             <Link to={'/release/qastatus'}>
                                 <div className='rp-icon-button'><i className="fa fa-area-chart"></i></div><span className='rp-app-table-title'>QA Status</span>
                             </Link>
-                            
                         </div>
                             <div className="chart-wrapper" style={{ textAlign: "center" }}>
-
-
-
                                 <div class='row'>
                                     
                                     <div class='col-md-6'>

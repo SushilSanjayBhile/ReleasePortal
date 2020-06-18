@@ -69,9 +69,6 @@ class ReleaseStatus extends Component {
             // this.initialize();
         }
     }
-
-
-
     getFeatureDetails(dws) {
         axios.post('/rest/featuredetail', { data: dws }).then(res => {
             let issuesArray = []
