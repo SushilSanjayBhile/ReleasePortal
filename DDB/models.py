@@ -275,6 +275,9 @@ class RELEASES(models.Model):
     AutomationSyncUp = models.TextField(blank = True)
     QARateOfProgress = models.IntegerField(default = -1, blank = True)
     Priority = models.CharField(max_length = 2, blank = True, null = True)
+    KubernetesVersion = models.TextField(blank = True, null = True)
+    DockerVersion = models.TextField(blank = True, null = True)
+    HelmVersion = models.TextField(blank = True, null = True)
 
     def __str__(self):
         return self.ReleaseNumber
