@@ -1155,22 +1155,9 @@ def RELEASEINFO(request, Release):
                     GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
             else:
                 print(serializer.errors)
-            # return JsonResponse({'Success': "RECORD UPDATED SUCCESSFULLY"}, status = 200)
-            return HttpResponse("SUCCESS")
+            return HttpResponse("RELEASE " + Release + " UPDATED SUCCESSFULLY", status = 200)
         except:
-            # return JsonResponse({'error': "SOME ERROR OCCURED"}, status = 400)
-            return HttpResponse("SOME ERROR OCCURED")
-
-    # elif request.method == "POST":
-    #     try:
-    #         data = RELEASES.objects.get(ReleaseNumber__icontains = Release)
-    #         serializer = RELEASE_SERIALIZER(data, data=request.data)
-
-    #         if serializer.is_valid():
-    #             serializer.save()
-    #         return HttpResponse(json.dumps(serializer))
-    #     except:
-    #         pass
+            return HttpResponse("SOME ERROR OCCURED", status = 400)
 
 def GETPLATFORMWISETCINFO(request, OrchestrationPlatform):
     data = TC_INFO.objects.filter(OrchestrationPlatform__icontains = OrchestrationPlatform)
