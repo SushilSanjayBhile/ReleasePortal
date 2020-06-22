@@ -367,14 +367,15 @@ def TCAGGREGATE(Release):
                 totalnottested += dictionary['domain'][tc['Domain']]['NotTested']
 
         ###################################################################################
-        tcinfo = TC_INFO.objects.using(Release).filter(~Q(Priority = "NA")).filter(~Q(Priority = "Skip"))
-        tcinfoserializer = TC_INFO_SERIALIZER(tcinfo, many=True)
+        tcinfo1 = TC_INFO.objects.using(Release).all()
+        tcinfoserializer = TC_INFO_SERIALIZER(tcinfo1, many=True)
 
-        status = LATEST_TC_STATUS.objects.using(Release).all()
+        status = LATEST_TC_STATUS.objects.using(Release).all().order_by('-Date')
         statusserializer = LATEST_TC_STATUS_SERIALIZER(status, many=True) 
 
         d = {}
-
+        s = {}
+        
         for tc in tcinfoserializer.data:
             domain = tc["Domain"]
             card = tc["CardType"]
@@ -389,10 +390,120 @@ def TCAGGREGATE(Release):
             if tcid not in d[domain][card]:
                 d[domain][card][tcid] = tc
 
+        for status in statusserializer.data:
+            domain = status["Domain"]
+            card = status["CardType"]
+            tcid = status["TcID"]
+
+            if domain not in s:
+                s[domain]= {}
+            if card not in s[domain]:
+                s[domain][card] = {}
+            if tcid not in s[domain][card]:
+                s[domain][card][tcid] = status
+
+            try:
+                s[domain][card][tcid].update(d[domain][card][tcid])
+            except:
+                pass
 
         dictionary['domain'] = {}
         dictionary['domain-cli'] = {}
         dictionary['domain-gui'] = {}
+
+
+
+        ########################## new code for aggregation
+        ########################## new code for aggregation
+        ########################## new code for aggregation
+        ########################## new code for aggregation
+        myDict = {}
+        myDict['domain-cli'] = {}
+        statusList = ['Pass','Fail','Skip','Blocked']
+
+        domains = tcinfo.values('Domain').distinct()
+
+        # domain wise GUI statistics
+        c = 0
+        for dom in domains:
+            sdomain = dom["Domain"]
+            if sdomain not in myDict['domain-cli']:
+                myDict['domain-cli'][sdomain] = {}
+
+            if "NotApplicable" not in myDict['domain-cli'][sdomain]:
+                myDict['domain-cli'][sdomain]['NotApplicable'] = 0
+            if "Not Tested" not in myDict['domain-cli'][sdomain]:
+                myDict['domain-cli'][sdomain]['NotTested'] = 0
+            if "Tested" not in myDict['domain-cli'][sdomain]:
+                myDict['domain-cli'][sdomain]['Tested'] = {}
+            
+            if "manual" not in myDict['domain-cli'][sdomain]['Tested']:
+                myDict['domain-cli'][sdomain]['Tested']['manual'] = {}
+            if "auto" not in myDict['domain-cli'][sdomain]['Tested']:
+                myDict['domain-cli'][sdomain]['Tested']['auto'] = {}
+            
+            for item in statusList:
+                if item not in myDict['domain-cli'][sdomain]['Tested']['manual']:
+                    myDict['domain-cli'][sdomain]['Tested']['manual'][item] = 0
+                if item not in myDict['domain-cli'][sdomain]['Tested']['auto']:
+                    myDict['domain-cli'][sdomain]['Tested']['auto'][item] = 0
+        
+        lateststatuslist = []
+        for d in s:
+            for c in s[d]:
+                for i in s[d][c]:
+                    #if d == "Project" and "PA_Basic-1.1" in s[d][c][i]["TcID"]:
+                    #    print(s[d][c][i])
+                    lateststatuslist.append(s[d][c][i])
+
+
+        for stat in lateststatuslist:
+            sdomain = stat["Domain"]
+            stcid = stat["TcID"]
+            scard = stat["CardType"]
+            sres = stat["Result"]
+            stcname = stat["TcName"]
+            try:
+                #stat.update(d[sdomain][scard][stcid])
+                sPriority = stat["Priority"]
+
+                # Skip and NA checking
+                if sPriority == "Skip":
+                    continue
+                if sPriority == "NA":
+                    continue
+
+                #applicable count calculations
+                if stcname == "TC NOT AUTOMATED":
+                    myDict['domain-cli'][sdomain]['Tested']['manual'][sres] += 1
+                    myDict['domain-cli'][sdomain]['NotTested'] -= 1 
+                if stcname != "TC NOT AUTOMATED":
+                    myDict['domain-cli'][sdomain]['Tested']['auto'][sres] += 1
+                    myDict['domain-cli'][sdomain]['NotTested'] -= 1 
+            except:
+                pass
+        
+        for tc in tcinfoserializer.data:
+            if tc["Priority"] == "Skip":
+                continue
+            domain = tc["Domain"]
+            card = tc["CardType"]
+            tcid = tc["TcID"]
+
+            try:
+                if tc["Priority"] == "NA":
+                    myDict['domain-cli'][domain]['NotApplicable'] += 1
+                    continue
+            
+                myDict["domain-cli"][domain]["NotTested"] += 1
+            except:
+                pass
+        
+        
+        ########################## new code for aggregation
+        ########################## new code for aggregation
+        ########################## new code for aggregation
+        ########################## new code for aggregation
 
         for stat in statusserializer.data:
             scard = stat["CardType"]
@@ -512,6 +623,7 @@ def TCAGGREGATE(Release):
 
                 dictionary["domain-cli"][sdomain]["NotTested"] = allcount - (passcounter + failcounter + blockedcounter)
 
+        dictionary["domain-cli"] = myDict["domain-cli"]
         #GUI aggregation
         if Release == "DMC-3.0":
             data = GUI_LATEST_TC_STATUS.objects.using(Release).all()
