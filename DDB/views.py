@@ -657,6 +657,8 @@ def TCAGGREGATE(Release):
 
     # default dictionary for CLI
     dictionary["allGUI"] = {}
+    dictionary["allGUI"]["Pass"] = 0 # default values
+    dictionary["allGUI"]["Fail"] = 0 # default values
     dictionary["allGUI"]["Blocked"] = 0 # default values
     dictionary["allGUI"]["NotTested"] = 0 # default values
 
@@ -688,6 +690,10 @@ def TCAGGREGATE(Release):
 
             for res in testedData:
                 dictionary["allGUI"]["Tested"][testedType][res] += testedData[res]
+                if res == "Pass":
+                    dictionary["allGUI"]["Pass"] += testedData[res]
+                elif res == "Fail":
+                    dictionary["allGUI"]["Fail"] += testedData[res]
 
     return dictionary
 
@@ -1549,7 +1555,7 @@ def RELEASEINFO(request, Release):
                         #st = time.time()
                         #a = TCAGGREGATEOLD(i['ReleaseNumber'])
                         #print(time.time() - st, "\n")
-                    data['Priority'] = "P0"
+                        data['Priority'] = a["Priority"]
 
                     data['TcAggregate'] = a
                 #list.append(data)
