@@ -24,8 +24,7 @@ import datetime
 from .forms import LogForm
 
 # Third party softwares / libraries
-import gzip
-import psycopg2
+import gzip, copy, psycopg2
 from sh import pg_dump
 from psycopg2 import sql
 import json, datetime, os, time
@@ -554,11 +553,11 @@ def domain_gui_aggreggation(guiTcInfo, guiStatus):
             continue
 
         myDict["domain-gui"][domain]["NotTested"] += 1
-
+    
     return myDict["domain-gui"]
 
 def cli_gui_combined_aggregation(cliDict,guiDict):
-    dictionary = cliDict
+    dictionary = copy.deepcopy(cliDict)
 
     for domain in guiDict:
         if domain not in dictionary:
@@ -571,7 +570,6 @@ def cli_gui_combined_aggregation(cliDict,guiDict):
                 testedData = dictionary[domain]["Tested"][testedType]
                 for res in testedData:
                     dictionary[domain]["Tested"][testedType][res] += guiDict[domain]["Tested"][testedType][res]
-
     return dictionary
 
 def TCAGGREGATE(Release):
@@ -1548,9 +1546,9 @@ def RELEASEINFO(request, Release):
                         a = TCAGGREGATE(i['ReleaseNumber'])
                         print(time.time() - st)
 
-                        st = time.time()
-                        a = TCAGGREGATEOLD(i['ReleaseNumber'])
-                        print(time.time() - st, "\n")
+                        #st = time.time()
+                        #a = TCAGGREGATEOLD(i['ReleaseNumber'])
+                        #print(time.time() - st, "\n")
                     data['Priority'] = "P0"
 
                     data['TcAggregate'] = a
