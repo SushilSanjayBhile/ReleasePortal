@@ -554,15 +554,12 @@ def GET_TC_INFO_BY_ID(request, Release, id, card):
 def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
     if request.method == "PUT":
         errRecords = []
-        print(request.body)
-        req = json.loads(request.body.decode("utf-8"))
-        print(req)
+        req = json.loads(request.body.decode("utf-8")) # original
 
         data = TC_INFO.objects.using(Release).filter(TcID = id)
         serializer = TC_INFO_SERIALIZER(data, many = True)
 
         for d in serializer.data:
-            print(d['CardType'])
             singleData = TC_INFO.objects.using(Release).filter(TcID = id).get(CardType = d['CardType'])
             singleSerializer = TC_INFO_SERIALIZER(singleData)
             updatedData = singleSerializer.data
