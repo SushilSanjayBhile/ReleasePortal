@@ -10,7 +10,8 @@ from .defaultViews import DEFAULT_DOMAIN_GET_POST_VIEW, DEFAULT_SUBDOMAIN_GET_PO
 from .e2eResultViews import e2eResultUpdate
 from .statusViews import TC_STATUS_UPDATE_VIEW, GUI_TC_STATUS_UPDATE_VIEW
 from .latestStatusUpdate import LATEST_STATUS_VIEW_UPDATE_ALL
-from .tcinfo import TC_INFO_GET_POST_VIEW, GET_TC_INFO_BY_ID, WHOLE_TC_INFO, MULTIPLE_TC_UPDATION, UPDATE_TC_INFO_BY_ID, TcCountByFilter
+from .tcinfo import TC_INFO_GET_POST_VIEW, GET_TC_INFO_BY_ID, WHOLE_TC_INFO, MULTIPLE_TC_UPDATION, \
+        UPDATE_TC_INFO_BY_ID, TcCountByFilter,MULTIPLE_TC_INFO_UPDATION
 
 from .getStatistics import BUG_WISE_BLOCKED_TCS 
 from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO
@@ -37,6 +38,7 @@ urlpatterns = [
     path('tccount/<str:Release>', TcCountByFilter),
     path('<str:Release>/tcinfo/domain/<str:Domain>', DOMAINWISETCINFO),
     path('tcupdate/<str:Release>', MULTIPLE_TC_UPDATION),
+    path('multipletcinfoupdate/<str:Release>', MULTIPLE_TC_INFO_UPDATION),
 
     path('tcinfogui/<str:Release>', GUI_TC_INFO_GET_POST_VIEW),
     path('tcstatusgui/<str:Release>', GUI_TC_STATUS_GET_POST_VIEW),

@@ -474,6 +474,52 @@ def TcCountByFilter2(request, Release):
                 dat.delete()
         return HttpResponse(json.dumps(countDict))
 
+
+
+
+@csrf_exempt
+def MULTIPLE_TC_INFO_UPDATION(request, Release):
+    if request.method == "PUT":
+        requests = json.loads(request.body.decode("utf-8"))
+        errRec = {}
+
+        for req in requests:
+            card = req['CardType']
+            tcid = req['TcID']
+
+            try:
+                data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+                serializer = TC_INFO_SERIALIZER(data)
+                updatedData = serializer.data
+                
+                for key in req:
+                    if key in updatedData and (key != "CardType" and key != "TcID"):
+                        updatedData[key] = req[key]
+                
+                updateData(updatedData, data, Release)
+                
+                if "Activity" in requests:
+                    AD = requests['Activity']
+                    GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+        
+                if Release != "TestDatabase":
+                    if "dmc" in Release.lower():
+                        master = "DMC Master"
+                    else:
+                        master = "master"
+                
+                    updateData(updatedData, data, master)
+        
+            except:
+                if card not in errRec:
+                    errRec[card] = []
+                errRec[card].append(tcid)
+
+
+        if len(errRec) > 0:
+            return HttpResponse(json.dumps(errRec), status = 400)
+        return HttpResponse("Successfully Updated All Records", status = 200)
+
 @csrf_exempt
 def MULTIPLE_TC_UPDATION(request, Release):
     if request.method == "PUT":
