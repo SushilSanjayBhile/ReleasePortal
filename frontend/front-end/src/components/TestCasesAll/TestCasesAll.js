@@ -183,10 +183,13 @@ class TestCasesAll extends Component {
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
                 columnDefDict['Description'],
+                columnDefDict['Steps'],
                 columnDefDict['Status'],
                 columnDefDict['Build'],
                 columnDefDict['Bug'],
                 columnDefDict['Priority'],
+                columnDefDict['Assignee'],
+
             ],
             
             defaultColDef: { resizable: true },
@@ -235,7 +238,6 @@ class TestCasesAll extends Component {
         let tableColumnsTcs = this.state.tableColumnsTcs
         tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked) 
         this.setState({tableColumnsTcs: tableColumnsTcs})
-        console.log("handleAllChecked",this.state.tableColumns)
 
     }
 
@@ -250,7 +252,6 @@ class TestCasesAll extends Component {
     }
 
     showSelectedTCs = () =>{
-        console.log("setSelectedColumns",this.state.tableColumnsTcs)
         this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain);
         this.setState({ popoverOpen2: !this.state.popoverOpen2 });
 
@@ -740,6 +741,7 @@ class TestCasesAll extends Component {
             if (priority) url += ('&Priority=' + priority);
         }
         
+        let showTc = []
         let skipTcs = []
         let NATcs = []
         let ApplicableTcs = []
@@ -752,9 +754,7 @@ class TestCasesAll extends Component {
             .then(all => {
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
-                
                 for(let i=-0;i<all.data.length;i++){
-
                     if(all.data[i].Priority == 'Skip' ){
                         skipCount+=1
                         skipTcs.push(all.data[i])
@@ -769,24 +769,27 @@ class TestCasesAll extends Component {
                         ApplicableTcs.push(all.data[i])
                     }
                 }
-
+                showTc = []
                 this.state.tableColumnsTcs.forEach(item=>{
-                    if(item.isChecked == true && item.value == 'Applicable'){
-                        this.saveLocalMultipleTC({ data: ApplicableTcs, id: release }, false, updateRelease)
-                        this.gridOperations(true);
+                   
+                    if(item.isChecked == true  && item.value == 'Show Skip'){
+                        skipTcs.forEach(skipTC=>{
+                            showTc.push(skipTC)
+                        })
                     } 
-                    if(item.isChecked == true && item.value == 'Show Not Applicable'){
-                        this.saveLocalMultipleTC({ data: NATcs, id: release }, false, updateRelease)
-                        this.gridOperations(true);
+                    if(item.isChecked == true && item.value == 'Show Not Applicable' ){
+                        NATcs.forEach(NATC=>{
+                            showTc.push(NATC)
+                        })
                     } 
-                    if(item.isChecked == true && item.value == 'Show Skip'){
-                        this.saveLocalMultipleTC({ data: skipTcs, id: release }, false, updateRelease)
-                        this.gridOperations(true);
-                    } 
+                    if(item.isChecked == true && item.value == 'Applicable' ){
+                        ApplicableTcs.forEach(applicableTC=>{
+                            showTc.push(applicableTC)
+                        })
+                    }
                 })
-
-                console.log("Skip Count = ",skipCount , "Na Count = ",NACount,"applicable COunt = ",applicableCount);
-               
+                this.saveLocalMultipleTC({ data: showTc, id: release }, false, updateRelease)
+                this.gridOperations(true);
 
             }).catch(err => {
                 this.saveLocalMultipleTC({ data: [], id: release }, true, updateRelease);
@@ -1226,6 +1229,8 @@ class TestCasesAll extends Component {
                                                 <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2" id="PopoverAssignButton2" toggle={() => this.popoverToggle2()} isOpen={this.state.popoverOpen2}>
                                                     <PopoverBody>
                                                         <div>
+                                                            <input type="checkbox" onClick={this.handleAllCheckedTCs}  value="checkedall" /> Check / Uncheck All
+
                                                                 <ul>
                                                                 {
                                                                 this.state.tableColumnsTcs.map((columnName) => {

@@ -46,13 +46,12 @@ class ReleaseStatus extends Component {
             graphsOpen: false,
             blockedBugOpen:false,
             blockedBugList:[],
-            allBugsList:[],
+            BugsList:[],
         }
     }
     initialize() {
         if (!this.props.singleFeature.fields) {
             if (this.props.feature && this.props.feature.issues) {
-                console.log("this.props.feature.issues",this.props.feature.issues);
                 this.getFeatureDetails(this.props.feature.issues[0].self)
             }
         }
@@ -140,21 +139,67 @@ class ReleaseStatus extends Component {
         )
         
     }
+
+    checkSelectedBug = (item) =>{
+        let list = []
+        let count = 0
+        Object.keys(this.props.bug.bugCount.all).map(item =>{
+            console.log("count item",this.props.bug.bugCount.all[item])
+        })
+        this.props.bug.bug.issues.forEach((eachBug)=>{
+            if(item == 'open'){
+                if(eachBug.fields.status.name == 'Open' || eachBug.fields.status.name == 'To Do' || eachBug.fields.status.name == 'In Progress'){
+                    list.push(eachBug)
+                }
+            }
+            if(item == 'resolved'){
+                if(eachBug.fields.status.name == 'Resolved' || eachBug.fields.status.name == 'Closed' ){
+                    list.push(eachBug)
+                }
+            }
+            if(item == 'total'){
+                list.push(eachBug)
+            }
+            if(item == "others" && eachBug.fields.status.name != 'Open' && eachBug.fields.status.name != 'Resolved' && eachBug.fields.status.name != 'To Do' && eachBug.fields.status.name != 'In Progress' && eachBug.fields.status.name != 'Closed'){
+                list.push(eachBug)
+            }
+        })
+        // console.log("list",list)
+        this.setState({BugsList:list})
+    }
     
     render() {
         let featuresCount = 0;
+        let featuresStatusDict = {'Open': { total: 0 },'Resolved': { total: 0 },'Others': { total: 0 } }
         let statusScenarios = { Open: { total: 0 }, Resolved: { total: 0 } };
         if (this.props.feature && this.props.feature.issues) {
             featuresCount = this.props.feature.issues.length;
             this.props.feature.issues.forEach(item => {
-                if(item.fields.status.name !== 'In Progress'){
-                    if (statusScenarios[item.fields.status.name]) {
-                        statusScenarios[item.fields.status.name].total += 1;
-                    } else {
-                        statusScenarios[item.fields.status.name] = { total: 1 }
-                    }
+                if(statusScenarios[item.fields.status.name] == 'In Progress' || statusScenarios[item.fields.status.name] == 'To Do' ) {
+                    statusScenarios['Open'].total += 1;
+                }
+                if (statusScenarios[item.fields.status.name]) {
+                    statusScenarios[item.fields.status.name].total += 1;
+                } else if(statusScenarios[item.fields.status.name] != 'In Progress' || statusScenarios[item.fields.status.name] != 'To Do') {
+                    statusScenarios[item.fields.status.name] = { total: 1 }
                 }
                 
+            })
+        }
+        if (this.props.feature && this.props.feature.issues) {
+            featuresCount = this.props.feature.issues.length;
+            this.props.feature.issues.forEach(item => {
+                if(item.fields.status.name == 'In Progress' || item.fields.status.name == 'To Do'|| item.fields.status.name == 'Open' ) {
+                    featuresStatusDict['Open'].total += 1;
+                }
+                else if(item.fields.status.name == 'Resolved'){
+                    featuresStatusDict['Resolved'].total += 1;
+                }
+                else{
+                    featuresStatusDict['Others'].total += 1;
+
+                }
+               
             })
         }
         return (
@@ -162,7 +207,6 @@ class ReleaseStatus extends Component {
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                         <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ bugOpen: !this.state.bugOpen })}>
-
                             <div class="row">
                                 <div class='col-md-6'>
                                     <div class='row'>
@@ -177,10 +221,8 @@ class ReleaseStatus extends Component {
                                             }
 
                                             <div className='rp-icon-button'><i className="fa fa-bug"></i></div><span className='rp-app-table-title'>Bugs</span>
-
-
                                         </div>
-                                        {
+                                        {/* {
                                             this.props.bug && Object.keys(this.props.bug.bugCount.all).map(item =>
                                                 
                                                 <div class='col-md-2'>
@@ -190,12 +232,31 @@ class ReleaseStatus extends Component {
                                                     </div>
                                                 </div>
                                             )
-                                        }
+                                        } */}
                                     </div>
                                 </div>
                             </div>
                         </div>
+                        
                         <Collapse isOpen={this.state.bugOpen}>
+                            <div className='rp-app-table-header' style={{ cursor: 'pointer' }} >
+                                <div class="row">
+                                    <div class='col-md-6'>
+                                        <div class='row'>
+                                            {
+                                                this.props.bug && Object.keys(this.props.bug.bugCount.all).map(item =>
+                                                    <div class='col-md-2'>
+                                                        <div className={`c-callout c-callout-${item.toLowerCase()}`} style={{ marginTop: '0', marginBottom: '0' }} onClick={() => this.checkSelectedBug(item)}>
+                                                            <small class="text-muted">{item.toUpperCase()}</small><br></br>
+                                                            <strong class="h5">{this.props.bug.bugCount.all[item]}</strong>
+                                                        </div>
+                                                    </div>
+                                                )
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <Row style={
                                 {
                                     marginRight: '0',
@@ -217,7 +278,7 @@ class ReleaseStatus extends Component {
                                             <tbody>
                                                 {  
                                                     this.props.bug && this.props.bug.bug && this.props.bug.bug.issues && 
-                                                    this.props.bug.bug.issues.map(item => {
+                                                    this.state.BugsList.map(item => {
                                                         return (
                                                             <tr style={{ cursor: 'pointer' }}>
                                                                 <td style={{ width: '250px' }} className='rp-app-table-key'><span onClick={() => window.open(`https://diamanti.atlassian.net/browse/${item.key}`)}>{item.key}</span></td>
@@ -384,11 +445,11 @@ class ReleaseStatus extends Component {
                                             </div>
                                         </div>
                                         {
-                                            Object.keys(statusScenarios).map(item =>
+                                            Object.keys(featuresStatusDict).map(item =>
                                                 <div class="col-sm-2">
                                                     <div className={`c-callout c-callout-${item.toLowerCase()}`} style={{ marginTop: '0', marginBottom: '0' }}>
                                                         <small class="text-muted">{item.toUpperCase()}</small><br></br>
-                                                        <strong class="h4">{statusScenarios[item].total}</strong>
+                                                        <strong class="h4">{featuresStatusDict[item].total}</strong>
                                                     </div>
                                                 </div>
                                             )
@@ -497,7 +558,6 @@ class ReleaseStatus extends Component {
                                                     {
 
                                                         this.props.singleFeature.fields.subtasks.map(item => {
-                                                            console.log("subtask",item.fields.summary,item.fields.status.name)
                                                             return (
                                                                 <tr>
                                                                     <td style={{ width: '250px' }}><span onClick={() => window.open(`https://diamanti.atlassian.net/browse/${item.key}`)}>{item.key}</span></td>

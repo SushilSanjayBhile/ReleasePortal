@@ -3,22 +3,23 @@
 // customers to be given to
 import React, { Component } from 'react';
 import {
-    TabContent, TabPane, Nav, NavItem, NavLink, Col, Row, Collapse, Button, Modal, ModalHeader, ModalBody, ModalFooter,
+    TabContent, TabPane, Nav, NavItem, NavLink, Col, Row, Button, Modal, ModalHeader, ModalBody, ModalFooter,
 } from 'reactstrap';
 import { } from 'reactstrap';
 
 import { connect } from 'react-redux';
-import { getCurrentRelease, getTCStrategyForUISubDomainsScenario } from '../../../reducers/release.reducer';
-import {
-    getTCStrategyForUIDomains, getTCStrategyForUISubDomains, alldomains, getTCStatusForSunburst,
-    getTCStrategyForUISubDomainsDistribution, getTCStrategyForUIDomainsDistribution
-} from '../../../reducers/release.reducer';
-import { getEachTCStrategyScenario } from '../../../reducers/testcase.reducer';
-import { AgGridReact } from 'ag-grid-react';
-import axios from 'axios';
+import { getCurrentRelease }  from '../../../reducers/release.reducer';
+// import {
+//     getTCStrategyForUIDomains, getTCStrategyForUISubDomains, alldomains, getTCStatusForSunburst,
+//     getTCStrategyForUISubDomainsDistribution, getTCStrategyForUIDomainsDistribution
+// } from '../../../reducers/release.reducer';
+// import { getEachTCStrategyScenario } from '../../../reducers/testcase.reducer';
+// import { AgGridReact } from 'ag-grid-react';
+// import axios from 'axios';
 import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../actions';
-import SanityTestCases from '../../../components/SanityTestCases/SanityTestCases';
+// import SanityTestCases from '../../../components/SanityTestCases/SanityTestCases';
 import E2ETestCases from '../../../components/E2ETestCases/E2ETestCases';
+import UITestCases from '../../../components/UITestCases/UITestCases';
 import LongevityTestCases from '../../../components/LongevityTestCases/LongevityTestCases';
 import StressTestCases from '../../../components/StressTestCases/StressTestCases';
 import './ReleaseSanityResult.scss'
@@ -36,21 +37,46 @@ class ReleaseSanityResult extends Component {
             edited: {},
             activeTab: '1',
             counter: 1,
-            deleteE2ESanityCntr: 1,
-            deleteE2EDailyCntr: 1,
-            deleteE2EWeeklyCntr: 1,
-            deleteLongevityCntr: 1,
-            deleteStressCntr: 1,
+             
+            // E2E state
             E2ESANITY: 1,
             E2EDAILY: 1,
             E2EWEEKLY: 1,
+
             saveE2ESanityCntr:1,
             saveE2EDailyCntr:1,
             saveE2EWeeklyCntr:1,
-            saveStressCntr:1,
-            saveLongevityCntr:1,
+
+            deleteE2ESanityCntr: 1,
+            deleteE2EDailyCntr: 1,
+            deleteE2EWeeklyCntr: 1,
+
+
+            // Longevity state
             Longevity: 1,
+            saveLongevityCntr:1,
+            deleteLongevityCntr: 1,
+            
+            // Stress state
             Stress: 1,
+            saveStressCntr:1,
+            deleteStressCntr: 1,
+
+            // UI state
+            UISANITY: 1,
+            UIDAILY: 1,
+            UIWEEKLY: 1,
+
+            saveUISanityCntr:1,
+            saveUIDailyCntr:1,
+            saveUIWeeklyCntr:1,
+
+            deleteUISanityCntr: 1,
+            deleteUIDailyCntr: 1,
+            deleteUIWeeklyCntr: 1,
+           
+           
+           
             tcOpen: true,
             createOpen: false,
             deleteOpen: false
@@ -70,44 +96,75 @@ class ReleaseSanityResult extends Component {
     }
     delete = () => {
 
+        // E2E activeTab
         if (this.state.activeTab === '1') {
             this.setState({ deleteE2ESanityCntr: this.state.deleteE2ESanityCntr + 1 })
         }
-
         if (this.state.activeTab === '2') {
             this.setState({ deleteE2EDailyCntr: this.state.deleteE2EDailyCntr + 1 })
         }
-
         if (this.state.activeTab === '3') {
             this.setState({ deleteE2EWeeklyCntr: this.state.deleteE2EWeeklyCntr + 1 })
         }
+
+        // Stress activeTab
         if (this.state.activeTab === '4') {
             this.setState({ deleteStressCntr: this.state.deleteStressCntr + 1 })
         }
+        
+        // Longevity 
         if (this.state.activeTab === '5') {
             this.setState({ deleteLongevityCntr: this.state.deleteLongevityCntr + 1 })
+        }
+
+        // UI activeTabs
+        if (this.state.activeTab === '6') {
+            this.setState({ deleteUISanityCntr: this.state.deleteUISanityCntr + 1 })
+        }
+
+        if (this.state.activeTab === '7') {
+            this.setState({ deleteUIDailyCntr: this.state.deleteUIDailyCntr + 1 })
+        }
+
+        if (this.state.activeTab === '8') {
+            this.setState({ deleteUIWeeklyCntr: this.state.deleteUIWeeklyCntr + 1 })
         }
         // this.confirmDeleteToggle();
     }
     save = () => {
 
+        // E2E
         if (this.state.activeTab === '1') {
             this.setState({ saveE2ESanityCntr: this.state.saveE2ESanityCntr + 1 })
         }
-
         if (this.state.activeTab === '2') {
             this.setState({ saveE2EDailyCntr: this.state.saveE2EDailyCntr + 1 })
         }
-
         if (this.state.activeTab === '3') {
             this.setState({ saveE2EWeeklyCntr: this.state.saveE2EWeeklyCntr + 1 })
         }
+
+        // Stress 
         if (this.state.activeTab === '4') {
             this.setState({ saveStressCntr: this.state.saveStressCntr + 1 })
         }
+
+        // Longevity
         if (this.state.activeTab === '5') {
 
             this.setState({ saveLongevityCntr: this.state.saveLongevityCntr + 1 })
+        }
+
+        // UI
+        
+        if (this.state.activeTab === '6') {
+            this.setState({ saveUISanityCntr: this.state.saveUISanityCntr + 1 })
+        }
+        if (this.state.activeTab === '7') {
+            this.setState({ saveUIDailyCntr: this.state.saveUIDailyCntr + 1 })
+        }
+        if (this.state.activeTab === '8') {
+            this.setState({ saveUIWeeklyCntr: this.state.saveUIWeeklyCntr + 1 })
         }
         // this.confirmSaveToggle();
     }
@@ -147,8 +204,6 @@ class ReleaseSanityResult extends Component {
                                             {
                                                 this.props.currentUser && this.props.currentUser.email &&
                                                 <React.Fragment>
-                                                   
-                                                   
                                                     <Button style={{ marginLeft: '1rem', right: '1rem', position: 'absolute' }} id="getDelete" onClick={() => this.confirmDelete()} type="button">Delete</Button>
                                                     <Button style={{ marginLeft: '1rem', right: '6rem', position: 'absolute' }} id="getall" onClick={() => this.confirmSave()} type="button">Update</Button>
                                                     <Button style={{ marginLeft: '1rem', right: '11rem', position: 'absolute' }} id="getall" onClick={() => this.toggleCreate()} type="button">Create</Button>
@@ -200,8 +255,33 @@ class ReleaseSanityResult extends Component {
                                     Longevity
                                 </NavLink>
                             </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    className={classnames({ active: this.state.activeTab === '6' })}
+                                    onClick={() => this.toggleTab('6')}>
+                                    UI Sanity
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    className={classnames({ active: this.state.activeTab === '7' })}
+                                    onClick={() => this.toggleTab('7')}
+                                >
+                                    UI Daily
+                                </NavLink>
+                            </NavItem>
+                            <NavItem>
+                                <NavLink
+                                    className={classnames({ active: this.state.activeTab === '8' })}
+                                    onClick={() => this.toggleTab('8')}
+                                >
+                                    UI Weekly
+                                </NavLink>
+                            </NavItem>
                         </Nav>
                         <TabContent activeTab={this.state.activeTab}>
+
+                            {/* E2E */}
                             <TabPane tabId="1">
                                 <E2ETestCases tag='SANITY' e2eCounter={this.state.E2ESANITY} deleteCounter={this.state.deleteE2ESanityCntr} saveCounter={this.state.saveE2ESanityCntr}></E2ETestCases>
                             </TabPane>
@@ -211,11 +291,26 @@ class ReleaseSanityResult extends Component {
                             <TabPane tabId="3">
                                 <E2ETestCases tag='WEEKLY' e2eCounter={this.state.E2EWEEKLY} deleteCounter={this.state.deleteE2EWeeklyCntr} saveCounter={this.state.saveE2EWeeklyCntr}></E2ETestCases>
                             </TabPane>
+                            
+                            {/* Stress */}
                             <TabPane tabId="4">
                                 <StressTestCases e2eCounter={this.state.Stress} deleteCounter={this.state.deleteStressCntr} saveCounter={this.state.saveStressCntr}></StressTestCases>
                             </TabPane>
+                            
+                            {/* Longevity */}
                             <TabPane tabId="5">
                                 <LongevityTestCases e2eCounter={this.state.Longevity} deleteCounter={this.state.deleteLongevityCntr} saveCounter={this.state.saveLongevityCntr}></LongevityTestCases>
+                            </TabPane>
+
+                            {/* UI */}
+                            <TabPane tabId="6">
+                                <UITestCases tag='SANITY' e2eCounter={this.state.UISANITY} deleteCounter={this.state.deleteUISanityCntr} saveCounter={this.state.saveUISanityCntr}></UITestCases>
+                            </TabPane>
+                            <TabPane tabId="7">
+                                <UITestCases tag='DAILY' e2eCounter={this.state.UIDAILY} deleteCounter={this.state.deleteUIDailyCntr} saveCounter={this.state.saveUIDailyCntr}></UITestCases>
+                            </TabPane>
+                            <TabPane tabId="8">
+                                <UITestCases tag='WEEKLY' e2eCounter={this.state.UIWEEKLY} deleteCounter={this.state.deleteUIWeeklyCntr} saveCounter={this.state.saveUIWeeklyCntr}></UITestCases>
                             </TabPane>
                         </TabContent>
                     </Col>

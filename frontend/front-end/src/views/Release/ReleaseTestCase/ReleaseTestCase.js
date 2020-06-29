@@ -55,6 +55,7 @@ class ReleaseTestCase extends Component {
             allTestCaseStatus:[],
             allTestCaseStatusCLI:[],
             allTestCaseStatusGUI:[],
+            overlayNoRowsTemplate: '<span class="ag-overlay-loading-center">No rows to show</span>',
 
 
         }
@@ -155,7 +156,7 @@ class ReleaseTestCase extends Component {
         this.setState({allTestCaseStatus:[]})
         let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
         axios.get(url).then(res=>{
-            console.log("result",res.data,res.data.TcAggregate,res.data.TcAggregate.domain)
+            // console.log("result",res.data,res.data.TcAggregate,res.data.TcAggregate.domain)
             let domainData =[]
             for (const [key, value] of Object.entries(res.data.TcAggregate.domain)) {
                 let arr = {}
@@ -175,6 +176,9 @@ class ReleaseTestCase extends Component {
                 }
                 domainData.push(arr);
             }
+            // domainData.forEach((item)=>{
+            //     console.log("domainData",item)
+            // })
             // console.log("Domaindata",domainData);
             this.setState({allTestCaseStatus:domainData})
         },
@@ -186,7 +190,7 @@ class ReleaseTestCase extends Component {
         this.setState({allTestCaseStatusCLI:[]})
         let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
         axios.get(url).then(res=>{
-            console.log("result",res.data,res.data.TcAggregate,res.data.TcAggregate['domain-cli'])
+            // console.log("result",res.data,res.data.TcAggregate,res.data.TcAggregate['domain-cli'])
             let domainData =[]
             if(res.data.TcAggregate['domain-cli']){
                 for (const [key, value] of Object.entries(res.data.TcAggregate['domain-cli'])) {
@@ -209,7 +213,7 @@ class ReleaseTestCase extends Component {
                 }
             }
             
-            // console.log("Domaindata cli",domainData);
+            console.log("Domaindata cli",domainData);
             this.setState({allTestCaseStatusCLI:domainData})
         },
         error => {
@@ -220,7 +224,7 @@ class ReleaseTestCase extends Component {
         this.setState({allTestCaseStatusGUI:[]})
         let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
         axios.get(url).then(res=>{
-            console.log("result",res.data,res.data.TcAggregate,res.data.TcAggregate['domain-gui'])
+            // console.log("result",res.data,res.data.TcAggregate,res.data.TcAggregate['domain-gui'])
             let domainData =[]
             if(res.data.TcAggregate['domain-gui']){
                 for (const [key, value] of Object.entries(res.data.TcAggregate['domain-gui'])) {
@@ -242,7 +246,7 @@ class ReleaseTestCase extends Component {
                     domainData.push(arr);
                 }
             }
-            // console.log("Domaindata gui",domainData);
+            console.log("Domaindata gui",this.props.selectedRelease.ReleaseNumber,domainData);
             this.setState({allTestCaseStatusGUI:domainData})
         },
         error => {
@@ -292,7 +296,7 @@ class ReleaseTestCase extends Component {
     renderTableDataGUI  = () => {
         
         return this.state.allTestCaseStatusGUI === 0 ? (
-            <div>Loading...1234</div>
+            <div>Loading...</div>
         ) : (
             this.state.allTestCaseStatusGUI.map((e, i) => {
             return (

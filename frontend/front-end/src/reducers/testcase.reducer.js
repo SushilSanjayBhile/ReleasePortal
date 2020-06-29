@@ -18,6 +18,10 @@ import {
     SAVE_SINGLE_E2E,
     UPDATE_E2E_EDIT,
 
+    SAVE_UI,
+    SAVE_SINGLE_UI,
+    UPDATE_UI_EDIT,
+
     UPDATE_SANITY_EDIT,
     SAVE_LONGEVITY,
     SAVE_STRESS
@@ -31,35 +35,14 @@ const initialState = {
     e2e: [],
     e2eDetails: {},
     e2eEdit: {},
+    ui: [],
+    uiDetails: {},
+    uiEdit: {},
     sanityEdit: {},
     stress: [],
     longevity: []
 };
 
-// TO BE REMOVEED
-// const types = [
-//     { key: 'PVC_Remote', Domain: 'Storage PVC', SubDomain: 'Remote' },
-//     { key: 'PVC_Local', Domain: 'Storage PVC', SubDomain: 'Local' },
-//     { key: 'PVC_Mirrored', Domain: 'Storage PVC', SubDomain: 'Mirrored' },
-//     { key: 'SR', Domain: 'Storage Remote', SubDomain: 'Remote' },
-//     { key: 'SS', Domain: 'Storage Snapshot', SubDomain: 'Snapshot' },
-//     { key: 'N_HostNetwork', Domain: 'Network', SubDomain: 'Host Network' },
-//     { key: 'N_Endpoint', Domain: 'Network', SubDomain: 'Endpoint' },
-//     { key: 'AT_Qos', Domain: 'Qos', tag: 'Additional Test' },
-//     { key: 'M_Migration', Domain: 'Management', SubDomain: 'Master Migration' },
-//     { key: 'MZ_ZoneCapability', Domain: 'Multizone Cluster', SubDomain: 'Zone Capability' },
-//     { key: 'MZ_BasicNW', Domain: 'Multizone Cluster', SubDomain: 'Basic Networking' },
-// ]
-// const sortTestCaseByDomain = (tc) => {
-//     types.forEach(item => {
-//         if (!tc.Domain) {
-//             if (tc.TcID.search(item.key) !== -1) {
-//                 tc = { ...tc, Domain: item.Domain, SubDomain: item.SubDomain, tag: item.tag, Setup: item.Setup ? item.Setup : 'Common' }
-//             }
-//         }
-//     });
-//     return tc;
-// }
 // ////////////////////
 // Modifiers //////////
 // //////////////////
@@ -173,6 +156,37 @@ function sanityEdit(state = initialState.sanityEdit, action) {
     }
 }
 
+function ui(state = initialState.ui, action) {
+    switch (action.type) {
+        case SAVE_UI:
+            state = action.payload
+            return state;
+        default:
+            return state;
+    }
+}
+
+function uiDetails(state = initialState.uiDetails, action) {
+    switch (action.type) {
+        case SAVE_SINGLE_UI:
+            state = action.payload
+            return state;
+        default:
+            return state;
+    }
+}
+function uiEdit(state = initialState.uiEdit, action) {
+    switch (action.type) {
+        case UPDATE_UI_EDIT:
+            state = action.payload
+            return state;
+        default:
+            return state;
+    }
+}
+
+
+
 export const testcaseReducer = combineReducers({
     all,
     status,
@@ -181,6 +195,9 @@ export const testcaseReducer = combineReducers({
     e2e,
     e2eDetails,
     e2eEdit,
+    ui,
+    uiDetails,
+    uiEdit,
     sanityEdit,
     longevity,
     stress
@@ -222,14 +239,7 @@ export const getEachTCStatusScenario = ({ data, domain, all }) => {
         })
         cardTypes[cardType].forEach(item => {
             if (scenarios[item.SubDomain]) {
-                // if (scenarios[item.SubDomain].Result === 'Pass') {
-                //     scenarios[item.SubDomain].Pass += 1
-                // } else if (scenarios[item.SubDomain].Result === 'Fail') {
-                //     scenarios[item.SubDomain].Fail += 1
-                // } else {
-                //     scenarios[item.SubDomain].Skip += 1
-                // }
-                // scenarios[item.SubDomain].Tested += 1;
+                
                 if (item.Result === 'Pass') {
                     scenarios[item.SubDomain].Pass += 1
                     totalPass += 1;
@@ -254,11 +264,7 @@ export const getEachTCStatusScenario = ({ data, domain, all }) => {
                 console.log('DATA IS INVALID');
             }
         });
-        // {
-        //     "id": 8, "TcName": "RbacStaticProvision.PodWithLSAndValidateIOPSWithMultipleQosforLocalNRemoteAuth",
-        //         "Build": "2.3.0-48", "Result": "Pass", "Bugs": "-1",
-        //             "Date": "2019-12-21", "Domain": "StoragePVC", "SubDomain": "PVC_Rbac", "TcID": "PVC_Rbac_S-1.0"
-        // },
+        
         let doughnut = { data: { labels: [], datasets: [] }, title: cardType, CardType: cardType, SubDomains:{} };
         let labels = [];
         let datasets = [
@@ -360,14 +366,7 @@ export const getEachTCStrategyScenario = ({ data, domain, release }) => {
                 console.log('DATA IS INVALID');
             }
         });
-        // Object.keys(scenarios).forEach(item => {
-        //     scenarios[item].NotTested = scenarios[item].Total - (scenarios[item].auto + scenarios[item].manual)
-        // })
-        // {
-        //     "id": 8, "TcName": "RbacStaticProvision.PodWithLSAndValidateIOPSWithMultipleQosforLocalNRemoteAuth",
-        //         "Build": "2.3.0-48", "Result": "Pass", "Bugs": "-1",
-        //             "Date": "2019-12-21", "Domain": "StoragePVC", "SubDomain": "PVC_Rbac", "TcID": "PVC_Rbac_S-1.0"
-        // },
+        
         let doughnut = { data: { labels: [], datasets: [] }, title: cardType };
         let labels = [];
         let datasets = [
@@ -426,114 +425,7 @@ export const getEachTCStrategyScenario = ({ data, domain, release }) => {
     return doughnuts;
 }
 
-// export const getEachTCStrategyScenario = ({ data, domain, release }) => {
-//     if (!data) {
-//         return;
-//     }
-//     let doughnuts = [];
-//     let cardTypes = {};
-//     let totalAuto = 0, totalManual = 0, totalNA = 0;
-//     data.forEach(item => {
-//         if (cardTypes[item.CardType]) {
-//             cardTypes[item.CardType].push(item);
-//         } else {
-//             cardTypes[item.CardType] = [item];
-//         }
-//     });
-//     Object.keys(cardTypes).forEach(cardType => {
-//         let scenarios = {};
-//         data.forEach(item => {
-//             if (item.CardType === cardType) {
-//                 if (scenarios[item.SubDomain]) {
-//                     scenarios[item.SubDomain].Total += 1;
-//                 } else {
-//                     scenarios[item.SubDomain] = { auto: 0, manual: 0, Total: 1, NotApplicable: 0 }
-//                 }
-//             }
-//         })
-//         cardTypes[cardType].forEach(item => {
-//             if (scenarios[item.SubDomain]) {
-//                 if ((item.Result === 'Pass' || item.Result === 'Fail') && item.TcName !== 'TC NOT AUTOMATED') {
-//                     scenarios[item.SubDomain].auto += 1
-//                     totalAuto += 1;
-//                 }
-//                 if ((item.Result === 'Pass' || item.Result === 'Fail') && item.TcName === 'TC NOT AUTOMATED') {
-//                     scenarios[item.SubDomain].manual += 1
-//                     totalManual += 1;
-//                 }
-//                 if (item.Result === 'Not Applicable') {
-//                     scenarios[item.SubDomain].NotApplicable += 1;
-//                     totalNA += 1;
-//                 }
-//             } else {
-//                 console.log('DATA IS INVALID');
-//             }
-//         });
-//         // Object.keys(scenarios).forEach(item => {
-//         //     scenarios[item].NotTested = scenarios[item].Total - (scenarios[item].auto + scenarios[item].manual)
-//         // })
-//         // {
-//         //     "id": 8, "TcName": "RbacStaticProvision.PodWithLSAndValidateIOPSWithMultipleQosforLocalNRemoteAuth",
-//         //         "Build": "2.3.0-48", "Result": "Pass", "Bugs": "-1",
-//         //             "Date": "2019-12-21", "Domain": "StoragePVC", "SubDomain": "PVC_Rbac", "TcID": "PVC_Rbac_S-1.0"
-//         // },
-//         let doughnut = { data: { labels: [], datasets: [] }, title: cardType };
-//         let labels = [];
-//         let datasets = [
-//             {
-//                 label: 'Auto (' + totalAuto + ')',
-//                 data: [],
-//                 backgroundColor: [],
-//                 hoverBackgroundColor: []
-//             },
-//             {
-//                 label: 'Manual (' + totalManual + ')',
-//                 data: [],
-//                 backgroundColor: [],
-//                 hoverBackgroundColor: []
-//             },
-//             // {
-//             //     label: 'Fail',
-//             //     data: [],
-//             //     backgroundColor: [],
-//             //     hoverBackgroundColor: []
-//             // },
-//             {
-//                 label: 'Not Applicable (' + totalNA + ')',
-//                 data: [],
-//                 backgroundColor: [],
-//                 hoverBackgroundColor: []
-//             }
-//         ];
-//         for (let i = 0; i < datasets.length; i++) {
-//             Object.keys(scenarios).forEach((item, index) => {
-//                 datasets[i].backgroundColor.push(colors[i]);
-//                 datasets[i].hoverBackgroundColor.push(colors[i]);
-//             })
-//         }
 
-//         Object.keys(scenarios).forEach((item, index) => {
-//             let auto = scenarios[item].auto;
-//             let manual = scenarios[item].manual;
-//             // let fail = scenarios[item].Fail;
-//             // let nottested = scenarios[item].Total - scenarios[item].Tested;
-//             let na = scenarios[item].NotApplicable;
-//             let total = scenarios[item].auto + scenarios[item].manual + scenarios[item].NotApplicable;
-//             labels.push(item + ' (' + total + ')');
-//             datasets[0].data.push(auto);
-//             datasets[1].data.push(manual);
-//             datasets[2].data.push(na);
-//         });
-//         doughnut.data.labels = labels;
-//         doughnut.data.datasets = datasets;
-//         if (datasets[0].backgroundColor.length === 0) {
-//             doughnut.hide = true
-//         }
-//         doughnuts.push(doughnut);
-
-//     });
-//     return doughnuts;
-// }
 const colors = [
 
     '#36A2EB',

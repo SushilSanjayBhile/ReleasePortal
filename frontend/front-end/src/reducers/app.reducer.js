@@ -29,6 +29,8 @@ const initialState = {
 // Reducers //////////
 // //////////////////
 function navs(state = initialState.navigation, action) {
+    console.log("=============================",action.type,action.payload, state)
+
     switch (action.type) {
         case UPDATE_NAV:
             let existing = state.items[0].children.filter(item => item.name === action.payload.id);

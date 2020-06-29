@@ -153,8 +153,11 @@ class UpdateMultiple extends Component {
         this.multipleToggle();
         this.globalErrors = null;
         this.currentID = 0;
-        this.save();
-        console.log(this.state.multiple);
+        // this.save();
+        //console.log("sushil murkha bavlat ahe",this.state.multiple);
+        if(this.state.multiple.length > 1){
+            this.saveMultipleTc();
+        }
     }
     textFields = [
         'Domain', 'SubDomain',
@@ -169,11 +172,14 @@ class UpdateMultiple extends Component {
         }
         return tcName;
     }
-    save() {
+
+    saveMultipleTc () {
+        let multipleTCArray = []
+
         this.gridOperations(false)
         this.props.showLoadingMessage(true);
         let row = this.state.multiple[this.currentID];
-        console.log(row)
+        //console.log(row)
         let data = {};
         // tc info meta fields
         // data.Role = 'QA';
@@ -190,7 +196,42 @@ class UpdateMultiple extends Component {
             "URL": `/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${data.CardType}`
         };
         data.TcName = this.getTcName(`${data.TcName}`);
-        console.log("updateMultiple",data)
+        for(this.currentID = 0 ; this.currentID < this.state.multiple.length ; this.currentID += 1 ){
+            multipleTCArray.push(this.state.multiple[this.currentID])
+        }
+        axios.put(`/api/multipletcinfoupdate/${this.props.selectedRelease.ReleaseNumber}`, multipleTCArray)
+        .then(res => {
+            alert('All TCs Updated Successfully')
+        }, error => {
+            alert('Following records does not exist in DB: ' + JSON.stringify(error.response.data) );
+        });
+
+
+    }
+
+
+    save() {
+        this.gridOperations(false)
+        this.props.showLoadingMessage(true);
+        let row = this.state.multiple[this.currentID];
+        // console.log(row)
+        let data = {};
+        // tc info meta fields
+        // data.Role = 'QA';
+        // tc info fields
+        this.textFields.forEach(item => data[item] = `${row[item]}`);
+        // this.arrayFields.forEach(item => data[item] = this.joinArrays(row[item]));
+        data.Activity = {
+            Release: this.props.selectedRelease.ReleaseNumber,
+            "TcID": `${data.TcID}`,
+            "CardType": `${data.CardType}`,
+            "UserName": `${this.props.currentUser.email}`,
+            "LogData": `UPDATED TC`,
+            "RequestType": 'PUT',
+            "URL": `/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${data.CardType}`
+        };
+        data.TcName = this.getTcName(`${data.TcName}`);
+        // console.log("updateMultiple",data)
 
         axios.put(`/api/tcinfoput/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${data.CardType}`, { ...data })
             .then(res => {
@@ -211,7 +252,7 @@ class UpdateMultiple extends Component {
             }, error => {
                 this.gridOperations(false)
                 this.props.showLoadingMessage(false);
-                console.log('entered here')
+                //console.log('entered here')
                 if (!this.globalErrors) this.globalErrors = {}
                 this.globalErrors = { ...this.globalErrors, [this.state.multiple[this.currentID].TABLEID]: { uploadError: true } }
                 this.currentID += 1;
@@ -229,7 +270,7 @@ class UpdateMultiple extends Component {
             });
     }
     confirmMultipleToggle() {
-        console.log(this.state.multiple);
+        //console.log(this.state.multiple);
         let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
         if (domains) {
             domains.sort();
@@ -299,8 +340,8 @@ class UpdateMultiple extends Component {
     }
     renderEditedCell = (params) => {
         if (params.data) {
-            console.log('errors inside')
-            console.log(this.state.multipleErrors)
+            //console.log('errors inside')
+            //console.log(this.state.multipleErrors)
             if (this.state.multipleErrors && this.state.multipleErrors[params.data.TABLEID] && this.state.multipleErrors[params.data.TABLEID].uploadError) {
                 return {
                     backgroundColor: 'rgb(237,102,72)',

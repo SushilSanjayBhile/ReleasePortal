@@ -247,6 +247,7 @@ class E2ETestCases extends Component {
         this.props.updateE2EEdit({ ...e, errors: {}, original: e });
     }
     componentWillReceiveProps(newProps) {
+        console.log("will receive",this.props.selectedRelease.ReleaseNumber,newProps.selectedRelease.ReleaseNumber)
         if(this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
             this.props.updateSanityEdit({});
             this.getTcs(newProps.selectedRelease.ReleaseNumber);
@@ -477,6 +478,7 @@ class E2ETestCases extends Component {
         let url = `/api/sanity/e2e/${release}`;
         setTimeout(() => axios.get(url)
             .then(all => {
+                console.log(all.data)
                 this.props.saveE2E(all.data);
                 setTimeout(this.gridApi.refreshView(), 0)
                 this.deselect();
@@ -601,11 +603,14 @@ class E2ETestCases extends Component {
             Notes: this.state.sanityDetails.oldNotes+'' } });
     }
     render() {
+        console.log("coming in E2E",this.props.data)
+
         let rowData = this.props.data.filter(it => it.Tag === this.props.tag).map(item => ({
             ...item,
             Date: this.convertDate(item.Date),
             sanityEdit: this.props.sanityEdit,
             updateSanityEdit: (sanity) => {
+                console.log("updateSanity",sanity)
                 this.props.updateSanityEdit(sanity)
                 let e2ePresent = sanity['E2E'] ? true : false;
                 this.setState({ e2ePresent: e2ePresent })

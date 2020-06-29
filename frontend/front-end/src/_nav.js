@@ -9,7 +9,7 @@ export default {
     {
       name: 'Release Status',
       url: '/release/status',
-      icon: 'fa fa-bars',
+      icon: 'fa fa-line-chart',
     },
     // {
     //   name: 'QA Updates',
@@ -22,53 +22,41 @@ export default {
       icon: 'fa fa-area-chart',
     },
     {
-      name: 'Test Metrics',
+      name: 'CLI Test Metrics',
       url: '/release/testmetrics',
-      icon: 'fa fa-compass',
+      icon: 'fa fa-table',
     },
     {
-      name: 'Gui Test Metrics',
+      name: 'GUI Test Metrics',
       url: '/release/guitestmetrics',
-      icon: 'fa fa-compass',
+      icon: 'fa fa-table',
     },
     {
       name: 'Other Test Result',
       url: '/release/sanityresults',
-      icon: 'fa fa-compass',
+      icon: 'fa fa-table',
     },
     {
       name: 'Documents',
       url: '/release/docs',
       icon: 'fa fa-file'
     },
-
+    {
+      name: 'Jenkins Build',
+      url: 'http://172.16.1.30:8080/view/3.0.0/',
+      attributes: { target: '_blank' }, 
+      icon: 'fa fa-server'    
+    },
+    {
+      name: 'Jira Dashboard',
+      url: 'https://diamanti.atlassian.net/secure/Dashboard.jspa?selectPageId=12400',
+      attributes: { target: '_blank' },
+      icon: 'fa fa-bug',
+    },
     // {
     //   name: 'Team Work',
     //   url: '/release/teamwork',
     //   icon: 'fa fa-bars',
     // },
-    
-    {
-      name: 'Jira Dashboard',
-      url: 'https://diamanti.atlassian.net/secure/Dashboard.jspa?selectPageId=12400',
-      // url: 'http://dwsjira1.eng.diamanti.com:8080/secure/Dashboard.jspa?selectPageId=11803',
-      attributes: { target: '_blank' },
-      icon: 'fa fa-bug',
-      // class: 'rp-jira'
-    },
-
-    
-
-    // {
-    //   name: 'select Month',
-    //   url: '/release/month',
-    //   icon: 'fa fa-bars',
-    // }
-
-
   ],
 };
-
-// 3.0.0: 11602
-//2.4.0:  12600
-//2.3.0: 11803

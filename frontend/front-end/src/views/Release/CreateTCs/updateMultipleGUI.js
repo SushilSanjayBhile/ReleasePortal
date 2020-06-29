@@ -299,8 +299,7 @@ class UpdateMultiple extends Component {
     }
     renderEditedCell = (params) => {
         if (params.data) {
-            console.log('errors inside')
-            console.log(this.state.multipleErrors)
+           
             if (this.state.multipleErrors && this.state.multipleErrors[params.data.TABLEID] && this.state.multipleErrors[params.data.TABLEID].uploadError) {
                 return {
                     backgroundColor: 'rgb(237,102,72)',

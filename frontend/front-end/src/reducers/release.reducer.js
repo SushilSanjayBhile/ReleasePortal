@@ -282,6 +282,7 @@ export const getTCForStatus = (state, id) => {
     if (release.TcAggregate.PriorityGui) {
         pGUI = { ...pGUI, ...release.TcAggregate.PriorityGui}
     }
+
     
     if (state.release.options.selectedPriority) {
         state.release.options.selectedPriority.forEach(item => {
@@ -487,7 +488,7 @@ export const getTCForStatus = (state, id) => {
     if (release.ReleaseNumber === '2.3.0') {
         total.push(3876)
     } else {
-        let temp =release.TcAggregate.allGUI.TotalTCs - (release.TcAggregate.allGUI.NotApplicable + (release.TcAggregate.allGUI.SkippedFromRelease + release.TcAggregate.allGUI.SkippedWhileTesting))
+        let temp =release.TcAggregate.allGUI.All - (release.TcAggregate.allGUI.NotApplicable + release.TcAggregate.allGUI.Skip)
         total.push(temp);
     }
     return {

@@ -406,7 +406,6 @@ class ReleaseSummary extends Component {
         data.Priority = 'P0' // if not set then giving error to update basic info 
         axios.put(`/api/release/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
-                console.log("data set hotoy ka?",res.data)
                 this.props.saveReleaseBasicInfo({ id: data.ReleaseNumber, data: data });
                 this.reset();
             }, error => {
@@ -430,9 +429,6 @@ class ReleaseSummary extends Component {
         })
     }
     componentDidMount(){
-
-        
-       
     }
     render() {
         
@@ -441,6 +437,7 @@ class ReleaseSummary extends Component {
         }
        
         let featuresCount = 0;
+        let featuresStatusDict = {'Open': { total: 0 },'Resolved': { total: 0 },'Others': { total: 0 } }
         let statusScenarios = { Open: { total: 0 }, Resolved: { total: 0 }};
         if (this.props.feature && this.props.feature.issues) {
             featuresCount = this.props.feature.issues.length;
@@ -454,6 +451,23 @@ class ReleaseSummary extends Component {
 
                 }
                 
+            })
+        }
+
+        if (this.props.feature && this.props.feature.issues) {
+            featuresCount = this.props.feature.issues.length;
+            this.props.feature.issues.forEach(item => {
+                if(item.fields.status.name == 'In Progress' || item.fields.status.name == 'To Do'|| item.fields.status.name == 'Open' ) {
+                    featuresStatusDict['Open'].total += 1;
+                }
+                else if(item.fields.status.name == 'Resolved'){
+                    featuresStatusDict['Resolved'].total += 1;
+                }
+                else{
+                    featuresStatusDict['Others'].total += 1;
+
+                }
+               
             })
         }
 
@@ -508,6 +522,9 @@ class ReleaseSummary extends Component {
                                         { key: 'Intended Customers', field: 'Customers', value: this.props.selectedRelease.Customers ? this.props.selectedRelease.Customers.join(',') : '' },
                                         { key: 'Total Features', restrictEdit: true, field: 'Total Features', value: featuresCount },
                                         { key: 'Operating System', value: this.props.selectedRelease.FinalOS, field: 'FinalOS' },
+                                        { key: 'Kubernetes', value: this.props.selectedRelease.KubernetesVersion , field: 'KubernetesVersion' },
+                                        { key: 'Docker', value: this.props.selectedRelease.DockerVersion , field: 'DockerVersion' },
+                                        { key: 'Helm', value: this.props.selectedRelease.HelmVersion , field: 'HelmVersion' },
                                     ].map((item, index) => {
                                         return (
                                             <tr>
@@ -635,8 +652,6 @@ class ReleaseSummary extends Component {
                         <Table scroll responsive style={{ overflow: 'hidden', }}>
                             <tbody>
                                 <tr style={{ cursor: 'pointer' }} onClick={() => {
-                                    
-
                                     this.props.statusPage({ featureOpen: false, buildOpen: false, bugOpen: true, graphsOpen: false });
                                     this.props.history.push('/release/status');
 
@@ -649,14 +664,13 @@ class ReleaseSummary extends Component {
                                             {
                                                 this.props.bug && this.props.bug.bugCount && Object.keys(this.props.bug.bugCount.all).map((item, index) =>
                                                     <div class="col-sm-3">
-                                                        <div className={`c-callout c-callout-${item.toLowerCase()}`} onClick={()=>{console.log("item is selected",item)}}>
+                                                        <div className={`c-callout c-callout-${item.toLowerCase()}`}>
                                                             <small class="text-muted">{item.toUpperCase()}</small><br></br>
                                                             <strong class="h4">{this.props.bug.bugCount.all[item]}</strong>
                                                         </div>
                                                     </div>
                                                 )
                                             }
-
                                         </div>
                                     </td>
                                 </tr>
@@ -679,11 +693,11 @@ class ReleaseSummary extends Component {
                                                     </div>
                                                 </div>
                                                 {
-                                                    Object.keys(statusScenarios).map(item =>
+                                                    Object.keys(featuresStatusDict).map(item =>
                                                         <div class="col-sm-3">
                                                             <div className={`c-callout c-callout-${item.toLowerCase()}`}  >
                                                                 <small class="text-muted">{item.toUpperCase()}</small><br></br>
-                                                                <strong class="h4">{statusScenarios[item].total}</strong>
+                                                                <strong class="h4">{featuresStatusDict[item].total}</strong>
                                                             </div>
                                                         </div>
                                                     )
@@ -779,7 +793,7 @@ class ReleaseSummary extends Component {
 
                                         <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.totalTests : 0}</span></td>
                                         
-                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI  ? allGUI.TotalTCs: 0}</span></td>
+                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI  ? allGUI.All : 0}</span></td>
                                            
                                             </tr>
                                         </tbody>
@@ -787,7 +801,7 @@ class ReleaseSummary extends Component {
                                         </td>
                                     </tr>
                                 }
-                                                                                                {
+                                {
                                     <tr>
                                         <td className='rp-app-table-key'>Test Cases Not Applicable</td>
                                         <td>
@@ -811,7 +825,7 @@ class ReleaseSummary extends Component {
                                         <tbody>
                                         <tr>
                                         <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.skipped : 0}</span></td>
-                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI ? allGUI.SkippedFromRelease : 0}</span></td>
+                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI ? allGUI.Skip : 0}</span></td>
                                             
                                             </tr>
                                         </tbody>

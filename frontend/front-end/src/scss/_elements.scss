@@ -315,6 +315,7 @@ th {
       color: $app-secondary-color !important;
     }
   }
+  
 
   &:last-child .nav-link.active .nav-icon {
     color: $app-secondary-color !important;
@@ -346,7 +347,7 @@ th {
 // changes
 .sidebar .nav-link {
   /* color: #41f041 !important; */
-  // color: #3a4248 !important;
+  color: #3a4248 !important;
 }
 
 .sidebar .nav-link .nav-icon {
@@ -373,7 +374,6 @@ th {
 
   }
 }
-
 
 .sidebar .nav {
   width: 200px;
