@@ -3,9 +3,9 @@ from django.http import HttpResponse, JsonResponse
 from django.db.models.functions import Trunc
 import json, time
 
-from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER, E2E_SERIALIZER, STRESS_SERIALIZER, LONGEVITY_SERIALIZER
-from .models import E2E, LONGEVITY, STRESS, LOGS
-from .forms import TcInfoForm, E2EForm, StressForm, LongevityForm
+from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER, E2E_SERIALIZER, STRESS_SERIALIZER, LONGEVITY_SERIALIZER,UI_SERIALIZER
+from .models import E2E, LONGEVITY, STRESS, LOGS,UI
+from .forms import TcInfoForm, E2EForm, StressForm, LongevityForm,UIForm
 from django.db.models import Q
 import datetime
 from .forms import LogForm
@@ -40,6 +40,8 @@ def SanityDeleteView(request, Release, SanityType):
         for req in requests:
             if "e2e" in SanityType.lower():
                 data = E2E.objects.using(Release).get(id = req['id']).delete()
+            if "ui" in SanityType.lower():
+                data = UI.objects.using(Release).get(id = req['id']).delete()
             if "stress" in SanityType.lower():
                 data = STRESS.objects.using(Release).get(id = req['id']).delete()
             if "longevity" in SanityType.lower():
@@ -59,6 +61,8 @@ def SanityView(request, Release, SanityType):
 
         if SanityType.lower() == "e2e":
             fd = E2EForm(req)
+        if SanityType.lower() == "ui":
+            fd = UIForm(req)
         if SanityType.lower() == "stress":
             fd = StressForm(req)
         if SanityType.lower() == "longevity":
@@ -81,6 +85,9 @@ def SanityView(request, Release, SanityType):
         if SanityType.lower() == "e2e":
             data = E2E.objects.using(Release).all()
             serializer = E2E_SERIALIZER(data, many = True)
+        if SanityType.lower() == "ui":
+            data = UI.objects.using(Release).all()
+            serializer = UI_SERIALIZER(data, many = True)
         if SanityType.lower() == "stress":
             data = STRESS.objects.using(Release).all()
             serializer = STRESS_SERIALIZER(data, many = True)
@@ -95,6 +102,26 @@ def SanityView(request, Release, SanityType):
         req = json.loads(request.body.decode("utf-8"))
         req['CardType'] = req['CardType'][0]
         print(req)
+
+def updateUI(updatedData, data, Release):
+    try:
+        data.User = updatedData['User']
+        data.Date = updatedData['Date']
+        data.Build = updatedData['Build']
+        data.Tag = updatedData['Tag']
+        data.Result = updatedData['Result']
+        data.Bugs = updatedData['Bugs']
+        data.CardType = updatedData['CardType']
+        data.NoOfTCsPassed = updatedData['NoOfTCsPassed']
+        data.UIFocus = updatedData['UIFocus']
+        data.UISkipList = updatedData['UISkipList']
+        data.Setup = updatedData['Setup']
+        data.Notes = updatedData['Notes']
+
+        data.save(using = Release)
+        return "S"
+    except:
+        return "F"
 
 def updateE2E(updatedData, data, Release):
     try:
@@ -159,6 +186,19 @@ def SanityUpdateView(request, Release, SanityType):
         request = json.loads(request.body.decode("utf-8"))
 
         for req in request:
+
+            if "ui" in SanityType.lower():
+                data = UI.objects.using(Release).get(id = req['id'])
+                serializer = UI_SERIALIZER(data)
+                updatedData = serializer.data
+                print(updatedData, req)
+
+                for key in req:
+                    updatedData[key] = req[key]
+
+                res = updateUI(updatedData, data, Release)
+                if res == "F":
+                    errRecords.append(req)
 
             if "e2e" in SanityType.lower():
                 data = E2E.objects.using(Release).get(id = req['id'])

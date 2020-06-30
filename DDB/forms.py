@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, E2E, STRESS, LONGEVITY, \
+from .models import TC_INFO, TC_STATUS, USER_INFO, LOGS, RELEASES, AGGREGATE_TC_STATE, TC_STATUS_GUI, E2E, UI, STRESS, LONGEVITY, \
         DEFAULT_DOMAIN_SUBDOMAIN, LATEST_TC_STATUS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LOGSGUI
 
 class GuiLogsForm(ModelForm):
@@ -65,6 +65,11 @@ class ReleaseInfoForm(ModelForm):
 class E2EForm(ModelForm):
     class Meta:
         model = E2E
+        fields = "__all__"
+
+class UIForm(ModelForm):
+    class Meta:
+        model = UI
         fields = "__all__"
 
 class StressForm(ModelForm):

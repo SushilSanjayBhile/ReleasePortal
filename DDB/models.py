@@ -209,6 +209,21 @@ class SANITY_RESULTS(models.Model):
     def __str__(self):
         return "{0}{1}".format(self.SanityId, self.Timestamp)
 
+# Table to store UI result
+class UI(models.Model):
+    User = models.CharField(max_length = 100, blank = False, default = "UNKNOWN")
+    Date = models.DateTimeField(auto_now = False, blank = True, null=True)
+    Build = models.CharField(max_length = 100, blank = True, null = True)
+    Tag = models.CharField(max_length = 100, blank = True, null = True)
+    Result = models.CharField(max_length = 14, blank = True, null = True)
+    Bugs = models.CharField(max_length = 500, blank = True, null = True) # we can make this as list field also
+    CardType = models.CharField(max_length = 100, blank = True, null = True) # we can make this as list field also
+    NoOfTCsPassed = models.IntegerField(blank = True, null = True)
+    UIFocus = models.TextField(blank = True, null = True)
+    UISkipList = models.TextField(blank = True, null = True)
+    Setup = models.TextField(blank = True, null = True)
+    Notes = models.TextField(blank = True, null = True)
+
 # Table to store e2e result
 class E2E(models.Model):
     User = models.CharField(max_length = 100, blank = False, default = "UNKNOWN")
