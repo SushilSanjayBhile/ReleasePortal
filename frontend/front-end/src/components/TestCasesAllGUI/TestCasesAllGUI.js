@@ -45,6 +45,7 @@ class TestCasesAllGUI extends Component {
     isApiUnderProgress = false;
     isAnyChanged = false;
     isBlockedOrFailed = false;
+    allTCsToShow = []
     constructor(props) {
         super(props);
         let columnDefDict = {
@@ -246,9 +247,8 @@ class TestCasesAllGUI extends Component {
     }
 
     showSelectedTCs = () =>{
-        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain);
+        this.getTcsToShow(this.props.selectedRelease.ReleaseNumber , true);
         this.setState({ popoverOpen2: !this.state.popoverOpen2 });
-
     }
 
 
@@ -738,45 +738,11 @@ class TestCasesAllGUI extends Component {
             .then(all => {
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
+                this.allTCsToShow = all.data;
+                this.getTcsToShow(release,updateRelease)
                 
-                for(let i=-0;i<all.data.length;i++){
-
-                    if(all.data[i].Priority == 'Skip' ){
-                        skipCount+=1
-                        skipTcs.push(all.data[i])
-                        // console.log('Tc with Skip and NA status',all.data[i]);
-                    }
-                    if(all.data[i].Priority == 'NA'){
-                        NACount += 1
-                        NATcs.push(all.data[i])
-                    }
-                    if(all.data[i].Priority != 'NA' && all.data[i].Priority != 'Skip'){
-                        applicableCount+=1
-                        ApplicableTcs.push(all.data[i])
-                    }
-                }
-
-                showTc = []
-                this.state.tableColumnsTcs.forEach(item=>{
-                   
-                    if(item.isChecked == true  && item.value == 'Show Skip'){
-                        skipTcs.forEach(skipTC=>{
-                            showTc.push(skipTC)
-                        })
-                    } 
-                    if(item.isChecked == true && item.value == 'Show Not Applicable' ){
-                        NATcs.forEach(NATC=>{
-                            showTc.push(NATC)
-                        })
-                    } 
-                    if(item.isChecked == true && item.value == 'Applicable' ){
-                        ApplicableTcs.forEach(applicableTC=>{
-                            showTc.push(applicableTC)
-                        })
-                    }
-                })
-                this.saveLocalMultipleTC({ data: showTc, id: release }, false, updateRelease)
-                this.gridOperations(true);
+                // this.saveLocalMultipleTC({ data: showTc, id: release }, false, updateRelease)
+                // this.gridOperations(true);
                 
             }).catch(err => {
                 this.saveLocalMultipleTC({ data: [], id: release }, true, updateRelease);
@@ -787,6 +753,55 @@ class TestCasesAllGUI extends Component {
         this.setState({ loading: true, domain: '', subDomain: '', CardType: '', Priority: '' })
         this.saveLocalMultipleTC({ data: [], id: this.props.selectedRelease.ReleaseNumber }, true);
         this.getTcs(null, null, null, null, true);
+    }
+
+    getTcsToShow(release,updateRelease){
+       
+        let showTc = []
+        let skipTcs = []
+        let NATcs = []
+        let ApplicableTcs = []
+        let skipCount = 0;
+        let NACount = 0;
+        let applicableCount = 0;
+       
+        for(let i = 0; i < this.allTCsToShow.length; i++){
+            if(this.allTCsToShow[i].Priority == 'Skip' ){
+                skipCount+=1
+                skipTcs.push(this.allTCsToShow[i])
+            }
+            if(this.allTCsToShow[i].Priority == 'NA'){
+                NACount += 1
+                NATcs.push(this.allTCsToShow[i])
+            }
+            if(this.allTCsToShow[i].Priority != 'NA' && this.allTCsToShow[i].Priority != 'Skip'){
+                applicableCount+=1
+                ApplicableTcs.push(this.allTCsToShow[i])
+            }
+        }
+        
+        showTc = []
+        this.state.tableColumnsTcs.forEach(item=>{
+           
+            if(item.isChecked == true  && item.value == 'Show Skip'){
+                skipTcs.forEach(skipTC=>{
+                    showTc.push(skipTC)
+                })
+            } 
+            if(item.isChecked == true && item.value == 'Show Not Applicable' ){
+                NATcs.forEach(NATC=>{
+                    showTc.push(NATC)
+                })
+            } 
+            if(item.isChecked == true && item.value == 'Applicable' ){
+                ApplicableTcs.forEach(applicableTC=>{
+                    showTc.push(applicableTC)
+                })
+            }
+        })
+
+        this.saveLocalMultipleTC({ data:showTc, id: release }, false, updateRelease)
+        this.gridOperations(true);
     }
 
     //RESET TC
