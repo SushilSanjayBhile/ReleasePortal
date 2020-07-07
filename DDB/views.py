@@ -467,17 +467,20 @@ def get_gui_priorityDict(guiTcInfo,guiStatus):
             myDict['Priority'][prior['Priority']][item] = 0
 
     for id in gsd:
-        priority = gsd[id]["Priority"]
-        result = gsd[id]["Result"]
+        try:
+            priority = gsd[id]["Priority"]
+            result = gsd[id]["Result"]
 
-        if priority == "Skip" or priority == "NA":
-            continue
+            if priority == "Skip" or priority == "NA":
+                continue
 
-        #check to add unblocked in not tested
-        if result == 'Unblocked':
-            myDict['Priority'][priority]['NotTested'] += 1
-        else:
-            myDict['Priority'][priority][result] += 1
+            #check to add unblocked in not tested
+            if result == 'Unblocked':
+                myDict['Priority'][priority]['NotTested'] += 1
+            else:
+                myDict['Priority'][priority][result] += 1
+        except:
+            pass
 
     return myDict["Priority"]
 
