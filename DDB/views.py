@@ -251,7 +251,7 @@ def GUITCSTATUSGETPOSTVIEW(request, Release):
         return HttpResponse(json.dumps(serializer.data))
         # return JsonResponse({'data': json.dumps(serializer.data)}, status = 200)
 
-def get_cli_dataDict(cliTcInfo,cliStatus):
+def get_cli_dataDict(cliTcInfo, cliStatus):
 
     cid = {} #cid stands for cli info dict
     csd = {} #csd stands for cli status dict
@@ -526,7 +526,6 @@ def domain_gui_aggreggation(guiTcInfo, guiStatus):
         try:
             prior = gsd[status]["Priority"]
         except:
-            print(status)
             continue
 
         res = gsd[status]["Result"]
@@ -595,7 +594,8 @@ def TCAGGREGATE(Release):
     # CLI TC INFO AND STATUS
     myDict = {}
     cliTcInfo = TC_INFO.objects.using(Release).all()
-    cliStatus = LATEST_TC_STATUS.objects.using(Release).all().order_by('-Date')
+    #cliStatus = LATEST_TC_STATUS.objects.using(Release).all().order_by('-Date')
+    cliStatus = TC_STATUS.objects.using(Release).all().order_by('-Date')
 
     # cli function call
     dictionary['domain-cli'] = domain_cli_aggreggation(cliTcInfo, cliStatus) # domain wise aggregation
