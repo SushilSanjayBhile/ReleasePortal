@@ -343,7 +343,7 @@ app.use('/rest/epic/:id', (req, res) => {
 }, err => { })
 
 app.use('/rest/DMCfeaturedetail/:id', (req, res) => {
-    var str = `?jql=project%3D%20SPEK%20and%20%22Epic%20Link%22%20%3D%20${req.params.id}%20order%20by%20created%20DESC&fields=key,summary,subtasks,created,progress,status,updated,priority`
+    var str = `?jql=project%3D%20SPEK%20and%20%22Epic%20Link%22%20%3D%20${req.params.id}%20order%20by%20created%20DESC&fields=key,summary,subtasks,created,progress,status,updated,priority&maxResults=2000`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult, response) {
         if (response.statusCode === 401) {
             loginJIRA().then(function () {
@@ -463,22 +463,7 @@ app.use('/rest/featuredetail', (req, res) => {
 
 })
 app.use('/api/release/all', (req, res) => {
-    // for (let i = 0; i < releases.length; i++) {
-    // ['P1', 'P2', 'P3'].map(each => {
-    //     releases[i][each] = 0;
 
-    //     console.log(Object.keys(allTcs[releases[i].ReleaseNumber]))
-    //     Object.keys(allTcs[releases[i].ReleaseNumber]).forEach(item => {
-    //         if (allTcs[releases[i].ReleaseNumber] && allTcs[releases[i].ReleaseNumber][item] && allTcs[releases[i].ReleaseNumber][item].Priority === each) {
-    //             releases[i][each] += 1
-    //         }
-    //     })
-    // })
-
-    // releases[i].P0 = Object.keys(allTcs[releases[i].ReleaseNumber]).filter(item => allTcs[releases[i].ReleaseNumber][item] && allTcs[releases[i].ReleaseNumber][item].Priority === 'P0').length;
-    // releases[i].P1 = Object.keys(allTcs[releases[i].ReleaseNumber]).filter(item => allTcs[releases[i].ReleaseNumber][item] && allTcs[releases[i].ReleaseNumber][item].Priority === 'P1').length;
-    // releases[i].P2 = Object.keys(allTcs[releases[i].ReleaseNumber]).filter(item => allTcs[releases[i].ReleaseNumber][item] && allTcs[releases[i].ReleaseNumber][item].Priority === 'P2').length;
-    // }
     res.send(releases);
 }, err => { })
 app.use('/user/login', (req, res) => {

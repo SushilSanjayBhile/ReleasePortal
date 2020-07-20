@@ -121,7 +121,6 @@ class CreateTCs extends Component {
         data.TcName = this.getTcName(`${data.TcName}`);
         data.BrowserName = 'NB'
         data.CardType = 'COMMON'
-        console.log("Create Tcs",data)
         axios.post(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 // this.getTcs();

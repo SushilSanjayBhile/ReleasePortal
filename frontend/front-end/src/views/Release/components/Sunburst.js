@@ -106,7 +106,6 @@ class Sunburst extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log('called construcotr');
         // this.init();
         this._last_click = null
         this.radius = (Math.min(this.props.width, this.props.height) / 2);

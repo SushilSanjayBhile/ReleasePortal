@@ -154,7 +154,6 @@ class UpdateMultiple extends Component {
         this.globalErrors = null;
         this.currentID = 0;
         this.save();
-        console.log(this.state.multiple);
     }
     textFields = [
         'Domain', 'SubDomain',
@@ -173,7 +172,6 @@ class UpdateMultiple extends Component {
         this.gridOperations(false)
         this.props.showLoadingMessage(true);
         let row = this.state.multiple[this.currentID];
-        console.log(row)
         let data = {};
         // tc info meta fields
         // data.Role = 'QA';
@@ -211,7 +209,6 @@ class UpdateMultiple extends Component {
             }, error => {
                 this.gridOperations(false)
                 this.props.showLoadingMessage(false);
-                console.log('entered here')
                 if (!this.globalErrors) this.globalErrors = {}
                 this.globalErrors = { ...this.globalErrors, [this.state.multiple[this.currentID].TABLEID]: { uploadError: true } }
                 this.currentID += 1;
@@ -229,7 +226,6 @@ class UpdateMultiple extends Component {
             });
     }
     confirmMultipleToggle() {
-        console.log(this.state.multiple);
         let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
         if (domains) {
             domains.sort();

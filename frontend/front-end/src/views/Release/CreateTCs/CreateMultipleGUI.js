@@ -189,7 +189,6 @@ class CreateMultiple extends Component {
         // tc info fields
         this.textFields.map(item => data[item] = row[item]);
         this.arrayFields.forEach(item => data[item] = this.joinArrays(row[item]));
-        console.log("data",data)
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
             "tcInfoNum":this.props.id,
@@ -204,7 +203,6 @@ class CreateMultiple extends Component {
         data.TcName = this.getTcName(`${data.TcName}`);
         data.BrowserName = 'NB'
         data.CardType = 'COMMON'
-        console.log("Create Tcs multiple",data)
 
         axios.post(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
@@ -419,7 +417,6 @@ class CreateMultiple extends Component {
                 data = data.map((item, index) => ({ TABLEID: `id${index}`, ...item }));
                 this.editedRows = {};
                 this.setState({ rowData: data, multipleErrors: {} })
-                console.log("data from xls",data);
 
                 this.getData(data);
                 break;

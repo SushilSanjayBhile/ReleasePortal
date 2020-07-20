@@ -192,13 +192,13 @@ class StressTestCases extends Component {
                     width:100
 
                 },
-                // {
-                //     headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                //     width: '420',
-                //     editable: true,
-                //     cellClass: 'cell-wrap-text',
-                //     autoHeight: true
-                // },
+                {
+                    headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                    width: '420',
+                    editable: true,
+                    cellClass: 'cell-wrap-text',
+                    autoHeight: true
+                },
 
             ],
             defaultColDef: { resizable: true },
@@ -740,34 +740,30 @@ class StressTestCases extends Component {
                                     }
                 {
                     this.state.sanityDetails && 
-                <FormGroup row className="my-0">
-                                                {
-                                                    [
-                                                        { field: 'Notes', header: 'Notes', type: 'text', size:"12" },
-                                                    ].map((item, index) => (
-                                                        <Col xs="12" md={item.size}  lg={item.size}>
-                                                            <FormGroup className='rp-app-table-value'>
-                                                                <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}</Label>
-                                                                {
-                                                                    !this.state.isEditing ?
-                                                                        <Input style={{ backgroundColor: 'white' }} className='rp-app-table-value' type='textarea' rows={this.getTextAreaHeight(this.state.sanityDetails && this.state.sanityDetails[item.field])} value={this.state.sanityDetails && this.state.sanityDetails[item.field]}></Input>
-                                                                        :
-                                                                        <Input className='rp-app-table-value' placeholder={'Add ' + item.header} type="textarea" rows={this.getTextAreaHeight(this.state.sanityDetails && this.state.sanityDetails[item.field])} id={item.field} value={this.state.sanityDetails && this.state.sanityDetails[item.field]}
-                                                                            onChange={(e) => this.setState({
-                                                                                sanityDetails: {...this.state.sanityDetails, [item.field]: e.target.value}
-                                                                            })} >
-                                                                        </Input>
-                                                                }
-                                                            </FormGroup>
-                                                        </Col>
-                                                    ))
-                                                }
-                                            </FormGroup>
-    }
-
-
-
-
+                    <FormGroup row className="my-0">
+                        {
+                            [
+                                { field: 'Notes', header: 'Notes', type: 'text', size:"12" },
+                            ].map((item, index) => (
+                                <Col xs="12" md={item.size}  lg={item.size}>
+                                    <FormGroup className='rp-app-table-value'>
+                                        <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}</Label>
+                                        {
+                                            !this.state.isEditing ?
+                                                <Input style={{ backgroundColor: 'white' }} className='rp-app-table-value' type='textarea' rows={this.getTextAreaHeight(this.state.sanityDetails && this.state.sanityDetails[item.field])} value={this.state.sanityDetails && this.state.sanityDetails[item.field]}></Input>
+                                                :
+                                                <Input className='rp-app-table-value' placeholder={'Add ' + item.header} type="textarea" rows={this.getTextAreaHeight(this.state.sanityDetails && this.state.sanityDetails[item.field])} id={item.field} value={this.state.sanityDetails && this.state.sanityDetails[item.field]}
+                                                    onChange={(e) => this.setState({
+                                                        sanityDetails: {...this.state.sanityDetails, [item.field]: e.target.value}
+                                                    })} >
+                                                </Input>
+                                        }
+                                    </FormGroup>
+                                </Col>
+                            ))
+                        }
+                    </FormGroup>
+                }
                 <Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                     {
                         !this.state.toggleMessage &&

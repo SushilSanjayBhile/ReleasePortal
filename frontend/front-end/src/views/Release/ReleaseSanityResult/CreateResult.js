@@ -87,10 +87,9 @@ class CreateResult extends Component {
             type = 'ui'
         }
 
-        console.log("before post request",data)
         axios.post(`/api/sanity/${type}/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
-                if(this.state.addTC.Type === 'E2E') {
+                if(this.state.addTC.Type === 'E2E' || this.state.addTC.Type === 'UI') {
                     this.props.close(`${this.state.addTC.Type}${this.state.addTC.Tag}`)
                 } else {
                     this.props.close(`${this.state.addTC.Type}`)
@@ -199,10 +198,8 @@ class CreateResult extends Component {
             default:
                 break;
         }
-        console.log('cards ', this.state.addTC.CardType)
     }
     render() {
-
         let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.email);
         let cards = ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(item => ({ value: item, selected: this.state.addTC.CardType && this.state.addTC.CardType.includes(item) }));
         let multiselect = { 'CardType': cards, };
@@ -212,7 +209,6 @@ class CreateResult extends Component {
                 <Col xs="6" md="6" lg="4">
                     <FormGroup check inline>
                         <Input className="form-check-input" type="checkbox" id="inline-checkbox1" name="inline-checkbox1" onChange={(e) => {
-                            console.log(e.target.checked)
                             this.setState({ addTC: { ...this.state.addTC, Jenkin: e.target.checked }, errors: { ...this.state.errors, Jenkin: null } })} }
                         value={this.state.addTC && this.state.addTC.Jenkin} />
                         <Label className="form-check-label" htmlFor="inline-checkbox1">Is Jenkins Build?</Label>
@@ -240,22 +236,22 @@ class CreateResult extends Component {
                         </FormGroup>
                     </Col>
                     {
-                            this.state.addTC.Type &&
-                    
-                              <Col xs="6" md="6" lg="4">
-                                        <FormGroup className='rp-app-table-value'>
-                                            <Label className='rp-app-table-label' htmlFor='Setup'>Setup  {
-                                                this.state.errors['Setup'] &&
-                                                <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors['Setup']}</i>
-                                            }</Label>
-                                            {
-                                                <Input style={{ borderColor: this.state.errors['Setup'] ? 'red' : '' }} className='rp-app-table-value' type="text" placeholder={`Add Setup`} id='Setup' name='Setup' value={this.state.addTC && this.state.addTC['Setup']}
-                                                    onChange={(e) => this.setState({ addTC: { ...this.state.addTC, ['Setup']: e.target.value }, errors: { ...this.state.errors, ['Setup']: null } })} >
+                        this.state.addTC.Type &&
+                
+                            <Col xs="6" md="6" lg="4">
+                                    <FormGroup className='rp-app-table-value'>
+                                        <Label className='rp-app-table-label' htmlFor='Setup'>Setup  {
+                                            this.state.errors['Setup'] &&
+                                            <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors['Setup']}</i>
+                                        }</Label>
+                                        {
+                                            <Input style={{ borderColor: this.state.errors['Setup'] ? 'red' : '' }} className='rp-app-table-value' type="text" placeholder={`Add Setup`} id='Setup' name='Setup' value={this.state.addTC && this.state.addTC['Setup']}
+                                                onChange={(e) => this.setState({ addTC: { ...this.state.addTC, ['Setup']: e.target.value }, errors: { ...this.state.errors, ['Setup']: null } })} >
 
-                                                </Input>
-                                            }
-                                        </FormGroup>
-                                    </Col>
+                                            </Input>
+                                        }
+                                    </FormGroup>
+                            </Col>
                     }
 
                     {
@@ -281,11 +277,11 @@ class CreateResult extends Component {
                     }
                     
                     {
-                        this.state.addTC.Type && this.state.addTC.CardType && this.state.addTC.CardType.length > 0 && this.state.addTC.Type === 'E2E' &&
+                        this.state.addTC.Type && this.state.addTC.CardType && this.state.addTC.CardType.length > 0 && (this.state.addTC.Type === 'E2E' || this.state.addTC.Type === 'UI') &&
                         <React.Fragment>
                             {
                                 [
-                                    { field: 'Tag', header: 'Tag', type: 'text', SanityType: 'E2E' },
+                                    { field: 'Tag', header: 'Tag', type: 'text', SanityType: this.state.addTC.Type },
                                 ].map((item, index) => (
                                     <Col xs="6" md="6" lg="4">
                                         <FormGroup className='rp-app-table-value'>
@@ -305,6 +301,7 @@ class CreateResult extends Component {
                             }
                         </React.Fragment>
                     }
+                    
                     {
                         this.state.addTC.Type && this.state.addTC.CardType && this.state.addTC.CardType.length > 0 &&
                         <Col xs="6" md="6" lg="4">
@@ -323,6 +320,7 @@ class CreateResult extends Component {
                             </FormGroup>
                         </Col>
                     }
+                    
                     {
                         this.state.addTC.Type && this.state.addTC.CardType && this.state.addTC.CardType.length > 0 &&
                         <Col xs="6" md="6" lg="4">
@@ -344,76 +342,14 @@ class CreateResult extends Component {
                             </FormGroup>
                         </Col>
                     }
-                    {
-                        this.state.addTC.Type && this.state.addTC.CardType && this.state.addTC.CardType.length > 0 && this.state.addTC.Type === 'E2E' &&
-                        <React.Fragment>
-                            {
-                                [
-                                    { field: 'Build', header: 'Build Number', type: 'text', SanityType: this.state.addTC.Type },
-                                  
-                                    { field: 'NoOfTCsPassed', header: 'No of Tcs Passed', type: 'number', SanityType: 'E2E' },
-                                    { field: 'CfgFileUsed', header: 'Cfg File Used', type: 'text', SanityType: 'Stress' },
-                                    { field: 'NoOfIteration', header: 'No of Iterations', type: 'number', SanityType: 'Stress' },
-                                    { field: 'NoOfDuration', header: 'Successful Duration (days)', type: 'number', SanityType: 'Longevity' },
-                                    { field: 'Bugs', header: 'Bug Number', type: 'text', SanityType: this.state.addTC.Type },
-
-                                ].map((item, index) => (
-
-                                    item.SanityType === this.state.addTC.Type &&
-                                    <Col xs="6" md="6" lg="4">
-                                        <FormGroup className='rp-app-table-value'>
-                                            <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}  {
-                                                this.state.errors[item.field] &&
-                                                <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
-                                            }</Label>
-                                            {
-                                                <Input style={{ borderColor: this.state.errors[item.field] ? 'red' : '' }} key={index} className='rp-app-table-value' type="text" placeholder={`Add ${item.header}`} id={item.field} name={item.field} value={this.state.addTC && this.state.addTC[item.field]}
-                                                    onChange={(e) => this.setState({ addTC: { ...this.state.addTC, [item.field]: e.target.value }, errors: { ...this.state.errors, [item.field]: null } })} >
-
-                                                </Input>
-                                            }
-                                        </FormGroup>
-                                    </Col>
-                                ))
-                            }
-                        </React.Fragment>
-                    }
-
-
-                    {
-                        this.state.addTC.Type && this.state.addTC.CardType && this.state.addTC.CardType.length > 0 && this.state.addTC.Type === 'UI' &&
-                        <React.Fragment>
-                            {
-                                [
-                                    { field: 'Tag', header: 'Tag', type: 'text', SanityType: 'UI' },
-                                ].map((item, index) => (
-                                    <Col xs="6" md="6" lg="4">
-                                        <FormGroup className='rp-app-table-value'>
-                                            <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}  {
-                                                this.state.errors[item.field] &&
-                                                <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
-                                            }</Label>
-                                            <Input style={{ borderColor: this.state.errors['Tag'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="Tag" name="Tag" value={this.state.addTC && this.state.addTC.Tag}
-                                                onChange={(e) => this.setState({ addTC: { ...this.state.addTC, Tag: e.target.value }, errors: { ...this.state.errors, Tag: null } })} >
-                                                <option value=''>Select Tag</option>
-                                                <option value='SANITY'>SANITY</option>
-                                                <option value='DAILY'>DAILY</option>
-                                                <option value='WEEKLY'>WEEKLY</option>
-                                            </Input>
-                                        </FormGroup>
-                                    </Col>))
-                            }
-                        </React.Fragment>
-                    }
-                   
                     
                     {
-                        this.state.addTC.Type && this.state.addTC.CardType && this.state.addTC.CardType.length > 0 && this.state.addTC.Type === 'UI' &&
+                        this.state.addTC.Type && this.state.addTC.CardType && this.state.addTC.CardType.length > 0 &&
                         <React.Fragment>
                             {
                                 [
                                     { field: 'Build', header: 'Build Number', type: 'text', SanityType: this.state.addTC.Type },
-                                    { field: 'NoOfTCsPassed', header: 'No of Tcs Passed', type: 'number', SanityType: 'UI' },
+                                    { field: 'NoOfTCsPassed', header: 'No of Tcs Passed', type: 'number', SanityType:this.state.addTC.Type },
                                     { field: 'CfgFileUsed', header: 'Cfg File Used', type: 'text', SanityType: 'Stress' },
                                     { field: 'NoOfIteration', header: 'No of Iterations', type: 'number', SanityType: 'Stress' },
                                     { field: 'NoOfDuration', header: 'Successful Duration (days)', type: 'number', SanityType: 'Longevity' },
@@ -463,7 +399,30 @@ class CreateResult extends Component {
                                         </FormGroup>
                                     </Col>))
                             }
+
+                            {
+                                [
+                                    { field: 'Notes', header: 'Notes', type: 'text', SanityType: this.state.addTC.Type },
+                                ].map((item, index) => (
+                                    item.SanityType === this.state.addTC.Type &&
+                                    <Col xs="6" md="12" lg="12">
+                                        <FormGroup className='rp-app-table-value'>
+                                            <Label className='rp-app-table-label' htmlFor={item.field}>{item.header} {
+                                                this.state.errors[item.field] &&
+                                                <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
+                                            }</Label>
+                                            {
+                                                <Input className='rp-app-table-value' placeholder={'Add ' + item.header} type="textarea" rows='3' id={item.field} value={this.state.addTC && this.state.addTC[item.field]}
+                                                    onChange={(e) => this.setState({ addTC: { ...this.state.addTC, [item.field]: e.target.value }, errors: { ...this.state.errors, [item.field]: null } })} >
+    
+                                                </Input>
+                                            }
+                                        </FormGroup>
+                                    </Col>
+                                ))
+                         }
                         </React.Fragment>
+                       
                     }
                 </FormGroup>
                 {

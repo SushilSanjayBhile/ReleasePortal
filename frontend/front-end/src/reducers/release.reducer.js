@@ -291,13 +291,12 @@ export const getTCForStatus = (state, id) => {
             visibleP.Fail += p[item].Fail;
             visibleP.NotTested += p[item].NotTested;
             visibleP.Blocked += p[item].Blocked;
+
         })
     }
 
     if(state.release.options.selectedPriority){
-
         if (release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master" ) {
-            
             state.release.options.selectedPriority.forEach(item => {
                 visibleGUIP.Pass += pGUI[item].Pass;
                 visibleGUIP.Skip += pGUI[item].Skip;
@@ -306,7 +305,6 @@ export const getTCForStatus = (state, id) => {
                 visibleGUIP.Blocked += pGUI[item].Blocked;
             })
         }
-
     }
     let PriorityLabel = state.release.options.selectedPriority;
     let str = ""
@@ -590,7 +588,7 @@ export const getTCStatusForUIDomains = (release) => {
     let doughnuts = [];
     let each = []
 
-    if(release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master"  ){
+    if(release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master" ){
         let CMPass = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Pass + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Pass;
         let CMFail = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Fail + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Fail;
         let CMSkipped = release.TcAggregate.uidomain['Cluster Management'].Tested.auto.Block + release.TcAggregate.uidomain['Cluster Management'].Tested.manual.Block

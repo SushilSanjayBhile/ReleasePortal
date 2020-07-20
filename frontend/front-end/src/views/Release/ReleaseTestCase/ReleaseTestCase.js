@@ -156,7 +156,6 @@ class ReleaseTestCase extends Component {
         this.setState({allTestCaseStatus:[]})
         let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
         axios.get(url).then(res=>{
-            // console.log("result",res.data,res.data.TcAggregate,res.data.TcAggregate.domain)
             let domainData =[]
             for (const [key, value] of Object.entries(res.data.TcAggregate.domain)) {
                 let arr = {}
@@ -176,10 +175,7 @@ class ReleaseTestCase extends Component {
                 }
                 domainData.push(arr);
             }
-            // domainData.forEach((item)=>{
-            //     console.log("domainData",item)
-            // })
-            // console.log("Domaindata",domainData);
+            
             this.setState({allTestCaseStatus:domainData})
         },
         error => {
@@ -190,7 +186,6 @@ class ReleaseTestCase extends Component {
         this.setState({allTestCaseStatusCLI:[]})
         let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
         axios.get(url).then(res=>{
-            // console.log("result",res.data,res.data.TcAggregate,res.data.TcAggregate['domain-cli'])
             let domainData =[]
             if(res.data.TcAggregate['domain-cli']){
                 for (const [key, value] of Object.entries(res.data.TcAggregate['domain-cli'])) {
@@ -224,7 +219,6 @@ class ReleaseTestCase extends Component {
         this.setState({allTestCaseStatusGUI:[]})
         let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
         axios.get(url).then(res=>{
-            // console.log("result",res.data,res.data.TcAggregate,res.data.TcAggregate['domain-gui'])
             let domainData =[]
             if(res.data.TcAggregate['domain-gui']){
                 for (const [key, value] of Object.entries(res.data.TcAggregate['domain-gui'])) {
@@ -320,7 +314,7 @@ class ReleaseTestCase extends Component {
             <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'marginLeft': '1.5rem' }}>
-                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ metricsOpen: !this.state.metricsOpen },()=>{console.log("state is set or not",this.state.metricsOpen)})}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ metricsOpen: !this.state.metricsOpen })}>
                                     <div class='row'>
                                         <div class='col-md-6 col-lg-6'>
                                             {

@@ -29,7 +29,6 @@ const initialState = {
 // Reducers //////////
 // //////////////////
 function navs(state = initialState.navigation, action) {
-    console.log("=============================",action.type,action.payload, state)
 
     switch (action.type) {
         case UPDATE_NAV:

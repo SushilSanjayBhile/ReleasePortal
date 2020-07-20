@@ -240,12 +240,6 @@ class CreateTC extends Component {
                                                 Save
                                             </Button>
                                         </div>
-
-
-                                        {/* </React.Fragment> */}
-
-
-
                                     </div>
 
                                 </div>

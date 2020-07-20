@@ -55,7 +55,6 @@ function clear(state, action) {
             state.messages = [];
             state.openWork = [];
             state.closedWork = [];
-            console.log('cleared state ', state);
             return state;
         default:
             return state;

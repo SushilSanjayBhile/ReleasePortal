@@ -15,7 +15,7 @@ import { TABLE_OPTIONS } from '../../../constants';
 import { Bar, Doughnut, Line, Pie, Polar, Radar } from 'react-chartjs-2';
 import { AgGridReact } from 'ag-grid-react';
 import axios from 'axios';
-import { saveSingleFeature } from '../../../actions';
+import { saveSingleFeature,saveBugs } from '../../../actions';
 import './ReleaseStatus.scss'
 // import sunburst from '../../../reducers/domains.js'
 import Sunburst from '../components/Sunburst';
@@ -47,6 +47,7 @@ class ReleaseStatus extends Component {
             blockedBugOpen:false,
             blockedBugList:[],
             BugsList:[],
+            totalBugList:[]
         }
     }
     initialize() {
@@ -61,11 +62,80 @@ class ReleaseStatus extends Component {
     }
     componentDidMount() {
         this.initialize();
+        
     }
     componentWillReceiveProps(newProps) {
         if(this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
             this.props.history.push('/release/summary')
             // this.initialize();
+        }
+        if(this.props.selectedRelease.ReleaseNumber){
+            let release = this.props.selectedRelease.ReleaseNumber;
+            
+            let tempRelease = release
+            let totalCount = 0
+            let maxResults = 0
+            let totalBugs = []
+
+            if(tempRelease === 'Spektra 2.4') {
+                tempRelease='2.4.0'
+            }
+            if(tempRelease === 'DMC-3.0') {
+                tempRelease="\"Spektra 3.0\""
+            }
+
+            axios.get('/rest/bugs/total/' + tempRelease)
+            .then(response => {
+                totalBugs = response;
+                maxResults = response.data.maxResults
+                totalCount = parseInt(response.data.total/response.data.maxResults)
+                let startAt = 0
+
+                for(let i = 0; i < totalCount ; i++){
+                    startAt = startAt + response.data.maxResults + 1
+                    let url = '/rest/bugs/totalCount/'  + tempRelease + "/" + startAt
+                    axios.get(url).then(response1=>{
+                        for(let i = 0 ;i < response1['data']['issues'].length ;i++){
+                            totalBugs['data']['issues'].push(response1['data']['issues'][i])
+                        }
+                    })
+                }
+                this.setState({totalBugList:totalBugs.data})
+                // console.log("totalBugList",this.state.totalBugList);
+
+            }, err => {
+                console.log('err ', err);
+            })
+
+            //calculate blocker bug count
+            let list = []
+            let list2 = []
+            let url  = `/api/bugwiseblockedtcs/` + release
+            axios.get(url).then(res=>{
+                        list.push(res.data);
+                        for (let [key, value] of Object.entries(list[0])) {
+                            list2.push({'bug_no':key,'value':value})
+                        }
+                        let a = this.sortBugList(list2)
+                        this.setState({blockedBugList:list2})
+                        let list3 = []
+                        if(this.state.totalBugList.issues){
+                            for(let i = 0 ; i < this.state.blockedBugList.length ; i++){
+                                for(let j = 0 ; j < this.state.totalBugList.issues.length ; j++ ){
+                                    if(this.state.totalBugList.issues[j]['key'] == this.state.blockedBugList[i]['bug_no'] ){
+                                        // console.log("bug data",this.state.totalBugList.issues[j])
+                                        let bug = this.state.totalBugList.issues[j].fields
+                                        list3.push({'bug_no':this.state.totalBugList.issues[j]['key'],'value':this.state.blockedBugList[i]['value'],'summary':bug.summary,'status':bug.status.name,'priority':bug.priority.name})
+                                    }
+                                }
+                            }
+    
+                        this.setState({blockedBugList:list3})
+                        }
+                    },
+                    error => {
+                    console.log('bugwiseblockedtcs',error);
+            }) 
         }
     }
     getFeatureDetails(dws) {
@@ -73,12 +143,14 @@ class ReleaseStatus extends Component {
             let issuesArray = []
             if (this.props.selectedRelease.ReleaseNumber === "DMC-3.0"){
                 axios.get("/rest/DMCfeaturedetail/"+ res.data.key).then(res1 => {
+                    console.log("featureDetail",res1)
                     if(res1.data.issues){
                         for(let i = 0 ; i < res1.data.issues.length ; i++ ){
                             issuesArray.push(res1.data.issues[i]);
                         }
                     }
                     res.data.fields.subtasks = issuesArray;
+                   
                     this.props.saveSingleFeature({ data: res.data });
                 })
                 res.data.fields.subtasks = issuesArray;
@@ -92,34 +164,7 @@ class ReleaseStatus extends Component {
             return b.value - a.value
         })
     }
-
-    handleTcCount = () =>{
-        let list = []
-        let list2 = []
-        let url  = `/api/bugwiseblockedtcs/` + this.props.selectedRelease.ReleaseNumber
         
-        axios.get(url).then(res=>{
-                    list.push(res.data);
-                    for (let [key, value] of Object.entries(list[0])) {
-                        list2.push({'bug_no':key,'value':value})
-                    }
-                    let a = this.sortBugList(list2)
-                    this.setState({blockedBugList:list2})
-                    let list3 = []
-                    for(let i = 0 ; i < this.state.blockedBugList.length ; i++){
-                        for(let j = 0 ; j < this.props.bug.bug.issues.length ; j++ ){
-                            if(this.props.bug.bug.issues[j]['key'] == this.state.blockedBugList[i]['bug_no'] ){
-                                let bug = this.props.bug.bug.issues[j].fields
-                                list3.push({'bug_no':this.props.bug.bug.issues[j]['key'],'value':this.state.blockedBugList[i]['value'],'summary':bug.summary,'status':bug.status.name,'priority':bug.priority.name})
-                            }
-                        }
-                    }
-                    this.setState({blockedBugList:list3})
-                },
-                error => {
-                console.log('bugwiseblockedtcs',error);
-        }) 
-    }
     renderTableData  = () => {
         
         return this.state.blockedBugList === 0 ? (
@@ -142,36 +187,34 @@ class ReleaseStatus extends Component {
 
     checkSelectedBug = (item) =>{
         let list = []
-        let count = 0
-        Object.keys(this.props.bug.bugCount.all).map(item =>{
-            console.log("count item",this.props.bug.bugCount.all[item])
-        })
-        this.props.bug.bug.issues.forEach((eachBug)=>{
-            if(item == 'open'){
-                if(eachBug.fields.status.name == 'Open' || eachBug.fields.status.name == 'To Do' || eachBug.fields.status.name == 'In Progress'){
+        if(this.props.bug.bug.issues){
+            this.props.bug.bug.issues.forEach((eachBug)=>{
+                if(item == 'open'){
+                    if(eachBug.fields.status.name == 'Open' || eachBug.fields.status.name == 'To Do' || eachBug.fields.status.name == 'In Progress'){
+                        list.push(eachBug)
+                    }
+                }
+                if(item == 'resolved'){
+                    if(eachBug.fields.status.name == 'Resolved' || eachBug.fields.status.name == 'Closed' ){
+                        list.push(eachBug)
+                    }
+                }
+                if(item == 'total'){
                     list.push(eachBug)
                 }
-            }
-            if(item == 'resolved'){
-                if(eachBug.fields.status.name == 'Resolved' || eachBug.fields.status.name == 'Closed' ){
+                if(item == "others" && eachBug.fields.status.name != 'Open' && eachBug.fields.status.name != 'Resolved' && eachBug.fields.status.name != 'To Do' && eachBug.fields.status.name != 'In Progress' && eachBug.fields.status.name != 'Closed'){
                     list.push(eachBug)
                 }
-            }
-            if(item == 'total'){
-                list.push(eachBug)
-            }
-            if(item == "others" && eachBug.fields.status.name != 'Open' && eachBug.fields.status.name != 'Resolved' && eachBug.fields.status.name != 'To Do' && eachBug.fields.status.name != 'In Progress' && eachBug.fields.status.name != 'Closed'){
-                list.push(eachBug)
-            }
-        })
-        // console.log("list",list)
-        this.setState({BugsList:list})
+            })
+            this.setState({BugsList:list})
+        }
     }
     
     render() {
         let featuresCount = 0;
         let featuresStatusDict = {'Open': { total: 0 },'Resolved': { total: 0 },'Others': { total: 0 } }
         let statusScenarios = { Open: { total: 0 }, Resolved: { total: 0 } };
+
         if (this.props.feature && this.props.feature.issues) {
             featuresCount = this.props.feature.issues.length;
             this.props.feature.issues.forEach(item => {
@@ -186,7 +229,10 @@ class ReleaseStatus extends Component {
                 
             })
         }
+
         if (this.props.feature && this.props.feature.issues) {
+            console.log("this.props.feature.issues",this.props.feature.issues)
+            // if()
             featuresCount = this.props.feature.issues.length;
             this.props.feature.issues.forEach(item => {
                 if(item.fields.status.name == 'In Progress' || item.fields.status.name == 'To Do'|| item.fields.status.name == 'Open' ) {
@@ -197,9 +243,7 @@ class ReleaseStatus extends Component {
                 }
                 else{
                     featuresStatusDict['Others'].total += 1;
-
                 }
-               
             })
         }
         return (
@@ -315,7 +359,7 @@ class ReleaseStatus extends Component {
                             <div class="row">
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
-                                        <div onClick={() => this.setState({ blockedBugOpen: !this.state.blockedBugOpen },()=>{this.handleTcCount()})} style={{ display: 'inlineBlock' }}>
+                                        <div onClick={() => this.setState({ blockedBugOpen: !this.state.blockedBugOpen })} style={{ display: 'inlineBlock' }}>
                                         
                                         {
                                             !this.state.blockedBugOpen &&

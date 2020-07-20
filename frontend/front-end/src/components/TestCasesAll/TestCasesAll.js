@@ -14,8 +14,8 @@ import { getCurrentRelease, getTCForStrategy } from '../../reducers/release.redu
 import { getEachTCStatusScenario } from '../../reducers/testcase.reducer';
 import { saveSingleTestCase, saveTestCase, updateTCEdit, saveReleaseBasicInfo } from '../../actions';
 import {
-    Col, Pagination, PaginationItem, PaginationLink, Row, Table, Button,
-    UncontrolledPopover, PopoverHeader, PopoverBody,
+    Col,Row, Table, Button,
+    UncontrolledPopover, PopoverBody,
     Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Collapse
 } from 'reactstrap';
 import './TestCasesAll.scss';
@@ -27,10 +27,9 @@ import MoodEditor from "./moodEditor";
 import MoodRenderer from "./moodRenderer";
 import NumericEditor from "./numericEditor";
 import SelectionEditor from './selectionEditor';
-import { getDatePicker } from './datepicker';
 import DatePickerEditor from './datePickerEditor';
 import EditTC from '../../views/Release/ReleaseTestMetrics/EditTC';
-import { roles, ws, tcTypes } from '../../constants';
+import { ws } from '../../constants';
 import TcSummary from './TcSummary';
 import  CheckBox  from './CheckBox';
 
@@ -158,11 +157,21 @@ class TestCasesAll extends Component {
             rowSelect: false,
             isEditing: false,
             delete: false,
+    
             tableColumnsTcs: [
                 {id: 1, value: "Show Skip", isChecked: false},
                 {id: 2, value: "Show Not Applicable", isChecked: false},
                 {id: 3, value: "Applicable", isChecked: true},
             ],
+
+            applicableTCForStatus:[],
+            statusColumn:[
+                {id:1,value:'Pass', isChecked: false},
+                {id:2,value:'Fail', isChecked: false},
+                {id:3,value:'Block', isChecked: false},
+                {id:4,value:'Not Tested', isChecked: false},
+            ],
+
             tableColumns: [
                 {id: 1, value: "TcID", isChecked: false},
                 {id: 2, value: "Scenario", isChecked: false},
@@ -235,11 +244,13 @@ class TestCasesAll extends Component {
         }
     }
 
+
+
+   //Priority Based Filter functions
     handleAllCheckedTCs = (event) => {
         let tableColumnsTcs = this.state.tableColumnsTcs
         tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked) 
         this.setState({tableColumnsTcs: tableColumnsTcs})
-
     }
 
     handleCheckChieldElementTcs = (event) => {
@@ -250,19 +261,34 @@ class TestCasesAll extends Component {
         })
         this.setState({tableColumnsTcs: tableColumnsTcs})
     }
-
+   
     showSelectedTCs = () =>{
         this.getTcsToShow(this.props.selectedRelease.ReleaseNumber , true);
         this.setState({ popoverOpen2: !this.state.popoverOpen2 });
-
     }
 
 
+    //Status Based Filter functions
+    handleAllCheckedStatusTCs = (event) => {
+        let statusColumn = this.state.statusColumn
+        statusColumn.forEach(columnName => columnName.isChecked = event.target.checked) 
+        this.setState({statusColumn: statusColumn})
+    }
+
+    handleCheckChieldElementStatusTcs = (event) => {
+        let statusColumn = this.state.statusColumn
+        statusColumn.forEach(columnName => {
+            if (columnName.value === event.target.value)
+                columnName.isChecked =  event.target.checked
+        })
+        this.setState({statusColumn: statusColumn})
+    }
+
+    //column based filter functions
     handleAllChecked = (event) => {
         let tableColumns = this.state.tableColumns
         tableColumns.forEach(columnName => columnName.isChecked = event.target.checked) 
         this.setState({tableColumns: tableColumns})
-        // console.log("handleAllChecked",this.state.tableColumns)
 
     }
 
@@ -274,8 +300,6 @@ class TestCasesAll extends Component {
         })
         this.setState({tableColumns: tableColumns})
     }
-
-    
 
     setSelectedColumns = () => {
 
@@ -379,7 +403,6 @@ class TestCasesAll extends Component {
           },
         }
         
-        // console.log("setSelectedColumns",this.state.tableColumns);
         let tableColumns = this.state.tableColumns;
         let selectedColumns = []
         tableColumns.forEach(columnName => {
@@ -388,7 +411,6 @@ class TestCasesAll extends Component {
             }
         })
 
-        // console.log("selected columns",selectedColumns);
         this.setState({columnDefs:selectedColumns});
         this.setState({ popoverOpen1: !this.state.popoverOpen1 });
     }
@@ -762,33 +784,24 @@ class TestCasesAll extends Component {
     }
 
     getTcsToShow(release,updateRelease){
-       
         let showTc = []
         let skipTcs = []
         let NATcs = []
         let ApplicableTcs = []
-        let skipCount = 0;
-        let NACount = 0;
-        let applicableCount = 0;
-       
+        
         for(let i = 0; i < this.allTCsToShow.length; i++){
             if(this.allTCsToShow[i].Priority == 'Skip' ){
-                skipCount+=1
                 skipTcs.push(this.allTCsToShow[i])
             }
             if(this.allTCsToShow[i].Priority == 'NA'){
-                NACount += 1
                 NATcs.push(this.allTCsToShow[i])
             }
             if(this.allTCsToShow[i].Priority != 'NA' && this.allTCsToShow[i].Priority != 'Skip'){
-                applicableCount+=1
                 ApplicableTcs.push(this.allTCsToShow[i])
             }
         }
-        
         showTc = []
         this.state.tableColumnsTcs.forEach(item=>{
-           
             if(item.isChecked == true  && item.value == 'Show Skip'){
                 skipTcs.forEach(skipTC=>{
                     showTc.push(skipTC)
@@ -805,8 +818,37 @@ class TestCasesAll extends Component {
                 })
             }
         })
+        let showTc1 = []
+        let statusFlag = 0
+        this.state.statusColumn.forEach(item=>{
 
-        this.saveLocalMultipleTC({ data:showTc, id: release }, false, updateRelease)
+            showTc.forEach(tcItem=>{
+               
+                if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Fail' && tcItem.CurrentStatus.Result == 'Fail'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Block' && tcItem.CurrentStatus.Result == 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Not Tested' && tcItem.CurrentStatus.Result != 'Pass' && tcItem.CurrentStatus.Result != 'Fail' && tcItem.CurrentStatus.Result != 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+            })
+        })
+        if(statusFlag == 0){
+            showTc1 = showTc; 
+        }
+        this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
         this.gridOperations(true);
     }
 
@@ -914,8 +956,6 @@ class TestCasesAll extends Component {
     }
     saveMultipleTcInfo(items) {
         this.gridOperations(false);
-        
-
         axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
             .then(res => {
                 this.gridOperations(true);
@@ -976,7 +1016,6 @@ class TestCasesAll extends Component {
                 alert("Build and bug number mandatory");
             }
         }
-
         let data = {};
         
         this.textFields.map(item => data[item] = this.props.testcaseEdit[item]);
@@ -1010,7 +1049,6 @@ class TestCasesAll extends Component {
         status.Result = this.props.testcaseEdit.CurrentStatus;
         status.CardType = this.props.tcDetails.CardType;
         status.TcID = this.props.tcDetails.TcID;
-
        
         if (this.props.testcaseEdit.CurrentStatus !== 'Fail' && this.props.testcaseEdit.CurrentStatus !== 'Pass' && this.props.testcaseEdit.CurrentStatus !== 'Blocked'  && this.props.testcaseEdit.CurrentStatus !== 'Unblocked') {
             let statusList = this.props.testcaseEdit.StatusList;
@@ -1029,7 +1067,6 @@ class TestCasesAll extends Component {
                     "RequestType": 'PUT',
                     "URL": `/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}/${statusList.id}`
                 }
-                // console.log("save single TC Status",status)
                 axios.put(`/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`, { ...status })
                     .then(res => {
                         this.gridOperations(true);
@@ -1098,11 +1135,11 @@ class TestCasesAll extends Component {
         }, 400);
     }
 
-
-
     render() {
+
         let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
         let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
+
         if (domains) {
             domains.sort();
         } else {
@@ -1122,8 +1159,10 @@ class TestCasesAll extends Component {
                 this.gridApi.hideOverlay();
             }
         }
+
         let manualFilter = this.state.domain || this.state.subdomain || this.state.CardType || this.state.Priority || this.state.filterValue
         let pass = 0, fail = 0, notTested = 0, prioritySkip = 0, priorityNA = 0, prioritySkipAndTested = 0, automated = 0, total = 0;
+
         if (manualFilter && this.gridApi) {
             let rows = this.gridApi.getModel().rowsToDisplay;
             rows.forEach(row => {
@@ -1162,6 +1201,7 @@ class TestCasesAll extends Component {
                 total = pass + fail + tcAggr.Tested.manual.Skip + tcAggr.Tested.auto.Skip + tcAggr.NotTested + tcAggr.NotApplicable
             }
         }
+
         return (
             <div>
                 <Row>
@@ -1194,8 +1234,6 @@ class TestCasesAll extends Component {
                                                     <span className='rp-app-table-value'>Selected: {this.state.selectedRows}</span>
                                                 </div>
                                             }
-
-
                                         </div>
                                     </div>
                                 </div>
@@ -1246,6 +1284,17 @@ class TestCasesAll extends Component {
                                                                 })
                                                                 }
                                                                 </ul>
+
+                                                                <input type="checkbox" onClick={this.handleAllCheckedStatusTCs}  value="checkedall" /> Check / Uncheck All
+
+                                                                <ul>
+                                                                {
+                                                                this.state.statusColumn.map((columnName) => {
+                                                                    return (<CheckBox handleCheckChieldElement={this.handleCheckChieldElementStatusTcs}  {...columnName} />)
+                                                                })
+                                                                }
+                                                                </ul>
+                                                                
                                                             <Button onClick={() => this.showSelectedTCs()}>Show Selected TC</Button>
                                                         </div>
                                                     </PopoverBody>
@@ -1279,9 +1328,9 @@ class TestCasesAll extends Component {
                                                             <PopoverBody>
                                                                 {
                                                                     [
-                                                                        { header: 'Priority', labels: 'Priority', values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] },
-                                                                        { header: 'Assignee', labels: 'Assignee', values: [{ value: '', text: 'Select Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
-                                                                        { header: 'Working Status', labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(ws.map(each => ({ value: each, text: each })))] },
+                                                                        { labels: 'Priority', values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] },
+                                                                        { labels: 'Assignee', values: [{ value: '', text: 'Select Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
+                                                                        { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(ws.map(each => ({ value: each, text: each })))] },
                                                                     ].map(each => <FormGroup className='rp-app-table-value'>
                                                                         <Label className='rp-app-table-label' htmlFor={each.labels}>
                                                                             {each.header}
@@ -1308,9 +1357,9 @@ class TestCasesAll extends Component {
                                                                 <Row>
                                                                     <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
-                                                                            <Label className='rp-app-table-label' htmlFor='Result'>
+                                                                            {/* <Label className='rp-app-table-label' htmlFor='Result'>
                                                                                 Result
-                                                                            </Label>
+                                                                            </Label> */}
                                                                             <Input disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Result} onChange={(e) => {
                                                                                 this.isAnyChanged = true;
                                                                                 let selectedRows = this.gridApi.getSelectedRows();
@@ -1334,9 +1383,9 @@ class TestCasesAll extends Component {
                                                                     </Col>
                                                                     <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
-                                                                            <Label className='rp-app-table-label' htmlFor='Build'>
+                                                                            {/* <Label className='rp-app-table-label' htmlFor='Build'>
                                                                                 Build
-                                                                            </Label>
+                                                                            </Label> */}
                                                                             <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Build} onChange={(e) => {
                                                                                 this.isAnyChanged = true;
                                                                                 let selectedRows = this.gridApi.getSelectedRows();
@@ -1348,8 +1397,8 @@ class TestCasesAll extends Component {
                                                                                 }
                                                                                 this.setState({ multi: { ...this.state.multi, Build: e.target.value } })
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
-                                                                            }} type="text" id={`select_Build`} >
-                                                                            </Input>
+                                                                            }} type="text" id={`select_Build`} placeholder="Build No" >
+                                                                            </Input> 
                                                                         </FormGroup>
                                                                     </Col>
 
@@ -1358,11 +1407,11 @@ class TestCasesAll extends Component {
                                                                 {
                                                                     this.isBlockedOrFailed &&
                                                                     <Row>
-                                                                        <Col md="8">
+                                                                        <Col md="12">
                                                                                 <FormGroup className='rp-app-table-value'>
-                                                                                    <Label className='rp-app-table-label' htmlFor='Bugs'>
+                                                                                    {/* <Label className='rp-app-table-label' htmlFor='Bugs'>
                                                                                         Bug No
-                                                                                    </Label>
+                                                                                    </Label> */}
                                                                                     <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Bugs} onChange={(e) => {
                                                                                         this.isAnyChanged = true;
                                                                                         
@@ -1375,9 +1424,8 @@ class TestCasesAll extends Component {
                                                                                         }
                                                                                         this.setState({ multi: { ...this.state.multi, Bugs: e.target.value } })
                                                                                         setTimeout(this.gridApi.redrawRows(), 0);
-                                                                                    }} type="text" id={`select_Bugs`} placeholder='DWS-000/SPEK-000'>
+                                                                                    }} type="text" id={`select_Bugs`} placeholder='Bug Number DWS-000/SPEK-000'>
                                                                                     </Input>
-                                                                                    <p style={{fontSize:'0.9'}}>Build And Bug Number Are Mandatory</p>
                                                                                 </FormGroup>
                                                                         </Col>
                                                                     </Row>
@@ -1486,12 +1534,8 @@ class TestCasesAll extends Component {
 
                                         </div>
                                     </div>
-
-
-
                                 </div>
                                 <div>
-
                                 </div>
                                 <Collapse isOpen={this.state.rowSelect}>
                                     {
@@ -1572,8 +1616,6 @@ class TestCasesAll extends Component {
                                                     }}>Delete</Button>
                                                     </div> */}
                                                     </div>
-
-
                                                     <div style={{ width: '100%', height: '300px', marginBottom: '3rem' }}>
                                                         <div style={{ width: "100%", height: "100%" }}>
                                                             <div

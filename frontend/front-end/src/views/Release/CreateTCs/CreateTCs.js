@@ -119,12 +119,9 @@ class CreateTCs extends Component {
         }
         data = { ...data, ...request }
         data.TcName = this.getTcName(`${data.TcName}`);
-        console.log("before post request check data",data);
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 // this.getTcs();
-                console.log("after post request check data",res.data);
-
                 this.setState({ addTC: { Master: true, Domain: this.state.Domain, SubDomain: this.state.SubDomain, CardType: this.state.CardType }, errors: {} });
                 alert(`TC ${data.TcID} Added Successfully`)
             }, error => {
@@ -261,14 +258,8 @@ class CreateTCs extends Component {
                                                 }
                                             </div>
                                         </div>
-
-
                                         {/* </React.Fragment> */}
-
-
-
                                     </div>
-
                                 </div>
 
                             </div>

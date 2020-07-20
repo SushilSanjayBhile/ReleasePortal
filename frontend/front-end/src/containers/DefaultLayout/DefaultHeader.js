@@ -31,7 +31,6 @@ class DefaultHeader extends Component {
   componentDidMount(){
     this.loginBackend()
   }
-  
  
   loginBackend() {
     if(localStorage.getItem('isAuthorized')){
@@ -56,7 +55,6 @@ class DefaultHeader extends Component {
         alert('Login Failed')
       })
     }
-    
     }
   }
     

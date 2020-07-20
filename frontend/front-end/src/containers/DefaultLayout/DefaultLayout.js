@@ -82,14 +82,13 @@ class DefaultLayout extends Component {
     if (this.props.allUsers.length === 0) {
       axios.get(`/api/userinfo`).then(res => {
         this.props.saveUsers(res.data)
-        
       })
       
     }
     if (this.props.allReleases.length === 0) {
       let releaseAllURL = `/api/release/all`;
       // let releaseInfoURL = `/api/release/info`;
-      axios.get(releaseAllURL,{timeout: 1000*30})
+      axios.get(releaseAllURL)
         .then(res => {
           res.data.forEach(item => {
             this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
@@ -149,14 +148,11 @@ class DefaultLayout extends Component {
                 this.props.allReleases.map(item => item.ReleaseNumber)
               }
               onReleaseChange={(release) => {
-                
                 if (release) {
                   // this.getReleaseData(release)
                   this.props.releaseChange({ id: release });
-                  
                 } else {
                   this.props.releaseChange({ id: null });
-                  
                 }
               }}
               onLogout={e => this.signOut(e)} />

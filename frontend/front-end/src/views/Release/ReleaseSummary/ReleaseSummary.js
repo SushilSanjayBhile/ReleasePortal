@@ -248,15 +248,13 @@ class ReleaseSummary extends Component {
         let totalCount = 0
         let maxResults = 0
         let totalBugs = []
+
         if(temp === 'Spektra 2.4') {
             temp='2.4.0'
-
         }
         if(temp === 'DMC-3.0') {
             temp="\"Spektra 3.0\""
-           
         }
-
         if(temp == 'DCX-3.0'){
             this.setState({selectedPriority:['P0']})
         }

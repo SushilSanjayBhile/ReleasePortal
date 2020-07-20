@@ -97,7 +97,7 @@ class TestCasesAllGUI extends Component {
           },
           
           'Status' : {
-              headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+              headerName: "Status", field: "CurrentStatus.Result", sortable: true, cellStyle: this.renderEditedCell, width: '100',
         
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
@@ -156,10 +156,19 @@ class TestCasesAllGUI extends Component {
             rowSelect: false,
             isEditing: false,
             delete: false,
+
             tableColumnsTcs: [
                 {id: 1, value: "Show Skip", isChecked: false},
                 {id: 2, value: "Show Not Applicable", isChecked: false},
                 {id: 3, value: "Applicable", isChecked: true},
+            ],
+
+            applicableTCForStatus:[],
+            statusColumn:[
+                {id:1,value:'Pass', isChecked: false},
+                {id:2,value:'Fail', isChecked: false},
+                {id:3,value:'Block', isChecked: false},
+                {id:4,value:'Not Tested', isChecked: false},
             ],
             tableColumns: [
                 {id: 1, value: "TcID", isChecked: false},
@@ -231,6 +240,8 @@ class TestCasesAllGUI extends Component {
             },
         }
     }
+
+    //Priority Based filter functions
     handleAllCheckedTCs = (event) => {
         let tableColumnsTcs = this.state.tableColumnsTcs
         tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked) 
@@ -252,6 +263,23 @@ class TestCasesAllGUI extends Component {
     }
 
 
+    //Status Based Filter functions
+    handleAllCheckedStatusTCs = (event) => {
+        let statusColumn = this.state.statusColumn
+        statusColumn.forEach(columnName => columnName.isChecked = event.target.checked) 
+        this.setState({statusColumn: statusColumn})
+    }
+
+    handleCheckChieldElementStatusTcs = (event) => {
+        let statusColumn = this.state.statusColumn
+        statusColumn.forEach(columnName => {
+            if (columnName.value === event.target.value)
+                columnName.isChecked =  event.target.checked
+        })
+        this.setState({statusColumn: statusColumn})
+    }
+
+    //column based filter functions
     handleAllChecked = (event) => {
         let tableColumns = this.state.tableColumns
         tableColumns.forEach(columnName => columnName.isChecked = event.target.checked) 
@@ -318,7 +346,7 @@ class TestCasesAllGUI extends Component {
           },
           
           'Status' : {
-              headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+              headerName: "Status", field: "CurrentStatus.Result", sortable: true, cellStyle: this.renderEditedCell, width: '100',
         
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
@@ -417,6 +445,7 @@ class TestCasesAllGUI extends Component {
     popoverToggle = () => this.setState({ popoverOpen: !this.state.popoverOpen });
     popoverToggle1 = () => this.setState({ popoverOpen1: !this.state.popoverOpen1 });
     popoverToggle2 = () => this.setState({ popoverOpen2: !this.state.popoverOpen2 });
+    popoverToggle3 = () => this.setState({ popoverOpen3: !this.state.popoverOpen3 });
     confirmStatusDeleteToggle = () => this.setState({ deleteStatusModal: !this.state.deleteStatusModal });
     confirmToggle() {
         this.changeLog = {};
@@ -726,14 +755,6 @@ class TestCasesAllGUI extends Component {
             if (priority) url += ('&Priority=' + priority);
         }
         
-        let showTc = []
-        let skipTcs = []
-        let NATcs = []
-        let ApplicableTcs = []
-        let skipCount = 0;
-        let NACount = 0;
-        let applicableCount = 0;
-      
         axios.get(url)
             .then(all => {
                 // Filters should not go away if data is reloaded
@@ -799,6 +820,37 @@ class TestCasesAllGUI extends Component {
                 })
             }
         })
+
+        let showTc1 = []
+        let statusFlag = 0
+        this.state.statusColumn.forEach(item=>{
+
+            showTc.forEach(tcItem=>{
+                console.log(tcItem)
+                if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Fail' && tcItem.CurrentStatus.Result == 'Fail'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Block' && tcItem.CurrentStatus.Result == 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Not Tested' && tcItem.CurrentStatus.Result != 'Pass' && tcItem.CurrentStatus.Result != 'Fail' && tcItem.CurrentStatus.Result != 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+            })
+        })
+        if(statusFlag == 0){
+            showTc1 = showTc; 
+        }
 
         this.saveLocalMultipleTC({ data:showTc, id: release }, false, updateRelease)
         this.gridOperations(true);
@@ -883,10 +935,8 @@ class TestCasesAllGUI extends Component {
                     "URL": `/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`
                 }
                 statusItems.push(status)
-                // console.log("Status Activity",status)
             }
             items.push(pushable);
-            // console.log("Status Pushable",pushable);
 
         })
        
@@ -902,7 +952,6 @@ class TestCasesAllGUI extends Component {
     saveMultipleTcStatus(statusItems, items) {
         let flag = 0;
         this.gridOperations(false);
-        // console.log("saveMultipleTcStatus",statusItems);
             axios.post(`/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`, statusItems)
             .then(res => {
                 this.gridOperations(true);
@@ -1001,7 +1050,6 @@ class TestCasesAllGUI extends Component {
             "RequestType": 'PUT',
             "URL": `/api/tcinfoput/${this.props.selectedRelease.ReleaseNumber}/id/${this.props.tcDetails.TcID}/card/${this.props.tcDetails.CardType}`
         };
-        // console.log("save function activity", data.Activity,this.props.tcDetails)
 
         if (this.props.testcaseEdit.CurrentStatus === 'Pass' || this.props.testcaseEdit.CurrentStatus === 'Fail' || this.props.testcaseEdit.CurrentStatus == 'Blocked' || this.props.testcaseEdit.CurrentStatus == 'Unblocked'||  this.props.testcaseEdit.Bugs) {
             this.saveSingleTCStatus(data);
@@ -1045,7 +1093,6 @@ class TestCasesAllGUI extends Component {
                     "RequestType": 'PUT',
                     "URL": `/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}/${statusList.id}`
                 }
-                // console.log("save single TC Status Activity if",status)
                 axios.put(`/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`, [{ ...status }])
                     .then(res => {
                         this.gridOperations(true);
@@ -1072,7 +1119,6 @@ class TestCasesAllGUI extends Component {
                 "RequestType": 'POST',
                 "URL": `/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`
             }
-            // console.log("save single TC Status Activity else",status,this.props.tcDetails)
             axios.post(`/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`, [{ ...status }])
                 .then(res => {
                     this.gridOperations(true);
@@ -1084,7 +1130,6 @@ class TestCasesAllGUI extends Component {
         }
     }
     saveSingleTCInfo(data) {
-        // console.log("data",data)
         if (this.props.testcaseEdit.NewTcID) {
             data.NewTcID = this.props.testcaseEdit.NewTcID
             if (data.Activity.LogData.length < 5) {
@@ -1325,9 +1370,9 @@ class TestCasesAllGUI extends Component {
                                                             <PopoverBody>
                                                                 {
                                                                     [
-                                                                        { header: 'Priority', labels: 'Priority', values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] },
-                                                                        { header: 'Assignee', labels: 'Assignee', values: [{ value: '', text: 'Select Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
-                                                                        { header: 'Working Status', labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(ws.map(each => ({ value: each, text: each })))] },
+                                                                        { labels: 'Priority', values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] },
+                                                                        { labels: 'Assignee', values: [{ value: '', text: 'Select Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
+                                                                        { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(ws.map(each => ({ value: each, text: each })))] },
                                                                     ].map(each => <FormGroup className='rp-app-table-value'>
                                                                         <Label className='rp-app-table-label' htmlFor={each.labels}>
                                                                             {each.header}
@@ -1354,9 +1399,9 @@ class TestCasesAllGUI extends Component {
                                                                 <Row>
                                                                     <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
-                                                                            <Label className='rp-app-table-label' htmlFor='Result'>
+                                                                            {/* <Label className='rp-app-table-label' htmlFor='Result'>
                                                                                 Result
-                                                                            </Label>
+                                                                            </Label> */}
                                                                             <Input disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Result} onChange={(e) => {
                                                                                 this.isAnyChanged = true;
                                                                                 let selectedRows = this.gridApi.getSelectedRows();
@@ -1380,9 +1425,9 @@ class TestCasesAllGUI extends Component {
                                                                     </Col>
                                                                     <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
-                                                                            <Label className='rp-app-table-label' htmlFor='Build'>
+                                                                            {/* <Label className='rp-app-table-label' htmlFor='Build'>
                                                                                 Build
-                                                                            </Label>
+                                                                            </Label> */}
                                                                             <Input disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Build} onChange={(e) => {
                                                                                 this.isAnyChanged = true;
                                                                                 let selectedRows = this.gridApi.getSelectedRows();
@@ -1394,7 +1439,7 @@ class TestCasesAllGUI extends Component {
                                                                                 }
                                                                                 this.setState({ multi: { ...this.state.multi, Build: e.target.value } })
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
-                                                                            }} type="text" id={`select_Build`}>
+                                                                            }} type="text" id={`select_Build`} placeholder = 'Build No'>
                                                                             </Input>
                                                                         </FormGroup>
                                                                     </Col>
@@ -1403,11 +1448,11 @@ class TestCasesAllGUI extends Component {
                                                                 {
                                                                     this.isBlockedOrFailed &&
                                                                     <Row>
-                                                                        <Col md="8">
+                                                                        <Col md="12">
                                                                                 <FormGroup className='rp-app-table-value'>
-                                                                                    <Label className='rp-app-table-label' htmlFor='Bugs'>
+                                                                                    {/* <Label className='rp-app-table-label' htmlFor='Bugs'>
                                                                                         Bug No
-                                                                                    </Label>
+                                                                                    </Label> */}
                                                                                     <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Bugs} onChange={(e) => {
                                                                                         this.isAnyChanged = true;
                                                                                         
@@ -1420,9 +1465,8 @@ class TestCasesAllGUI extends Component {
                                                                                         }
                                                                                         this.setState({ multi: { ...this.state.multi, Bugs: e.target.value } })
                                                                                         setTimeout(this.gridApi.redrawRows(), 0);
-                                                                                    }} type="text" id={`select_Bugs`} placeholder='DWS-000/SPEK-000'>
+                                                                                    }} type="text" id={`select_Bugs`} placeholder = 'Bug Number DWS-000/SPEK-000'>
                                                                                     </Input>
-                                                                                    <p style={{fontSize:'0.9'}}>Build And Bug Number Are Mandatory</p>
                                                                                 </FormGroup>
                                                                         </Col>
                                                                     </Row>

@@ -154,7 +154,6 @@ class UpdateMultiple extends Component {
         this.globalErrors = null;
         this.currentID = 0;
         // this.save();
-        //console.log("sushil murkha bavlat ahe",this.state.multiple);
         if(this.state.multiple.length > 1){
             this.saveMultipleTc();
         }
@@ -179,7 +178,6 @@ class UpdateMultiple extends Component {
         this.gridOperations(false)
         this.props.showLoadingMessage(true);
         let row = this.state.multiple[this.currentID];
-        //console.log(row)
         let data = {};
         // tc info meta fields
         // data.Role = 'QA';
@@ -214,7 +212,6 @@ class UpdateMultiple extends Component {
         this.gridOperations(false)
         this.props.showLoadingMessage(true);
         let row = this.state.multiple[this.currentID];
-        // console.log(row)
         let data = {};
         // tc info meta fields
         // data.Role = 'QA';
@@ -231,7 +228,6 @@ class UpdateMultiple extends Component {
             "URL": `/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${data.CardType}`
         };
         data.TcName = this.getTcName(`${data.TcName}`);
-        // console.log("updateMultiple",data)
 
         axios.put(`/api/tcinfoput/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${data.CardType}`, { ...data })
             .then(res => {
@@ -252,7 +248,6 @@ class UpdateMultiple extends Component {
             }, error => {
                 this.gridOperations(false)
                 this.props.showLoadingMessage(false);
-                //console.log('entered here')
                 if (!this.globalErrors) this.globalErrors = {}
                 this.globalErrors = { ...this.globalErrors, [this.state.multiple[this.currentID].TABLEID]: { uploadError: true } }
                 this.currentID += 1;
@@ -270,7 +265,6 @@ class UpdateMultiple extends Component {
             });
     }
     confirmMultipleToggle() {
-        //console.log(this.state.multiple);
         let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
         if (domains) {
             domains.sort();
@@ -340,8 +334,7 @@ class UpdateMultiple extends Component {
     }
     renderEditedCell = (params) => {
         if (params.data) {
-            //console.log('errors inside')
-            //console.log(this.state.multipleErrors)
+            
             if (this.state.multipleErrors && this.state.multipleErrors[params.data.TABLEID] && this.state.multipleErrors[params.data.TABLEID].uploadError) {
                 return {
                     backgroundColor: 'rgb(237,102,72)',
