@@ -332,3 +332,16 @@ class LOGSGUI(models.Model):
 
     def __str__(self):
         return "{0}:-{1}".format(self.RequestType, self.Log)
+
+
+class RELEASEBUILDSINFO(models.Model):
+    jobName = models.CharField(max_length = 100 , blank = False)
+    buildNumber = models.IntegerField()
+    buildResult = models.CharField(max_length = 20)
+    buildURL = models.CharField(max_length = 100)
+    timeStamp = models.CharField(max_length = 30)
+    buildName = models.CharField(max_length = 100)
+
+    def __str__(self):
+        return self.jobName
+
