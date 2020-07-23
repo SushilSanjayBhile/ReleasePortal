@@ -22,7 +22,7 @@ def RELEASEBUILDINFOGETPOSTVIEW(request):
 
         print(req,"\n\n\n\n")
         #req = request.body
-        fd = RELEASEBUILDINFO_Form(req['buildDataArray3'])
+        fd = RELEASEBUILDINFO_Form(req['buildDataArray'])
         if fd.is_valid():
             data = fd.save(commit = False)
             data.save()
@@ -36,6 +36,6 @@ def RELEASEBUILDINFOGETPOSTVIEW(request):
         return HttpResponse("SUCCESS")
     
     elif request.method == "GET":
-        data = RELEASEBUILDSINFO.objects.using().all()
-        serializer = TC_STATUS_GUI_SERIALIZER(data, many = True)
+        data = RELEASEBUILDSINFO.objects.all()
+        serializer = RELEASE_BUILD_INFO_SERIALIZER(data, many = True)
         return HttpResponse(json.dumps(serializer.data))
