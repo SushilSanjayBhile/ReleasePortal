@@ -111,7 +111,10 @@ def TCSTATUSGETPOSTVIEW(request, Release):
         except:
             req['TcName'] = data['TcName']
 
-        print("THIS IS REQUEST", req)
+        try:
+            print("THIS IS REQUEST", req)
+        except:
+            pass
 
         updateLatestStatus(Release, req['CardType'], req['TcID'], req)
 
@@ -1543,6 +1546,7 @@ def RELEASEINFO(request, Release):
         elif(Release == 'all'):
             data = RELEASES.objects.all()
             serializer = RELEASE_SERIALIZER(data, many = True)
+            t = time.time()
 
             for i in serializer.data:
                 data = json.dumps(i)
@@ -1568,6 +1572,8 @@ def RELEASEINFO(request, Release):
                     list.insert(1, data)
                 else:
                     list.append(data)
+
+            print(time.time() - t)
 
             # return JsonResponse(json.dumps(list), status = 200)
             return HttpResponse(json.dumps(list))
