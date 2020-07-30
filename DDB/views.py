@@ -1578,7 +1578,7 @@ def RELEASEINFO(request, Release):
             # return JsonResponse(json.dumps(list), status = 200)
             return HttpResponse(json.dumps(list))
         else:
-            data = RELEASES.objects.using('universal').get(ReleaseNumber__icontains = Release)
+            data = RELEASES.objects.using('universal').get(ReleaseNumber = Release)
             serializer = RELEASE_SERIALIZER(data)
 
             serData = json.dumps(serializer.data)
