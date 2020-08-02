@@ -335,14 +335,12 @@ class LOGSGUI(models.Model):
 
 
 class RELEASEBUILDSINFO(models.Model):
-    jobName = models.CharField(max_length = 100 , blank = True, default = "UNKNOWN")
-    buildNumber = models.IntegerField(default=0)
-    successCount = models.IntegerField(default=0)
-    failureCount = models.IntegerField(default=0)
-    buildResult = models.CharField(max_length = 20)
-    buildURL = models.CharField(max_length = 100)
-    timeStamp = models.CharField(max_length = 30)
-    buildName = models.CharField(max_length = 100)
+    ReleaseNumber = models.CharField(max_length = 50, blank = False,default = "UNKNOWN")
+    buildNumber = models.IntegerField(default = 0)
+    buildName = models.CharField(max_length = 100, blank = False, default = "UNKNOWN")
+    buildResult = models.CharField(max_length = 20, blank = True , default = "UNKNOWN")
+    buildURL = models.CharField(max_length = 100 , blank = True , null = True)
+#    timeStamp = models.CharField(max_length = 30)
 
     def __str__(self):
         return self.jobName

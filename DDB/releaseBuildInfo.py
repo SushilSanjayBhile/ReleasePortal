@@ -19,23 +19,46 @@ def RELEASEBUILDINFOGETPOSTVIEW(request):
 
     if request.method == "POST":
         req = json.loads(request.body.decode("utf-8"))
-
-        print(req,"\n\n\n\n")
-        #req = request.body
-        fd = RELEASEBUILDINFO_Form(req['buildDataArray'])
-        if fd.is_valid():
-            data = fd.save(commit = False)
-            data.save()
-           # if "Activity" in req:
-           #     AD = req['Activity']
-           #     GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
-        else:
-            print(req)
-            print(fd.errors)
-            return JsonResponse({'Error': fd.errors}, status = 400)
+        #print("reques",req)
+        for i in req['buildDataArray']:
+            fd = RELEASEBUILDINFO_Form(i)
+            if fd.is_valid():
+                data = fd.save(commit = False)
+                data.save()
+                # if "Activity" in req:
+                #     AD = req['Activity']
+                #     GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+            else:
+                print(req)
+                print(fd.errors)
+                return JsonResponse({'Error': fd.errors}, status = 400)
+        
         return HttpResponse("SUCCESS")
     
     elif request.method == "GET":
         data = RELEASEBUILDSINFO.objects.all()
         serializer = RELEASE_BUILD_INFO_SERIALIZER(data, many = True)
-        return HttpResponse(json.dumps(serializer.data))
+        buildDataDict = {}
+        arr = []
+        arr1 = []
+        successCount = 0
+        failureCount = 0
+
+        for item in serializer.data:
+            if item['buildName'] not in iter(buildDataDict.values()):
+                buildDataDict['buildName'] = item['buildName']
+                arr.append({'buildName' : item['buildName'],'ReleaseNumber':item['ReleaseNumber']})
+        
+        for i in arr:
+            name = i['buildName']
+            release = i['ReleaseNumber']
+            successCount = 0
+            failureCount = 0
+            for itr in serializer.data:
+                if name == itr['buildName']:
+                    if itr['buildResult'] == 'SUCCESS':
+                        successCount += 1
+                    if itr['buildResult'] == 'FAILURE':
+                        failureCount += 1
+            arr1.append({'ReleaseNumber':release,'buildName':name,'success':successCount,'failure':failureCount})
+        return JsonResponse({'data':arr1})
