@@ -32,6 +32,10 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from .latestStatusUpdate import updateLatestStatus, latestResultUpdateFunction
 from .tcinfo import updateStatusData
 
+# GLOBAL VARIABLES
+statusList = ['Pass', 'Fail', 'Skip', 'Blocked']
+
+
 def createDB(release):
     con = psycopg2.connect(dbname='postgres',
         user=userName, host='',
@@ -257,10 +261,22 @@ def GUITCSTATUSGETPOSTVIEW(request, Release):
 def get_cli_dataDict(cliTcInfo, cliStatus):
 
     cid = {} #cid stands for cli info dict
-    csd = {} #csd stands for cli status dict
+    csd = {} #csd stands for cli status dict  # csd consist of only latest tc status'
 
     tcinfoserializer = TC_INFO_SERIALIZER(cliTcInfo, many=True)
     statusserializer = LATEST_TC_STATUS_SERIALIZER(cliStatus, many=True)
+
+    for status in statusserializer.data:
+        domain = status["Domain"]
+        card = status["CardType"]
+        tcid = status["TcID"]
+
+        if domain not in csd:
+            csd[domain]= {}
+        if card not in csd[domain]:
+            csd[domain][card] = {}
+        if tcid not in csd[domain][card]:
+            csd[domain][card][tcid] = status
 
     for tc in tcinfoserializer.data:
         domain = tc["Domain"]
@@ -276,36 +292,23 @@ def get_cli_dataDict(cliTcInfo, cliStatus):
         if tcid not in cid[domain][card]:
             cid[domain][card][tcid] = tc
 
-    for status in statusserializer.data:
-        domain = status["Domain"]
-        card = status["CardType"]
-        tcid = status["TcID"]
-
-        if domain not in csd:
-            csd[domain]= {}
-        if card not in csd[domain]:
-            csd[domain][card] = {}
-        if tcid not in csd[domain][card]:
-            csd[domain][card][tcid] = status
-
         try:
-            csd[domain][card][tcid].update(cid[domain][card][tcid])
+            cid[domain][card][tcid].update(csd[domain][card][tcid])
         except:
             pass
     return (cid,csd)
 
-
 def domain_cli_aggreggation(cliTcInfo, cliStatus):
     cid = {} #cid stands for cli info dict
     csd = {} #csd stands for cli status dict
+    myDict = {}
+    myDict['domain-cli'] = {}
+    global statusList
 
-    cid,csd = get_cli_dataDict(cliTcInfo, cliStatus)
+    cid, csd = get_cli_dataDict(cliTcInfo, cliStatus)
     tcinfoserializer = TC_INFO_SERIALIZER(cliTcInfo, many=True)
     statusserializer = LATEST_TC_STATUS_SERIALIZER(cliStatus, many=True)
 
-    myDict = {}
-    myDict['domain-cli'] = {}
-    statusList = ['Pass','Fail','Skip','Blocked']
     priorityList = ['P0','P1','P2','P3','P4','P5','P6','P7']
 
     domains = cliTcInfo.values('Domain').distinct()
@@ -335,32 +338,30 @@ def domain_cli_aggreggation(cliTcInfo, cliStatus):
             if item not in myDict['domain-cli'][sdomain]['Tested']['auto']:
                 myDict['domain-cli'][sdomain]['Tested']['auto'][item] = 0
 
-    # creation of list with latest status'
     lateststatuslist = []
-    for d in csd:
-        for c in csd[d]:
-            for i in csd[d][c]:
-                lateststatuslist.append(csd[d][c][i])
+    for d in cid:
+        for c in cid[d]:
+            for i in cid[d][c]:
+                lateststatuslist.append(cid[d][c][i])
 
     # aggregation calculation
     for stat in lateststatuslist:
         sdomain = stat["Domain"]
         stcid = stat["TcID"]
         scard = stat["CardType"]
-        sres = stat["Result"]
         stcname = stat["TcName"]
-
-        try:
-            sPriority = stat["Priority"]
-        except:
-            continue
+        sPriority = stat["Priority"]
 
         # Skip and NA checking
-        if sPriority == "Skip" or sPriority == "NA" or sres == "Unblocked":
+        if sPriority == "Skip" or sPriority == "NA":
             continue
 
-        #applicable count calculations
         try:
+            sres = stat["Result"]
+
+            if sres == "Unblocked": # unblocked key is not present in VALID STATUS', as we are counting it into NOTTESTED
+                continue
+            #applicable count calculations
             if stcname == "TC NOT AUTOMATED":
                 myDict['domain-cli'][sdomain]['Tested']['manual'][sres] += 1
                 myDict['domain-cli'][sdomain]['NotTested'] -= 1
@@ -371,60 +372,56 @@ def domain_cli_aggreggation(cliTcInfo, cliStatus):
             pass
 
     for tc in tcinfoserializer.data:
-        if tc["Priority"] == "Skip":
+        if tc["Priority"] == "Skip": # we need NA count, so skipping only SKIP(priority) tcs
             continue
+
         domain = tc["Domain"]
         card = tc["CardType"]
         tcid = tc["TcID"]
 
-        try:
-            if tc["Priority"] == "NA":
-                myDict['domain-cli'][domain]['NotApplicable'] += 1
-                continue
+        if tc["Priority"] == "NA":
+            myDict['domain-cli'][domain]['NotApplicable'] += 1
+            continue
 
-            myDict["domain-cli"][domain]["NotTested"] += 1
-        except:
-            pass
+        myDict["domain-cli"][domain]["NotTested"] += 1
 
     return myDict["domain-cli"]
 
-
 def get_cli_priorityDict(cliTcInfo,cliStatus):
-        cid, csd = get_cli_dataDict(cliTcInfo, cliStatus)
-        myDict = {}
-        priorities = cliTcInfo.values('Priority').distinct()
-        myDict['Priority'] = {}
-        priorityStatusList = ['Pass','Fail','Skip','Blocked','NotTested']
+    myDict = {}
+    myDict['Priority'] = {}
 
-        for prior in priorities:
-            if prior["Priority"] == "Skip" or prior["Priority"]  == "NA":
-                continue
-            myDict['Priority'][prior['Priority']] = {}
-            for item in priorityStatusList:
-                myDict['Priority'][prior['Priority']][item] = 0
+    cid, csd = get_cli_dataDict(cliTcInfo, cliStatus)
+    priorities = cliTcInfo.values('Priority').distinct()
+    priorityStatusList = ['Pass', 'Fail', 'Skip', 'Blocked', 'NotTested']
 
-        for domain in csd:
-            for tc in csd[domain]:
-                for item in csd[domain][tc]:
-                    try:
-                        priority = csd[domain][tc][item]["Priority"]
-                    except:
-                        continue
-                    result = csd[domain][tc][item]["Result"]
+    for prior in priorities:
+        if prior["Priority"] == "Skip" or prior["Priority"]  == "NA":   # only applicable
+            continue
 
-                    if priority == "Skip" or priority == "NA":
-                        continue
+        myDict['Priority'][prior['Priority']] = {}
+        for item in priorityStatusList:
+            myDict['Priority'][prior['Priority']][item] = 0
 
-                    #check to add unblocked in not tested
-                    try:
-                        if result == 'Unblocked':
-                            myDict['Priority'][priority]['NotTested'] += 1
-                        else:
-                            myDict['Priority'][priority][result] += 1
-                    except:
-                        pass
+    for domain in cid:
+        for tc in cid[domain]:
+            for item in cid[domain][tc]:
+                priority = cid[domain][tc][item]["Priority"]
+                if priority == "Skip" or priority == "NA":
+                    continue
 
-        return myDict["Priority"]
+                try:
+                    result = cid[domain][tc][item]["Result"]
+                except:
+                    myDict['Priority'][priority]['NotTested'] += 1
+                    continue
+
+                #check to add unblocked in not tested
+                if result == "Unblocked":
+                    myDict['Priority'][priority]['NotTested'] += 1
+                elif result != "":
+                    myDict['Priority'][priority][result] += 1
+    return myDict["Priority"]
 
 
 def get_gui_dataDict(guiTcInfo, guiStatus):
@@ -490,12 +487,12 @@ def get_gui_priorityDict(guiTcInfo,guiStatus):
 def domain_gui_aggreggation(guiTcInfo, guiStatus):
     gid = {} #gid stands for gui info dict
     gsd = {} #gsd stands for cli status dict
+    myDict = {}
+    myDict['domain-gui'] = {}
+    global statusList
 
     gid,gsd = get_gui_dataDict(guiTcInfo, guiStatus)
 
-    myDict = {}
-    myDict['domain-gui'] = {}
-    statusList = ['Pass','Fail','Skip','Blocked']
     priorityList = ['P0','P1','P2','P3','P4','P5','P6','P7']
 
     domains = guiTcInfo.values('Domain').distinct()
@@ -579,13 +576,14 @@ def cli_gui_combined_aggregation(cliDict,guiDict):
 
 def TCAGGREGATE(Release):
     dictionary = {}
+    global statusList
 
     dictionary['domain'] = {}
     dictionary['AvailableScenarios'] = []
     dictionary["AvailableDomainOptions"] = {}
 
     domains = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(Release).all()
-    domSer = ser = DOMAIN_SUBDOMAIN_SERIALIZER(domains, many = True)
+    domSer = DOMAIN_SUBDOMAIN_SERIALIZER(domains, many = True)
 
     for dom in domSer.data:
         dictionary["AvailableDomainOptions"][dom["Domain"]] = dom["SubDomain"]
@@ -618,8 +616,6 @@ def TCAGGREGATE(Release):
     ############################################
     # cli total numbers calculation for dashboard
     applicableCliInfo = cliTcInfo.filter(~Q(Priority = "Skip")).filter(~Q(Priority = "NA"))
-
-    statusList = ["Pass", "Fail", "Skip", "Blocked"]
 
     # default dictionary for CLI
     dictionary["all"] = {}
@@ -658,8 +654,6 @@ def TCAGGREGATE(Release):
     #############################################
     # GUI total numbers calculation for dashboard
     applicableGuiInfo = guiTcInfo.filter(~Q(Priority = "Skip")).filter(~Q(Priority = "NA"))
-
-    statusList = ["Pass", "Fail", "Skip", "Blocked"]
 
     # default dictionary for CLI
     dictionary["allGUI"] = {}
@@ -737,7 +731,7 @@ def TCAGGREGATEOLD(Release):
         dictionary["AvailableDomainOptions"] = {}
 
         domains = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(Release).all()
-        domSer = ser = DOMAIN_SUBDOMAIN_SERIALIZER(domains, many = True)
+        domSer = DOMAIN_SUBDOMAIN_SERIALIZER(domains, many = True)
 
         for dom in domSer.data:
             dictionary["AvailableDomainOptions"][dom["Domain"]] = dom["SubDomain"]
