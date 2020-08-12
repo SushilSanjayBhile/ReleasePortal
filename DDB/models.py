@@ -293,7 +293,8 @@ class RELEASES(models.Model):
     KubernetesVersion = models.TextField(blank = True, null = True)
     DockerVersion = models.TextField(blank = True, null = True)
     HelmVersion = models.TextField(blank = True, null = True)
-
+    #ParentReleaseNumber = models.CharField(max_length = 50, blank = False, primary_key = True)
+    
     def __str__(self):
         return self.ReleaseNumber
 
@@ -343,5 +344,5 @@ class RELEASEBUILDSINFO(models.Model):
 #    timeStamp = models.CharField(max_length = 30)
 
     def __str__(self):
-        return self.jobName
+        return self.buildName
 

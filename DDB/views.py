@@ -1578,8 +1578,8 @@ def RELEASEINFO(request, Release):
             serData = json.dumps(serializer.data)
             serData = json.loads(serData)
 
-            if Release != "TestDatabase":
-                aggregateData = TCAGGREGATE(Release)
+            #if Release != "TestDatabase":
+            aggregateData = TCAGGREGATE(Release)
             serData['TcAggregate'] = aggregateData
             # return JsonResponse({'data': json.dumps(serializer.data)}, status = 200)
             return HttpResponse(json.dumps(serData))

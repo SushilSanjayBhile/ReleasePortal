@@ -16,7 +16,6 @@ import json
 
 @csrf_exempt
 def RELEASEBUILDINFOGETPOSTVIEW(request):
-
     if request.method == "POST":
         req = json.loads(request.body.decode("utf-8"))
         #print("reques",req)
@@ -62,3 +61,33 @@ def RELEASEBUILDINFOGETPOSTVIEW(request):
                         failureCount += 1
             arr1.append({'ReleaseNumber':release,'buildName':name,'success':successCount,'failure':failureCount})
         return JsonResponse({'data':arr1})
+    
+
+
+@csrf_exempt
+def RELEASEBUILDINFODELETEVIEW(request):
+
+    if request.method == "DELETE":
+        
+        req = json.loads(request.body.decode("utf-8"))
+        buildName = req['data1'][0]['buildName']
+        data = RELEASEBUILDSINFO.objects.filter(buildName=buildName).delete()
+        serializer = RELEASE_BUILD_INFO_SERIALIZER(data, many = True)
+        print(data)
+        
+        #buildDataDict = {}
+        #arr = []
+        #arr1 = []
+        #successCount = 0
+        #failureCount = 0
+
+        #for item in serializer.data:
+        #    if item['buildName'] == buildName:
+        #        #print("\n\n",item,"\n\n")
+        #        del(item)
+
+        #print("After Delete Operation")
+        #for item in serializer.data:
+        #    print("\n\n",item,"\n\n")
+        
+        return JsonResponse({'status':"SUCCESS"})

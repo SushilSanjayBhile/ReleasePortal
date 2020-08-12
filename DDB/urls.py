@@ -3,7 +3,7 @@ from .views import (TCSTATUSGETPOSTVIEW, USER_INFO_GET_POST_VIEW,
         USER_INFO_SPECIFIC_BY_ID, USER_INFO_SPECIFIC_BY_NAME, LOG,
         GETSETUPWISETCINFO, RELEASEINFO, GETPLATFORMWISETCINFO, RELEASEINFOPOST,
         GETPLATFORMANDSETUPWISETCINFO, TCAGGREGATE, DOMAINWISETCSTATUS, DOMAINWISETCINFO, USER_LOGIN_VIEW,
-        GUITCSTATUSGETPOSTVIEW, createDB, AddDomainSubDomain)
+        GUITCSTATUSGETPOSTVIEW, createDB, DeleteDomainSubDomain, AddDomainSubDomain)
 from .sanityViews import SANITY_VIEW
 from .defaultViews import DEFAULT_DOMAIN_GET_POST_VIEW, DEFAULT_SUBDOMAIN_GET_POST_VIEW
 
@@ -15,7 +15,7 @@ from .tcinfo import TC_INFO_GET_POST_VIEW, GET_TC_INFO_BY_ID, WHOLE_TC_INFO, MUL
 
 from .getStatistics import BUG_WISE_BLOCKED_TCS 
 from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO
-from .releaseBuildInfo import RELEASEBUILDINFOGETPOSTVIEW
+from .releaseBuildInfo import RELEASEBUILDINFOGETPOSTVIEW,RELEASEBUILDINFODELETEVIEW
 
 # my scripts
 from .cleanup import RemoveStatus
@@ -71,5 +71,7 @@ urlpatterns = [
     path('updatee2eresult', e2eResultUpdate),
 
     path('<str:Release>/options/add', AddDomainSubDomain),
+    path('<str:Release>/options/delete', AddDomainSubDomain),
     path('jenkinsBuild/',RELEASEBUILDINFOGETPOSTVIEW),
+    path('jenkinsBuildDelete/',RELEASEBUILDINFODELETEVIEW)
 ]
