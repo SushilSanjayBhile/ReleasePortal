@@ -1584,18 +1584,18 @@ def RELEASEINFO(request, Release):
             # return JsonResponse({'data': json.dumps(serializer.data)}, status = 200)
             return HttpResponse(json.dumps(serData))
 
-    elif request.method == "DELETE":
-        try:
-            data = RELEASES.objects.get(ReleaseNumber__icontains = Release).delete()
-            if "Activity" in req:
-               AD = request['Activity']
-               GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
-            # return JsonResponse({'Success': "DELETED SUCCESSFULLY"}, status = 200)
-            return HttpResponse("DELETED SUCCESSFULLY")
-        except RELEASES.DoesNotExist:
-            error_message = "OBJECT NOT PRESENT CANNOT BE DELETED!!"
-            # return JsonResponse({'Error': error_message}, status = 400)
-            return HttpResponse(error_message)
+    #elif request.method == "DELETE":
+    #    try:
+    #        data = RELEASES.objects.get(ReleaseNumber__icontains = Release).delete()
+    #        if "Activity" in req:
+    #           AD = request['Activity']
+    #           GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+    #        # return JsonResponse({'Success': "DELETED SUCCESSFULLY"}, status = 200)
+    #        return HttpResponse("DELETED SUCCESSFULLY")
+    #    except RELEASES.DoesNotExist:
+    #        error_message = "OBJECT NOT PRESENT CANNOT BE DELETED!!"
+    #        # return JsonResponse({'Error': error_message}, status = 400)
+    #        return HttpResponse(error_message)
 
     elif request.method == "PUT":
         try:
