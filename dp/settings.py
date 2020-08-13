@@ -84,6 +84,14 @@ DATABASES = {
         'HOST': hostName,
         'PORT': portNumber,
         },
+    'CentOS-DCX-2.4.1': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'CentOS-DCX-2.4.1',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'DCX-2.4.1': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'DCX-2.4.1',

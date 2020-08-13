@@ -55,10 +55,15 @@ def BUG_WISE_BLOCKED_TCS(request, Release):
                 for tc in csd[domain][card]:
                     clilateststatuslist.append(csd[domain][card][tc])
         
+        
         for stat in clilateststatuslist:
             sres = stat["Result"]
             stcname = stat["TcName"]
-            spriority = stat["Priority"]
+            
+            try:
+                spriority = stat["Priority"]
+            except:
+                continue
 
             #priority check
             if spriority != "Skip" and spriority != "NA":

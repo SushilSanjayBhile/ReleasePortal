@@ -1572,6 +1572,8 @@ def RELEASEINFO(request, Release):
             # return JsonResponse(json.dumps(list), status = 200)
             return HttpResponse(json.dumps(list))
         else:
+            t = time.time()
+            
             data = RELEASES.objects.using('universal').get(ReleaseNumber = Release)
             serializer = RELEASE_SERIALIZER(data)
 
@@ -1582,6 +1584,7 @@ def RELEASEINFO(request, Release):
             aggregateData = TCAGGREGATE(Release)
             serData['TcAggregate'] = aggregateData
             # return JsonResponse({'data': json.dumps(serializer.data)}, status = 200)
+            print(time.time()-t)
             return HttpResponse(json.dumps(serData))
 
     #elif request.method == "DELETE":
