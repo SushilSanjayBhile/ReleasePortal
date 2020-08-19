@@ -19,9 +19,12 @@ const propTypes = {
 const defaultProps = {};
 
 class DefaultHeader extends Component {
+  
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      releaseChange:false,
+    };
   }
   componentWillReceiveProps(newProps) {
     if (newProps.selectedReleaseNumber !== this.props.selectedReleaseNumber) {
@@ -70,7 +73,7 @@ class DefaultHeader extends Component {
           full={{ src: logo, width: 150, height: 45, alt: 'Diamanti Logo' }}
           minimized={{ src: sygnet, width: 30, height: 30, alt: 'Diamanti Logo' }}
         />
-        <Nav className="d-md-down-none" navbar>
+        {/* <Nav className="d-md-down-none" navbar>
           <UncontrolledDropdown nav direction="down">
             <DropdownToggle nav>
               <span style={{ fontWeight: 600, marginRight: '1rem' }}> Release : </span>
@@ -106,6 +109,45 @@ class DefaultHeader extends Component {
             </NavItem>
 
           }
+        </Nav> */}
+        <Nav className="d-md-down-none" navbar>
+          <UncontrolledDropdown nav direction="down">
+            <DropdownToggle nav>
+              <span style={{ fontWeight: 600, marginRight: '1rem' }}> Release : </span>
+              {/* { this.props.selectedReleaseNumber ? this.props.selectedReleaseNumber : 'Release..'  } */}
+              {this.props.selectedReleaseNumber }
+              <i className="fa fa-caret-down" style={{ paddingLeft: '10px' }} aria-hidden="true"></i>
+            </DropdownToggle>
+            <DropdownMenu>
+              {
+                this.props.releases
+                  .map(release => <DropdownItem onClick={e => {
+                      // this.props.history.push('/release/summary')
+                      // this.setState({
+                      //   releaseChange:true
+                      // })
+                      this.props.onReleaseChange(release);
+                    }} ><i className="fa fa-file" ></i> {release}</DropdownItem>
+                  )
+              }
+            </DropdownMenu>
+          </UncontrolledDropdown>
+          {
+            this.props.currentUser &&
+            <NavItem className="px-3">
+              <UncontrolledDropdown nav direction="down">
+                <DropdownMenu>
+                  {
+                    this.props.notifications && this.props.notifications.map(item =>
+                      <DropdownItem onClick={() => this.props.history.push('/release/user')}><i className="fa fa-envelope-o"></i>{item.message}<span style={{ float: 'right' }}>{item.date}</span></DropdownItem>
+                    )
+                  }
+                </DropdownMenu>
+              </UncontrolledDropdown>
+
+            </NavItem>
+
+          }
         </Nav>
         <Nav className="ml-auto" navbar>
           <span>{this.props.currentUser && this.props.currentUser.name}</span>
@@ -115,7 +157,7 @@ class DefaultHeader extends Component {
               <img src={userIcon} className="img-avatar" alt={this.props.currentUser && this.props.currentUser.email} title={this.props.currentUser && this.props.currentUser.email} />
             </DropdownToggle>
             <DropdownMenu right>
-              
+           
               {
                 !this.props.user &&
                 <DropdownItem onClick={() => this.props.onLogout()}><i className="fa fa-lock"></i> Login</DropdownItem>
@@ -128,6 +170,10 @@ class DefaultHeader extends Component {
                   {
                     this.props.currentUser && this.props.currentUser.isAdmin &&
                     <DropdownItem onClick={() => this.props.history.push('/release/manage')}><i className="fas fa-archive"></i>Release Settings</DropdownItem>
+                  }
+                  {
+                    this.props.currentUser && this.props.currentUser.isAdmin &&
+                    <DropdownItem onClick={() => this.props.history.push('/release/settings')}><i className="fas fa-archive"></i>Create User</DropdownItem>
                   }
                   <DropdownItem onClick={() => this.props.onLogout()}><i className="fa fa-lock"></i>Logout</DropdownItem>
                 </React.Fragment>

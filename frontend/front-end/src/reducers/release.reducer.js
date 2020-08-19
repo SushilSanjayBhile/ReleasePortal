@@ -41,6 +41,8 @@ let domainDetail = {
 // //////////////////
 
 function getAggregate(release) {
+    release = release.data;
+    // console.log("getAggregate",release.ReleaseNumber)
     
     if(release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master" ){
         alldomains = ['Cluster Management', 'Application Management', 'Multizone','AirGapped','ApplicationDR','Tenant', 'Project','User Management','Service Provider','Others'];
@@ -275,14 +277,15 @@ export const getTCForStatus = (state, id) => {
     let visibleP = { Total:0,Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
     let visibleGUIP = { Total:0,Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
     if (release.Priority) {
-        p = { ...p, ...release.Priority }
+        // console.log("if  release.Priority",release.Priority);
+        p = { ...p, ...release.TcAggregate.Priority }
         
     }
+    
     let pGUI = {}
     if (release.TcAggregate.PriorityGui) {
         pGUI = { ...pGUI, ...release.TcAggregate.PriorityGui}
     }
-
     
     if (state.release.options.selectedPriority) {
         state.release.options.selectedPriority.forEach(item => {
@@ -298,11 +301,15 @@ export const getTCForStatus = (state, id) => {
     if(state.release.options.selectedPriority){
         if (release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master" ) {
             state.release.options.selectedPriority.forEach(item => {
-                visibleGUIP.Pass += pGUI[item].Pass;
-                visibleGUIP.Skip += pGUI[item].Skip;
-                visibleGUIP.Fail += pGUI[item].Fail;
-                visibleGUIP.NotTested += pGUI[item].NotTested;
-                visibleGUIP.Blocked += pGUI[item].Blocked;
+                if(item){
+                    visibleGUIP.Pass += pGUI[item].Pass;
+                    visibleGUIP.Skip += pGUI[item].Skip;
+                    visibleGUIP.Fail += pGUI[item].Fail;
+                    visibleGUIP.NotTested += pGUI[item].NotTested;
+                    visibleGUIP.Blocked += pGUI[item].Blocked;
+
+                }
+               
             })
         }
     }
@@ -317,6 +324,7 @@ export const getTCForStatus = (state, id) => {
             str += PriorityLabel[i] + " "
         }
     }
+    // console.log("before adding to tool tip",release.TcAggregate,release.TcAggregate.all)
     let data = [{
         labels: ['Total', str],
         datasets: [
@@ -470,6 +478,8 @@ export const getTCForStatus = (state, id) => {
             ]
         })
     }
+
+    // console.log("first dataset",this.datasets)
 
     const options = {
         legend: {
@@ -683,7 +693,6 @@ export const getTCStatusForUIDomains = (release) => {
 
     alldomains.forEach((item, index) => {
         if(each[index]){
-
             doughnuts.push({
                 data: {
                     labels: [

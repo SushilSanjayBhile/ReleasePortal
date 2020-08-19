@@ -255,13 +255,15 @@ class ReleaseSummary extends Component {
         if(temp === 'DMC-3.0') {
             temp="\"Spektra 3.0\""
         }
-        if(temp == 'DCX-3.0'){
-            this.setState({selectedPriority:['P0']})
-        }
-        else{
-            this.setState({selectedPriority:['P0','P1']})
-        }
+        // console.log("temp.includes('DCX')",temp.includes('DCX'));
+        // if(temp.includes('DCX')){
+        //     this.setState({selectedPriority:['P0']})
+        // }
+        // else{
+        //     this.setState({selectedPriority:['P0','P1']})
+        // }
 
+        // console.log("priority for releasw",this.props.selectedRelease.ReleaseNumber,this.state.selectedPriority);
         if(release === 'DMC-3.0'){
             axios.get('/rest/epic/' + temp)
             .then(res => {
@@ -305,10 +307,6 @@ class ReleaseSummary extends Component {
             }, err => {
                 console.log('err ', err);
             })
-        
-        
-
-            
         axios.get('/rest/bugs/open/' + temp)
             .then(res => {
                 this.props.saveBugs({ data: { open: res.data.total }, id: release })
@@ -791,7 +789,7 @@ class ReleaseSummary extends Component {
 
                                         <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.totalTests : 0}</span></td>
                                         
-                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI  ? allGUI.All : 0}</span></td>
+                                        <td style={{ borderTop: '0px'}}><span>UI: {allGUI  ? allGUI.All : 0}</span></td>
                                            
                                             </tr>
                                         </tbody>
@@ -807,7 +805,7 @@ class ReleaseSummary extends Component {
                                         <tbody>
                                         <tr>
                                         <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.notApplicable : 0}</span></td>
-                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI ? allGUI.NotApplicable : 0}</span></td>
+                                        <td style={{ borderTop: '0px'}}><span>UI: {allGUI ? allGUI.NotApplicable : 0}</span></td>
                                            
                                             </tr>
                                         </tbody>
@@ -823,7 +821,7 @@ class ReleaseSummary extends Component {
                                         <tbody>
                                         <tr>
                                         <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.skipped : 0}</span></td>
-                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI ? allGUI.Skip : 0}</span></td>
+                                        <td style={{ borderTop: '0px'}}><span>UI: {allGUI ? allGUI.Skip : 0}</span></td>
                                             
                                             </tr>
                                         </tbody>
@@ -854,7 +852,7 @@ class ReleaseSummary extends Component {
                                                 <tbody>
                                                     <tr>
                                                         <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.totalAutomated : 0}</span></td>
-                                                        <td style={{ borderTop: '0px'}}><span>GUI: {allGUI ? allGUI.Automated : 0}</span></td>
+                                                        <td style={{ borderTop: '0px'}}><span>UI: {allGUI ? allGUI.Automated : 0}</span></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -1018,7 +1016,7 @@ class ReleaseSummary extends Component {
                                         {
                                             this.props.tcSummary &&
                                             <div className='rp-app-table-key'>
-                                                <span>GUI ({this.props.tcSummary.total[1]})</span>
+                                                <span>UI ({this.props.tcSummary.total[1]})</span>
                                                 <span>
                                                         <Button  size="sm" style={{backgroundColor: '#2eb85c', borderRadius: '50%', marginLeft: '0.5rem'}} id="PopoverAssign1" type="button">
                                                             P

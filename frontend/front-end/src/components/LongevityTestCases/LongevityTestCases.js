@@ -167,6 +167,13 @@ class LongevityTestCases extends Component {
                     width:80
 
                 },
+                {
+                    headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                    width: '420',
+                    editable: true,
+                    cellClass: 'cell-wrap-text',
+                    autoHeight: true
+                },
             ],
             defaultColDef: { resizable: true },
 

@@ -146,6 +146,12 @@ class TestCasesAll extends Component {
               editable: false,
               cellClass: 'cell-wrap-text',
           },
+          'Notes' : { 
+                headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
         }
         
         this.state = {
@@ -199,6 +205,7 @@ class TestCasesAll extends Component {
                 columnDefDict['Bug'],
                 columnDefDict['Priority'],
                 columnDefDict['Assignee'],
+                columnDefDict['Notes'],
 
             ],
             
@@ -401,6 +408,12 @@ class TestCasesAll extends Component {
               editable: false,
               cellClass: 'cell-wrap-text',
           },
+          'Notes' : { 
+            headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            width: '180',
+            editable: false,
+            cellClass: 'cell-wrap-text',
+        },
         }
         
         let tableColumns = this.state.tableColumns;
@@ -555,6 +568,13 @@ class TestCasesAll extends Component {
                 this.props.user.role === 'ENGG')) {
             this.setState({ tcOpen: true })
         }
+        axios.get('/api/userinfo/')
+        .then(response=>{
+            console.log("response",response)
+        })
+        .catch(err=>{
+            console.log("error",err)
+        })
     }
     componentWillReceiveProps(newProps) {
         if (this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
@@ -614,12 +634,24 @@ class TestCasesAll extends Component {
 
 
     // RELEASE
+    // updateReleaseInfo() {
+    //     axios.get(`/api/release/all`)
+    //         .then(res => {
+    //             res.data.forEach(item => {
+    //                 this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
+    //             });
+    //         }, error => {
+    //         });
+    // }
+
+    // // RELEASE
     updateReleaseInfo() {
-        axios.get(`/api/release/all`)
+        axios.get(`/api/release/` + this.props.selectedRelease.ReleaseNumber)
             .then(res => {
-                res.data.forEach(item => {
-                    this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
-                });
+                console.log("cli test marix",res);
+                // res.data.forEach(item => {
+                    this.props.saveReleaseBasicInfo({ id: res.ReleaseNumber, data: res });
+                // });
             }, error => {
             });
     }
@@ -762,7 +794,6 @@ class TestCasesAll extends Component {
             if (subDomain) url += ('&SubDomain=' + subDomain);
             if (priority) url += ('&Priority=' + priority);
         }
-      
         axios.get(url)
             .then(all => {
                 // Filters should not go away if data is reloaded

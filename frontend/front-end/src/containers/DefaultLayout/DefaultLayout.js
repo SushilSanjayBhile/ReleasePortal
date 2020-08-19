@@ -31,6 +31,14 @@ let selectedRelease1 = [];
   
 /* global gapi */
 class DefaultLayout extends Component {
+  constructor(){
+    super();
+    this.state={
+      releaseChange:true,
+    }
+  }
+  allReleases1 = []
+  selectedReleaseTest = ''
   GoogleAuth;
   auth2;
   // SCOPE = 'https://www.googleapis.com/auth/drive.metadata.readonly';
@@ -85,39 +93,62 @@ class DefaultLayout extends Component {
       })
       
     }
-    if (this.props.allReleases.length === 0) {
-      let releaseAllURL = `/api/release/all`;
-      // let releaseInfoURL = `/api/release/info`;
-      axios.get(releaseAllURL)
+
+    let releaseInfoURL = `/api/release/info`;
+      axios.get(releaseInfoURL)
         .then(res => {
           res.data.forEach(item => {
-            this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
+            this.allReleases1.push(item.ReleaseNumber)
+            // this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
           });
-          if (res.data[0]) {
-            this.props.releaseChange({ id: res.data[0].ReleaseNumber });
+          if (this.allReleases1[0]) {
+            // console.log(this.allReleases1[0])
+            this.getReleaseData(this.allReleases1[0] )
+            this.props.releaseChange({ id: this.allReleases1[0]  });
           }
-          
+
         }, error => {
           
         });
-    }
+    // if (this.props.allReleases.length === 0) {
+    //   let releaseAllURL = `/api/release/all`;
+    //   // let releaseInfoURL = `/api/release/info`;
+    //   axios.get(releaseAllURL)
+    //     .then(res => {
+    //       res.data.forEach(item => {
+    //         console.log("item 12345",item)
+    //         // this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
+    //       });
+    //       if (res.data[0]) {
+    //         this.props.releaseChange({ id: res.data[0].ReleaseNumber });
+    //       }
+          
+    //     }, error => {
+          
+    //     });
+    // }
   }
 
-  // getReleaseData = (release) =>{
-  //   let releaseSpecificURL =  `/api/release/` + release;
-  //   // console.log("releaseSpecificURL",releaseSpecificURL)
-  //   axios.get(releaseSpecificURL)
-  //       .then(res => {
-  //         // console.log("releaseSpecificURL",res.data);
-  //         selectedRelease1  =res.data.ReleaseNumber
-  //         // console.log("set state of release",selectedRelease1)
-
-          
-  //       }, error => {
-  //         // console.log("error while getting data");
-  //       });
-
-  // }
+  getReleaseData = (release) =>{
+    this.setState({
+      releaseChange:false
+    })
+    let releaseSpecificURL =  `/api/release/` + release;
+    // console.log("releaseSpecificURL",releaseSpecificURL)
+    axios.get(releaseSpecificURL)
+        .then(res => {
+          this.setState({
+            releaseChange:true
+          })
+          this.props.saveReleaseBasicInfo({ id: res.ReleaseNumber, data: res });
+          // this.props.releaseChange({ id: res.ReleaseNumber });
+          this.props.releaseChange({ id: release });
+          this.selectedReleaseTest = res.ReleaseNumber
+          // console.log("releaseSpecificURL",res.data);
+        }, error => {
+          // console.log("error while getting data");
+        });
+  }
   startPolling(email, startTime) {
     this.stopPolling();
     this.userNotificationsInterval = setInterval(
@@ -137,25 +168,44 @@ class DefaultLayout extends Component {
   }
 
   render() {
+   
     return (
       <div className="app">
         <AppHeader fixed>
           <Suspense fallback={this.loading()}>
             <DefaultHeader
               user={this.props.currentUser}
+              // selectedReleaseNumber={this.props.selectedRelease.ReleaseNumber}
+              // releases={this.props.allReleases &&
+              //   this.props.allReleases.map(item => item.ReleaseNumber)
+              // }
+              // onReleaseChange={(release) => {
+              //   if (release) {
+              //     // this.getReleaseData(release)
+              //     this.props.releaseChange({ id: release });
+              //   } else {
+              //     this.props.releaseChange({ id: null });
+              //   }
+              // }}
+
               selectedReleaseNumber={this.props.selectedRelease.ReleaseNumber}
-              releases={this.props.allReleases &&
-                this.props.allReleases.map(item => item.ReleaseNumber)
+              releases={this.allReleases1 &&
+                this.allReleases1.map(item => item)
               }
+              
               onReleaseChange={(release) => {
                 if (release) {
-                  // this.getReleaseData(release)
-                  this.props.releaseChange({ id: release });
+                  
+                // this.props.saveReleaseBasicInfo({ id: 0, data: [] });
+                  // console.log("this.props.selectedRelease.ReleaseNumber",this.props.selectedRelease.ReleaseNumber)
+                  this.getReleaseData(release)
                 } else {
                   this.props.releaseChange({ id: null });
                 }
               }}
+              
               onLogout={e => this.signOut(e)} />
+              
           </Suspense>
         </AppHeader>
         <div className="app-body">
@@ -169,6 +219,21 @@ class DefaultLayout extends Component {
             <AppSidebarMinimizer />
           </AppSidebar>
           <main className="main">
+            <div>
+            {
+                ! this.state.releaseChange &&
+                <div>
+                      <div class="container" style={{ 'margin-top': '1rem' }}>
+                          <div class="modal fade" id="myModal" role="dialog">
+                              <div class="modal-body">
+                              <span>Please wait while Data is loading...</span>
+                              </div>
+                          </div>
+                        </div>
+                </div>
+              }
+            </div>
+         
             
             <Container fluid>
               <Suspense fallback={this.loading()}>

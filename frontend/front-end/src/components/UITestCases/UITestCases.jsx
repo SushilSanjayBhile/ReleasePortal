@@ -159,6 +159,13 @@ class UITestCases extends Component {
                         values: ['Select Assignee', 'Jenkin', ...this.props.users]
                     }
                 },
+                {
+                    headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                    width: '420',
+                    editable: true,
+                    cellClass: 'cell-wrap-text',
+                    autoHeight: true
+                },
                
             ],
             defaultColDef: { resizable: true },

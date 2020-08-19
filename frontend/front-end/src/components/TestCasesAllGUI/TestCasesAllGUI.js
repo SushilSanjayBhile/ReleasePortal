@@ -97,7 +97,7 @@ class TestCasesAllGUI extends Component {
           },
           
           'Status' : {
-              headerName: "Status", field: "CurrentStatus.Result", sortable: true, cellStyle: this.renderEditedCell, width: '100',
+              headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
         
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
@@ -146,6 +146,12 @@ class TestCasesAllGUI extends Component {
               editable: false,
               cellClass: 'cell-wrap-text',
           },
+          'Notes' : { 
+                headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
         }
         this.state = {
             updateCounter: 1,
@@ -197,6 +203,7 @@ class TestCasesAllGUI extends Component {
                 columnDefDict['Bug'],
                 columnDefDict['Priority'],
                 columnDefDict['Assignee'],
+                columnDefDict['Notes'],
             ],
             
             defaultColDef: { resizable: true },
@@ -346,7 +353,7 @@ class TestCasesAllGUI extends Component {
           },
           
           'Status' : {
-              headerName: "Status", field: "CurrentStatus.Result", sortable: true, cellStyle: this.renderEditedCell, width: '100',
+              headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
         
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
@@ -395,6 +402,12 @@ class TestCasesAllGUI extends Component {
               editable: false,
               cellClass: 'cell-wrap-text',
           },
+          'Notes' : { 
+                headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
         }
         
         let tableColumns = this.state.tableColumns;
@@ -547,6 +560,13 @@ class TestCasesAllGUI extends Component {
                 this.props.user.role === 'ENGG')) {
             this.setState({ tcOpen: true })
         }
+        axios.get('/api/userinfo/')
+        .then(response=>{
+            console.log("response",response)
+        })
+        .catch(err=>{
+            console.log("error",err)
+        })
     }
     componentWillReceiveProps(newProps) {
         if (this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
@@ -605,15 +625,26 @@ class TestCasesAllGUI extends Component {
     }
 
 
-    // RELEASE
+    // // RELEASE
+    // updateReleaseInfo() {
+    //     axios.get(`/api/release/all`)
+    //         .then(res => {
+    //             res.data.forEach(item => {
+    //                 this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
+    //             });
+    //         }, error => {
+    //         });
+    // }
+
     updateReleaseInfo() {
-        axios.get(`/api/release/all`)
+        axios.get(`/api/release/` + this.props.selectedRelease.ReleaseNumber)
             .then(res => {
+                console.log("cli test marix",res);
                 res.data.forEach(item => {
                     this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
                 });
             }, error => {
-            });
+        });
     }
 
     // DELETE TC
@@ -826,7 +857,7 @@ class TestCasesAllGUI extends Component {
         this.state.statusColumn.forEach(item=>{
 
             showTc.forEach(tcItem=>{
-                console.log(tcItem)
+               
                 if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
                     statusFlag = 1
                     showTc1.push(tcItem)
@@ -851,8 +882,7 @@ class TestCasesAllGUI extends Component {
         if(statusFlag == 0){
             showTc1 = showTc; 
         }
-
-        this.saveLocalMultipleTC({ data:showTc, id: release }, false, updateRelease)
+        this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
         this.gridOperations(true);
     }
 
@@ -1334,6 +1364,15 @@ class TestCasesAllGUI extends Component {
                                                                 {
                                                                 this.state.tableColumnsTcs.map((columnName) => {
                                                                     return (<CheckBox handleCheckChieldElement={this.handleCheckChieldElementTcs}  {...columnName} />)
+                                                                })
+                                                                }
+                                                                </ul>
+                                                                <input type="checkbox" onClick={this.handleAllCheckedStatusTCs}  value="checkedall" /> Check / Uncheck All
+
+                                                                <ul>
+                                                                {
+                                                                this.state.statusColumn.map((columnName) => {
+                                                                    return (<CheckBox handleCheckChieldElement={this.handleCheckChieldElementStatusTcs}  {...columnName} />)
                                                                 })
                                                                 }
                                                                 </ul>

@@ -208,7 +208,7 @@ class ReleaseTestCase extends Component {
                 }
             }
             
-            console.log("Domaindata cli",domainData);
+            // console.log("Domaindata cli",domainData);
             this.setState({allTestCaseStatusCLI:domainData})
         },
         error => {

@@ -6,12 +6,12 @@ import './taskList.css';
 import axios from 'axios';
 const API_URL = 'https://diamanti.teamwork.com';
 
-class ManualComponent extends Component {
+class DCXNonTestingTaskComponent2 extends Component {
     constructor(props){
         super(props);
 
         this.state = {
-            tasklist:['1579939'],
+            tasklist:['1433012'],
             selectedTask:'',
             taskDataToShow : [],
             UserDataToShow : [],
@@ -106,7 +106,6 @@ class ManualComponent extends Component {
                             userData = data["todo-items"][i]['responsible-party-ids'].split(",")
                             userName = data["todo-items"][i]['responsible-party-names'].split(",");
 
-                            console.log("in if",userData,userName);
                             for(let i = 0 ; i < userData.length ; i++){
                                 UserDataToShow.push({
                                     id:userData[i],
@@ -125,8 +124,6 @@ class ManualComponent extends Component {
                                 name:userName
                             })
                         }
-
-                        
                     }
 
                     taskListTemp.push({
@@ -150,7 +147,7 @@ class ManualComponent extends Component {
         return(
             <div>
                 {
-                    this.props.selectedTaskList === 'Spektra' && this.state.taskDataToShow  ?(
+                    this.props.selectedTaskList === 'DCX' && this.state.taskDataToShow  ?(
                         <Input onChange={(e) => this.selectedTask(e.target.value)} type="select" name="selectedTask" id="selectedTask" >
                         <option value=''>Select Type</option>
                             {
@@ -165,4 +162,5 @@ class ManualComponent extends Component {
     }
 }
 
-export default ManualComponent;
+export default DCXNonTestingTaskComponent2;
+

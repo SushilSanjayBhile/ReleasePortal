@@ -42,21 +42,34 @@ export default {
       icon: 'fa fa-file'
     },
     {
-      name: 'Jenkins Build',
-      url: 'http://172.16.1.30:8080/view/3.0.0/',
-      attributes: { target: '_blank' }, 
-      icon: 'fa fa-server'    
+      name: 'Builds Information',
+      url: '/release/builds',
+      icon: 'fa fa-file'
     },
+    // {
+    //   name: 'Jenkins Build',
+    //   url: 'http://172.16.1.30:8080/view/3.0.0/',
+    //   attributes: { target: '_blank' }, 
+    //   icon: 'fa fa-server'    
+    // },
+    // {
+    //   name: 'Settings',
+    //   url: '/release/settings',
+    //   icon: 'fa fa-cogs',
+    // },
+    {
+      name: 'Team Work',
+      url: '/release/teamwork',
+      icon: 'fa fa-bars',
+    },
+
     {
       name: 'Jira Dashboard',
       url: 'https://diamanti.atlassian.net/secure/Dashboard.jspa?selectPageId=12400',
       attributes: { target: '_blank' },
       icon: 'fa fa-bug',
     },
-    // {
-    //   name: 'Team Work',
-    //   url: '/release/teamwork',
-    //   icon: 'fa fa-bars',
-    // },
+   
+    
   ],
 };

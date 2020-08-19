@@ -29,267 +29,16 @@ function assignPriority(priority, release) {
     })
 }
 
-// function assign() {
-//     Object.keys(allTcs).forEach(release => {
-//         Object.keys(allTcs[release]).forEach(item => {
-//             if (allTcs[release][item]) {
-//                 allTcs[release][item]['WorkingStatus'] = 'UNASSIGNED';
-//             }
-//         })
-//     })
-// }
-// assign();
-
-// function assignMasterPriority() {
-//     Object.keys(allTcs).forEach(release => {
-//         if (allTcs[release]) {
-//             Object.keys(allTcs[release]).forEach(item => {
-//                 if (allTcs[release][item]) {
-//                     allTcs[release][item]['Priority'] = '';
-//                 }
-//             })
-//         }
-//     })
-// }
-// assignMasterPriority();
-
-// function assignMasterNotTested() {
-//     Object.keys(allTcs).forEach(release => {
-//         Object.keys(allTcs[release]).forEach(item => {
-//             if (allTcs[release][item]) {
-//                 allTcs[release][item]['CurrentStatus'] = 'NotTested';
-//             }
-//         })
-//     })
-// }
-// assignMasterNotTested();
-
-
-// function sortInfo() {
-//     updatedReleases = jsonfile.readFileSync('./releases.json');
-//     let TCMaster = jsonfile.readFileSync('./masterTC.json');
-//     let TC230 = jsonfile.readFileSync('./230TC.json');
-//     let status = jsonfile.readFileSync('./tcstatus.json');
-
-//     let tcs230 = {};
-//     let tcsMaster = {};
-//     let domainsMaster = {};
-//     let domains230 = {};
-//     let total = 0;
-//     let masterAggr = { domain: {}, all: { "Tested": { "auto": { "Pass": 0, "Fail": 0, "Skip": 0 }, "manual": { "Pass": 0, "Fail": 0, "Skip": 0 } }, "NotTested": 0, "NotApplicable": 0, "Block": 0, "Skip": 0 } }
-//     TC230.forEach(item => {
-//         if (domains230[item.Domain]) {
-//             if (!domains230[item.Domain].includes(item.SubDomain)) {
-//                 domains230[item.Domain].push(item.SubDomain);
-//             }
-//         } else {
-//             domains230[item.Domain] = [];
-//         }
-//         item.WorkingStatus = 'RESOLVED';
-//         item.Activity = [{
-//             "Date": "2019-12-30T00:00:00.000Z",
-//             "Header": "RESOLVED: master, REPORTER:",
-//             "Details": {},
-//             "StatusChangeComments": "RESOLVED"
-//         }];
-//         item.AutoBuilds = [];
-//         item.Tag = 'DAILY';
-//         item.ManualBuilds = [];
-//         item.LatestE2EBuilds = [];
-//         item.Master = true;
-//         item.Date = '2019-12-30T00:00:00.000Z';
-//         item.Assignee = 'ADMIN';
-//         item.Priority = '';
-//         item.Steps = '';
-//         item.CurrentStatus = 'NotTested';
-//         tcs230[item.TcID] = item;
-//     });
-//     TCMaster.forEach(item => {
-//         if (domainsMaster[item.Domain]) {
-//             if (!domainsMaster[item.Domain].includes(item.SubDomain)) {
-//                 domainsMaster[item.Domain].push(item.SubDomain);
-//             }
-//             masterAggr.domain[item.Domain].NotTested += item.CardType.length;
-//             total += item.CardType.length;
-//         } else {
-//             total += item.CardType.length;
-//             masterAggr.domain[item.Domain] = { "Tested": { "auto": { "Pass": 0, "Fail": 0, "Skip": 0 }, "manual": { "Pass": 0, "Fail": 0, "Skip": 0 } }, "NotTested": item.CardType.length, "NotApplicable": 0, "Block": 0, "Skip": 0 };
-//             domainsMaster[item.Domain] = [];
-//         }
-//         item.WorkingStatus = 'CREATED';
-//         item.Activity = [{
-//             "Date": "2019-12-30T00:00:00.000Z",
-//             "Header": "CREATED: master, REPORTER:",
-//             "Details": {},
-//             "StatusChangeComments": ""
-//         }];
-//         item.AutoBuilds = [];
-//         item.Tag = 'DAILY';
-//         item.ManualBuilds = [];
-//         item.LatestE2EBuilds = [];
-//         item.Master = true;
-//         item.Date = '2019-12-30T00:00:00.000Z';
-//         item.Assignee = 'ADMIN';
-//         item.Steps = '';
-//         item.Priority = '';
-//         item.CurrentStatus = 'NotTested';
-//         tcsMaster[item.TcID] = item;
-
-//     });
-//     masterAggr.all.NotTested = total;
-
-//     status.forEach(item => {
-//         let e2eBuild = {
-//             "e2eBuild": item.Build,
-//             "Result": item.Result,
-//             "Date": new Date(item.Date).toISOString(),
-//             CardType: item.CardType,
-//             "log": "",
-//             "logUrl": ""
-//         }
-//         tcs230[item.TcID].CurrentStatus = item.Result;
-//         tcs230[item.TcID].CardType = item.CardType;
-//         tcs230[item.TcID].Build = item.Build;
-//         tcs230[item.TcID].LatestE2EBuilds.push(e2eBuild);
-//     });
-//     tcs = {
-//         master: tcsMaster,
-//         '2.3.0': tcs230,
-//         '3.0.0': tcsMaster,
-//         '2.3.1': tcsMaster
-//     }
-
-// updatedReleases.forEach(item => {
-//     if (item.ReleaseNumber === 'master') {
-//         item.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions = domainsMaster;
-//         item.StatusOptions = statusOptions;
-//         item.TagOptions = ["DAILY", "WEEKLY", "MONTHLY"]
-//         item.TcAggregate = masterAggr;
-//     }
-//     if (item.ReleaseNumber === '2.3.0') {
-//         item.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions = domains230;
-//         item.StatusOptions = statusOptions;
-//         item.TagOptions = ["DAILY", "WEEKLY", "MONTHLY"]
-//     }
-// });
-// }
-// sortInfo();
 
 var Client = require('node-rest-client').Client;
 client = new Client();
-// Provide user credentials, which will be used to log in to JIRA.
-// var loginArgs = {
-//     // data: {
-//     //     "username": "achavan@diamanti.com",
-//     //     "password": "indiandreams"
-//     // },
-//     headers: {
-//         "Content-Type": "application/json",
-//         "Authorization": "Basic YWNoYXZhbkBkaWFtYW50aS5jb206Y2VtRDF5UW1ySTIweFNCSWQwUU9DODgw"
-//     }
-// };
+
 var searchArgs = {
     headers: {
         "Content-Type": "application/json",
         "Authorization": "Basic YWNoYXZhbkBkaWFtYW50aS5jb206Y2VtRDF5UW1ySTIweFNCSWQwUU9DODgw"
     }
 }
-// loginJIRA()
-//     .then(function (res) {
-//         console.log('logged in')
-//     }).catch(err => {
-
-//     });
-// var jiraReq = client.post("http://dwsjira1.eng.diamanti.com:8080/rest/auth/1/session", loginArgs, function (data, response) {
-//     if (response.statusCode == 200) {
-//         console.log('succesfully logged in, session:', data.session);
-//         var session = data.session;
-//         jiraHeaders = {
-//             cookie: session.name + '=' + session.value,
-//             "Content-Type": "application/json"
-//         }
-//         // Get the session information and store it in a cookie in the header
-//         searchArgs = {
-//             headers: {
-//                 // Set the cookie from the session information
-//                 cookie: session.name + '=' + session.value,
-//                 "Content-Type": "application/json"
-//             },
-//             // data: {
-//             //     // Provide additional data for the JIRA search. You can modify the JQL to search for whatever you want.
-//             //     jql: "type=Bug AND status=Closed"
-//             // }
-//         };
-//         // Make the request return the search results, passing the header information including the cookie.
-//         // client.post("http://localhost:8090/jira/rest/api/2/search", searchArgs, function (searchResult, response) {
-//         //     console.log('status code:', response.statusCode);
-//         //     console.log('search result:', searchResult);
-//         // });
-//     } else {
-//         console.log('jira logging failed')
-//         // throw "Login failed :(";
-//     }
-// }, function (err) {
-//     console.log('cannot get jira')
-// });
-
-// function loginJIRA() {
-//     return new Promise(function (resolve, reject) {
-//         // var jiraReq = client.post("http://dwsjira1.eng.diamanti.com:8080/rest/auth/1/session", loginArgs, function (data, response) {
-//         var jiraReq = client.post("https://diamanti.atlassian.net/rest/auth", loginArgs, function (data, response) {
-//             console.log(response.error);
-//             console.log("")
-//             console.log("asdassssssssssssssssssssssssssssssssssssssssssssssss")
-//             console.log(response.statusCode)
-//             if (response.statusCode == 200) {
-//                 console.log('succesfully logged in, session:', data.session);
-//                 var session = data.session;
-//                 jiraHeaders = {
-//                     cookie: session.name + '=' + session.value,
-//                     "Content-Type": "application/json"
-//                 }
-//                 // Get the session information and store it in a cookie in the header
-//                 // searchArgs = {
-//                 //     headers: {
-//                 //         // Set the cookie from the session information
-//                 //         cookie: session.name + '=' + session.value,
-//                 //         "Content-Type": "application/json"
-//                 //     },
-//                 //     // data: {
-//                 //     //     // Provide additional data for the JIRA search. You can modify the JQL to search for whatever you want.
-//                 //     //     jql: "type=Bug AND status=Closed"
-//                 //     // }
-//                 // };
-//                 resolve();
-//                 // Make the request return the search results, passing the header information including the cookie.
-//                 // client.post("http://localhost:8090/jira/rest/api/2/search", searchArgs, function (searchResult, response) {
-//                 //     console.log('status code:', response.statusCode);
-//                 //     console.log('search result:', searchResult);
-//                 // });
-//             } else {
-//                 console.log('jira logging failed')
-//                 reject();
-//             }
-//         }, function (err) {
-//             console.log('cannot get jira')
-//             reject();
-//         });
-
-//         jiraReq.on('requestTimeout', function (err) {
-//             console.log('cannot get jira due to timeout')
-//             reject();
-//         })
-//         jiraReq.on('responseTimeout', function (err) {
-//             console.log('cannot get jira due to response timeout')
-//             reject();
-//         })
-//         jiraReq.on('error', function (err) {
-//             console.log('cannot get jira due to error')
-//             reject();
-//         })
-//     });
-// }
-
 
 // var JIRA_URL = 'http://dwsjira1.eng.diamanti.com:8080';
 var JIRA_URL = 'https://diamanti.atlassian.net'
@@ -460,12 +209,12 @@ app.use('/rest/featuredetail', (req, res) => {
     })
 
 }, err => {
-
 })
-app.use('/api/release/all', (req, res) => {
 
+app.use('/api/release/all', (req, res) => {
     res.send(releases);
 }, err => { })
+
 app.use('/user/login', (req, res) => {
     if (req.body.email === '') {
         res.status(401).send({ message: 'Please enter email' })
@@ -484,6 +233,42 @@ app.use('/user/login', (req, res) => {
     //     res.send({ role: 'ENGG', loginTime: new Date() })
     // }
 }, err => { })
+
+app.use('/rest/bldservBuildCount/:id', (req, res) => {
+    var searchArgs1 = {
+        headers: {
+            "Content-Type": "application/json",
+            // "Authorization": "Basic YWNoYXZhbkBkaWFtYW50aS5jb206Y2VtRDF5UW1ySTIweFNCSWQwUU9DODgw"
+        }
+    }
+    var bldserver = `http://bldserv1:8080/job/${req.params.id}/api/json?tree=builds[number,result,duration,url]&pretty=true`
+    var Req = client.get(bldserver, searchArgs1, function (searchResultTotal, response) {
+        console.log("app-server",searchResultTotal)
+        res.send({response:searchResultTotal});
+    }, err => {
+        console.log(err,'caught error in primitive')
+    });
+
+
+    
+}, err => { })
+
+app.use('/rest/bldservBuildData/:id', (req, res) => {
+    var searchArgs1 = {
+        headers: {
+            "Content-Type": "application/json",
+            // "Authorization": "Basic YWNoYXZhbkBkaWFtYW50aS5jb206Y2VtRDF5UW1ySTIweFNCSWQwUU9DODgw"
+        }
+    }
+    var bldserver = `http://bldserv1:8080/job/${req.params.id}/lastBuild/api/json?&pretty=true/`
+    var Req = client.get(bldserver, searchArgs1, function (searchResultTotal, response) {
+        res.send({response:searchResultTotal});
+    }, err => {
+        console.log(err,'caught error in primitive')
+    });
+}, err => { })
+
+
 app.get('/users', (req, res) => {
     res.send(users);
 })

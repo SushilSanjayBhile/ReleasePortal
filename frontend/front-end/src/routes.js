@@ -44,10 +44,12 @@ const ReleaseTestMetrics = React.lazy(() => import('./views/Release/ReleaseTestM
 const ReleaseStatus = React.lazy(() => import('./views/Release/ReleaseStatus/ReleaseStatus'));
 const ReleaseAdmin = React.lazy(() => import('./views/Release/ReleaseAdmin/ReleaseAdmin'));
 const ReleaseDocs = React.lazy(() => import('./views/Release/ReleaseDocs/ReleaseDocs'));
+const ReleaseBuilds = React.lazy(() => import('./views/Release/ReleaseBuilds/ReleaseBuilds'));
+const Settings = React.lazy(() => import('./views/Release/Settings/createUser'));
 const ReleaseTestMetricsGUI = React.lazy(() => import('./views/Release/ReleaseTestMetricsGUI/ReleaseTestMetricsGUI'))
 const ReleaseSanityResult = React.lazy(() => import('./views/Release/ReleaseSanityResult/ReleaseSanityResult'))
 const Examples = React.lazy(() => import('./views/Examples/Examples.js'))
-// const teamwork = React.lazy(() => import('./views/TeamWorkComponent/Test'))
+const teamwork = React.lazy(() => import('./views/TeamWorkComponent/Test'))
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
 const routes = [
@@ -62,8 +64,10 @@ const routes = [
   { path: '/release/status', name: 'Release Status', exact: true, component: ReleaseStatus },
   { path: '/release/user', name: 'Admin Panel', exact: true, component: ReleaseAdmin },
   { path: '/release/docs', name: 'Documentation Panel', exact: true, component: ReleaseDocs },
+  { path: '/release/builds', name: 'Release Build', exact: true, component: ReleaseBuilds },
+  { path: '/release/settings', name: 'settings', exact: true, component: Settings },
   { path: '/release/sanityresults', name: 'sanityresults', exact: true, component: ReleaseSanityResult },
-  // { path: '/release/teamwork', name: 'teamwork', exact: true, component: teamwork },
+  { path: '/release/teamwork', name: 'teamwork', exact: true, component: teamwork },
   // { path: '/release/month', name: 'teamwork', exact: true, component: month },
   // {path: '/examples', name: 'Examples', exact:true, component:Examples}
   // { path: '/dashboard', name: 'Dashboard', component: Dashboard },

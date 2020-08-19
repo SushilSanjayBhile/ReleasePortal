@@ -85,6 +85,7 @@ class E2ETestCases extends Component {
                 {
                     headerName: "Tag", field: "Tag", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 },
+                
 
             ],
 
@@ -158,6 +159,13 @@ class E2ETestCases extends Component {
                     cellEditorParams: {
                         values: ['Select Assignee', 'Jenkin', ...this.props.users]
                     }
+                },
+                {
+                    headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                    width: '420',
+                    editable: true,
+                    cellClass: 'cell-wrap-text',
+                    autoHeight: true
                 },
                
             ],

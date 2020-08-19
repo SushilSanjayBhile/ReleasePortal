@@ -50,14 +50,17 @@ class AddOptions extends Component {
             },
             ...selected
         }
+        // console.log("datat to add domain",{...data})
         axios.post(`/api/${this.props.selectedRelease.ReleaseNumber}/options/add`, {...data})
         .then(data => {
-            axios.get(`/api/release/all`)
+            axios.get(`/api/release/` + this.props.selectedRelease.ReleaseNumber)
             .then(res => {
-              res.data.forEach(item => {
-                // this.props.updateNavBar({ id: item.ReleaseNumber });
-                this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
-              });
+                this.props.saveReleaseBasicInfo({ id: res.ReleaseNumber, data: res });
+
+            //   res.data.forEach(item => {
+            //     // this.props.updateNavBar({ id: item.ReleaseNumber });
+            //     this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
+            //   });
             }, error => {
             });
             this.edit();
@@ -100,7 +103,7 @@ class AddOptions extends Component {
                 {
                     this.props.user && this.props.user.email && 
                 
-                                    <Row>
+                        <Row>
                         <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                             <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
                                 <div class="row">
@@ -135,54 +138,54 @@ class AddOptions extends Component {
                                 </div>
 
                             </div>
-                 <Collapse isOpen={this.state.createTc}>
-                {
-                                        this.props.user && this.props.user.email &&
-                                        <React.Fragment>
-                                                    <Fragment>
-                                                        <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggle()} >
-                                                            <i className="fa fa-check-square-o"></i>
-                                                        </Button>
-                                                        <Button size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.edit(false)} >
-                                                            <i className="fa fa-undo"></i>
-                                                        </Button>
-                                                    </Fragment>
-                                        </React.Fragment>
-                                    }
-                <FormGroup row className="my-0" style={{ marginTop: '1rem' }}>
-                        <Col xs="6" md="4" lg="3">
-                        {
-                                this.state.addedDomains && this.state.addedDomains.map((item, index) => {
-                                    return (
-                                        <div class='row'>
+                            <Collapse isOpen={this.state.createTc}>
+                            {
+                                                    this.props.user && this.props.user.email &&
+                                                    <React.Fragment>
+                                                                <Fragment>
+                                                                    <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggle()} >
+                                                                        <i className="fa fa-check-square-o"></i>
+                                                                    </Button>
+                                                                    <Button size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.edit(false)} >
+                                                                        <i className="fa fa-undo"></i>
+                                                                    </Button>
+                                                                </Fragment>
+                                                    </React.Fragment>
+                                                }
+                            <FormGroup row className="my-0" style={{ marginTop: '1rem' }}>
+                            <Col xs="6" md="4" lg="3">
+                            {
+                                    this.state.addedDomains && this.state.addedDomains.map((item, index) => {
+                                        return (
+                                            <div class='row'>
+                                                <div class='col-md-6'>
+                                            <Input style={{marginTop: '0.2rem', marginBottom: '0.2rem'}} type='text' onChange={(e) => {
+                                                this.state.addedDomains[index] = e.target.value;
+                                                
+                                                this.setState({addedDomains: [...this.state.addedDomains]})
+                                                }} value={item}>
+                                            </Input>
+                                            </div>
                                             <div class='col-md-6'>
-                                        <Input style={{marginTop: '0.2rem', marginBottom: '0.2rem'}} type='text' onChange={(e) => {
-                                            this.state.addedDomains[index] = e.target.value;
-                                            
-                                            this.setState({addedDomains: [...this.state.addedDomains]})
-                                            }} value={item}>
-                                        </Input>
-                                        </div>
-                                        <div class='col-md-6'>
-<Button size="md" color='transparent' className='rp-save-btn' onClick={() => {
-    this.state.addedDomains.splice(index,1);
-    this.setState({addedDomains: [...this.state.addedDomains]});
-    }}>  <i className="fa fa-trash"></i></Button>
-                                        </div>
-                                        </div>
+                                            <Button size="md" color='transparent' className='rp-save-btn' onClick={() => {
+                                                this.state.addedDomains.splice(index,1);
+                                                this.setState({addedDomains: [...this.state.addedDomains]});
+                                                }}>  <i className="fa fa-trash"></i></Button>
+                                            </div>
+                                            </div>
 
-                                    )
-                                })
-                            }
-                            <div className='rp-app-table-value' style={{marginTop: '1rem'}}><Button onClick={() => {
-                                let domains = this.state.addedDomains;
-                                if(!domains) {
-                                    domains=['']
-                                } else {
-                                    domains.push('');
+                                        )
+                                    })
                                 }
-                                this.setState({addedDomains: domains})
-                                }}>Add Domain</Button></div>
+                                <div className='rp-app-table-value' style={{marginTop: '1rem'}}><Button onClick={() => {
+                                    let domains = this.state.addedDomains;
+                                    if(!domains) {
+                                        domains=['']
+                                    } else {
+                                        domains.push('');
+                                    }
+                                    this.setState({addedDomains: domains})
+                                    }}>Add Domain</Button></div>
 
 
                         </Col>
@@ -222,10 +225,10 @@ class AddOptions extends Component {
                                         </Input>
                                         </div>
                                         <div class='col-md-6'>
-<Button size="md" color='transparent' onClick={() => {
-    this.state.addedSubDomains.splice(index,1);
-    this.setState({addedSubDomains: [...this.state.addedSubDomains]});
-    }}><i className="fa fa-trash"></i></Button>
+                                            <Button size="md" color='transparent' onClick={() => {
+                                                this.state.addedSubDomains.splice(index,1);
+                                                this.setState({addedSubDomains: [...this.state.addedSubDomains]});
+                                                }}><i className="fa fa-trash"></i></Button>
                                         </div>
                                         </div>
 

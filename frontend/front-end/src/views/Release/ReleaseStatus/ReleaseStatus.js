@@ -400,7 +400,7 @@ class ReleaseStatus extends Component {
                                             </thead>
                                             <tbody>
                                                 {
-                                                this. renderTableData()
+                                                this.renderTableData()
                                                 }
                                             </tbody>
                                         </Table>

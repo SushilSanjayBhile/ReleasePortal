@@ -217,6 +217,8 @@ app.use('/rest/featuredetail', (req, res) => {
 app.use('/api/release/all', (req, res) => {
     res.send(releases);
 }, err => { })
+
+
 app.use('/user/login', (req, res) => {
     if (req.body.email === '') {
         res.status(401).send({ message: 'Please enter email' })
@@ -230,6 +232,37 @@ app.use('/user/login', (req, res) => {
         // res.status(404).send({ message: 'User not found' });
     }
     
+}, err => { })
+
+app.use('/rest/bldservBuildCount/:id', (req, res) => {
+    var searchArgs1 = {
+        headers: {
+            "Content-Type": "application/json",
+            // "Authorization": "Basic YWNoYXZhbkBkaWFtYW50aS5jb206Y2VtRDF5UW1ySTIweFNCSWQwUU9DODgw"
+        }
+    }
+    var bldserver = `http://bldserv1:8080/job/${req.params.id}/api/json?tree=builds[number,result,duration,url]&pretty=true`
+    var Req = client.get(bldserver, searchArgs1, function (searchResultTotal, response) {
+        console.log("app-server",searchResultTotal)
+        res.send({response:searchResultTotal});
+    }, err => {
+        console.log(err,'caught error in primitive')
+    });
+}, err => { })
+
+app.use('/rest/bldservBuildData/:id', (req, res) => {
+    var searchArgs1 = {
+        headers: {
+            "Content-Type": "application/json",
+            // "Authorization": "Basic YWNoYXZhbkBkaWFtYW50aS5jb206Y2VtRDF5UW1ySTIweFNCSWQwUU9DODgw"
+        }
+    }
+    var bldserver = `http://bldserv1:8080/job/${req.params.id}/lastBuild/api/json?&pretty=true/`
+    var Req = client.get(bldserver, searchArgs1, function (searchResultTotal, response) {
+        res.send({response:searchResultTotal});
+    }, err => {
+        console.log(err,'caught error in primitive')
+    });
 }, err => { })
 app.get('/users', (req, res) => {
     res.send(users);
