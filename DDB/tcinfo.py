@@ -76,10 +76,10 @@ def WHOLE_TC_INFO(request, Release):
         SubDomain = str(request.GET.get('SubDomain', None))
         CardType = str(request.GET.get('CardType', None))
         Priority = str(request.GET.get('Priority', None))
+        WorkingStatus = str(request.GET.get('WorkingStatus',None))
 
         statusdata = TC_STATUS.objects.using(Release).all().order_by('Date')
         infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
-
         if Domain != 'None':
             infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':
@@ -88,6 +88,8 @@ def WHOLE_TC_INFO(request, Release):
             infodata = infodata.filter(CardType = CardType)
         if Priority != 'None':
             infodata = infodata.filter(Priority = Priority)
+        if WorkingStatus != 'None':
+            infodata = infodata.filter(stateUserMapping__icontains = WorkingStatus)
 
         count = int(request.GET.get('count', len(infodata)))
         try:
@@ -118,13 +120,20 @@ def WHOLE_TC_INFO(request, Release):
             else:
                 statusDict[card][tcid] = []
                 statusDict[card][tcid].append(rec)
-  
+
         for info in infoserializer.data:
             info['StatusList'] = {"id": "", "TcID": info['TcID'], "TcName": info['TcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
             info['CurrentStatus'] = {"id": "", "TcID": info['TcID'], "TcName": info['TcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
 
             card = info['CardType']
             tcid = info['TcID']
+
+            #For stateUserMapping Of Test Case
+            try:
+                print("\n\n",info['stateUserMapping'],"\n\n")
+                info['stateUserMapping'] = json.loads(info['stateUserMapping'])
+            except:
+                pass
 
             try:
                 info['StatusList'] = statusDict[card][tcid]
@@ -136,7 +145,6 @@ def WHOLE_TC_INFO(request, Release):
                 pass
 
             AllInfoData.append(info)
-
         return HttpResponse(json.dumps(AllInfoData))
 
 
@@ -151,6 +159,8 @@ def TC_INFO_GET_POST_VIEW(request, Release):
     if request.method == "POST":
         req = json.loads(request.body.decode("utf-8"))
         cards = req['CardType']
+        req['stateUserMapping'] = json.dumps(req['stateUserMapping'])
+        print("\n\nrequestedData",req['stateUserMapping'],"\n\n")
 
         for card in cards:
             # post request for current release
@@ -216,7 +226,6 @@ def TC_INFO_GET_POST_VIEW(request, Release):
             return JsonResponse({'message': 'Records no found at given index'}, status = 400)
 
         serializer = TC_INFO_SERIALIZER(data, many=True)
-        print(json.dumps(serializer.data))
         return HttpResponse(json.dumps(serializer.data))
     """
     elif request.method == "DELETE":
@@ -256,6 +265,7 @@ def updateData(updatedData, data, Release):
      data.Creator = updatedData['Creator']
      data.Priority = updatedData['Priority']
      data.Tag = updatedData['Tag']
+     data.stateUserMapping = updatedData['stateUserMapping']
  
      data.save(using = Release)
      return 1
@@ -533,13 +543,31 @@ def MULTIPLE_TC_UPDATION(request, Release):
             data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
             serializer = TC_INFO_SERIALIZER(data)
             updatedData = serializer.data
-        
+
+            #print("\n\nmultiple tc updation", req["Manual WorkingStatus"],req["Manual Assignee"],req["Automation WorkingStatus"],req["Automation Assignee"],"\n\n")
+
+            workingState = "{"
+
+            if "Manual WorkingStatus" in req:
+                workingState += "\"Manual WorkingStatus\"" + ":\"" + req["Manual WorkingStatus"] + "\","
+            if "Automation Assignee" in req:
+                workingState += "\"Automation Assignee\"" + ":\"" + req["Automation Assignee"] + "\","
+            if "Automation WorkingStatus" in req:
+                workingState += "\"Automation WorkingStatus\"" + ":\"" + req["Automation WorkingStatus"] + "\","
+            if "Manual Assignee" in req:
+                workingState += "\"Manual Assignee\"" + ":\"" + req["Manual Assignee"] + "\""
+
+            workingState += "}"
+
+            print("\n\nworking status",workingState,"\n\n")
+            updatedData["stateUserMapping"] = workingState
+
             for key in req:
                 updatedData[key] = req[key]
 
+
             res = updateData(updatedData, data, Release)
             if res == 0:
-                print("error", req)
                 errRecords.append(req)
             elif "Activity" in requests:
                 AD = requests['Activity']

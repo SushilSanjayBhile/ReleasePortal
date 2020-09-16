@@ -35,6 +35,8 @@ class TC_INFO(models.Model):
     Tag = models.CharField(max_length = 20, blank = True, default = "NO TAG")
     Priority = models.CharField(max_length = 5, blank = True, default = "P4")
     #deleted = models.BooleanField(default = False)
+    stateUserMapping = models.TextField(blank = True, default = "{\"CREATED\":\"DEFAULT\"}")
+
 
     def __str__(self):
         return self.TcID
