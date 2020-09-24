@@ -130,7 +130,10 @@ def WHOLE_TC_INFO(request, Release):
 
             #For stateUserMapping Of Test Case
             info['stateUserMapping'] = info['stateUserMapping'].replace("\'","\"")
-            info['stateUserMapping'] = json.loads(info['stateUserMapping'])
+            try:
+                info['stateUserMapping'] = json.loads(info['stateUserMapping'])
+            except:
+                pass
 
             try:
                 info['StatusList'] = statusDict[card][tcid]
