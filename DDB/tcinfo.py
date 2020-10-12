@@ -543,7 +543,6 @@ def MULTIPLE_TC_UPDATION(request, Release):
             data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
             serializer = TC_INFO_SERIALIZER(data)
             updatedData = serializer.data
-            print("\n","request",req,"\n\n")
 
             workingState = "{"
 
@@ -558,15 +557,11 @@ def MULTIPLE_TC_UPDATION(request, Release):
 
             workingState += "}"
 
-            print("\n\nworking status",workingState,type(workingState))
             updatedData["stateUserMapping"] = workingState
-            print("working status2",updatedData,type(workingState),"\n\n")
 
             for key in req:
-                print("key",key)
                 updatedData[key] = req[key]
 
-            print("\ndata and updated",data,"\n",updatedData,"\n")
             res = updateData(updatedData, data, Release)
             if res == 0:
                 errRecords.append(req)
