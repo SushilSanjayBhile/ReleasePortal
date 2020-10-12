@@ -2,7 +2,7 @@
 from django.db.models import Q
 from django.shortcuts import render
 # # from django.http import HttpResponse, JsonResponse
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
@@ -246,7 +246,6 @@ def GUITCSTATUSGETPOSTVIEW(request, Release):
                 AD = req['Activity']
                 GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
         else:
-            print(req)
             print(fd.errors)
             return JsonResponse({'Error': fd.errors}, status = 400)
         # GenerateLogData(1, 'POST', 'specificuserbyid/' + str(id) + " => " + json.dumps(req))
@@ -696,6 +695,103 @@ def TCAGGREGATE(Release):
                     dictionary["allGUI"]["Fail"] += testedData[res]
 
     return dictionary
+
+
+def subDomain_cli_aggreggation(cliTcInfo,cliStatus):
+    
+    cid = {} #cid stands for cli info dict
+    csd = {} #csd stands for cli status dict
+    myDict = {}
+    myDict['subDomain-cli'] = {}
+    global statusList
+
+    cid, csd = get_cli_dataDict(cliTcInfo, cliStatus)
+    tcinfoserializer = TC_INFO_SERIALIZER(cliTcInfo,many=True)
+    statusserializer = LATEST_TC_STATUS_SERIALIZER(cliStatus, many=True)
+
+    priorityList = ['P0','P1','P2','P3','P4','P5','P6','P7']
+
+    subDomains = cliTcInfo.values('SubDomain').distinct()
+
+    for subDom in subDomains:
+        subDomain = subDom['SubDomain']
+        if subDomain not in myDict['subDomain-cli']:
+            myDict['subDomain-cli'][subDomain]={}
+
+            if "NotApplicable" not in myDict['subDomain-cli'][subDomain]:
+                myDict['subDomain-cli'][subDomain]['NotApplicable'] = 0
+            if "NotTested" not in myDict['subDomain-cli'][subDomain]:
+                myDict['subDomain-cli'][subDomain]['NotTested'] = 0
+            if "Tested" not in myDict['subDomain-cli'][subDomain]:
+                myDict['subDomain-cli'][subDomain]['Tested'] = {}
+
+            if "manual" not in myDict['subDomain-cli'][subDomain]['Tested']:
+                myDict['subDomain-cli'][subDomain]['Tested']['manual'] = {}
+            if "auto" not in myDict['subDomain-cli'][subDomain]['Tested']:
+                myDict['subDomain-cli'][subDomain]['Tested']['auto'] = {}
+
+            for item in statusList:
+                if item not in myDict['subDomain-cli'][subDomain]['Tested']['manual']:
+                    myDict['subDomain-cli'][subDomain]['Tested']['manual'][item] = 0
+                if item not in myDict['subDomain-cli'][subDomain]['Tested']['auto']:
+                    myDict['subDomain-cli'][subDomain]['Tested']['auto'][item] = 0
+
+    lateststatuslist = []
+    for d in cid:
+        for c in cid[d]:
+            for i in cid[d][c]:
+                lateststatuslist.append(cid[d][c][i])
+
+    # aggregation calculation
+    for stat in lateststatuslist:
+        subDomain = stat["SubDomain"]
+        stcid = stat["TcID"]
+        scard = stat["CardType"]
+        stcname = stat["TcName"]
+        sPriority = stat["Priority"]
+
+        # Skip and NA checking
+        if sPriority == "Skip" or sPriority == "NA":
+            continue
+
+        try:
+            sres = stat["Result"]
+
+            if sres == "Unblocked": # unblocked key is not present in VALID STATUS', as we are counting it into NOTTESTED
+                continue
+            #applicable count calculations
+            if stcname == "TC NOT AUTOMATED":
+                myDict['subDomain-cli'][subDomain]['Tested']['manual'][sres] += 1
+                myDict['subDomain-cli'][subDomain]['NotTested'] -= 1
+            if stcname != "TC NOT AUTOMATED":
+                myDict['subDomain-cli'][subDomain]['Tested']['auto'][sres] += 1
+                myDict['subDomain-cli'][subDomain]['NotTested'] -= 1
+        except:
+            pass
+
+    for tc in tcinfoserializer.data:
+        if tc["Priority"] == "Skip": # we need NA count, so skipping only SKIP(priority) tcs
+            continue
+
+        subDomain = tc["SubDomain"]
+        card = tc["CardType"]
+        tcid = tc["TcID"]
+
+        if tc["Priority"] == "NA":
+            myDict['subDomain-cli'][subDomain]['NotApplicable'] += 1
+            continue
+
+        myDict["subDomain-cli"][subDomain]["NotTested"] += 1
+
+    return myDict["subDomain-cli"]
+
+
+def DOMAINWISERELEASEINFO(request,Release,Domain):
+    dictionary = {}
+    cliTcInfo = TC_INFO.objects.using(Release).filter(Domain=Domain)
+    cliStatus = TC_STATUS.objects.using(Release).all().order_by('-Date')
+    dictionary['subDomain-cli'] = subDomain_cli_aggreggation(cliTcInfo, cliStatus) # subDomain wise aggregation
+    return JsonResponse(dictionary['subDomain-cli'])
 
 def TCAGGREGATEOLD(Release):
         dictionary = {}
@@ -1548,10 +1644,8 @@ def RELEASEINFO(request, Release):
     
                 if(i['ReleaseNumber'] != "universal"):
                     if i["ReleaseNumber"] != "TestDatabase":
-                        print(i["ReleaseNumber"])
                         st = time.time()
                         a = TCAGGREGATE(i['ReleaseNumber'])
-                        print(time.time() - st)
 
                         #st = time.time()
                         #a = TCAGGREGATEOLD(i['ReleaseNumber'])
@@ -1567,7 +1661,6 @@ def RELEASEINFO(request, Release):
                 else:
                     list.append(data)
 
-            print(time.time() - t)
 
             # return JsonResponse(json.dumps(list), status = 200)
             return HttpResponse(json.dumps(list))
@@ -1584,7 +1677,6 @@ def RELEASEINFO(request, Release):
             aggregateData = TCAGGREGATE(Release)
             serData['TcAggregate'] = aggregateData
             # return JsonResponse({'data': json.dumps(serializer.data)}, status = 200)
-            print(time.time()-t)
             return HttpResponse(json.dumps(serData))
 
     #elif request.method == "DELETE":
