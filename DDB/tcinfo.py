@@ -560,7 +560,6 @@ def MULTIPLE_TC_UPDATION(request, Release):
             updatedData["stateUserMapping"] = workingState
 
             for key in req:
-                print("key",key)
                 updatedData[key] = req[key]
 
             res = updateData(updatedData, data, Release)
