@@ -50,17 +50,11 @@ class AddOptions extends Component {
             },
             ...selected
         }
-        // console.log("datat to add domain",{...data})
         axios.post(`/api/${this.props.selectedRelease.ReleaseNumber}/options/add`, {...data})
         .then(data => {
             axios.get(`/api/release/` + this.props.selectedRelease.ReleaseNumber)
             .then(res => {
                 this.props.saveReleaseBasicInfo({ id: res.ReleaseNumber, data: res });
-
-            //   res.data.forEach(item => {
-            //     // this.props.updateNavBar({ id: item.ReleaseNumber });
-            //     this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
-            //   });
             }, error => {
             });
             this.edit();

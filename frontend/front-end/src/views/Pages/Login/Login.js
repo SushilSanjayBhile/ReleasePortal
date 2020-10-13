@@ -46,11 +46,7 @@ class Login extends Component {
   }
   //a1xGwnaKFGC2A55Cy72bxMq1
   componentDidMount() {
-    // this.props.logInSuccess({ email: 'ADMIN', name: 'ADMIN', isAdmin: true, role: 'ADMIN' });
-    // this.props.history.push('/');
-   
       window.gapi.load('auth2', () => {
-        // alert("component Did mount")
         this.auth2 = gapi.auth2.init({
           'apiKey': 'AIzaSyCx0M1qs_LyfAgVmkTmDE6qIfgUiDekM-I',
           'client_id': '271454306292-q477q7slv0vpe1gep84habq5m2gv58k3.apps.googleusercontent.com',
@@ -58,10 +54,7 @@ class Login extends Component {
         }).then(() => {
           this.GoogleAuth = gapi.auth2.getAuthInstance();
           this.setState({ googleAuthLoaded: true })
-          console.log("googleAuthLoaded",this.state.googleAuthLoaded)
           this.setSigninStatus();
-          // this.GoogleAuth.isSignedIn.listen((data) => this.setSigninStatus(data));
-  
         })
       });
   }
@@ -92,7 +85,6 @@ class Login extends Component {
                 <CardBody>
                 
                   <div>
-                    {/* <p>You are not signed in. Click here to sign in.</p> */}
                     <div style={{
                       backgroundImage: `url(${logo})`,
                       backgroundSize: 'contain',
@@ -100,10 +92,6 @@ class Login extends Component {
                       width: '200px',
                       height: '48px'
                     }}></div>
-                    {/* <div id="loginButton">Login with Google</div> */}
-                    {/* <div class="g-signin2" data-onsuccess="onSignIn" 
-                    clientId="271454306292-q477q7slv0vpe1gep84habq5m2gv58k3.apps.googleusercontent.com"
-                    >Login</div> */}
                     {
                       this.state.googleAuthLoaded &&
                       <div style={{ textAlign: 'center' }}>

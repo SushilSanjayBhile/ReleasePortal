@@ -8,34 +8,57 @@ const username = 'twp_0UY04jI8DHxw88bzxe0DbStT9U0h'
 const password = 'a'
 const token = Buffer.from(`${username}:${password}`, 'utf8').toString('base64')
 
+
+function daysInThisMonth() {
+    var now = new Date();
+    return new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+}
+
+let month = new Date().getMonth() + 1;
+let year = new Date().getFullYear();
+let dayInCurrentMonth = daysInThisMonth();
+
+let tempDateStart = ''
+let tempDateEnd = ''
+let tempDateStartAPI = ''
+let tempDateEndAPI = ''
+
+if(month >= '10'){
+   
+    tempDateStart = year +"-"+ month +"-"+ "01"
+    tempDateEnd = year +"-"+ month +"-"+ dayInCurrentMonth
+
+    tempDateStartAPI = tempDateStartAPI.concat(year,month,"01")
+    tempDateEndAPI = tempDateEndAPI.concat(year,month,dayInCurrentMonth)
+}
+else{
+
+    tempDateStart = year + "-" + "0" + month + "-" + "01"
+    tempDateEnd =year + "-" + "0" + month + "-" + dayInCurrentMonth
+
+    tempDateStartAPI = tempDateStartAPI.concat(year,month,"01")
+    tempDateEndAPI = tempDateEndAPI.concat(year,month,dayInCurrentMonth)
+}
+
 var flag = 0
 let tempTaskListArray = [];
 class PersonViewTest extends Component {
     constructor(props){
         super(props);
-        
-        var month = new Date().getMonth() + 1;
-        var year = new Date().getFullYear();
-        let dayInCurrentMonth = this.daysInThisMonth();
 
         this.state = {
             projectID : ['507644','507522','507574', '507537', '507533'],
             empID : '',
             selectedTaskList : '',
             tasks : [],
-            startDate:year + '0'+ month + '01',
-            endDate : year + '0'+ month + '30',
-
-            startDateToShow: '01' + '-' + month + '-' + year,
-            endDateToShow: dayInCurrentMonth  + '-' + month + '-' + year,
+            startDate : tempDateStartAPI,
+            endDate : tempDateEndAPI,
+            startDateToShow : tempDateStart,
+            endDateToShow : tempDateEnd,
         }
     }
 
-    daysInThisMonth() {
-        var now = new Date();
-        return new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-    }
-
+   
     selectEmployeeID = (empID) => {
         flag = 1;
         this.setState({
@@ -232,6 +255,8 @@ class PersonViewTest extends Component {
     }
 
     selectedStartDate = (startDate) =>{
+        tempDateStart = startDate['StartDate'] 
+
         let tempDate = startDate['StartDate'].split("-");
         let tempDate1 = tempDate[0] + tempDate[1] + tempDate[2];
         let tempDate2 = tempDate[2] + " - " + tempDate[1] + " - " + tempDate[0]
@@ -245,6 +270,8 @@ class PersonViewTest extends Component {
     }
 
     selectedEndDate = (endDate) =>{
+        tempDateEnd = endDate['EndDate']
+        
         let tempDate = endDate['EndDate'].split("-");
         let tempDate1 = tempDate[0] + tempDate[1] + tempDate[2];
         let tempDate2 = tempDate[2] + " - " + tempDate[1] + " - " + tempDate[0]
@@ -259,6 +286,10 @@ class PersonViewTest extends Component {
     }
 
     render(){
+        //set value for calender input box
+        let DATE1 = tempDateStart     
+        let DATE2 = tempDateEnd  
+
         let tasklistToShow = []
         if(tempTaskListArray){
             const tempresult = [];
@@ -302,16 +333,13 @@ class PersonViewTest extends Component {
                     </div>
                    
                     <div class="col-md-3">
-                        Start Date<Input style={{marginTop:'1rem'}} type="date" id="StartDate" name="StartDate" placeholder="Start Date" onChange={(e) => this.selectedStartDate({ StartDate: e.target.value })} />
+                        Start Date<Input style={{marginTop:'1rem'}} type="date" id="StartDate" value={DATE1} name="StartDate" placeholder="Start Date" onChange={(e) => this.selectedStartDate({ StartDate: e.target.value })} />
                     </div> 
 
                      <div class="col-md-3">
-                        End Date<Input style={{marginTop:'1rem'}} type="date" id="EndDate" name="EndDate" placeholder="End Date" onChange={(e) => this.selectedEndDate({ EndDate: e.target.value })} />
+                        End Date<Input style={{marginTop:'1rem'}} type="date" id="EndDate" value={DATE2} name="EndDate" placeholder="End Date" onChange={(e) => this.selectedEndDate({ EndDate: e.target.value })} />
                     </div>         
 
-                    <div  style={{marginTop:'1rem'}} class="col-md-5">
-                        <p><b>Displayed Data From {this.state.startDateToShow} To {this.state.endDateToShow}</b></p>
-                    </div>
                 </div>
 
                 <div>

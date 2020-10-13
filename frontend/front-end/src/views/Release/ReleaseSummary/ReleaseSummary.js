@@ -255,15 +255,6 @@ class ReleaseSummary extends Component {
         if(temp === 'DMC-3.0') {
             temp="\"Spektra 3.0\""
         }
-        // console.log("temp.includes('DCX')",temp.includes('DCX'));
-        // if(temp.includes('DCX')){
-        //     this.setState({selectedPriority:['P0']})
-        // }
-        // else{
-        //     this.setState({selectedPriority:['P0','P1']})
-        // }
-
-        // console.log("priority for releasw",this.props.selectedRelease.ReleaseNumber,this.state.selectedPriority);
         if(release === 'DMC-3.0'){
             axios.get('/rest/epic/' + temp)
             .then(res => {

@@ -29,7 +29,9 @@ import NumericEditor from "./numericEditor";
 import SelectionEditor from './selectionEditor';
 import DatePickerEditor from './datePickerEditor';
 import EditTC from '../../views/Release/ReleaseTestMetrics/EditTC';
-import { ws } from '../../constants';
+import { ws, workingStatuses } from '../../constants';
+import { wsM } from '../../constants';
+import { wsA } from '../../constants';
 import TcSummary from './TcSummary';
 import  CheckBox  from './CheckBox';
 
@@ -61,91 +63,120 @@ class TestCasesAll extends Component {
               headerName: "TcID", field: "TcID", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               editable: false,
               width: 180
-          },
-          'Scenario' : {
-              headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-              width: '180',
-              editable: false,
-              cellClass: 'cell-wrap-text',
-          },
+            },
+            'Scenario' : {
+                headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            // 'WorkingStatus1' : {
+            // headerName: "Manual Working Status", field: "stateUserMapping.Manual WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            // width: '180',
+            // editable: false,
+            // cellClass: 'cell-wrap-text',
+            // },
+            // 'WorkingStatus2' : {
+            //     headerName: "Automation Working Status", field: "stateUserMapping.Automation WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            //     width: '180',
+            //     editable: false,
+            //     cellClass: 'cell-wrap-text',
+            // },
+            // 'Manual Assignee' : {
+            //     headerName: "Manual Assignee ", field: "stateUserMapping.Manual Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            //     cellClass: 'cell-wrap-text',
+            //     cellEditor: 'selectionEditor',
+            //     cellEditorParams: {
+            //         values: this.props.users.map(item => item.name)
+            //     }
+            // },
+
+            // 'Automation Assignee' : {
+            //     headerName: "Automation Assignee", field: "stateUserMapping.Automation Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+            //     cellClass: 'cell-wrap-text',
+            //     cellEditor: 'selectionEditor',
+            //     cellEditorParams: {
+            //         values: this.props.users.map(item => item.name)
+            //     }
+            // },
           
-          'Description': {
-              headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-              width: '520',
-              editable: false,
-              cellClass: 'cell-wrap-text',
-          },
-          'CardType' : {
-              headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
-              cellEditor: 'selectionEditor',
-              cellClass: 'cell-wrap-text',
-              cellEditorParams: {
-                  values: ['BOS', 'NYNJ', 'COMMON'],
-                  multiple: true
-              }
-          },
-          'Build' :  {
-              headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
-              cellEditor: 'selectionEditor',
-              cellClass: 'cell-wrap-text',
-              cellEditorParams: {
-                  values: ['BOS', 'NYNJ', 'COMMON'],
-                  multiple: true
-              }
-          },
-          
-          'Status' : {
-              headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
-              cellEditor: 'selectionEditor',
-              cellClass: 'cell-wrap-text',
-              cellEditorParams: {
-                  values: ['COMPLETED', 'NOT_COMPLETED']
-              }
-          },
-          'Bug' : {
-              headerName: "Bug", field: "CurrentStatus.Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-              cellClass: 'cell-wrap-text'
-          },
-          'Priority' :  {
-              headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
-          }, 
-          'Assignee' : {
-              headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-              cellClass: 'cell-wrap-text',
-        
-              cellEditor: 'selectionEditor',
-              cellEditorParams: {
-                  values: this.props.users.map(item => item.email)
-              }
-          },
-          'WorkingStatus' : {
-              headerName: "WorkingStatus", field: "WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-              cellClass: 'cell-wrap-text',
-          },
-          'TcName' : {
-              headerName: "TcName", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-          },
-          'Domain' : {
-              headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-              width: '180',
-              editable: false,
-              cellClass: 'cell-wrap-text',
-          },
-          'SubDomain' : {
-              headerName: "SubDomain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-              width: '180',
-              editable: false,
-              cellClass: 'cell-wrap-text',
-          },
-          'Steps' : { 
-              headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-              width: '180',
-              editable: false,
-              cellClass: 'cell-wrap-text',
-          },
+            'Description': {
+                headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '520',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'CardType' : {
+                headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+            
+                cellEditor: 'selectionEditor',
+                cellClass: 'cell-wrap-text',
+                cellEditorParams: {
+                    values: ['BOS', 'NYNJ', 'COMMON'],
+                    multiple: true
+                }
+            },
+            'Build' :  {
+                headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+            
+                cellEditor: 'selectionEditor',
+                cellClass: 'cell-wrap-text',
+                cellEditorParams: {
+                    values: ['BOS', 'NYNJ', 'COMMON'],
+                    multiple: true
+                }
+            },
+            
+            'Status' : {
+                headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+            
+                cellEditor: 'selectionEditor',
+                cellClass: 'cell-wrap-text',
+                cellEditorParams: {
+                    values: ['COMPLETED', 'NOT_COMPLETED']
+                }
+            },
+            'Bug' : {
+                headerName: "Bug", field: "CurrentStatus.Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+                cellClass: 'cell-wrap-text'
+            },
+            'Priority' :  {
+                headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
+            }, 
+            'Assignee' : {
+                headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+                cellClass: 'cell-wrap-text',
+            
+                cellEditor: 'selectionEditor',
+                cellEditorParams: {
+                    values: this.props.users.map(item => item.name)
+                }
+            },
+            'WorkingStatus' : {
+                headerName: "WorkingStatus", field: "WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+                cellClass: 'cell-wrap-text',
+            },
+            'TcName' : {
+                headerName: "TcName", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+            },
+            'Domain' : {
+                headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'SubDomain' : {
+                headerName: "SubDomain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'Steps' : { 
+                headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
           'Notes' : { 
                 headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
@@ -198,6 +229,10 @@ class TestCasesAll extends Component {
             columnDefs: [
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
+                // columnDefDict['Manual Assignee'],
+                // columnDefDict['WorkingStatus1'],
+                // columnDefDict['Automation Assignee'],
+                // columnDefDict['WorkingStatus2'],
                 columnDefDict['Description'],
                 columnDefDict['Steps'],
                 columnDefDict['Status'],
@@ -205,7 +240,7 @@ class TestCasesAll extends Component {
                 columnDefDict['Bug'],
                 columnDefDict['Priority'],
                 columnDefDict['Assignee'],
-                columnDefDict['Notes'],
+                // columnDefDict['Notes'],
 
             ],
             
@@ -323,13 +358,44 @@ class TestCasesAll extends Component {
               headerName: "TcID", field: "TcID", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               editable: false,
               width: 180
-          },
-          'Scenario' : {
-              headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-              width: '180',
-              editable: false,
-              cellClass: 'cell-wrap-text',
-          },
+            },
+            'Scenario' : {
+                headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+
+            // 'WorkingStatus1' : {
+            //     headerName: "Manual Working Status", field: "stateUserMapping.Manual WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            //     width: '180',
+            //     editable: false,
+            //     cellClass: 'cell-wrap-text',
+            // },
+            // 'WorkingStatus2' : {
+            //     headerName: "Automation Working Status", field: "stateUserMapping.Automation WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            //     width: '180',
+            //     editable: false,
+            //     cellClass: 'cell-wrap-text',
+            // },
+
+            // 'Manual Assignee' : {
+            //     headerName: "Manual Assignee ", field: "stateUserMapping.Manual Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            //     cellClass: 'cell-wrap-text',
+            //     cellEditor: 'selectionEditor',
+            //     cellEditorParams: {
+            //         values: this.props.users.map(item => item.name)
+            //     }
+            // },
+
+            // 'Automation Assignee' : {
+            //     headerName: "Automation Assignee", field: "stateUserMapping.Automation Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+            //     cellClass: 'cell-wrap-text',
+            //     cellEditor: 'selectionEditor',
+            //     cellEditorParams: {
+            //         values: this.props.users.map(item => item.name)
+            //     }
+            // },
           
           'Description': {
               headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
@@ -357,7 +423,6 @@ class TestCasesAll extends Component {
                   multiple: true
               }
           },
-          
           'Status' : {
               headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
         
@@ -504,8 +569,8 @@ class TestCasesAll extends Component {
                 this.editedRows[`${params.TcID}_${params.CardType}`][field] =
                     { ...this.editedRows[`${params.TcID}_${params.CardType}`][field], oldValue: params[field], newValue: value }
             } else {
-                this.editedRows[`${params.TcID}_${params.CardType}`] =
-                    { ...this.editedRows[`${params.TcID}_${params.CardType}`], [field]: { oldValue: params[field], originalValue: params[field], newValue: value } }
+            this.editedRows[`${params.TcID}_${params.CardType}`] =
+                { ...this.editedRows[`${params.TcID}_${params.CardType}`], [field]: { oldValue: params[field], originalValue: params[field], newValue: value } }
             }
 
         } else {
@@ -560,8 +625,6 @@ class TestCasesAll extends Component {
         }
     }
     componentDidMount() {
-
-       
         setTimeout(() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain), 400);
         if (this.props.user &&
             (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
@@ -570,7 +633,6 @@ class TestCasesAll extends Component {
         }
         axios.get('/api/userinfo/')
         .then(response=>{
-            console.log("response",response)
         })
         .catch(err=>{
             console.log("error",err)
@@ -632,26 +694,11 @@ class TestCasesAll extends Component {
         this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, priority);
     }
 
-
-    // RELEASE
-    // updateReleaseInfo() {
-    //     axios.get(`/api/release/all`)
-    //         .then(res => {
-    //             res.data.forEach(item => {
-    //                 this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
-    //             });
-    //         }, error => {
-    //         });
-    // }
-
     // // RELEASE
     updateReleaseInfo() {
         axios.get(`/api/release/` + this.props.selectedRelease.ReleaseNumber)
             .then(res => {
-                console.log("cli test marix",res);
-                // res.data.forEach(item => {
-                    this.props.saveReleaseBasicInfo({ id: res.ReleaseNumber, data: res });
-                // });
+                this.props.saveReleaseBasicInfo({ id: res.ReleaseNumber, data: res });
             }, error => {
             });
     }
@@ -785,6 +832,7 @@ class TestCasesAll extends Component {
         let startingIndex = this.pageNumber * this.rows;
         let url = `/api/wholetcinfo/${release}?index=${startingIndex}&count=${this.rows}`;
         if (all) {
+            // url = `/api/wholetcinfo/${release}?`;
             url = `/api/wholetcinfo/${release}`;
         }
         if (CardType || domain || subDomain || priority) {
@@ -800,8 +848,6 @@ class TestCasesAll extends Component {
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
                 this.allTCsToShow = all.data;
                 this.getTcsToShow(release,updateRelease)
-                // this.saveLocalMultipleTC({ data: all.data, id: release }, false, updateRelease)
-                // this.gridOperations(true);
 
             }).catch(err => {
                 this.saveLocalMultipleTC({ data: [], id: release }, true, updateRelease);
@@ -815,6 +861,7 @@ class TestCasesAll extends Component {
     }
 
     getTcsToShow(release,updateRelease){
+
         let showTc = []
         let skipTcs = []
         let NATcs = []
@@ -879,6 +926,7 @@ class TestCasesAll extends Component {
         if(statusFlag == 0){
             showTc1 = showTc; 
         }
+
         this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
         this.gridOperations(true);
     }
@@ -923,7 +971,18 @@ class TestCasesAll extends Component {
                     "URL": `/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`
                 }
             };
-            ['Priority', 'Assignee', 'WorkingStatus'].map(each => {
+            // ['Priority', 'Manual Assignee', 'Manual WorkingStatus', 'Automation Assignee', 'Automation WorkingStatus'].map(each => {
+            //     if (item[each]) {
+            //         pushable[each] = item[each]
+            //         let old = item[each];
+            //         if (this.editedRows[`${item.TcID}_${item.CardType}`] && this.editedRows[`${item.TcID}_${item.CardType}`][each]) {
+            //             old = `${this.editedRows[`${item.TcID}_${item.CardType}`][each].originalValue}`
+            //         }
+            //         pushable.Activity.LogData += `${each}:{old: ${old}, new: ${item[each]}}, `
+            //     }
+                
+            // })
+            ['Priority', 'Assignee',  'WorkingStatus'].map(each => {
                 if (item[each]) {
                     pushable[each] = item[each]
                     let old = item[each];
@@ -933,7 +992,7 @@ class TestCasesAll extends Component {
                     pushable.Activity.LogData += `${each}:{old: ${old}, new: ${item[each]}}, `
                 }
             })
-            if (this.state.multi && this.state.multi.Build) {
+            if (this.state.multi && this.state.multi.Build ) {
                 let status = {};
                 status.Domain = item.Domain;
                 status.SubDomain = item.SubDomain;
@@ -988,14 +1047,14 @@ class TestCasesAll extends Component {
     saveMultipleTcInfo(items) {
         this.gridOperations(false);
         axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
-            .then(res => {
-                this.gridOperations(true);
-                this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
-                alert('Tc Info Updated Successfully');
-            }, error => {
-                this.gridOperations(true);
-                alert('Failed To Update TC Info');
-            });
+        .then(res => {
+            this.gridOperations(true);
+            this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
+            alert('Tc Info Updated Successfully');
+        }, error => {
+            this.gridOperations(true);
+            alert('Failed To Update TC Info');
+        });
     }
 
     saveLocalTC(data) {
@@ -1022,6 +1081,8 @@ class TestCasesAll extends Component {
     textFields = [
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'Tag', 'Priority',
         'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus',
+        'automationStateUser','manualStateUser',
+        // 'Manual Assignee','Automation Assignee', 'Manual WorkingStatus','Automation Assignee'
     ];
     whichFieldsUpdated(old, latest) {
         let changes = {};
@@ -1253,12 +1314,7 @@ class TestCasesAll extends Component {
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
                                             <span className='rp-app-table-title'>{this.props.title}</span>
                                             <span style={{ 'marginLeft': '2rem', fontWeight:'500', color: 'red'  }}>Table Showing Only Applicable TC's. To see Skip Or NA TC's Use Filter [<i class="fa fa-filter" aria-hidden="true"></i>] Below</span>
-                                            {/* {
-                                                this.state.loading && <span style={{ 'marginLeft': '2rem' }}>Please Wait for approx 3 mins to load complete table...</span>
-                                            }
-                                            {
-                                                !this.state.loading && <span style={{ 'marginLeft': '2rem', fontWeight:'500', color: 'red' }}>TcName is Automated TC Name. It should contain '.' in its name. Please dont add description/scenario in TcName.</span>
-                                            } */}
+                                            
                                             {
                                                 this.state.tcOpen &&
                                                 <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
@@ -1360,8 +1416,16 @@ class TestCasesAll extends Component {
                                                                 {
                                                                     [
                                                                         { labels: 'Priority', values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] },
+                                                                        // { labels: 'Manual Assignee', values: [{ value: '', text: 'Select Manual Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
+                                                                        // { labels: 'Manual WorkingStatus', values: [{ value: '', text: 'Select Manual Working Status' }, ...(wsM.map(each => ({ value: each, text: each })))] },
+                                                                        // { labels: 'Automation Assignee', values: [{ value: '', text: 'Select Automation Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
+                                                                        // { labels: 'Automation WorkingStatus', values: [{ value: '', text: 'Select Automated Working Status' }, ...(wsA.map(each => ({ value: each, text: each })))] },
+
                                                                         { labels: 'Assignee', values: [{ value: '', text: 'Select Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
                                                                         { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(ws.map(each => ({ value: each, text: each })))] },
+                                                                        
+
+                                                                        
                                                                     ].map(each => <FormGroup className='rp-app-table-value'>
                                                                         <Label className='rp-app-table-label' htmlFor={each.labels}>
                                                                             {each.header}
@@ -1371,12 +1435,12 @@ class TestCasesAll extends Component {
                                                                             let selectedRows = this.gridApi.getSelectedRows();
                                                                             if (e.target.value && e.target.value !== '') {
                                                                                 selectedRows.forEach(item => {
-
                                                                                     this.onCellEditing(item, each.labels, e.target.value)
                                                                                     item[each.labels] = e.target.value;
                                                                                 })
                                                                             }
-                                                                            this.setState({ multi: { ...this.state.multi, [each.labels]: e.target.value } })
+                                                                            this.setState({ multi: { ...this.state.multi, [each.labels]: e.target.value } },()=>{
+                                                                            })
                                                                             setTimeout(this.gridApi.redrawRows(), 0);
                                                                         }} type="select" id={`select_${each.labels}`}>
                                                                             {
@@ -1388,9 +1452,6 @@ class TestCasesAll extends Component {
                                                                 <Row>
                                                                     <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
-                                                                            {/* <Label className='rp-app-table-label' htmlFor='Result'>
-                                                                                Result
-                                                                            </Label> */}
                                                                             <Input disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Result} onChange={(e) => {
                                                                                 this.isAnyChanged = true;
                                                                                 let selectedRows = this.gridApi.getSelectedRows();
@@ -1414,9 +1475,6 @@ class TestCasesAll extends Component {
                                                                     </Col>
                                                                     <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
-                                                                            {/* <Label className='rp-app-table-label' htmlFor='Build'>
-                                                                                Build
-                                                                            </Label> */}
                                                                             <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Build} onChange={(e) => {
                                                                                 this.isAnyChanged = true;
                                                                                 let selectedRows = this.gridApi.getSelectedRows();
@@ -1440,9 +1498,6 @@ class TestCasesAll extends Component {
                                                                     <Row>
                                                                         <Col md="12">
                                                                                 <FormGroup className='rp-app-table-value'>
-                                                                                    {/* <Label className='rp-app-table-label' htmlFor='Bugs'>
-                                                                                        Bug No
-                                                                                    </Label> */}
                                                                                     <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Bugs} onChange={(e) => {
                                                                                         this.isAnyChanged = true;
                                                                                         
@@ -1544,13 +1599,6 @@ class TestCasesAll extends Component {
                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Pass: {pass}</span>
                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Fail: {fail}</span>
                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Automated: {automated}</span>
-
-                                            {/* <span style={{marginLeft: '0.5rem'}} className='rp-app-table-value'>notTested: {notTested}</span>
-                                            <span style={{marginLeft: '0.5rem'}} className='rp-app-table-value'>prioritySkip: {prioritySkip}</span>
-                                            <span style={{marginLeft: '0.5rem'}} className='rp-app-table-value'>priorityNA: {priorityNA}</span>
-                                            <span style={{marginLeft: '0.5rem'}} className='rp-app-table-value'>prioritySkipAndTested: {prioritySkipAndTested}</span> */}
-                                            {/* notTested = 0, prioritySkip=0,priorityNA=0,prioritySkipAndTested=0, */}
-
                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {total}</span>
                                         </div>
                                         <div style={{
@@ -1800,7 +1848,7 @@ class TestCasesAll extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
     user: state.auth.currentUser,
-    users: state.user && state.user.users ? state.user.users.map(item => item.email) : [],
+    users: state.user && state.user.users ? state.user.users.map(item => item.name) : [],
     selectedRelease: getCurrentRelease(state, state.release.current.id),
     data: state.testcase.all[state.release.current.id],
     tcDetails: state.testcase.testcaseDetail,

@@ -2,18 +2,9 @@
 // Issues faced on customer side (jira - list)
 // customers to be given to
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import {
-    Badge, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table, Button, Input, Collapse
-    , Modal, ModalHeader, ModalBody, ModalFooter, Progress, Popover, PopoverBody, FormGroup, Label, TabContent, TabPane, Nav, NavItem, NavLink,
-} from 'reactstrap';
+import {Col,Row,Button, Input, Collapse,Modal, ModalHeader, ModalBody, ModalFooter,FormGroup, Label, TabContent, TabPane, Nav, NavItem, NavLink,} from 'reactstrap';
 import { connect } from 'react-redux';
 import { getCurrentRelease } from '../../../reducers/release.reducer';
-import {
-    getTCStrategyForUIDomains, getTCStrategyForUISubDomains, alldomains, getTCStatusForSunburst,
-    getTCStrategyForUISubDomainsDistribution, getTCStrategyForUIDomainsDistribution
-} from '../../../reducers/release.reducer';
-import { AgGridReact } from 'ag-grid-react';
 import axios from 'axios';
 import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../actions';
 import Multiselect from 'react-bootstrap-multiselect';
@@ -118,6 +109,9 @@ class CreateTCs extends Component {
             request.note = 'added by non-admin and pending for approval'
         }
         data = { ...data, ...request }
+        data.WorkingStatus = 'CREATED'
+        let currentUser = this.props.currentUser.email
+        data.stateUserMapping = {"CREATED" : `${currentUser}`}
         data.TcName = this.getTcName(`${data.TcName}`);
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
@@ -533,11 +527,3 @@ const mapStateToProps = (state, ownProps) => ({
     testcaseDetail: state.testcase.testcaseDetail
 })
 export default connect(mapStateToProps, { saveTestCase, saveTestCaseStatus, saveSingleTestCase })(CreateTCs);
-
-
-
-
-
-
-
-

@@ -347,6 +347,22 @@ export const steps = {
     }, //12 //auto-Assignee compulsory
 }
 
+export const wsPA = [
+    'APPROVED', 'UNAPPROVED'
+]
+
+export const wsPUA = [
+    'CREATED', 'DELETED'
+]
+
+export const wsM = [
+    'MANUAL_TESTING','InProgress','MANUAL_COMPLETED','DELETED'
+]
+
+export const wsA = [
+    'AUTO_TESTING', 'InProgress','AUTO_COMPLETED'
+]
+
 export const ws = [
     'CREATED', 'UNASSIGNED', 'DEV_ASSIGNED', 'DEV_APPROVED', 'APPROVED', 'UNAPPROVED', 'MANUAL_ASSIGNED',
     'MANUAL_COMPLETED', 'AUTO_ASSIGNED', 'AUTO_COMPLETED', 'DELETED'

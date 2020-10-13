@@ -15,18 +15,23 @@ import { AgGridReact } from 'ag-grid-react';
 import { AllCommunityModules } from "@ag-grid-community/all-modules";
 import "@ag-grid-community/all-modules/dist/styles/ag-grid.css";
 import "@ag-grid-community/all-modules/dist/styles/ag-theme-balham.css";
-import CheckBoxRenderer from '../components/CheckBoxRenderer';
 import EditPendingForApproval from './EditPendingForApproval';
 // import EditTC from '../../views/Release/ReleaseTestMetrics/EditTC';
+import { wsPA } from '../../../constants';
 
 class PendingForApproval extends Component {
-    workingStatusOptions = [{ value: 'APPROVED', text: 'APPROVE' }, { value: 'UNAPPROVED', text: 'UNAPPROVE' }];
+    workingStatusOptions = [{ value: 'APPROVED', text: 'APPROVED' }, { value: 'UNAPPROVED', text: 'UNAPPROVED' }];
+    editedRows = {};
+    isAnyChanged = false;
+
     constructor(props) {
         super(props);
         this.state = {
             approveState: 'UNAPPROVED',
             reasonForUnapproval: '',
             rowsChecked: {},
+
+            showData:[],
             rowSelect: false,
             isEditing: false,
             delete: false,
@@ -44,6 +49,7 @@ class PendingForApproval extends Component {
                     headerName: "Scenario", field: "Scenario", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 },
                 {
+                    
                     headerName: "Tc ID", field: "TcID", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 },
                 {
@@ -88,12 +94,14 @@ class PendingForApproval extends Component {
             columnDefs: [
                 // { headerName: '', field: 'checked', cellRenderer: "checkboxRenderer" },
                 {
-                    headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100'
-                },
-                {
-                    headerName: "Sub Domain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-                },
-                {
+                    headerCheckboxSelection: (params) => {
+                        if (this.gridApi) {
+                            this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
+                        }
+                        return true;
+                    },
+                    headerCheckboxSelectionFilteredOnly: true,
+                    checkboxSelection: true,
                     headerName: "Tc ID", field: "TcID", sortable: true, filter: true, cellStyle: this.renderEditedCell
                 },
                 {
@@ -102,6 +110,13 @@ class PendingForApproval extends Component {
                 {
                     headerName: "Card Type", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100'
                 },
+                {
+                    headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100'
+                },
+                {
+                    headerName: "Sub Domain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+                },
+                
                 {
                     headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100'
                 },
@@ -141,8 +156,57 @@ class PendingForApproval extends Component {
         }
     }
 
+    renderEditedCell = (params) => {
+        let editedInRow = this.editedRows[`${params.data.TcID}_${params.data.CardType}`] && this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field] && this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field].originalValue !== params.value;
+        // let restored = this.editedRows[`${params.data.TcID}_${params.data.CardType}`] && this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field] && this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field].originalValue === params.value;
+        if (editedInRow) {
+            this.editedRows[`${params.data.TcID}_${params.data.CardType}`].Changed = true;
+            return {
+                backgroundColor: 'rgb(209, 255, 82)',
+                borderStyle: 'solid',
+                borderWidth: '1px',
+                borderColor: 'rgb(255, 166, 0)'
+            };
+        }
+        return { backgroundColor: '' };
+    }
+
+    onCellEditingStarted = params => {
+        if (this.editedRows[`${params.data.TcID}_${params.data.CardType}`]) {
+            if (this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field]) {
+                this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field] =
+                    { ...this.editedRows[`${params.data.TcID}_${params.data.CardType}`][params.colDef.field], oldValue: params.value }
+            } else {
+                this.editedRows[`${params.data.TcID}_${params.data.CardType}`] =
+                    { ...this.editedRows[`${params.data.TcID}_${params.data.CardType}`], [params.colDef.field]: { oldValue: params.value, originalValue: params.value } }
+            }
+        } else {
+            this.editedRows[`${params.data.TcID}_${params.data.CardType}`] = { [params.colDef.field]: { oldValue: params.value, originalValue: params.value } }
+        }
+    }
+
+    onCellEditing = (params, field, value) => {
+        if (this.editedRows[`${params.TcID}_${params.CardType}`]) {
+            if (this.editedRows[`${params.TcID}_${params.CardType}`][field]) {
+                this.editedRows[`${params.TcID}_${params.CardType}`][field] =
+                    { ...this.editedRows[`${params.TcID}_${params.CardType}`][field], oldValue: params[field], newValue: value }
+
+            } else {
+            this.editedRows[`${params.TcID}_${params.CardType}`] =
+                { ...this.editedRows[`${params.TcID}_${params.CardType}`], [field]: { oldValue: params[field], originalValue: params[field], newValue: value } }
+            }
+
+        } else {
+            this.editedRows[`${params.TcID}_${params.CardType}`] = {
+                TcID: { oldValue: `${params.TcID}`, originalValue: `${params.TcID}`, newValue: `${params.TcID}` },
+                CardType: { oldValue: `${params.CardType}`, originalValue: `${params.CardType}`, newValue: `${params.CardType}` },
+                [field]: { oldValue: params[field], originalValue: params[field], newValue: value }
+            }
+        }
+    }
+
     getTC(e) {
-        axios.get(`/test/${this.props.selectedRelease.ReleaseNumber}/tcinfo/details/id/${e.TcID}`)
+        axios.get(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}/id/${e.TcID}/card/${e.CardType}`)
             .then(res => {
                 this.props.saveSingleTestCase(res.data);
                 this.props.updateTCEdit({ ...res.data, errors: {}, original: res.data });
@@ -156,14 +220,30 @@ class PendingForApproval extends Component {
         this.props.saveSingleTestCase({});
         this.props.updateTCEdit({ Master: true, errors: {}, original: null });
     }
-    renderEditedCell = (params) => {
-        return { backgroundColor: '' };
-    }
+    // renderEditedCell = (params) => {
+    //     return { backgroundColor: '' };
+    // }
     onGridReady = params => {
         this.gridApi = params.api;
         this.gridColumnApi = params.columnApi;
         params.api.sizeColumnsToFit();
     };
+    onStatusGridReady = params => {
+        this.statusGridApi = params.api;
+        this.statusGridColumnApi = params.columnApi;
+        params.api.sizeColumnsToFit();
+    }
+    gridOperations(enable) {
+        if (enable) {
+            if (this.state.isApiUnderProgress) {
+                this.setState({ isApiUnderProgress: false, loading: false });
+            }
+        } else {
+            if (!this.state.isApiUnderProgress) {
+                this.setState({ isApiUnderProgress: true });
+            }
+        }
+    }
     onFilterTextBoxChanged(value) {
         this.deselect();
         this.setState({ domain: null, subDomain: null, CardType: null, rowSelect: false });
@@ -183,58 +263,106 @@ class PendingForApproval extends Component {
     toggleDelete = () => {
         this.setState({ delete: !this.state.delete })
     };
+
+    // SELECTION BOX
     onSelectDomain(domain) {
-        this.deselect();
         if (domain === '') {
             domain = null;
+        } else {
+            this.getTcByDomain(domain);
         }
-        this.setState({ domain: domain, subDomain: null, data: this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType }), rowSelect: false });
+        // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
+        this.setState({ domain: domain, subDomain: '' });
+        this.getTcs(this.state.CardType, domain, '', this.state.Priority);
     }
     onSelectSubDomain(subDomain) {
-        this.deselect();
         if (subDomain === '') {
             subDomain = null;
         }
-        this.setState({ subDomain: subDomain, data: this.filterData({ Domain: this.state.domain, SubDomain: subDomain, CardType: this.state.CardType }), rowSelect: false });
+        // let data = this.filterData({ Domain: this.state.domain, SubDomain: subDomain, CardType: this.state.CardType })
+        this.setState({ subDomain: subDomain });
+        this.getTcs(this.state.CardType, this.state.domain, subDomain, this.state.Priority);
     }
     onSelectCardType(cardType) {
-        this.deselect();
         if (cardType === '') {
             cardType = null;
         }
-        this.setState({ CardType: cardType, data: this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType }), rowSelect: false });
+        //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
+        this.setState({ CardType: cardType });
+        this.getTcs(cardType, this.state.domain, this.state.subDomain, this.state.Priority);
+    }
+    onSelectPriority(priority) {
+        if (priority === '') {
+            priority = null;
+        }
+        //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
+        this.setState({ Priority: priority });
+        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, priority);
+    }
+
+    getTcByDomain(domain) {
+        this.gridOperations(false);
+        axios.get('/api/' + this.props.selectedRelease.ReleaseNumber + '/tcinfo/domain/' + domain)
+        .then(all => {
+            if (all && all.data.length) {
+                axios.get('/api/' + this.props.selectedRelease.ReleaseNumber + '/tcstatus/domain/' + domain)
+                    .then(res => {
+                        this.gridOperations(true);
+                        // this.setState({ doughnuts: getEachTCStatusScenario({ data: res.data, domain: domain, all: all.data }) })
+                    }, error => {
+                        this.gridOperations(true);
+                    });
+            }
+        }, error => {
+            this.gridOperations(true);
+        })
+    }
+    getTcs(CardType, domain, subDomain, priority, selectedRelease) {
+        let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
+        if (!release) {
+            return;
+        }
+        this.gridOperations(false);
+        let url = `/api/wholetcinfo/${release}?`;
+        if (CardType || domain || subDomain || priority) {
+            url = `/api/wholetcinfo/${release}?`;
+            if (CardType) url += ('&CardType=' + CardType);
+            if (domain) url += ('&Domain=' + domain);
+            if (subDomain) url += ('&SubDomain=' + subDomain);
+            if (priority) url += ('&Priority=' + priority);
+        }
+        url += ('&WorkingStatus=' + 'CREATED');
+
+        axios.get(url)
+        .then(response => {
+            this.setState({
+                showData : response.data
+            })
+        }).catch(err => {
+            console.log("Error",err);
+        })
     }
     rowSelect(e) {
         this.setState({ rowSelect: true, toggleMessage: null })
         this.props.updateTCEdit({ Master: true, errors: {} });
         this.getTC(e.data);
     }
-    getTcs() {
-        setTimeout(() => axios.get(`/user/${this.props.selectedRelease.ReleaseNumber}/pendingApproval/user/${this.props.user.email} `)
-            .then(res => {
-                if (this.props.user && this.props.user.isAdmin) {
-                    axios.get(`/user/${this.props.selectedRelease.ReleaseNumber}/pendingApproval/user/ADMIN`)
-                        .then(admin => {
-                            this.props.saveUserPendingApproval([...admin.data, ...res.data]);
-                            this.deselect();
-                            setTimeout(this.gridApi.refreshView(), 0);
-                        })
-                        .catch(err => this.props.saveUserPendingApproval(res.data))
-                } else {
-                    this.props.saveUserPendingApproval(res.data);
-                }
-            }).catch(err => this.props.saveUserPendingApproval([])), 100)
-    }
     toggle = () => this.setState({ modal: !this.state.modal });
+    toggleMultiple = () => this.setState({ modalMultiple: !this.state.modalMultiple });
+    toggleAllSAVE = () => {
+        this.setState({ multipleChanges: !this.state.multipleChanges })
+    };
+    popoverToggleSAVE = () => this.setState({ popoverOpenSAVE: !this.state.popoverOpenSAVE });
+    popoverToggleCREATED = () => this.setState({ popoverOpenCREATED: !this.state.popoverOpenCREATED });
     reset() {
         this.props.updateTCEdit({ ...this.props.tcDetails, errors: {} });
         this.setState({ isEditing: false });
     }
     textFields = [
         'Domain', 'SubDomain', 'Scenario', 'TcID', 'TcName', 'Tag', 'Assignee',
-        'Description', 'Steps', 'ExpectationBehavior', 'Notes'
+        'Description', 'Steps', 'ExpectationBehavior', 'Notes','CardType',
     ];
-    arrayFields = ['CardType', 'ServerType', 'OrchestrationPlatform']
+    arrayFields = [ 'ServerType', 'OrchestrationPlatform']
     whichFieldsUpdated(old, latest) {
         let changes = {};
         this.textFields.forEach(item => {
@@ -265,6 +393,65 @@ class PendingForApproval extends Component {
         }
         return array;
     }
+
+    // Save Multiple TC
+    saveAll() {
+        this.gridOperations(false);
+        let items = [];
+        let currentUser = "UNKNOWN"
+        if(this.props.user){
+            currentUser = this.props.user.email
+        }
+        let selectedRows = this.gridApi.getSelectedRows();
+        selectedRows.forEach(item => {
+            let pushable = {
+                TcID: item.TcID,
+                CardType: item.CardType,
+                Activity: {
+                    Release: this.props.selectedRelease.ReleaseNumber,
+                    "TcID": item.TcID,
+                    CardType: item.CardType,
+                    "UserName": this.props.user.email,
+                    LogData: ``,
+                    "RequestType": 'PUT',
+                    "URL": `/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`
+                }
+            };
+            ['WorkingStatus'].map(each => {
+                if (item[each]) {
+                    pushable[each] = item[each]
+                    let old = item[each];
+                    if (this.editedRows[`${item.TcID}_${item.CardType}`] && this.editedRows[`${item.TcID}_${item.CardType}`][each]) {
+                        old = `${this.editedRows[`${item.TcID}_${item.CardType}`][each].originalValue}`
+                    }
+                    pushable.Activity.LogData += `${each}:{old: ${old}, new: ${item[each]}}, `
+
+                    if(item[each] ==  'APPROVED'){
+                        pushable.stateUserMapping =  {"Manual Assignee":"-","Manual WorkingStatus":"Inprogress","Automation Assignee":"-","Automation WorkingStatus":"AUTO_ASSIGNED"}
+                        pushable["Manual WorkingStatus"] = "Inprogress"
+                        pushable["Manual Assignee"] = "-"
+                        pushable["Automation WorkingStatus"] = "AUTO_ASSIGNED"
+                        pushable["Automation Assignee"] = "-"
+                    }
+                    if(item[each] == 'UNAPPROVED'){
+                        pushable.stateUserMapping = {'UNAPPROVED':`${currentUser}`}
+                    }
+                }
+            })
+            items.push(pushable);
+        })
+        axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
+        .then(res => {
+            this.gridOperations(true);
+            this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
+            alert('Tc Added Successfully');
+        }, error => {
+            this.gridOperations(true);
+            alert('Failed To Add TC ',error);
+        });
+    }
+
+    // Save Single Tc
     save() {
         let data = {};
         data.OldWorkingStatus = this.props.tcDetails.WorkingStatus;
@@ -272,7 +459,6 @@ class PendingForApproval extends Component {
         this.textFields.map(item => data[item] = this.props.testcaseEdit[item]);
         this.arrayFields.forEach(item => data[item] = this.joinArrays(this.props.testcaseEdit[item]));
         data.Assignee = data.Assignee ? data.Assignee : 'ADMIN';
-
         data.WorkingStatus = this.state.approveState;
         data.Activity={
             "Date": new Date().toISOString(),
@@ -280,11 +466,29 @@ class PendingForApproval extends Component {
             "Details": this.changeLog,
             "StatusChangeComments": data.WorkingStatus === 'UNAPPROVED' ? this.state.reasonForUnapproval : ''
         };
-        axios.put(`/user/${this.props.selectedRelease.ReleaseNumber}/pendingApproval/tcinfo/${data.TcID}`, { ...data })
+
+        let currentUser = "UNKNOWN"
+        if(this.props.currentUser){
+            currentUser = this.props.currentUser
+        }
+
+        if(this.state.approveState == 'APPROVED'){
+            // data.stateUserMapping = {'APPROVED':`${currentUser}`}
+            data.stateUserMapping = {"Manual Assignee":"-","Manual WorkingStatus":"Inprogress","Automation Assignee":"-","Automation WorkingStatus":"AUTO_ASSIGNED"}
+            data["Manual WorkingStatus"] = "Inprogress"
+            data["Manual Assignee"] = "-"
+            data["Automation WorkingStatus"] = "AUTO_ASSIGNED"
+            data["Automation Assignee"] = "-"
+        }
+
+        if(this.state.approveState == 'UNAPPROVED'){
+            data.stateUserMapping = {"UNAPPROVED":`${currentUser}`}
+            // data.stateUserMapping = {'Manual Assignee':'','Manual WorkingStatus':'','Automation Assignee':'','Automation WorkingStatus':''}
+        }
+
+        axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, [data] )
             .then(res => {
-                this.setState({ addTC: { Master: true, Domain: '' }, errors: {}, toggleMessage: `TC ${this.props.testcaseEdit.TcID} Updated Successfully` });
-                this.deselect();
-                this.toggle();
+                this.setState({ addTC: { Master: true, Domain: '' }, errors: {}, toggleMessage: `TC ${this.props.testcaseEdit.TcID} Added Successfully` });
                 this.getTcs();
             }, error => {
                 let message = error.response.data.message;
@@ -374,7 +578,6 @@ class PendingForApproval extends Component {
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                         <Collapse isOpen={this.state.tcOpen}>
@@ -415,6 +618,62 @@ class PendingForApproval extends Component {
                                                     </Input>
                                                 </div>
                                             }
+                                            {
+                                                this.props.user &&
+                                                <div style={{ width: '8rem', marginLeft: '0.5rem' }}>
+                                                    <span>
+                                                        <Button  id="PopoverAssignCREATED" type="button">Apply Multiple</Button>
+                                                        <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignCREATED" id="PopoverAssignButtonCREATED" toggle={() => this.popoverToggleCREATED()} isOpen={this.state.popoverOpenCREATED}>
+                                                            <PopoverBody>
+                                                                {
+                                                                    [
+                                                                        { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(wsPA.map(each => ({ value: each, text: each })))] },
+                                                                    ].map(each => <FormGroup className='rp-app-table-value'>
+                                                                        
+                                                                        <Label className='rp-app-table-label' htmlFor={each.labels}>
+                                                                            {each.header}
+                                                                        </Label>
+                                                                        <Input  value={this.state.multi && this.state.multi[each.labels]} onChange={(e) => {
+                                                                            this.isAnyChanged = true;
+                                                                            let selectedRows = this.gridApi.getSelectedRows();
+                                                                            if (e.target.value && e.target.value !== '') {
+                                                                                selectedRows.forEach(item => {
+                                                                                    this.onCellEditing(item, each.labels, e.target.value)
+                                                                                    item[each.labels] = e.target.value;
+                                                                                })
+                                                                            }
+                                                                            this.setState({ multi: { ...this.state.multi, [each.labels]: e.target.value } })
+                                                                            setTimeout(this.gridApi.redrawRows(), 0);
+                                                                        }} type="select" id={`select_${each.labels}`}>
+                                                                            {
+                                                                                each.values.map(item => <option value={item.value}>{item.text}</option>)
+                                                                            }
+                                                                        </Input>
+                                                                    </FormGroup>)
+                                                                }
+                                                                <div style={{ float: 'right', marginBottom: '0.5rem' }}>
+                                                                    <span>
+                                                                        {
+                                                                            this.isAnyChanged &&
+                                                                            <Button  title="Undo" size="md" className="rp-rb-save-btn" onClick={() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain)} >
+                                                                                Undo
+                                                                            </Button>
+                                                                        }
+                                                                    </span>
+                                                                    <span>
+                                                                        {
+                                                                            this.isAnyChanged &&
+                                                                            <Button  title="Save" size="md" className="rp-rb-save-btn" onClick={() => { this.popoverToggleSAVE(); this.toggleAllSAVE() }} >
+                                                                                Save
+                                                                            </Button>
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                            </PopoverBody>
+                                                        </UncontrolledPopover>
+                                                    </span>
+                                                </div>
+                                            }
                                             <div class="col-md-2">
                                                 <Input type="text" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e.target.value)} />
                                             </div>
@@ -435,7 +694,7 @@ class PendingForApproval extends Component {
                                                 columnDefs={this.state.columnDefs}
                                                 rowSelection='multiple'
                                                 defaultColDef={this.state.defaultColDef}
-                                                rowData={this.state.data ? this.state.data : this.props.data ? this.props.data : []}
+                                                rowData={this.state.showData ? this.state.showData : []}
                                                 onGridReady={(params) => this.onGridReady(params)}
                                                 onCellEditingStarted={this.onCellEditingStarted}
                                                 frameworkComponents={this.state.frameworkComponents}
@@ -467,7 +726,6 @@ class PendingForApproval extends Component {
                                                             <i className="fa fa-pencil-square-o"></i>
                                                         </Button>
                                                     </Fragment>
-
                                             }
                                         </React.Fragment>
                                     }
@@ -573,6 +831,52 @@ class PendingForApproval extends Component {
 
                     </Col>
                 </Row>
+                {/* <Modal isOpen={this.state.modalMultiple} toggle={() => this.toggleMultiple()}>
+                    {
+                        <ModalHeader toggle={() => this.toggleMultiple()}>{
+                            'Confirmation'
+                        }</ModalHeader>
+                    }
+                    <ModalBody>
+                        {
+                            `Are you sure you want to make the changes?`
+                        }
+                        {
+                            < React.Fragment >
+                                <Row>
+                                    <Col xs="11" md="11" lg="11">
+
+                                    </Col>
+                                </Row>
+                            </React.Fragment>
+                        }
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => { this.toggleMultiple(); this.save() }}>Ok</Button>{' '}
+                        {
+                            <Button color="secondary" onClick={() => this.toggleMultiple()}>Cancel</Button>
+                        }
+                    </ModalFooter>
+                </Modal> */}
+                <Modal isOpen={this.state.multipleChanges} toggle={() => this.toggleAllSAVE()}>
+                    {
+                        <ModalHeader toggle={() => this.toggleAllSAVE()}>{
+                            'Confirmation'
+                        }</ModalHeader>
+                    }
+                    <ModalBody>
+                        {
+                            `Are you sure you want to update multiple changes ?`
+                        }
+
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => { this.toggleAllSAVE(); this.saveAll(); }}>Ok</Button>{' '}
+                        {
+                            <Button color="secondary" onClick={() => this.toggleAllSAVE()}>Cancel</Button>
+                        }
+                    </ModalFooter>
+                </Modal>
 
                 <Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                     {

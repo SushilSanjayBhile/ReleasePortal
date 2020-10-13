@@ -61,7 +61,6 @@ class createUser extends Component {
             "Gender": gender
         }
 
-        // console.log("formdata",formData)
         let url = `/api/userinfo/`;
         axios.post(url,formData)
         .then(response=>{

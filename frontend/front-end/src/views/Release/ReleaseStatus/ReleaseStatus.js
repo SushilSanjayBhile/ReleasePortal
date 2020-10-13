@@ -101,7 +101,6 @@ class ReleaseStatus extends Component {
                     })
                 }
                 this.setState({totalBugList:totalBugs.data})
-                // console.log("totalBugList",this.state.totalBugList);
 
             }, err => {
                 console.log('err ', err);
@@ -123,7 +122,6 @@ class ReleaseStatus extends Component {
                             for(let i = 0 ; i < this.state.blockedBugList.length ; i++){
                                 for(let j = 0 ; j < this.state.totalBugList.issues.length ; j++ ){
                                     if(this.state.totalBugList.issues[j]['key'] == this.state.blockedBugList[i]['bug_no'] ){
-                                        // console.log("bug data",this.state.totalBugList.issues[j])
                                         let bug = this.state.totalBugList.issues[j].fields
                                         list3.push({'bug_no':this.state.totalBugList.issues[j]['key'],'value':this.state.blockedBugList[i]['value'],'summary':bug.summary,'status':bug.status.name,'priority':bug.priority.name})
                                     }
@@ -143,7 +141,6 @@ class ReleaseStatus extends Component {
             let issuesArray = []
             if (this.props.selectedRelease.ReleaseNumber === "DMC-3.0"){
                 axios.get("/rest/DMCfeaturedetail/"+ res.data.key).then(res1 => {
-                    console.log("featureDetail",res1)
                     if(res1.data.issues){
                         for(let i = 0 ; i < res1.data.issues.length ; i++ ){
                             issuesArray.push(res1.data.issues[i]);
@@ -231,8 +228,6 @@ class ReleaseStatus extends Component {
         }
 
         if (this.props.feature && this.props.feature.issues) {
-            console.log("this.props.feature.issues",this.props.feature.issues)
-            // if()
             featuresCount = this.props.feature.issues.length;
             this.props.feature.issues.forEach(item => {
                 if(item.fields.status.name == 'In Progress' || item.fields.status.name == 'To Do'|| item.fields.status.name == 'Open' ) {

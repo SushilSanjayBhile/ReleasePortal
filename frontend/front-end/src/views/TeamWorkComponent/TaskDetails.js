@@ -40,12 +40,10 @@ class TaskDetails extends Component {
             },()=>{
                 this.props.userUpdated(this.state.rowData)
                 this.props.userUpdated(this.state.userData)
-                console.log("coming here",this.state.userData)
             })
         }
 
         if(this.props.startDate && newProps.startDate && this.props.startDate !== newProps.startDate || this.props.endDate && newProps.endDate && this.props.endDate !== newProps.endDate) {
-            console.log("change date",this.props.startDate , newProps.startDate )
             flag = 1
             newStartDate = newProps.startDate
             newEndDate = newProps.endDate
@@ -68,8 +66,6 @@ class TaskDetails extends Component {
             },()=>{
                 this.props.userUpdated(this.state.rowData)
                 this.props.userUpdated(this.state.userData)
-                console.log("coming here",this.state.userData)
-
                 this.getTaskDetails(this.taskListID);
             })
         }
@@ -98,7 +94,6 @@ class TaskDetails extends Component {
         })
         .then(response=>{
             let data =  response.data['todo-items']
-            console.log("data",data)
             data.map((ele)=>{
                 tempTasksArray.push(
                     {
@@ -135,7 +130,6 @@ class TaskDetails extends Component {
 
         let taskTimeCalculationURL = `${API_URL}/tasks/${taskID}/time/total.json`;
 
-        console.log("this.props.startDate",startDate,endDate)
         this.props.usersInProject.map((emp)=>{
             axios.get(taskTimeCalculationURL,{
                 params: {
@@ -149,7 +143,6 @@ class TaskDetails extends Component {
             })
             .then(response=>{
                 let taskdata = response.data
-                console.log("task",taskdata)
                 let taskName = taskdata['projects'][0]['tasklist']['task']['name']
                 let empId = emp.id;
                 let empName = emp.name

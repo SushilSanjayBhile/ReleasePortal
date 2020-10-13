@@ -2,35 +2,23 @@
 // Issues faced on customer side (jira - list)
 // customers to be given to
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import {
-    Badge, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table, Button, Input, Collapse
-    , Modal, ModalHeader, ModalBody, ModalFooter, Progress, Popover, PopoverBody,
-} from 'reactstrap';
+import {Col,Row,Button,Collapse, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import { connect } from 'react-redux';
-import { getCurrentRelease, getTCStrategyForUISubDomainsScenario } from '../../../reducers/release.reducer';
+import { getCurrentRelease,} from '../../../reducers/release.reducer';
 import {
     getTCStrategyForUIDomains, getTCStrategyForUISubDomains, alldomains, getTCStatusForSunburst,
     getTCStrategyForUISubDomainsDistribution, getTCStrategyForUIDomainsDistribution
 } from '../../../reducers/release.reducer';
 import { getEachTCStrategyScenario } from '../../../reducers/testcase.reducer';
-import { roles, workingStatuses, tcTypes } from '../../../constants';
-import { Bar, Doughnut, Line, Pie, Polar, Radar } from 'react-chartjs-2';
-import { AgGridReact } from 'ag-grid-react';
+import { Bar} from 'react-chartjs-2';
 import axios from 'axios';
 import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../actions';
-import TestCases from '../../../components/TestCases/TestCases';
 import TestCasesAll from '../../../components/TestCasesAll/TestCasesAll';
-import TestCasesLifecycle from '../../../components/TestCasesLifecycle/TestCasesLifecycle';
 
 import './ReleaseTestMetrics.scss'
 import Sunburst from '../components/Sunburst';
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
 import CreateTCs from '../CreateTCs/CreateTCs';
-import PendingForApproval from '../PendingForApproval/PendingForApproval';
-import MyTcsForRegression from '../MyTcsForRegression/MyTcsForRegression';
-import AssignTcs from '../AssignTcs/AssignTcs';
-import MyTcsPendingForApproval from '../MyTcsPendingForApproval/MyTcsPendingForApproval';
 import AddOptions from '../AddOptions/AddOptions';
 const options = {
     tooltips: {
@@ -145,21 +133,6 @@ class ReleaseTestMetrics extends Component {
         return (
             <div>
                 <TestCasesAll title={'Test Cases'} type='all'></TestCasesAll>
-                {/* <TestCasesLifecycle title={tcTypes.ALL.title} type={tcTypes.ALL}></TestCasesLifecycle> */}
-                {/* {
-                    this.props.currentUser && this.props.currentUser.isAdmin &&
-                    <TestCasesLifecycle title={tcTypes.PFAPPROVAL.title} type={tcTypes.PFAPPROVAL}></TestCasesLifecycle>
-                }
-                {
-                    this.props.currentUser && this.props.currentUser.isAdmin &&
-                    <TestCasesLifecycle title={tcTypes.PFREGRESSION.title} type={tcTypes.PFREGRESSION}></TestCasesLifecycle>
-                } */}
-
-                {/* <TestCasesAll title={tcTypes.ASSIGNAUTO.title} type={tcTypes.ASSIGNAUTO.type}></TestCasesAll>
-                <TestCasesAll title={tcTypes.ASSIGNREGRESSION.title} type={tcTypes.ASSIGNREGRESSION.type}></TestCasesAll>
-                <TestCasesAll title={tcTypes.ASSIGNEDAUTO.title} type={tcTypes.ASSIGNEDAUTO.type}></TestCasesAll>
-                <TestCasesAll title={tcTypes.ASSIGNEDREGRESSION.title} type={tcTypes.ASSIGNEDREGRESSION.type}></TestCasesAll>
-                <TestCasesAll title={tcTypes.MPFAPPROVAL.title} type={tcTypes.MPFAPPROVAL.type}></TestCasesAll> */}
                 {
                     this.props.currentUser &&
                     <CreateTCs isEditing={true} update={() => this.save()}></CreateTCs>
@@ -263,54 +236,8 @@ class ReleaseTestMetrics extends Component {
                                 </Col>
                             </Row>
                         </Collapse>
-                        {/* <Row>
-                            {
-                                this.state.doughnuts &&
-                                this.state.doughnuts.length >= 4 &&
-                                this.state.doughnuts.map((item, index) => {
-                                    if (index >= 4) {
-                                        return (<Col xs="12" sm="12" md="4" lg="4">
-                                            <div className="chart-wrapper">
-                                                <Doughnut data={item.data} />
-                                            </div>
-                                            <div className='rp-tc-dougnut-text'>
-                                                {item && item.title}
-                                            </div>
-                                        </Col>)
-                                    }
-                                })
-                            }
-                        </Row> */}
                     </Col>
                 </Row>
-
-
-
-                {
-                    // this.props.currentUser && this.props.currentUser.isAdmin &&
-                    // <UpdateTCOptions></UpdateTCOptions>
-                }
-                {/* {
-                    this.props.currentUser && this.props.currentUser.isAdmin &&
-                    <PendingForApproval></PendingForApproval>
-                } */}
-                {/* {
-                    this.props.currentUser && this.props.currentUser.isAdmin &&
-                    <AssignTcs></AssignTcs>
-                } */}
-                {/* {
-                    // this.props.currentUser && this.props.currentUser.role === 'QA' &&
-                    this.props.currentUser &&
-                    <MyTcsForRegression></MyTcsForRegression>
-                } */}
-                {/* {
-                    this.props.currentUser && this.props.currentUser.role === 'QA' &&
-                    <MyTcsForAutomation></MyTcsForAutomation>
-                } */}
-                {/* {
-                    this.props.currentUser && (this.props.currentUser.role === 'QA' || this.props.currentUser.role === 'DEVELOPER') &&
-                    <MyTcsPendingForApproval></MyTcsPendingForApproval>
-                } */}
                 {
                     this.props.currentUser && this.props.currentUser.email &&
                     <AddOptions></AddOptions>

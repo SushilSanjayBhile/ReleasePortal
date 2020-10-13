@@ -110,23 +110,6 @@ class DefaultLayout extends Component {
         }, error => {
           
         });
-    // if (this.props.allReleases.length === 0) {
-    //   let releaseAllURL = `/api/release/all`;
-    //   // let releaseInfoURL = `/api/release/info`;
-    //   axios.get(releaseAllURL)
-    //     .then(res => {
-    //       res.data.forEach(item => {
-    //         console.log("item 12345",item)
-    //         // this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
-    //       });
-    //       if (res.data[0]) {
-    //         this.props.releaseChange({ id: res.data[0].ReleaseNumber });
-    //       }
-          
-    //     }, error => {
-          
-    //     });
-    // }
   }
 
   getReleaseData = (release) =>{
@@ -134,19 +117,16 @@ class DefaultLayout extends Component {
       releaseChange:false
     })
     let releaseSpecificURL =  `/api/release/` + release;
-    // console.log("releaseSpecificURL",releaseSpecificURL)
     axios.get(releaseSpecificURL)
         .then(res => {
           this.setState({
             releaseChange:true
           })
           this.props.saveReleaseBasicInfo({ id: res.ReleaseNumber, data: res });
-          // this.props.releaseChange({ id: res.ReleaseNumber });
           this.props.releaseChange({ id: release });
           this.selectedReleaseTest = res.ReleaseNumber
-          // console.log("releaseSpecificURL",res.data);
         }, error => {
-          // console.log("error while getting data");
+          console.log("error while getting data");
         });
   }
   startPolling(email, startTime) {
@@ -175,37 +155,18 @@ class DefaultLayout extends Component {
           <Suspense fallback={this.loading()}>
             <DefaultHeader
               user={this.props.currentUser}
-              // selectedReleaseNumber={this.props.selectedRelease.ReleaseNumber}
-              // releases={this.props.allReleases &&
-              //   this.props.allReleases.map(item => item.ReleaseNumber)
-              // }
-              // onReleaseChange={(release) => {
-              //   if (release) {
-              //     // this.getReleaseData(release)
-              //     this.props.releaseChange({ id: release });
-              //   } else {
-              //     this.props.releaseChange({ id: null });
-              //   }
-              // }}
-
               selectedReleaseNumber={this.props.selectedRelease.ReleaseNumber}
               releases={this.allReleases1 &&
                 this.allReleases1.map(item => item)
               }
-              
               onReleaseChange={(release) => {
                 if (release) {
-                  
-                // this.props.saveReleaseBasicInfo({ id: 0, data: [] });
-                  // console.log("this.props.selectedRelease.ReleaseNumber",this.props.selectedRelease.ReleaseNumber)
                   this.getReleaseData(release)
                 } else {
                   this.props.releaseChange({ id: null });
                 }
               }}
-              
               onLogout={e => this.signOut(e)} />
-              
           </Suspense>
         </AppHeader>
         <div className="app-body">

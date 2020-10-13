@@ -42,7 +42,6 @@ let domainDetail = {
 
 function getAggregate(release) {
     release = release.data;
-    // console.log("getAggregate",release.ReleaseNumber)
     
     if(release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master" ){
         alldomains = ['Cluster Management', 'Application Management', 'Multizone','AirGapped','ApplicationDR','Tenant', 'Project','User Management','Service Provider','Others'];
@@ -277,7 +276,6 @@ export const getTCForStatus = (state, id) => {
     let visibleP = { Total:0,Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
     let visibleGUIP = { Total:0,Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
     if (release.Priority) {
-        // console.log("if  release.Priority",release.Priority);
         p = { ...p, ...release.TcAggregate.Priority }
         
     }
@@ -324,7 +322,6 @@ export const getTCForStatus = (state, id) => {
             str += PriorityLabel[i] + " "
         }
     }
-    // console.log("before adding to tool tip",release.TcAggregate,release.TcAggregate.all)
     let data = [{
         labels: ['Total', str],
         datasets: [
@@ -478,8 +475,6 @@ export const getTCForStatus = (state, id) => {
             ]
         })
     }
-
-    // console.log("first dataset",this.datasets)
 
     const options = {
         legend: {

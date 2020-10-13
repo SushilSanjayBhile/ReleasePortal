@@ -108,10 +108,8 @@ class ReleaseBuilds extends Component {
         newValue = newValue[4]
         let count = 0
         let buildCount = '/rest/bldservBuildCount/' + newValue;
-        // buildDataArray.push({'ReleaseNumber':this.props.selectedRelease.ReleaseNumber})
         axios.get(buildCount)
         .then(response=>{
-            // console.log("buildCount response data",response.data['response']);
             let builds = response.data['response'].builds;
             builds.forEach((item)=>{
                 let a = item.url.split("/")
@@ -155,7 +153,6 @@ class ReleaseBuilds extends Component {
         })
         axios.delete(url,{data: { data1 : buildDataArray} })
         .then(data => {
-            // console.log("data",data.data)
             document.getElementById('BuildNameToDelete').value = '';
             alert('Build Deleted Successfully' + ' ' +  newValue);
 

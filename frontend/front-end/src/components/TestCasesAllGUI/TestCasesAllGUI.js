@@ -562,7 +562,7 @@ class TestCasesAllGUI extends Component {
         }
         axios.get('/api/userinfo/')
         .then(response=>{
-            console.log("response",response)
+            
         })
         .catch(err=>{
             console.log("error",err)
@@ -639,7 +639,6 @@ class TestCasesAllGUI extends Component {
     updateReleaseInfo() {
         axios.get(`/api/release/` + this.props.selectedRelease.ReleaseNumber)
             .then(res => {
-                console.log("cli test marix",res);
                 res.data.forEach(item => {
                     this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
                 });

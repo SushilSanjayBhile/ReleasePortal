@@ -55,6 +55,8 @@ class ReleaseTestCase extends Component {
             allTestCaseStatus:[],
             allTestCaseStatusCLI:[],
             allTestCaseStatusGUI:[],
+            allSubDomainwiseStatus:[],
+            subDomainModal:false,
             overlayNoRowsTemplate: '<span class="ag-overlay-loading-center">No rows to show</span>',
 
 
@@ -182,6 +184,7 @@ class ReleaseTestCase extends Component {
             console.log('Error Getting Release Data',error);
         }) 
     }
+    
     getReleaseDataCLI = () =>{
         this.setState({allTestCaseStatusCLI:[]})
         let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
@@ -208,13 +211,13 @@ class ReleaseTestCase extends Component {
                 }
             }
             
-            // console.log("Domaindata cli",domainData);
             this.setState({allTestCaseStatusCLI:domainData})
         },
         error => {
             console.log('Error Getting Release Data',error);
         }) 
     }
+    
     getReleaseDataGUI = () =>{
         this.setState({allTestCaseStatusGUI:[]})
         let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
@@ -240,12 +243,28 @@ class ReleaseTestCase extends Component {
                     domainData.push(arr);
                 }
             }
-            console.log("Domaindata gui",this.props.selectedRelease.ReleaseNumber,domainData);
             this.setState({allTestCaseStatusGUI:domainData})
         },
         error => {
             console.log('Error Getting Release Data',error);
         }) 
+    }
+
+    selectedDomainName = (domainName) =>{
+        let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber + `/` + domainName
+        let i = 0;
+        axios.get(url)
+        .then(response=>{
+            console.log("response selectedDomainName",response.data)
+            response.data.map((item)=>{
+                console.log("item",item)
+            })
+        })
+        .catch(error=>{
+            console.log("Error Getting Data",error)
+            alert("Error Getting Data")
+        })
+        
     }
 
     renderTableDataAll  = () => {
@@ -255,7 +274,13 @@ class ReleaseTestCase extends Component {
             this.state.allTestCaseStatus.map((e, i) => {
             return (
                         <tr key={i}> 
-                            <td>{e.Domain}</td>
+                            {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
+                                <a href='#' style={{color: 'green'}}>{e.Domain}</a>
+                               
+                            </td> */}
+                            <td>
+                                {e.Domain}
+                            </td>
                             <td>{e.autoPass + e.manualPass}</td>
                             <td>{e.autoFail + e.manualFail}</td>
                             <td>{e.autoBlocked + e.manualBlocked}</td>
@@ -265,8 +290,8 @@ class ReleaseTestCase extends Component {
                 );
             })
         )
-        
     }
+
     renderTableDataCLI  = () => {
         
         return this.state.allTestCaseStatusCLI === 0 ? (
@@ -275,7 +300,12 @@ class ReleaseTestCase extends Component {
             this.state.allTestCaseStatusCLI.map((e, i) => {
             return (
                         <tr key={i}> 
-                            <td>{e.Domain}</td>
+                            {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
+                                <a href='#' style={{color: 'green'}}>{e.Domain}</a>
+                            </td> */}
+                            <td>
+                                {e.Domain}
+                            </td>
                             <td>{e.autoPass + e.manualPass}</td>
                             <td>{e.autoFail + e.manualFail}</td>
                             <td>{e.autoBlocked + e.manualBlocked}</td>
@@ -285,8 +315,30 @@ class ReleaseTestCase extends Component {
                 );
             })
         )
-        
     }
+    
+    renderTableDataSubDomain = () =>{
+
+        return this.state.allSubDomainwiseStatus === 0 ? (
+            <div>Loading...</div>
+        ) : (
+            this.state.allSubDomainwiseStatus.map((e, i) => {
+            return (
+                        <tr key={i}> 
+                            <td>{e.Domain}</td>
+                            <td>{e.autoPass + e.manualPass}</td>
+                            <td>{e.autoFail + e.manualFail}</td>
+                            <td>{e.autoBlocked + e.manualBlocked}</td>
+                            <td>{e.NotTested}</td>
+                            <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
+                        </tr>    
+                ); 
+            })
+        )
+
+    }
+
+
     renderTableDataGUI  = () => {
         
         return this.state.allTestCaseStatusGUI === 0 ? (
@@ -295,7 +347,13 @@ class ReleaseTestCase extends Component {
             this.state.allTestCaseStatusGUI.map((e, i) => {
             return (
                         <tr key={i}> 
-                            <td>{e.Domain}</td>
+                            {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
+                                <a href='#' style={{color: 'green'}}>{e.Domain}</a>
+                            </td> */}
+
+                            <td>
+                                {e.Domain}
+                            </td>
                             <td>{e.autoPass + e.manualPass}</td>
                             <td>{e.autoFail + e.manualFail}</td>
                             <td>{e.autoBlocked + e.manualBlocked}</td>
@@ -531,7 +589,7 @@ class ReleaseTestCase extends Component {
                                             }
                                             }>
                                             <Col xs="12" sm="12" md="12" lg="12">
-                                                <div style={{ marginLeft: '1rem', marginTop: '1rem', overflowY: 'scroll', maxHeight: '30rem' }}>
+                                                <div style={{ marginLeft: '1rem', marginTop: '1rem', overflowY: 'scroll', maxHeight: '80rem' }}>
                                                     <Table scroll responsive style={{ overflow: 'scroll'}} >
                                                         <thead>
                                                             <tr>
@@ -550,6 +608,9 @@ class ReleaseTestCase extends Component {
                                                             }
                                                         </tbody>
                                                     </Table>
+
+
+                                                   
                                                 </div>
                                             </Col>
                                         </Row>
@@ -611,6 +672,27 @@ class ReleaseTestCase extends Component {
                                                             }
                                                         </tbody>
                                                     </Table>
+
+                                                    {/* {
+                                                        this.state.allSubDomainwiseStatus.length && <Table scroll responsive style={{ overflow: 'scroll'}} >
+                                                            <thead>
+                                                                <tr>
+                                                                <th>Domain</th>
+                                                                <th>Pass</th>
+                                                                <th>Fail</th>
+                                                                <th>Block</th>
+                                                                <th>Not Tested</th>
+                                                                <th>Total</th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {
+                                                                    this.state.allSubDomainwiseStatus.length > 1 ? this.renderTableDataSubDomain() : <span class="ag-overlay-loading-center">Loading ...</span>
+                                                                }
+                                                            </tbody>
+                                                        </Table>
+                                                    } */}
                                                 </div>
                                             </Col>
                                         </Row>

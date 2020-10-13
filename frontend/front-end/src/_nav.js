@@ -63,6 +63,12 @@ export default {
       icon: 'fa fa-bars',
     },
 
+    // {
+    //   name: 'My Test Metrics',
+    //   url: '/release/mytestmatrics',
+    //   icon: 'fa fa-table',
+    // },
+
     {
       name: 'Jira Dashboard',
       url: 'https://diamanti.atlassian.net/secure/Dashboard.jspa?selectPageId=12400',
