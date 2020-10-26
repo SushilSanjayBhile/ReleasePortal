@@ -160,7 +160,6 @@ def TC_INFO_GET_POST_VIEW(request, Release):
         req = json.loads(request.body.decode("utf-8"))
         cards = req['CardType']
         req['stateUserMapping'] = json.dumps(req['stateUserMapping'])
-        print("\n\nrequestedData",req['stateUserMapping'],"\n\n")
 
         for card in cards:
             # post request for current release
@@ -537,26 +536,43 @@ def MULTIPLE_TC_UPDATION(request, Release):
         errRecords = []
 
         for req in requests:
+            #print(req,"\n\n")
             card = req['CardType']
             tcid = req['TcID']
 
             data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
             serializer = TC_INFO_SERIALIZER(data)
             updatedData = serializer.data
+            oldworkingStatus = updatedData["stateUserMapping"]
+            oldworkingStatus = oldworkingStatus.replace("\'","\"")
+            oldworkingStatus = json.loads(oldworkingStatus)
+            #print("oldWorkingStatus before update",oldworkingStatus)
 
             workingState = "{"
 
             if "Manual WorkingStatus" in req:
                 workingState += "\"Manual WorkingStatus\"" + ":\"" + req["Manual WorkingStatus"] + "\","
+            elif "Manual WorkingStatus" in oldworkingStatus:
+                workingState += "\"Manual WorkingStatus\"" + ":\"" + oldworkingStatus["Manual WorkingStatus"] + "\","
+            
             if "Automation Assignee" in req:
                 workingState += "\"Automation Assignee\"" + ":\"" + req["Automation Assignee"] + "\","
+            elif "Automation Assignee" in oldworkingStatus:
+                workingState += "\"Automation Assignee\"" + ":\"" + oldworkingStatus["Automation Assignee"] + "\","
+            
             if "Automation WorkingStatus" in req:
                 workingState += "\"Automation WorkingStatus\"" + ":\"" + req["Automation WorkingStatus"] + "\","
+            elif "Automation WorkingStatus" in oldworkingStatus:
+                workingState += "\"Automation WorkingStatus\"" + ":\"" + oldworkingStatus["Automation WorkingStatus"] + "\","
+            
             if "Manual Assignee" in req:
                 workingState += "\"Manual Assignee\"" + ":\"" + req["Manual Assignee"] + "\""
+            elif "Manual Assignee" in oldworkingStatus:
+                workingState += "\"Manual Assignee\"" + ":\"" + oldworkingStatus["Manual Assignee"] + "\""
 
             workingState += "}"
 
+            #print("after update working status",workingState)
             updatedData["stateUserMapping"] = workingState
 
             for key in req:

@@ -302,6 +302,7 @@ def domain_cli_aggreggation(cliTcInfo, cliStatus):
     csd = {} #csd stands for cli status dict
     myDict = {}
     myDict['domain-cli'] = {}
+    subDomainDict = {}
     global statusList
 
     cid, csd = get_cli_dataDict(cliTcInfo, cliStatus)
@@ -316,8 +317,10 @@ def domain_cli_aggreggation(cliTcInfo, cliStatus):
     # domain-cli default dictionary creation
     for dom in domains:
         sdomain = dom["Domain"]
+        domainCliTcInfo = cliTcInfo.filter(Domain=sdomain)
         if sdomain not in myDict['domain-cli']:
             myDict['domain-cli'][sdomain] = {}
+        myDict['domain-cli'][sdomain]["subDomain-cli"] = subDomain_cli_aggreggation(domainCliTcInfo, cliStatus) # subDomain wise aggregation
 
         if "NotApplicable" not in myDict['domain-cli'][sdomain]:
             myDict['domain-cli'][sdomain]['NotApplicable'] = 0
@@ -495,6 +498,7 @@ def domain_gui_aggreggation(guiTcInfo, guiStatus):
     priorityList = ['P0','P1','P2','P3','P4','P5','P6','P7']
 
     domains = guiTcInfo.values('Domain').distinct()
+    #print("gui domain",domains,"\n\n")
 
     # domain wise GUI statistics
     # domain-gui default dictionary creation
@@ -698,7 +702,6 @@ def TCAGGREGATE(Release):
 
 
 def subDomain_cli_aggreggation(cliTcInfo,cliStatus):
-    
     cid = {} #cid stands for cli info dict
     csd = {} #csd stands for cli status dict
     myDict = {}
