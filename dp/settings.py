@@ -149,6 +149,15 @@ DATABASES = {
         'PORT': portNumber,
         },
 
+    'DMC-3.1': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DMC-3.1',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+
     'universal': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'universal',
