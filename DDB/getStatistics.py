@@ -60,21 +60,23 @@ def BUG_WISE_BLOCKED_TCS(request, Release):
             sres = stat["Result"]
             stcname = stat["TcName"]
             
-            try:
-                spriority = stat["Priority"]
-            except:
-                continue
+            #try:
+            #    spriority = stat["Priority"]
+            #except:
+            #    continue
 
             #priority check
-            if spriority != "Skip" and spriority != "NA":
-                try:
-                    if stat["Bugs"] != '':
-                        if stat["Bugs"] in blockedDict:
-                            blockedDict[stat["Bugs"]] += 1
-                        else:
-                            blockedDict[stat["Bugs"]] = 1
-                except:
-                    pass
+            #if spriority != "Skip" and spriority != "NA":
+            #if sres == "Blocked":
+             #   print(sres,stat,"\n\n")
+            try:
+                if stat["Bugs"] != '':
+                    if stat["Bugs"] in blockedDict:
+                        blockedDict[stat["Bugs"]] += 1
+                    else:
+                        blockedDict[stat["Bugs"]] = 1
+            except:
+                pass
         
         
         for id in gsd:
