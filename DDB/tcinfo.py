@@ -545,8 +545,19 @@ def MULTIPLE_TC_UPDATION(request, Release):
             updatedData = serializer.data
             oldworkingStatus = updatedData["stateUserMapping"]
             oldworkingStatus = oldworkingStatus.replace("\'","\"")
-            oldworkingStatus = json.loads(oldworkingStatus)
-            #print("oldWorkingStatus before update",oldworkingStatus)
+            try:
+                oldworkingStatus = json.loads(oldworkingStatus)
+            except:
+                workingStatusReplace = "{\"CREATED\":\"DEFAULT\"}"
+                updatedData["stateUserMapping"] = workingStatusReplace
+                updateData(updatedData, data, Release)
+
+                data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+                serializer = TC_INFO_SERIALIZER(data)
+                updatedData = serializer.data
+                oldworkingStatus = updatedData["stateUserMapping"]
+                oldworkingStatus = oldworkingStatus.replace("\'","\"")
+                oldworkingStatus = json.loads(oldworkingStatus)
 
             workingState = "{"
 

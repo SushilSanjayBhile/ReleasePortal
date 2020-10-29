@@ -124,6 +124,14 @@ DATABASES = {
         'HOST': hostName,
         'PORT': portNumber,
         },
+    'Overlay-3.1': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'Overlay-3.1',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'DCX-3.0': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'DCX-3.0',
