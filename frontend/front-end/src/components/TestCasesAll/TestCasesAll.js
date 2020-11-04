@@ -954,6 +954,8 @@ class TestCasesAll extends Component {
     //SAVE TC
     saveAll() {
         this.gridOperations(false);
+        let auto_assignee = ''
+        let auto_workingState = ''
         let items = [];
         let statusItems = [];
         let selectedRows = this.gridApi.getSelectedRows();
@@ -971,17 +973,7 @@ class TestCasesAll extends Component {
                     "URL": `/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`
                 }
             };
-            // ['Priority', 'Manual Assignee', 'Manual WorkingStatus', 'Automation Assignee', 'Automation WorkingStatus'].map(each => {
-            //     if (item[each]) {
-            //         pushable[each] = item[each]
-            //         let old = item[each];
-            //         if (this.editedRows[`${item.TcID}_${item.CardType}`] && this.editedRows[`${item.TcID}_${item.CardType}`][each]) {
-            //             old = `${this.editedRows[`${item.TcID}_${item.CardType}`][each].originalValue}`
-            //         }
-            //         pushable.Activity.LogData += `${each}:{old: ${old}, new: ${item[each]}}, `
-            //     }
-                
-            // })
+            
             ['Priority', 'Assignee',  'WorkingStatus'].map(each => {
                 if (item[each]) {
                     pushable[each] = item[each]
@@ -990,6 +982,21 @@ class TestCasesAll extends Component {
                         old = `${this.editedRows[`${item.TcID}_${item.CardType}`][each].originalValue}`
                     }
                     pushable.Activity.LogData += `${each}:{old: ${old}, new: ${item[each]}}, `
+
+                    if(each ==  'Assignee'){
+                        auto_assignee = item[each]
+                        pushable["Automation Assignee"] = item[each]
+
+                    }
+                   
+                    if(each == 'WorkingStatus'){
+                        auto_workingState = item[each]
+                        pushable["Automation WorkingStatus"] = item[each]
+                    }
+
+                    pushable.stateUserMapping =  {"Manual Assignee" : item.Creator,"Manual WorkingStatus" : "Inprogress","Automation Assignee" : auto_assignee ,"Automation WorkingStatus":auto_workingState}
+                    pushable["Manual WorkingStatus"] = "Inprogress"
+                    pushable["Manual Assignee"] = item.Creator
                 }
             })
             if (this.state.multi && this.state.multi.Build ) {
@@ -1103,13 +1110,7 @@ class TestCasesAll extends Component {
         return array;
     }
     save() {
-        if(this.isBlockedOrFailed){
-            if(document.getElementById('select_Build').value =='' && document.getElementById('select_Bugs').value == ''){
-                alert("Build and bug number mandatory");
-            }
-        }
         let data = {};
-        
         this.textFields.map(item => data[item] = this.props.testcaseEdit[item]);
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
@@ -1416,16 +1417,8 @@ class TestCasesAll extends Component {
                                                                 {
                                                                     [
                                                                         { labels: 'Priority', values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] },
-                                                                        // { labels: 'Manual Assignee', values: [{ value: '', text: 'Select Manual Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
-                                                                        // { labels: 'Manual WorkingStatus', values: [{ value: '', text: 'Select Manual Working Status' }, ...(wsM.map(each => ({ value: each, text: each })))] },
-                                                                        // { labels: 'Automation Assignee', values: [{ value: '', text: 'Select Automation Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
-                                                                        // { labels: 'Automation WorkingStatus', values: [{ value: '', text: 'Select Automated Working Status' }, ...(wsA.map(each => ({ value: each, text: each })))] },
-
                                                                         { labels: 'Assignee', values: [{ value: '', text: 'Select Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
-                                                                        { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(ws.map(each => ({ value: each, text: each })))] },
-                                                                        
-
-                                                                        
+                                                                        { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(wsA.map(each => ({ value: each, text: each })))] },
                                                                     ].map(each => <FormGroup className='rp-app-table-value'>
                                                                         <Label className='rp-app-table-label' htmlFor={each.labels}>
                                                                             {each.header}

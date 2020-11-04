@@ -91,6 +91,31 @@ app.use('/rest/epic/:id', (req, res) => {
     })
 }, err => { })
 
+
+// app.use('/rest/DSSepic/:id', (req, res) => {
+//     // var str = `?jql=project%20in%20(SPEK%2C%20DWS)%20AND%20issuetype%20in%20(Bug%2C%20Epic%2C%20Improvement%2C%20Task)%20AND%20%22Epic%20Link%22%20%3D%20DWS-6707%20ORDER%20BY%20summary%20ASC%2C%20created%20DESC&fields=key,summary,status&maxResults=2000`
+//     var str = `?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20%3D%20Bug%20AND%20%22Epic%20Link%22%20%3D%20DWS-6707%20order%20by%20created%20&fields=key,summary,status&maxResults=2000`
+
+    
+//     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult, response) {
+//         if (response.statusCode === 401) {
+//             loginJIRA().then(function () {
+//                 client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult2, response2) {
+//                     console.log("calling this function",searchResult2)
+//                     res.send(searchResult2);
+//                 }, err => { console.log(err) });
+//             }).catch(err => { console.log('rpomise failed'); console.log(err) })
+//         } else {
+//             res.send(searchResult);
+//         }
+//     }, err => {
+//         console.log('caught error in primitive')
+//     });
+//     jiraReq.on('error', function (err) {
+//         console.log('cannot get features due to error in fetching JIRA')
+//     })
+// }, err => { })
+
 app.use('/rest/DMCfeaturedetail/:id', (req, res) => {
     var str = `?jql=project%3D%20SPEK%20and%20%22Epic%20Link%22%20%3D%20${req.params.id}%20order%20by%20created%20DESC&fields=key,summary,subtasks,created,progress,status,updated,priority&maxResults=2000`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult, response) {
@@ -114,6 +139,8 @@ app.use('/rest/DMCfeaturedetail/:id', (req, res) => {
 
 app.use('/rest/bugs/total/:id', (req, res) => {
     var totalBugsStr = `?jql=fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug")&fields=key,status,priority,summary&maxResults=2000`
+    
+    console.log("url for bugs",totalBugsStr)
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
         if (response.statusCode === 401) {
             loginJIRA().then(function () {

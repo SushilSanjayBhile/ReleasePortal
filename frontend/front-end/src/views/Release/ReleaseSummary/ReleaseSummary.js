@@ -255,6 +255,21 @@ class ReleaseSummary extends Component {
         if(temp === 'DMC-3.0') {
             temp="\"Spektra 3.0\""
         }
+        if(temp === 'DSS-3.1') {
+            temp="3.1.0"
+        }
+
+        // if(release === 'DSS-3.1'){
+        //     axios.get('/rest/DSSepic/' + temp)
+        //     .then(res => {
+        //         console.log("DSS epic",res.data)
+        //         this.props.saveFeatures({ data: res.data, id: release })
+        //         this.setState({ showFeatures: true })
+        //     }, err => {
+        //         console.log('err ', err);
+        //     });
+        // }
+        
         if(release === 'DMC-3.0'){
             axios.get('/rest/epic/' + temp)
             .then(res => {
@@ -263,7 +278,8 @@ class ReleaseSummary extends Component {
             }, err => {
                 console.log('err ', err);
             });
-        }else{
+        }
+        else{
 
             axios.get('/rest/features/' + temp)
             .then(res => {

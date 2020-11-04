@@ -59,20 +59,10 @@ class ReleaseStatus extends Component {
         if (this.props.statusPage) {
             this.setState({ ...this.state, ...this.props.statusPage });
         }
-    }
-    componentDidMount() {
-        this.initialize();
         
-    }
-    componentWillReceiveProps(newProps) {
-        if(this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
-            this.props.history.push('/release/summary')
-            // this.initialize();
-        }
-        if(this.props.selectedRelease.ReleaseNumber){
-            let release = this.props.selectedRelease.ReleaseNumber;
-            
-            let tempRelease = release
+        
+        let tempRelease = this.props.selectedRelease.ReleaseNumber
+        let release = this.props.selectedRelease.ReleaseNumber
             let totalCount = 0
             let maxResults = 0
             let totalBugs = []
@@ -82,6 +72,9 @@ class ReleaseStatus extends Component {
             }
             if(tempRelease === 'DMC-3.0') {
                 tempRelease="\"Spektra 3.0\""
+            }
+            if(tempRelease === 'DSS-3.1') {
+                tempRelease='3.1.0'
             }
 
             axios.get('/rest/bugs/total/' + tempRelease)
@@ -100,41 +93,74 @@ class ReleaseStatus extends Component {
                         }
                     })
                 }
-                this.setState({totalBugList:totalBugs.data})
+        
+                this.setState({totalBugList:totalBugs.data},()=>{
+                    if(this.state.totalBugList){
+                        this.BlockedBugList(release)
+                     }else{
+                        console.log("coming in empty totalBugList")
+                     }
+                })
+
+                
 
             }, err => {
                 console.log('err ', err);
             })
+    }
+    componentDidMount() {
+        this.initialize();
+        
+    }
+    componentWillReceiveProps(newProps) {
+        if(this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
+            this.props.history.push('/release/summary')
+            this.initialize();
+        }
+    }
 
-            //calculate blocker bug count
-            let list = []
-            let list2 = []
-            let url  = `/api/bugwiseblockedtcs/` + release
-            axios.get(url).then(res=>{
-                        list.push(res.data);
-                        for (let [key, value] of Object.entries(list[0])) {
-                            list2.push({'bug_no':key,'value':value})
-                        }
-                        let a = this.sortBugList(list2)
-                        this.setState({blockedBugList:list2})
-                        let list3 = []
-                        if(this.state.totalBugList.issues){
-                            for(let i = 0 ; i < this.state.blockedBugList.length ; i++){
-                                for(let j = 0 ; j < this.state.totalBugList.issues.length ; j++ ){
-                                    if(this.state.totalBugList.issues[j]['key'] == this.state.blockedBugList[i]['bug_no'] ){
-                                        let bug = this.state.totalBugList.issues[j].fields
-                                        list3.push({'bug_no':this.state.totalBugList.issues[j]['key'],'value':this.state.blockedBugList[i]['value'],'summary':bug.summary,'status':bug.status.name,'priority':bug.priority.name})
+    BlockedBugList = (release) =>{
+        //calculate blocker bug count
+        let list = []
+        let list2 = []
+        let url  = `/api/bugwiseblockedtcs/` + release
+        axios.get(url).then(res=>{
+                    // console.log("response of blocked data",res.data)
+                    list.push(res.data);
+                    for (let [key, value] of Object.entries(list[0])) {
+                        list2.push({'bug_no':key,'value':value})
+                    }
+                    let a = this.sortBugList(list2)
+                    this.setState({blockedBugList:list2})
+                    let list3 = []
+                    let list4 = []
+                    if(this.state.totalBugList.issues){
+                        for(let i = 0 ; i < this.state.blockedBugList.length ; i++){
+                            for(let j = 0 ; j < this.state.totalBugList.issues.length ; j++ ){
+                                if(this.state.totalBugList.issues[j]['key'] == this.state.blockedBugList[i]['bug_no'] ){
+                                    let bug = this.state.totalBugList.issues[j].fields
+                                    list3.push({'bug_no':this.state.totalBugList.issues[j]['key'],'value':this.state.blockedBugList[i]['value'],'summary':bug.summary,'status':bug.status.name,'priority':bug.priority.name})
+                                }
+                                else{
+                                    if (this.state.blockedBugList[i]['bug_no'].indexOf(',') != -1) {
+                                        list3.push({'bug_no':this.state.blockedBugList[i]['bug_no'],'value':this.state.blockedBugList[i]['value'],'summary':'','status':'','priority':''})
                                     }
+                                    
                                 }
                             }
-    
-                        this.setState({blockedBugList:list3})
                         }
-                    },
-                    error => {
-                    console.log('bugwiseblockedtcs',error);
-            }) 
-        }
+                    
+                    for(let i = 0; i < list3.length-1;i++){
+                        if(list3[i]['bug_no'] !== list3[i+1]['bug_no'] ){
+                            list4.push(list3[i])
+                        }
+                    }
+                    this.setState({blockedBugList:list4})
+                    }
+                },
+                error => {
+                console.log('bugwiseblockedtcs',error);
+        }) 
     }
     getFeatureDetails(dws) {
         axios.post('/rest/featuredetail', { data: dws }).then(res => {
@@ -164,7 +190,7 @@ class ReleaseStatus extends Component {
         
     renderTableData  = () => {
         
-        return this.state.blockedBugList === 0 ? (
+        return this.state.blockedBugList == 0 ? (
             <div>Loading...</div>
         ) : (
             this.state.blockedBugList.map((e, i) => {
@@ -354,7 +380,7 @@ class ReleaseStatus extends Component {
                             <div class="row">
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
-                                        <div onClick={() => this.setState({ blockedBugOpen: !this.state.blockedBugOpen })} style={{ display: 'inlineBlock' }}>
+                                        <div onClick={() => this.setState({ blockedBugOpen: !this.state.blockedBugOpen },()=>{this.BlockedBugList(this.props.selectedRelease.ReleaseNumber)})} style={{ display: 'inlineBlock' }}>
                                         
                                         {
                                             !this.state.blockedBugOpen &&

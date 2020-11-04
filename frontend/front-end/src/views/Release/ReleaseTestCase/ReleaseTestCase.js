@@ -55,6 +55,7 @@ class ReleaseTestCase extends Component {
             allTestCaseStatus:[],
             allTestCaseStatusCLI:[],
             allTestCaseStatusGUI:[],
+            allDomains:[],
             allSubDomainwiseStatus:[],
             subDomainModal:false,
             overlayNoRowsTemplate: '<span class="ag-overlay-loading-center">No rows to show</span>',
@@ -186,6 +187,7 @@ class ReleaseTestCase extends Component {
     }
     
     getReleaseDataCLI = () =>{
+        let domainList = []
         this.setState({allTestCaseStatusCLI:[]})
         let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
         axios.get(url).then(res=>{
@@ -211,7 +213,9 @@ class ReleaseTestCase extends Component {
                 }
             }
             
-            this.setState({allTestCaseStatusCLI:domainData})
+            this.setState({
+                allTestCaseStatusCLI:domainData,
+            })
         },
         error => {
             console.log('Error Getting Release Data',error);
@@ -250,22 +254,70 @@ class ReleaseTestCase extends Component {
         }) 
     }
 
-    selectedDomainName = (domainName) =>{
-        let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber + `/` + domainName
-        let i = 0;
-        axios.get(url)
-        .then(response=>{
-            console.log("response selectedDomainName",response.data)
-            response.data.map((item)=>{
-                console.log("item",item)
+    subDomainByDomain(domainName){
+        let subDomainData = []
+
+        this.state.allTestCaseStatusCLI.map((item)=>{
+            if(item['Domain'] == domainName){
+                console.log("subDomain",item['subDomain-cli'])
+                for (const [key, value] of Object.entries(item['subDomain-cli'])) {
+                    console.log(key, value);
+                    let arr = {}
+                    arr['subDomain'] = key
+
+                    for(const [key1, value1] of Object.entries(value)){
+                        if(key1 == 'Tested'){
+                            for(const [key2, value2] of Object.entries(value1)){
+                                for(const [key3, value3] of Object.entries(value2)){
+                                    let str = key2 + key3
+                                    arr[str] = value3;
+                                }
+                            }
+                        }
+                        else{
+                            arr[key1] = value1;
+                        }
+                    }
+                    subDomainData.push(arr)
+                }
+            }
+
+            this.setState({
+                allSubDomainwiseStatus  : subDomainData
             })
+
         })
-        .catch(error=>{
-            console.log("Error Getting Data",error)
-            alert("Error Getting Data")
-        })
+
         
     }
+
+
+    renderTableDataSubDomain  = () => {
+        return this.state.allSubDomainwiseStatus === 0 ? (
+            <div>Loading...</div>
+        ) : (
+            this.state.allSubDomainwiseStatus.map((e, i) => {
+            return (
+                        <tr key={i}> 
+                            {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
+                                <a href='#' style={{color: 'green'}}>{e.Domain}</a>
+                               
+                            </td> */}
+                            <td>
+                                {e.subDomain}
+                            </td>
+                            <td>{e.autoPass + e.manualPass}</td>
+                            <td>{e.autoFail + e.manualFail}</td>
+                            <td>{e.autoBlocked + e.manualBlocked}</td>
+                            <td>{e.NotTested}</td>
+                            <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
+                        </tr>    
+                );
+            })
+        )
+    }
+
+
 
     renderTableDataAll  = () => {
         return this.state.allTestCaseStatus === 0 ? (
@@ -300,12 +352,12 @@ class ReleaseTestCase extends Component {
             this.state.allTestCaseStatusCLI.map((e, i) => {
             return (
                         <tr key={i}> 
-                            {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
+                            <td onClick={() => this.subDomainByDomain(e.Domain)}>
                                 <a href='#' style={{color: 'green'}}>{e.Domain}</a>
-                            </td> */}
-                            <td>
-                                {e.Domain}
                             </td>
+                            {/* <td>
+                                {e.Domain}
+                            </td> */}
                             <td>{e.autoPass + e.manualPass}</td>
                             <td>{e.autoFail + e.manualFail}</td>
                             <td>{e.autoBlocked + e.manualBlocked}</td>
@@ -316,28 +368,6 @@ class ReleaseTestCase extends Component {
             })
         )
     }
-    
-    renderTableDataSubDomain = () =>{
-
-        return this.state.allSubDomainwiseStatus === 0 ? (
-            <div>Loading...</div>
-        ) : (
-            this.state.allSubDomainwiseStatus.map((e, i) => {
-            return (
-                        <tr key={i}> 
-                            <td>{e.Domain}</td>
-                            <td>{e.autoPass + e.manualPass}</td>
-                            <td>{e.autoFail + e.manualFail}</td>
-                            <td>{e.autoBlocked + e.manualBlocked}</td>
-                            <td>{e.NotTested}</td>
-                            <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
-                        </tr>    
-                ); 
-            })
-        )
-
-    }
-
 
     renderTableDataGUI  = () => {
         
@@ -673,11 +703,15 @@ class ReleaseTestCase extends Component {
                                                         </tbody>
                                                     </Table>
 
-                                                    {/* {
-                                                        this.state.allSubDomainwiseStatus.length && <Table scroll responsive style={{ overflow: 'scroll'}} >
+                                                    
+
+                                                    {
+                                                        this.state.allSubDomainwiseStatus.length && 
+                                                        <Table scroll responsive style={{ overflow: 'scroll'}} >
+                                                            {/* <div> SubDomain List for selected Domain</div> */}
                                                             <thead>
                                                                 <tr>
-                                                                <th>Domain</th>
+                                                                <th>SubDomain</th>
                                                                 <th>Pass</th>
                                                                 <th>Fail</th>
                                                                 <th>Block</th>
@@ -692,7 +726,7 @@ class ReleaseTestCase extends Component {
                                                                 }
                                                             </tbody>
                                                         </Table>
-                                                    } */}
+                                                    }
                                                 </div>
                                             </Col>
                                         </Row>

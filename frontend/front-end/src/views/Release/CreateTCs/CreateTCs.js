@@ -37,7 +37,7 @@ class CreateTCs extends Component {
     textFields = [
         'Domain', 'SubDomain',
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'AutoAssignee', 'DevAssignee', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes',
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes','Creator',
     ];
     arrayFields = ['CardType', 'ServerType']
     whichFieldsUpdated(old, latest) {
@@ -113,6 +113,8 @@ class CreateTCs extends Component {
         let currentUser = this.props.currentUser.email
         data.stateUserMapping = {"CREATED" : `${currentUser}`}
         data.TcName = this.getTcName(`${data.TcName}`);
+        data.Creator = data.Creator;
+        data.Assignee = data.Creator;
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 // this.getTcs();

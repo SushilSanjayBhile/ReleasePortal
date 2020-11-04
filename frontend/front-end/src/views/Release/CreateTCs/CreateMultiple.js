@@ -157,7 +157,7 @@ class CreateMultiple extends Component {
     textFields = [
         'Domain', 'SubDomain',
         'TcID', 'TcName', 'Scenario', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'Assignee',
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'Assignee','Creator',
     ];
     arrayFields = ['CardType']
     getTcName(name) {
@@ -191,7 +191,9 @@ class CreateMultiple extends Component {
         let currentUser = this.props.currentUser.email
         data.stateUserMapping = {"CREATED" : `${currentUser}`}
         data.TcName = this.getTcName(`${data.TcName}`);
-        
+        data.Creator = data.Creator;
+        // data.Assignee = data.Creator;
+        console.log("data before post request",data);
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
 
@@ -348,7 +350,7 @@ class CreateMultiple extends Component {
     textFields = [
         'Domain', 'SubDomain',
         'TcID', 'TcName', 'Scenario', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes',
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes','Creator',
     ];
     arrayFields = ['CardType', 'ServerType']
     whichFieldsUpdated(old, latest) {

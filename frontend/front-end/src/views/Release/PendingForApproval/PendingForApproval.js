@@ -108,21 +108,21 @@ class PendingForApproval extends Component {
                     headerName: "Tc Name", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell
                 },
                 {
-                    headerName: "Card Type", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100'
+                    headerName: "Card Type", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, 
                 },
                 {
-                    headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100'
+                    headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell, 
                 },
                 {
-                    headerName: "Sub Domain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+                    headerName: "Sub Domain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell, 
                 },
                 
-                {
-                    headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100'
-                },
-                {
-                    headerName: "Server Type", field: "ServerType", sortable: true, filter: true, cellStyle: this.renderEditedCell
-                }
+                // {
+                //     headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100'
+                // },
+                // {
+                //     headerName: "Server Type", field: "ServerType", sortable: true, filter: true, cellStyle: this.renderEditedCell
+                // }
             ],
             defaultColDef: { resizable: true },
 
@@ -399,11 +399,14 @@ class PendingForApproval extends Component {
         this.gridOperations(false);
         let items = [];
         let currentUser = "UNKNOWN"
+        let tcResult = ''
         if(this.props.user){
             currentUser = this.props.user.email
         }
         let selectedRows = this.gridApi.getSelectedRows();
         selectedRows.forEach(item => {
+            tcResult = item.CurrentStatus.Result
+            console.log("selected row",item.CurrentStatus.Result)
             let pushable = {
                 TcID: item.TcID,
                 CardType: item.CardType,
@@ -427,11 +430,23 @@ class PendingForApproval extends Component {
                     pushable.Activity.LogData += `${each}:{old: ${old}, new: ${item[each]}}, `
 
                     if(item[each] ==  'APPROVED'){
-                        pushable.stateUserMapping =  {"Manual Assignee":"-","Manual WorkingStatus":"Inprogress","Automation Assignee":"-","Automation WorkingStatus":"AUTO_ASSIGNED"}
-                        pushable["Manual WorkingStatus"] = "Inprogress"
-                        pushable["Manual Assignee"] = "-"
-                        pushable["Automation WorkingStatus"] = "AUTO_ASSIGNED"
-                        pushable["Automation Assignee"] = "-"
+                        if(tcResult === ""){
+                            console.log("coming in tcresult",tcResult)
+                            pushable.stateUserMapping =  {"Manual Assignee" : item.Creator,"Manual WorkingStatus" : "Inprogress","Automation Assignee" : "-","Automation WorkingStatus":"AUTO_ASSIGNED"}
+                            pushable["Manual WorkingStatus"] = "Inprogress"
+                            pushable["Manual Assignee"] = item.Creator
+                            pushable["Automation WorkingStatus"] = "AUTO_ASSIGNED"
+                            pushable["Automation Assignee"] = "-"
+
+                        }
+                        else{
+                            pushable.stateUserMapping =  {"Manual Assignee" : item.Creator,"Manual WorkingStatus" : "MANUAL_COMPLETED","Automation Assignee" : "-","Automation WorkingStatus":"AUTO_ASSIGNED"}
+                            pushable["Manual WorkingStatus"] = "MANUAL_COMPLETED"
+                            pushable["Manual Assignee"] = item.Creator
+                            pushable["Automation WorkingStatus"] = "AUTO_ASSIGNED"
+                            pushable["Automation Assignee"] = "-"
+                        }
+                        
                     }
                     if(item[each] == 'UNAPPROVED'){
                         pushable.stateUserMapping = {'UNAPPROVED':`${currentUser}`}
