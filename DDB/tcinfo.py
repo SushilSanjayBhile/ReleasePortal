@@ -10,6 +10,7 @@ from django.db.models import Q
 
 import datetime
 from .forms import LogForm
+from itertools import chain
 
 def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
     Timestamp = datetime.datetime.now()
@@ -77,9 +78,22 @@ def WHOLE_TC_INFO(request, Release):
         CardType = str(request.GET.get('CardType', None))
         Priority = str(request.GET.get('Priority', None))
         WorkingStatus = str(request.GET.get('WorkingStatus',None))
+        Applicable = str(request.GET.get('applicable',None))
 
         statusdata = TC_STATUS.objects.using(Release).all().order_by('Date')
         infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
+        if Applicable != 'None':
+            if "," in Applicable:
+                appl = Applicable.split(",")
+
+                for a in appl:
+                    infod = infodata.filter(applicable = a)
+                    try:
+                        infodataone = infodataone | infod
+                    except:
+                        infodataone = infod
+
+                infodata = infodataone
         if Domain != 'None':
             infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':
@@ -265,6 +279,7 @@ def updateData(updatedData, data, Release):
      data.Priority = updatedData['Priority']
      data.Tag = updatedData['Tag']
      data.stateUserMapping = updatedData['stateUserMapping']
+     data.applicable = updatedData['applicable']
  
      data.save(using = Release)
      return 1
@@ -495,6 +510,30 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
         for req in requests:
             card = req['CardType']
             tcid = req['TcID']
+            
+            try:
+                # for master release
+                if Release != "TestDatabase":
+                    if "dmc" in Release.lower():
+                        master = "DMC Master"
+                    else:
+                        master = "master"
+                dataMaster = TC_INFO.objects.using(master).filter(TcID = tcid).get(CardType = card)
+                serializerMaster = TC_INFO_SERIALIZER(dataMaster)
+                updatedDataMaster = serializerMaster.data 
+                
+                for key in req:
+                    if key in updatedDataMaster and (key != "CardType" and key != "TcID" and key != "Priority" and key != "applicable"):
+                        updatedDataMaster[key] = req[key]
+                
+                updateData(updatedDataMaster, dataMaster, master)
+                
+                if "Activity" in requests:
+                    AD = requests['Activity']
+                    GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], master)
+        
+            except:
+                pass
 
             try:
                 data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
@@ -510,15 +549,6 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
                 if "Activity" in requests:
                     AD = requests['Activity']
                     GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
-        
-                if Release != "TestDatabase":
-                    if "dmc" in Release.lower():
-                        master = "DMC Master"
-                    else:
-                        master = "master"
-                
-                    updateData(updatedData, data, master)
-        
             except:
                 if card not in errRec:
                     errRec[card] = []
@@ -536,7 +566,7 @@ def MULTIPLE_TC_UPDATION(request, Release):
         errRecords = []
 
         for req in requests:
-            #print(req,"\n\n")
+            print("tc for updation",req,"\n\n")
             card = req['CardType']
             tcid = req['TcID']
 

@@ -36,6 +36,7 @@ class TC_INFO(models.Model):
     Priority = models.CharField(max_length = 5, blank = True, default = "P4")
     #deleted = models.BooleanField(default = False)
     stateUserMapping = models.TextField(blank = True, default = "{\"CREATED\":\"DEFAULT\"}")
+    applicable = models.TextField(blank = True, default = 'APPLICABLE')
 
 
     def __str__(self):

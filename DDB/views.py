@@ -419,10 +419,13 @@ def get_cli_priorityDict(cliTcInfo,cliStatus):
                     continue
 
                 #check to add unblocked in not tested
-                if result == "Unblocked":
-                    myDict['Priority'][priority]['NotTested'] += 1
-                elif result != "":
-                    myDict['Priority'][priority][result] += 1
+                try:
+                    if result == "Unblocked":
+                        myDict['Priority'][priority]['NotTested'] += 1
+                    elif result != "":
+                        myDict['Priority'][priority][result] += 1
+                except:
+                    continue
     return myDict["Priority"]
 
 
