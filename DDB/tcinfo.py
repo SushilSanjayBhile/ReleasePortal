@@ -80,6 +80,22 @@ def WHOLE_TC_INFO(request, Release):
         WorkingStatus = str(request.GET.get('WorkingStatus',None))
         Applicable = str(request.GET.get('applicable',None))
 
+        infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
+        infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
+
+        for i in infoserializer.data:
+            tcid = i["TcID"]
+            card = i["CardType"]
+            try:
+                data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+                serializer = TC_INFO_SERIALIZER(data)
+                updatedData = serializer.data
+
+                if "APPLICABLE" in updatedData["applicable"]:
+                    updatedData["applicable"] = "Applicable"
+                    updateData(updatedData, data, Release)
+            except:
+                pass
         statusdata = TC_STATUS.objects.using(Release).all().order_by('Date')
         infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
         if Applicable != 'None':
@@ -105,7 +121,8 @@ def WHOLE_TC_INFO(request, Release):
         if WorkingStatus != 'None':
             infodata = infodata.filter(stateUserMapping__icontains = WorkingStatus)
 
-        count = int(request.GET.get('count', len(infodata)))
+        #count = int(request.GET.get('count', len(infodata)))
+        count = int(request.GET.get('count', 25))
         try:
             infodata = infodata[index : (index + count)]
         except:
