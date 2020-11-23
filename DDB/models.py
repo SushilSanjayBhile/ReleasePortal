@@ -37,6 +37,8 @@ class TC_INFO(models.Model):
     #deleted = models.BooleanField(default = False)
     stateUserMapping = models.TextField(blank = True, default = "{\"CREATED\":\"DEFAULT\"}")
     applicable = models.TextField(blank = True, default = 'Applicable')
+    fixVersion = models.TextField(blank = True, default = 'UNKNOWN')
+    epicLink = models.TextField(blank = True, default = 'UNKNOWN')
 
 
     def __str__(self):

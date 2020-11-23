@@ -1,13 +1,14 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse
 from django.db.models.functions import Trunc
-import json, time
+import json, time, os
 
 from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER, TC_STATUS_GUI_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, TC_INFO_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER
 from .models import TC_INFO, TC_STATUS, LOGS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LATEST_TC_STATUS
 from .forms import TcInfoForm
 from django.db.models import Q
 
+from dp import settings
 import datetime
 from .forms import LogForm
 from itertools import chain
@@ -68,6 +69,9 @@ def updateGuiData(updatedData, data, Release):
 @csrf_exempt
 def WHOLE_TC_INFO(request, Release):
     if request.method == "GET":
+        for db in settings.DATABASES:
+            print(db)
+
         AllInfoData = []
         statusDict = {}
 
@@ -83,17 +87,22 @@ def WHOLE_TC_INFO(request, Release):
         infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
         infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
 
-        for i in infoserializer.data:
+        infodataUpdate = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI")).filter(~Q(applicable = "Applicable"))
+        infoserializerUpdate = TC_INFO_SERIALIZER(infodataUpdate, many = True)
+        c = 0
+        for i in infoserializerUpdate.data:
             tcid = i["TcID"]
             card = i["CardType"]
             try:
                 data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
                 serializer = TC_INFO_SERIALIZER(data)
                 updatedData = serializer.data
+                c+=1
 
-                if "APPLICABLE" in updatedData["applicable"]:
+                if "Applicable" not in updatedData["applicable"]:
                     updatedData["applicable"] = "Applicable"
                     updateData(updatedData, data, Release)
+                print("count ",c)
             except:
                 pass
         statusdata = TC_STATUS.objects.using(Release).all().order_by('Date')
@@ -121,8 +130,8 @@ def WHOLE_TC_INFO(request, Release):
         if WorkingStatus != 'None':
             infodata = infodata.filter(stateUserMapping__icontains = WorkingStatus)
 
-        #count = int(request.GET.get('count', len(infodata)))
-        count = int(request.GET.get('count', 25))
+        count = int(request.GET.get('count', len(infodata)))
+        #count = int(request.GET.get('count', 25))
         try:
             infodata = infodata[index : (index + count)]
         except:
