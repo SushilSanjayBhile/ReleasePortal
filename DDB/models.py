@@ -37,9 +37,9 @@ class TC_INFO(models.Model):
     #deleted = models.BooleanField(default = False)
     stateUserMapping = models.TextField(blank = True, default = "{\"CREATED\":\"DEFAULT\"}")
     applicable = models.TextField(blank = True, default = 'Applicable')
-    fixVersion = models.TextField(blank = True, default = 'UNKNOWN')
-    epicLink = models.TextField(blank = True, default = 'UNKNOWN')
-
+    OS = models.TextField(blank = True, null = True, default = 'NO OS')
+    #fixVersion = models.TextField(blank = True, default = 'UNKNOWN')
+    #epicLink = models.TextField(blank = True, default = 'UNKNOWN')
 
     def __str__(self):
         return self.TcID
@@ -66,6 +66,9 @@ class TC_INFO_GUI(models.Model):
 
     AutomatedTcName = models.CharField(max_length = 2000, default = "TC NOT AUTOMATED", blank = True)
     BrowserName = models.CharField(max_length = 100, blank = True, default=None)
+    stateUserMapping = models.TextField(blank = True, null = True, default = "{\"CREATED\":\"DEFAULT\"}")
+    applicable = models.TextField(blank = True, null = True, default = 'Applicable')
+    OS = models.TextField(blank = True, null = True, default = 'NO OS')
 
     def __str__(self):
         return self.TcID
@@ -298,6 +301,8 @@ class RELEASES(models.Model):
     KubernetesVersion = models.TextField(blank = True, null = True)
     DockerVersion = models.TextField(blank = True, null = True)
     HelmVersion = models.TextField(blank = True, null = True)
+    fixVersion = models.TextField(blank = True, null = True, default = 'UNKNOWN')
+    epicLink = models.TextField(blank = True, null = True, default = 'UNKNOWN')
     #ParentReleaseNumber = models.CharField(max_length = 50, blank = False, primary_key = True)
     
     def __str__(self):

@@ -24,7 +24,7 @@ from .migrate import Migrate
 urlpatterns = [
     # my scripts URLs
     path('removestatus/<str:Release>', RemoveStatus),
-    path('migrate', Migrate),
+    path('migrate/<str:typ>', Migrate),
 
     #all api
     path('bugwiseblockedtcs/<str:Release>', BUG_WISE_BLOCKED_TCS),

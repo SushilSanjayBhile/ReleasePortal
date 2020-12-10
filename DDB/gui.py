@@ -39,6 +39,9 @@ def updateGuiTcInfo(data, updatedData, Release):
     data.Priority = updatedData["Priority"]
     data.AutomatedTcName = updatedData["AutomatedTcName"]
     data.BrowserName = updatedData["BrowserName"]
+    data.stateUserMapping = updatedData['stateUserMapping']
+    data.applicable = updatedData['applicable']
+    data.OS = updatedData['OS']
 
     print(Release, data.Priority)
     data.save(using = Release)
@@ -106,10 +109,52 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
 
         # post request for current release
         for req in requests:
-            data = TC_INFO_GUI.objects.using(Release).get(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = req["CardType"])
+            data = TC_INFO_GUI.objects.using(Release).get(TcID = req['TcID'], CardType = req["CardType"])
             dataSer = TC_INFO_GUI_SERIALIZER(data)
 
             updatedData = dataSer.data
+            oldworkingStatus = updatedData["stateUserMapping"]
+            oldworkingStatus = oldworkingStatus.replace("\'","\"")
+            try:
+                oldworkingStatus = json.loads(oldworkingStatus)
+            except:
+                workingStatusReplace = "{\"CREATED\":\"DEFAULT\"}"
+                updatedData["stateUserMapping"] = workingStatusReplace
+                updateGuiTcInfo(updatedData, data, Release)
+
+                data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+                serializer = TC_INFO_GUI_SERIALIZER(data)
+                updatedData = serializer.data
+                oldworkingStatus = updatedData["stateUserMapping"]
+                oldworkingStatus = oldworkingStatus.replace("\'","\"")
+                oldworkingStatus = json.loads(oldworkingStatus)
+
+            workingState = "{"
+
+            if "Manual WorkingStatus" in req:
+                workingState += "\"Manual WorkingStatus\"" + ":\"" + req["Manual WorkingStatus"] + "\","
+            elif "Manual WorkingStatus" in oldworkingStatus:
+                workingState += "\"Manual WorkingStatus\"" + ":\"" + oldworkingStatus["Manual WorkingStatus"] + "\","
+            
+            if "Automation Assignee" in req:
+                workingState += "\"Automation Assignee\"" + ":\"" + req["Automation Assignee"] + "\","
+            elif "Automation Assignee" in oldworkingStatus:
+                workingState += "\"Automation Assignee\"" + ":\"" + oldworkingStatus["Automation Assignee"] + "\","
+            
+            if "Automation WorkingStatus" in req:
+                workingState += "\"Automation WorkingStatus\"" + ":\"" + req["Automation WorkingStatus"] + "\","
+            elif "Automation WorkingStatus" in oldworkingStatus:
+                workingState += "\"Automation WorkingStatus\"" + ":\"" + oldworkingStatus["Automation WorkingStatus"] + "\","
+            
+            if "Manual Assignee" in req:
+                workingState += "\"Manual Assignee\"" + ":\"" + req["Manual Assignee"] + "\""
+            elif "Manual Assignee" in oldworkingStatus:
+                workingState += "\"Manual Assignee\"" + ":\"" + oldworkingStatus["Manual Assignee"] + "\""
+
+            workingState += "}"
+
+            #print("after update working status",workingState)
+            updatedData["stateUserMapping"] = workingState
 
             for row in req:
                 if "CardType" not in row or "TcID" not in row or "BrowserName" not in row and req[row] != "undefined":
@@ -219,15 +264,53 @@ def WHOLE_GUI_TC_INFO(request, Release):
         Domain = str(request.GET.get('Domain', None))
         SubDomain = str(request.GET.get('SubDomain', None))
         Priority = str(request.GET.get('Priority', None))
+        WorkingStatus = str(request.GET.get('WorkingStatus',None))
+        Assignee = str(request.GET.get('Assignee',None))
+        Applicable = str(request.GET.get('applicable',None))
 
         infodata = TC_INFO_GUI.objects.using(Release).all()
 
+        infodataUpdate = TC_INFO_GUI.objects.all().using(Release).filter(~Q(applicable = "Applicable"))
+        infoserializerUpdate = TC_INFO_GUI_SERIALIZER(infodataUpdate, many = True)
+        c = 0
+        for i in infoserializerUpdate.data:
+            tcid = i["TcID"]
+            card = i["CardType"]
+            try:
+                data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+                serializer = TC_INFO_GUI_SERIALIZER(data)
+                updatedData = serializer.data
+                c+=1
+
+                if "Applicable" not in updatedData["applicable"]:
+                    updatedData["applicable"] = "Applicable"
+                    updateGuiTcInfo(updatedData, data, Release)
+                print("count ",c)
+            except:
+                pass
+
+        if Applicable != 'None':
+            if "," in Applicable:
+                appl = Applicable.split(",")
+
+                for a in appl:
+                    infod = infodata.filter(applicable = a)
+                    try:
+                        infodataone = infodataone | infod
+                    except:
+                        infodataone = infod
+
+                infodata = infodataone
         if Domain != 'None':
             infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':
             infodata = infodata.filter(SubDomain = SubDomain)
         if Priority != 'None':
             infodata = infodata.filter(Priority = Priority)
+        if WorkingStatus != 'None':
+            infodata = infodata.filter(stateUserMapping__icontains = WorkingStatus)
+        if  Assignee != 'None':
+            infodata = infodata.filter(Assignee = Assignee)
 
         count = int(request.GET.get('count', len(infodata)))
 
@@ -265,6 +348,13 @@ def WHOLE_GUI_TC_INFO(request, Release):
         for info in infoserializer.data:
             info = json.loads(json.dumps(info))
             info["TcName"] =  info["AutomatedTcName"]
+
+            #For stateUserMapping Of Test Case
+            info['stateUserMapping'] = info['stateUserMapping'].replace("\'","\"")
+            try:
+                info['stateUserMapping'] = json.loads(info['stateUserMapping'])
+            except:
+                pass
 
             try:
                 card = info['CardType'].strip('][').strip('\'')

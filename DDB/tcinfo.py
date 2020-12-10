@@ -62,6 +62,9 @@ def updateGuiData(updatedData, data, Release):
      data.Tag = updatedData['Tag']
      data.AutomatedTcName = updatedData['AutomatedTcName']
      data.BrowserName = updatedData['BrowserName']
+     data.stateUserMapping = updatedData['stateUserMapping']
+     data.applicable = updatedData['applicable']
+     data.OS = updatedData['OS']
 
      data.save(using = Release)
      return 1
@@ -82,6 +85,7 @@ def WHOLE_TC_INFO(request, Release):
         CardType = str(request.GET.get('CardType', None))
         Priority = str(request.GET.get('Priority', None))
         WorkingStatus = str(request.GET.get('WorkingStatus',None))
+        Assignee = str(request.GET.get('Assignee',None))
         Applicable = str(request.GET.get('applicable',None))
 
         infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
@@ -107,6 +111,7 @@ def WHOLE_TC_INFO(request, Release):
                 pass
         statusdata = TC_STATUS.objects.using(Release).all().order_by('Date')
         infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
+
         if Applicable != 'None':
             if "," in Applicable:
                 appl = Applicable.split(",")
@@ -119,6 +124,10 @@ def WHOLE_TC_INFO(request, Release):
                         infodataone = infod
 
                 infodata = infodataone
+        for i in infodata:
+                serializer = TC_INFO_SERIALIZER(i)
+                #print(serializer.data)
+        print("#"*20)
         if Domain != 'None':
             infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':
@@ -129,6 +138,8 @@ def WHOLE_TC_INFO(request, Release):
             infodata = infodata.filter(Priority = Priority)
         if WorkingStatus != 'None':
             infodata = infodata.filter(stateUserMapping__icontains = WorkingStatus)
+        if  Assignee != 'None':
+            infodata = infodata.filter(Assignee = Assignee)
 
         count = int(request.GET.get('count', len(infodata)))
         #count = int(request.GET.get('count', 25))
@@ -306,6 +317,7 @@ def updateData(updatedData, data, Release):
      data.Tag = updatedData['Tag']
      data.stateUserMapping = updatedData['stateUserMapping']
      data.applicable = updatedData['applicable']
+     data.OS = updatedData['OS']
  
      data.save(using = Release)
      return 1

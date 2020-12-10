@@ -320,7 +320,7 @@ def domain_cli_aggreggation(cliTcInfo, cliStatus):
         domainCliTcInfo = cliTcInfo.filter(Domain=sdomain)
         if sdomain not in myDict['domain-cli']:
             myDict['domain-cli'][sdomain] = {}
-        myDict['domain-cli'][sdomain]["subDomain-cli"] = subDomain_cli_aggreggation(domainCliTcInfo, cliStatus) # subDomain wise aggregation
+        #myDict['domain-cli'][sdomain]["subDomain-cli"] = subDomain_cli_aggreggation(domainCliTcInfo, cliStatus) # subDomain wise aggregation
 
         if "NotApplicable" not in myDict['domain-cli'][sdomain]:
             myDict['domain-cli'][sdomain]['NotApplicable'] = 0
@@ -426,6 +426,7 @@ def get_cli_priorityDict(cliTcInfo,cliStatus):
                         myDict['Priority'][priority][result] += 1
                 except:
                     continue
+    print(myDict["Priority"])
     return myDict["Priority"]
 
 
