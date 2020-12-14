@@ -72,8 +72,8 @@ def updateGuiData(updatedData, data, Release):
 @csrf_exempt
 def WHOLE_TC_INFO(request, Release):
     if request.method == "GET":
-        for db in settings.DATABASES:
-            print(db)
+        #for db in settings.DATABASES:
+        #    print(db)
 
         AllInfoData = []
         statusDict = {}
@@ -90,8 +90,29 @@ def WHOLE_TC_INFO(request, Release):
 
         infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
         infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
+        print("all test cases", len(infoserializer.data))
 
-        infodataUpdate = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI")).filter(~Q(applicable = "Applicable"))
+#        infodataUpdate = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI")).filter(~Q(applicable = "Applicable"))
+#        infoserializerUpdate = TC_INFO_SERIALIZER(infodataUpdate, many = True)
+#        c = 0
+#        for i in infoserializerUpdate.data:
+#            tcid = i["TcID"]
+#            card = i["CardType"]
+#            try:
+#                data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+#                serializer = TC_INFO_SERIALIZER(data)
+#                updatedData = serializer.data
+#                c+=1
+#
+#                if "Applicable" not in updatedData["applicable"]:
+#                    updatedData["applicable"] = "Applicable"
+#                    updateData(updatedData, data, Release)
+#                print("count ",c)
+#            except:
+#                pass
+#        
+#        infodataUpdate = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI")).filter(stateUserMapping = "{\"CREATED\":\"DEFAULT\"}")
+        infodataUpdate = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI")).filter(~Q(stateUserMapping = ""))
         infoserializerUpdate = TC_INFO_SERIALIZER(infodataUpdate, many = True)
         c = 0
         for i in infoserializerUpdate.data:
@@ -103,12 +124,27 @@ def WHOLE_TC_INFO(request, Release):
                 updatedData = serializer.data
                 c+=1
 
-                if "Applicable" not in updatedData["applicable"]:
-                    updatedData["applicable"] = "Applicable"
+                if "Manual Assignee" not in updatedData["stateUserMapping"]:
+                    print("This with no MA ", tcid, updatedData["stateUserMapping"])
+                if "Manual Assignee" not in updatedData["stateUserMapping"] and "CREATED" not in updatedData["stateUserMapping"] and "Automation Assignee" not in updatedData["stateUserMapping"]:
+                    print("This ", tcid, updatedData["stateUserMapping"])
+                if  "{}" in updatedData["stateUserMapping"]:
+                    updatedData["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\", \"Automation Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
+                    #updatedData["applicable"] = "Applicable"
                     updateData(updatedData, data, Release)
-                print("count ",c)
+                if  "Not Mapped" in updatedData["stateUserMapping"]:
+                    updatedData["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\", \"Automation Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
+                    updateData(updatedData, data, Release)
+
+                if "UNDERWORK" in updatedData["WorkingStatus"]:
+                    #print(updatedData["WorkingStatus"])
+                    updatedData["WorkingStatus"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\", \"Automation As    signee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
+                    updateData(updatedData, data, Release)
+                #else:
+                #    print("in else")
             except:
                 pass
+
         statusdata = TC_STATUS.objects.using(Release).all().order_by('Date')
         infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
 
@@ -172,6 +208,7 @@ def WHOLE_TC_INFO(request, Release):
                 statusDict[card][tcid] = []
                 statusDict[card][tcid].append(rec)
 
+        c= 0 
         for info in infoserializer.data:
             info['StatusList'] = {"id": "", "TcID": info['TcID'], "TcName": info['TcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
             info['CurrentStatus'] = {"id": "", "TcID": info['TcID'], "TcName": info['TcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
@@ -196,8 +233,9 @@ def WHOLE_TC_INFO(request, Release):
                 pass
 
             AllInfoData.append(info)
+        print(len(AllInfoData))
+        #return HttpResponse("COMING")
         return HttpResponse(json.dumps(AllInfoData))
-
 
 @csrf_exempt
 def TC_INFO_GET_POST_VIEW(request, Release):

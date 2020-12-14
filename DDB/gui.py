@@ -289,6 +289,31 @@ def WHOLE_GUI_TC_INFO(request, Release):
             except:
                 pass
 
+        infodataUpdate = TC_INFO_GUI.objects.all().using(Release).filter(~Q(stateUserMapping = ""))
+        infoserializerUpdate = TC_INFO_GUI_SERIALIZER(infodataUpdate, many = True)
+        c = 0
+        print("coming")
+    
+        for i in infoserializerUpdate.data:
+            tcid = i["TcID"]
+            card = i["CardType"]
+            try:
+                data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).filter(CardType = card)
+                serializer = TC_INFO_GUI_SERIALIZER(data, many = True)
+                updatedData = serializer.data
+                c+=1
+                for tc in updatedData:
+                    tc = json.dumps(tc)
+                    tc = json.loads(tc)
+                    #print(tc["stateUserMapping"])
+                    SUM = json.dumps(tc["stateUserMapping"])
+                    if "CREATED" in SUM:
+                        updatedData["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\",\"Automa    tion Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
+                        print(tcid, SUM,updatedData["stateUserMapping"])
+                
+            except:
+                pass
+
         if Applicable != 'None':
             if "," in Applicable:
                 appl = Applicable.split(",")
