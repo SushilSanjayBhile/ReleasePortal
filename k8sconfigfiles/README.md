@@ -1,2 +1,3 @@
-dctl endpoint create diamantireleaseportal -n default -ns default --ip
-dctl network update default --host-network
+shared a 
+google sheet named => k8s related study
+tab name => release portal deployment steps.

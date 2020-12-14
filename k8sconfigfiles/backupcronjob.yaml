@@ -9,7 +9,7 @@ spec:
   successfulJobsHistoryLimit: 1
   jobTemplate:
     spec:
-      backoffLimit: 0
+      backoffLimit: 4
       template:
         spec:
           serviceAccountName: qa-backup
@@ -32,13 +32,12 @@ spec:
             - -pluginOptions=["-cvp","--selinux","--acls","--xattrs"] # Backup plugin options
             - -compressed=true                     # Flag to enable/disable compression
             - -maxNumSnapshots=10                   # Maximum number of snapshots that can exist for the PVC
-            - -numDaysToKeep=30                     # Maximum number of backups that can exist on NFS server
+            - -numDaysToKeep=180                    # Maximum number of backups that can exist on NFS server
             - -snapshotPromoter=snapshot-promoter  # Storage class for creating volume from a snapshot
             - -activeVolumesOnly=true              # Flag to backup attached volumes only
             - -cpuResource=100m                    # CPU resource for backup agent
             - -memoryResource=100Mi                # Memory resource for backup agent
-            - -maxConcurrentJobs=10                # Max concurrent backup agents
+            - -maxConcurrentJobs=1                # Max concurrent backup agents
             name: backupjob-release-pvc
             image: diamanti/backupcontroller:v2.3.0.1
-          restartPolicy: Never
-
+          restartPolicy: OnFailure
