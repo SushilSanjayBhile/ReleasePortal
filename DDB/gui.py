@@ -42,8 +42,8 @@ def updateGuiTcInfo(data, updatedData, Release):
     data.stateUserMapping = updatedData['stateUserMapping']
     data.applicable = updatedData['applicable']
     data.OS = updatedData['OS']
+    #print("UPDATED SUCCESSFULLY", updatedData["TcID"], updatedData["CardType"], updatedData["BrowserName"])
 
-    print(Release, data.Priority)
     data.save(using = Release)
 
 
@@ -289,30 +289,32 @@ def WHOLE_GUI_TC_INFO(request, Release):
             except:
                 pass
 
-        infodataUpdate = TC_INFO_GUI.objects.all().using(Release).filter(~Q(stateUserMapping = ""))
-        infoserializerUpdate = TC_INFO_GUI_SERIALIZER(infodataUpdate, many = True)
+        infodataUpdate1 = TC_INFO_GUI.objects.all().using(Release).filter(stateUserMapping = "{\"CREATED\":\"DEFAULT\"}")
+        infoserializerUpdate1 = TC_INFO_GUI_SERIALIZER(infodataUpdate1, many = True)
         c = 0
-        print("coming")
+        print("Started to update")
     
-        for i in infoserializerUpdate.data:
-            tcid = i["TcID"]
-            card = i["CardType"]
-            try:
+        for i in infoserializerUpdate1.data:
+                #break
+                tcid = i["TcID"]
+                card = i["CardType"]
                 data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).filter(CardType = card)
                 serializer = TC_INFO_GUI_SERIALIZER(data, many = True)
-                updatedData = serializer.data
-                c+=1
-                for tc in updatedData:
-                    tc = json.dumps(tc)
-                    tc = json.loads(tc)
-                    #print(tc["stateUserMapping"])
-                    SUM = json.dumps(tc["stateUserMapping"])
+                updatedData1 = serializer.data
+                for tc in updatedData1:
+                    browsername = tc["BrowserName"]
+                    card = tc["CardType"]
+                    tcid = tc["TcID"]
+                    data1 = TC_INFO_GUI.objects.using(Release).get(TcID = tcid, CardType = card, BrowserName = browsername)
+                    serializer1 = TC_INFO_GUI_SERIALIZER(data1)
+                    updatedData2 = serializer1.data
+                    SUM = json.dumps(updatedData2["stateUserMapping"])
                     if "CREATED" in SUM:
-                        updatedData["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\",\"Automa    tion Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
-                        print(tcid, SUM,updatedData["stateUserMapping"])
-                
-            except:
-                pass
+                        c+=1
+                        print("INSIDE IF", len(infoserializerUpdate1.data),  c)
+                        updatedData2["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\",\"Automation Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
+                        updateGuiTcInfo(data1, updatedData2, Release)
+        print("DONE")
 
         if Applicable != 'None':
             if "," in Applicable:
@@ -399,4 +401,5 @@ def WHOLE_GUI_TC_INFO(request, Release):
             count = len(AllInfoData)
 
         requiredData = AllInfoData[index:count]
+        print(len(requiredData))
         return HttpResponse(json.dumps(requiredData))
