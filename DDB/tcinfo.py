@@ -112,39 +112,39 @@ def WHOLE_TC_INFO(request, Release):
 #                pass
 #        
 #        infodataUpdate = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI")).filter(stateUserMapping = "{\"CREATED\":\"DEFAULT\"}")
-        infodataUpdate = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI")).filter(~Q(stateUserMapping = ""))
-        infoserializerUpdate = TC_INFO_SERIALIZER(infodataUpdate, many = True)
-        c = 0
-        for i in infoserializerUpdate.data:
-            tcid = i["TcID"]
-            card = i["CardType"]
-            try:
-                data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
-                serializer = TC_INFO_SERIALIZER(data)
-                updatedData = serializer.data
-                c+=1
-
-                if "Manual Assignee" not in updatedData["stateUserMapping"]:
-                    print("This with no MA ", tcid, updatedData["stateUserMapping"])
-                if "Manual Assignee" not in updatedData["stateUserMapping"] and "CREATED" not in updatedData["stateUserMapping"] and "Automation Assignee" not in updatedData["stateUserMapping"]:
-                    print("This ", tcid, updatedData["stateUserMapping"])
-                if  "{}" in updatedData["stateUserMapping"]:
-                    updatedData["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\", \"Automation Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
-                    #updatedData["applicable"] = "Applicable"
-                    updateData(updatedData, data, Release)
-                if  "Not Mapped" in updatedData["stateUserMapping"]:
-                    updatedData["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\", \"Automation Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
-                    updateData(updatedData, data, Release)
-
-                if "UNDERWORK" in updatedData["WorkingStatus"]:
-                    #print(updatedData["WorkingStatus"])
-                    updatedData["WorkingStatus"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\", \"Automation As    signee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
-                    updateData(updatedData, data, Release)
-                #else:
-                #    print("in else")
-            except:
-                pass
-
+#        infodataUpdate = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI")).filter(~Q(stateUserMapping = ""))
+#        infoserializerUpdate = TC_INFO_SERIALIZER(infodataUpdate, many = True)
+#         c = 0
+#        for i in infoserializerUpdate.data:
+#            tcid = i["TcID"]
+#            card = i["CardType"]
+#            try:
+#                data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+#                serializer = TC_INFO_SERIALIZER(data)
+#                updatedData = serializer.data
+#                c+=1
+#
+#                if "Manual Assignee" not in updatedData["stateUserMapping"]:
+#                    print("This with no MA ", tcid, updatedData["stateUserMapping"])
+#                if "Manual Assignee" not in updatedData["stateUserMapping"] and "CREATED" not in updatedData["stateUserMapping"] and "Automation Assignee" not in updatedData["stateUserMapping"]:
+#                    print("This ", tcid, updatedData["stateUserMapping"])
+#                if  "{}" in updatedData["stateUserMapping"]:
+#                    updatedData["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\", \"Automation Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
+#                    #updatedData["applicable"] = "Applicable"
+#                    updateData(updatedData, data, Release)
+#                if  "Not Mapped" in updatedData["stateUserMapping"]:
+#                    updatedData["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\", \"Automation Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
+#                    updateData(updatedData, data, Release)
+#
+#                if "UNDERWORK" in updatedData["WorkingStatus"]:
+#                    #print(updatedData["WorkingStatus"])
+#                    updatedData["WorkingStatus"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\", \"Automation As    signee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
+#                    updateData(updatedData, data, Release)
+#                #else:
+#                #    print("in else")
+#            except:
+#                pass
+#
         statusdata = TC_STATUS.objects.using(Release).all().order_by('Date')
         infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
 
@@ -163,7 +163,6 @@ def WHOLE_TC_INFO(request, Release):
         for i in infodata:
                 serializer = TC_INFO_SERIALIZER(i)
                 #print(serializer.data)
-        print("#"*20)
         if Domain != 'None':
             infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':

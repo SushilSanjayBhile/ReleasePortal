@@ -274,6 +274,7 @@ def WHOLE_GUI_TC_INFO(request, Release):
         infoserializerUpdate = TC_INFO_GUI_SERIALIZER(infodataUpdate, many = True)
         c = 0
         for i in infoserializerUpdate.data:
+            break
             tcid = i["TcID"]
             card = i["CardType"]
             try:
@@ -295,7 +296,7 @@ def WHOLE_GUI_TC_INFO(request, Release):
         print("Started to update")
     
         for i in infoserializerUpdate1.data:
-                #break
+                break
                 tcid = i["TcID"]
                 card = i["CardType"]
                 data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).filter(CardType = card)
