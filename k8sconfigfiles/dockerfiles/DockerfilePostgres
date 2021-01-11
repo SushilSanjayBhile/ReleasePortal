@@ -1,0 +1,40 @@
+# Image to be used for Diamanti Release Portal
+FROM ubuntu:18.04
+
+# Maintainer of diamanti release portal docker image
+MAINTAINER sushil bhile <sushilmaxbhile@gmail.com>
+
+# Package updation
+RUN apt update -y
+RUN apt install sudo -y
+RUN apt install vim -y
+RUN apt install python3.6 -y
+RUN apt update -y
+RUN apt install python3-pip -y
+RUN apt install curl -y
+RUN apt install openssh-client -y
+
+# Postgres installation
+ENV TZ=Asia/Kolkata
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt install postgresql postgresql-contrib -y
+
+# Adjust PostgreSQL configuration so that remote connections to the
+# database are possible.
+RUN echo "host all  all    0.0.0.0/0  md5" >> /etc/postgresql/10/main/pg_hba.conf
+
+# Requirement installation for backend
+COPY requirementspostgres.txt /
+RUN pip3 install -r /requirementspostgres.txt
+
+#copy flask app
+RUN mkdir /flaskapp
+COPY app.py /flaskapp/app.py
+COPY pgpass /var/lib/postgresql/.pgpass
+COPY postgresql.conf /etc/postgresql/10/main
+
+# Expose the PostgreSQL port
+EXPOSE 5432
+
+ENTRYPOINT service postgresql restart
+#ENTRYPOINT service postgresql restart && nohup bash -c "python3 /flaskapp/app.py &" && bash
