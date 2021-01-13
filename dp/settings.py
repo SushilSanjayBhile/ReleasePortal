@@ -198,6 +198,14 @@ DATABASES = {
         'HOST': hostName,
         'PORT': portNumber,
         },
+    'DCX-DMC-Master': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DCX-DMC-Master',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     '2.3.0': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': '2.3.0',
