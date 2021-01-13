@@ -16,6 +16,7 @@ from .tcinfo import TC_INFO_GET_POST_VIEW, GET_TC_INFO_BY_ID, WHOLE_TC_INFO, MUL
 from .getStatistics import BUG_WISE_BLOCKED_TCS 
 from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO
 from .releaseBuildInfo import RELEASEBUILDINFOGETPOSTVIEW,RELEASEBUILDINFODELETEVIEW
+from .createRelease import mergeDB
 
 # my scripts
 from .cleanup import RemoveStatus
@@ -27,6 +28,7 @@ urlpatterns = [
     path('migrate/<str:typ>', Migrate),
 
     #all api
+    path('mergeDB/<str:Release>', mergeDB),
     path('bugwiseblockedtcs/<str:Release>', BUG_WISE_BLOCKED_TCS),
     path('guitcstatusUpdate/<str:Release>', GUI_TC_STATUS_UPDATE_VIEW),
     path('tcstatus/<str:Release>', TCSTATUSGETPOSTVIEW),
