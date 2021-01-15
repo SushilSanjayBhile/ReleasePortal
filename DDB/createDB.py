@@ -2,10 +2,9 @@ import psycopg2
 from constraints import *
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT # <-- ADD THIS LINE
 from psycopg2 import sql
-import os
+import os, requests
 
 def createReleaseDB(release):
-    return 1
     con = psycopg2.connect(dbname='postgres',
         user=userName, host=hostName,
         password=passwd, port=portNumber)
@@ -32,10 +31,34 @@ def createReleaseDB(release):
 
 
     string = "echo " + hostName + ":" + portNumber + ":" + release + ":" + userName + ":" + passwd
-    os.system(string + ">> ~/.pgpass")
+    #os.system(string + ">> ~/.pgpass")
 
-    os.system("pg_dump -h localhost -U " + userName + " -Fc master -f backup.sql")
-    os.system("pg_restore -h localhost -d " + release + " -U " + userName + " backup.sql")
+    #os.system("pg_dump -h localhost -U " + userName + " -Fc master -f backup.sql")
+    #os.system("sudo -u postgres pg_dump -h localhost -U " + userName + " -Fc master > ./testing1.sql")
+
+    #os.system("pg_restore -h localhost -d " + release + " -U " + userName + " backup.sql")
+    #os.system("sudo -u postgres pg_restore -h localhost -d " + release + " -U " + userName + " testing1.sql")
+
+    dump_command = "sudo -u postgres pg_dump -h localhost -U " + userName + " -Fc master > /data/testing1.sql"
+    restore_command = "sudo -u postgres pg_restore -h localhost -d " + release + " -U " + userName + " /data/testing1.sql"
+
+    fp = open('/data/createdb.sh', 'w')
+    fp.write(dump_command)
+    fp.write("\n")
+    fp.write(restore_command)
+    fp.write("\n")
+    #fp.write("expect <<END")
+    #fp.write("\n")
+    #fp.write("expect \"Password:\"")
+    #fp.write("\n")
+    #fp.write("send \"!lovert3\r\"")
+    #fp.write("\n")
+    #fp.write("END")
+    fp.close()
+
+    #os.system("chmod +x /data/createdb.sh")
+    #os.system("/bin/su -s /bin/bash -c \"/data/createdb.sh\" postgres")
+    requests.get("http://172.16.187.83:5000/")
 
     databaseExistsString = "\'NAME\': \'" + release + "\',"
     with open('dp/settings.py', 'r') as fp:

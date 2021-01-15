@@ -1641,36 +1641,39 @@ def RELEASEINFO(request, Release):
             serializer = RELEASE_SERIALIZER(data, many = True)
             return HttpResponse(json.dumps(serializer.data))
         elif(Release == 'all'):
-            data = RELEASES.objects.all()
+            data = RELEASES.objects.using("universal").values("ReleaseNumber").all()
             serializer = RELEASE_SERIALIZER(data, many = True)
-            t = time.time()
+            return HttpResponse(json.dumps(serializer.data))
+            #data = RELEASES.objects.all()
+            #serializer = RELEASE_SERIALIZER(data, many = True)
+            #t = time.time()
 
-            for i in serializer.data:
-                data = json.dumps(i)
-                data = json.loads(data)
+            #for i in serializer.data:
+            #    data = json.dumps(i)
+            #    data = json.loads(data)
     
-                if(i['ReleaseNumber'] != "universal"):
-                    if i["ReleaseNumber"] != "TestDatabase":
-                        st = time.time()
-                        a = TCAGGREGATE(i['ReleaseNumber'])
+            #    if(i['ReleaseNumber'] != "universal"):
+            #        if i["ReleaseNumber"] != "TestDatabase":
+            #            st = time.time()
+            #            a = TCAGGREGATE(i['ReleaseNumber'])
 
-                        #st = time.time()
-                        #a = TCAGGREGATEOLD(i['ReleaseNumber'])
-                        #print(time.time() - st, "\n")
-                        data['Priority'] = a["Priority"]
+            #            #st = time.time()
+            #            #a = TCAGGREGATEOLD(i['ReleaseNumber'])
+            #            #print(time.time() - st, "\n")
+            #            data['Priority'] = a["Priority"]
 
-                    data['TcAggregate'] = a
-                #list.append(data)
-                if i["ReleaseNumber"] == "DMC-3.0":
-                    list.insert(0, data)
-                elif "Spektra" in i["ReleaseNumber"]:
-                    list.insert(1, data)
-                else:
-                    list.append(data)
+            #        data['TcAggregate'] = a
+            #    #list.append(data)
+            #    if i["ReleaseNumber"] == "DMC-3.0":
+            #        list.insert(0, data)
+            #    elif "Spektra" in i["ReleaseNumber"]:
+            #        list.insert(1, data)
+            #    else:
+            #        list.append(data)
 
 
-            # return JsonResponse(json.dumps(list), status = 200)
-            return HttpResponse(json.dumps(list))
+            ## return JsonResponse(json.dumps(list), status = 200)
+            #return HttpResponse(json.dumps(list))
         else:
             t = time.time()
             
