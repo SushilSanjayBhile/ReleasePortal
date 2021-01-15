@@ -40,6 +40,7 @@ class TC_INFO(models.Model):
     OS = models.TextField(blank = True, null = True, default = 'NO OS')
     #fixVersion = models.TextField(blank = True, default = 'UNKNOWN')
     #epicLink = models.TextField(blank = True, default = 'UNKNOWN')
+    UnapproveTCReason = models.TextField(blank = True, default = "NO REASON PROVIDED")
 
     def __str__(self):
         return self.TcID
