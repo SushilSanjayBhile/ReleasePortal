@@ -116,6 +116,14 @@ DATABASES = {
         'HOST': hostName,
         'PORT': portNumber,
         },
+    'DCX-3.2.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DCX-3.2.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'OCP-4.5': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'OCP-4.5',
@@ -193,6 +201,14 @@ DATABASES = {
     'Spektra 2.4': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': '2.4.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'DCX-DMC-Master': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DCX-DMC-Master',
         'USER': userName,
         'PASSWORD': passwd,
         'HOST': hostName,
