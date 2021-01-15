@@ -1,0 +1,46 @@
+{
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+        "labels": {
+            "app": "universal"
+        },
+        "name": "diamantiuniversalportalui"
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "matchLabels": {
+                "app": "universal"
+             }
+        },
+        "template": {
+            "metadata": {
+                "labels": {
+                    "app": "universal"
+                },
+                "name": "universal",
+        	"annotations": {
+	            "diamanti.com/endpoint0":"{\"endpointId\":\"diamantireleaseportal\",\"perfTier\":\"high\"}"
+       	 	}
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "aratijadhav/dockernodejs:stableV53",
+                        "imagePullPolicy": "Always",
+                        "name": "frontend",
+                        "tty": true,
+                        "resources": {
+                            "requests": {
+                                "cpu": "4000m",
+                                "memory": "4Gi"
+                            }
+                        }
+                    }
+                ],
+                "restartPolicy": "Always"
+            }
+        }
+    }
+}

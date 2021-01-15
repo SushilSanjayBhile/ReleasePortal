@@ -90,7 +90,6 @@ def WHOLE_TC_INFO(request, Release):
 
         infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
         infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
-        print("all test cases", len(infoserializer.data))
 
 #        infodataUpdate = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI")).filter(~Q(applicable = "Applicable"))
 #        infoserializerUpdate = TC_INFO_SERIALIZER(infodataUpdate, many = True)
@@ -232,7 +231,6 @@ def WHOLE_TC_INFO(request, Release):
                 pass
 
             AllInfoData.append(info)
-        print(len(AllInfoData))
         #return HttpResponse("COMING")
         return HttpResponse(json.dumps(AllInfoData))
 
