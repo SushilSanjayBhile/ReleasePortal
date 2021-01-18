@@ -1,4 +1,4 @@
 userName = 'sushil'
 passwd = '!lovert3'
-hostName = '172.16.187.83'
+hostName = 'release'
 portNumber = '5432'
