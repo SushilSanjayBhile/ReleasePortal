@@ -38,8 +38,6 @@ class TC_INFO(models.Model):
     stateUserMapping = models.TextField(blank = True, default = "{\"CREATED\":\"DEFAULT\"}")
     applicable = models.TextField(blank = True, default = 'Applicable')
     OS = models.TextField(blank = True, null = True, default = 'NO OS')
-    #fixVersion = models.TextField(blank = True, default = 'UNKNOWN')
-    #epicLink = models.TextField(blank = True, default = 'UNKNOWN')
     UnapproveTCReason = models.TextField(blank = True, default = "NO REASON PROVIDED")
 
     def __str__(self):
@@ -70,6 +68,7 @@ class TC_INFO_GUI(models.Model):
     stateUserMapping = models.TextField(blank = True, null = True, default = "{\"CREATED\":\"DEFAULT\"}")
     applicable = models.TextField(blank = True, null = True, default = 'Applicable')
     OS = models.TextField(blank = True, null = True, default = 'NO OS')
+    UnapproveTCReason = models.TextField(blank = True, default = "NO REASON PROVIDED")
 
     def __str__(self):
         return self.TcID
@@ -305,6 +304,7 @@ class RELEASES(models.Model):
     fixVersion = models.TextField(blank = True, null = True, default = 'UNKNOWN')
     epicLink = models.TextField(blank = True, null = True, default = 'UNKNOWN')
     #ParentReleaseNumber = models.CharField(max_length = 50, blank = False, primary_key = True)
+    ParentRelease = models.CharField(max_length = 50, blank = False, null = True)
     
     def __str__(self):
         return self.ReleaseNumber

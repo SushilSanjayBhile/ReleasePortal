@@ -19,12 +19,12 @@ def Migrate(request, typ):
     flag = 0
 
     for db in settings.DATABASES:
-        if typ == "fake":
-            cmd = "python3 manage.py migrate --database='"+ db +"' --fake" 
-            print("\n",cmd)
-            os.system(cmd)
-            flag = 1
-        elif typ == "real":
+       # if typ == "fake":
+       #     cmd = "python3 manage.py migrate --database='"+ db +"' --fake" 
+       #     print("\n",cmd)
+       #     os.system(cmd)
+       #     flag = 1
+        if typ == "real":
             cmd = "python3 manage.py migrate --database='"+ db +"'" 
             print("\n",cmd)
             os.system(cmd)
