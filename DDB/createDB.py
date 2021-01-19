@@ -4,7 +4,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT # <-- ADD THIS LINE
 from psycopg2 import sql
 import os, requests
 
-def createReleaseDB(release):
+def createReleaseDB(release, parentRelease):
     con = psycopg2.connect(dbname='postgres',
         user=userName, host=hostName,
         password=passwd, port=portNumber)
@@ -39,7 +39,7 @@ def createReleaseDB(release):
     #os.system("pg_restore -h localhost -d " + release + " -U " + userName + " backup.sql")
     #os.system("sudo -u postgres pg_restore -h localhost -d " + release + " -U " + userName + " testing1.sql")
 
-    dump_command = "sudo -u postgres pg_dump -h localhost -U " + userName + " -Fc master > /data/testing1.sql"
+    dump_command = "sudo -u postgres pg_dump -h localhost -U " + userName + " -Fc " + parentRelease " + > /data/testing1.sql"
     restore_command = "sudo -u postgres pg_restore -h localhost -d " + release + " -U " + userName + " /data/testing1.sql"
 
     fp = open('/data/createdb.sh', 'w')
