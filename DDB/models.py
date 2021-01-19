@@ -46,6 +46,7 @@ class TC_INFO(models.Model):
 # Table per release
 class TC_INFO_GUI(models.Model):
     TcID = models.CharField(max_length = 200, blank = False)
+    TcName = models.CharField(max_length = 2000, default = "TC NOT AUTOMATED", blank = True)
     Domain = models.CharField(max_length=50, default = "UNKNOWN", blank = True)  #storage, nw
     SubDomain = models.CharField(max_length=50, default = "UNKNOWN", blank = True)  #remote, local, mirroring
     Scenario = models.CharField(max_length = 200, blank = True, default = "UNKNOWN") #stress, standard, negative

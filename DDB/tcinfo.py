@@ -65,6 +65,7 @@ def updateGuiData(updatedData, data, Release):
      data.stateUserMapping = updatedData['stateUserMapping']
      data.applicable = updatedData['applicable']
      data.OS = updatedData['OS']
+     data.UnapproveTCReason = updatedData['UnapproveTCReason']
 
      data.save(using = Release)
      return 1
@@ -353,6 +354,7 @@ def updateData(updatedData, data, Release):
      data.stateUserMapping = updatedData['stateUserMapping']
      data.applicable = updatedData['applicable']
      data.OS = updatedData['OS']
+     data.UnapproveTCReason = updatedData['UnapproveTCReason']
  
      data.save(using = Release)
      return 1

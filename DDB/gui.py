@@ -38,10 +38,12 @@ def updateGuiTcInfo(data, updatedData, Release):
     data.Tag = updatedData["Tag"]
     data.Priority = updatedData["Priority"]
     data.AutomatedTcName = updatedData["AutomatedTcName"]
+    data.TcName = updatedData["TcName"]
     data.BrowserName = updatedData["BrowserName"]
     data.stateUserMapping = updatedData['stateUserMapping']
     data.applicable = updatedData['applicable']
     data.OS = updatedData['OS']
+    data.UnapproveTCReason = updatedData['UnapproveTCReason']
     #print("UPDATED SUCCESSFULLY", updatedData["TcID"], updatedData["CardType"], updatedData["BrowserName"])
 
     data.save(using = Release)
@@ -161,8 +163,9 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     updatedData[row] = req[row]
 
             updateGuiTcInfo(data, updatedData, Release)
-            AD = req["Activity"]
-            GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], dataSer.data['id'], AD['Release'])
+            #AD = requests["Activity"]
+            print("AD",req,"\n")
+            #GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], dataSer.data['id'], AD['Release'])
         return HttpResponse("SUCCESSFULLY UPDATED")
 
 # Function to update TC STATUS data
@@ -375,7 +378,8 @@ def WHOLE_GUI_TC_INFO(request, Release):
 
         for info in infoserializer.data:
             info = json.loads(json.dumps(info))
-            info["TcName"] =  info["AutomatedTcName"]
+            #info["TcName"] =  info["AutomatedTcName"]
+            info["TcName"] =  info["TcName"]
 
             #For stateUserMapping Of Test Case
             info['stateUserMapping'] = info['stateUserMapping'].replace("\'","\"")
