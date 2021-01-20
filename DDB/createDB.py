@@ -39,7 +39,7 @@ def createReleaseDB(release, parentRelease):
     #os.system("pg_restore -h localhost -d " + release + " -U " + userName + " backup.sql")
     #os.system("sudo -u postgres pg_restore -h localhost -d " + release + " -U " + userName + " testing1.sql")
 
-    dump_command = "sudo -u postgres pg_dump -h localhost -U " + userName + " -Fc " + parentRelease " + > /data/testing1.sql"
+    dump_command = "sudo -u postgres pg_dump -h localhost -U " + userName + " -Fc " + parentRelease + " > /data/testing1.sql"
     restore_command = "sudo -u postgres pg_restore -h localhost -d " + release + " -U " + userName + " /data/testing1.sql"
 
     fp = open('/data/createdb.sh', 'w')
