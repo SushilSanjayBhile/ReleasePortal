@@ -1612,7 +1612,7 @@ def RELEASEINFOPOST(request):
 
         fd = ReleaseInfoForm(req)
         if fd.is_valid():
-            res = createReleaseDB(req['ReleaseNumber'], req["parentRelease"])
+            res = createReleaseDB(req['ReleaseNumber'], req["ParentRelease"])
             if res == 0:
                 print("Database already exists")
             else:
