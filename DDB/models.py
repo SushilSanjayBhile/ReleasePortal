@@ -305,7 +305,7 @@ class RELEASES(models.Model):
     fixVersion = models.TextField(blank = True, null = True, default = 'UNKNOWN')
     epicLink = models.TextField(blank = True, null = True, default = 'UNKNOWN')
     #ParentReleaseNumber = models.CharField(max_length = 50, blank = False, primary_key = True)
-    ParentRelease = models.CharField(max_length = 50, blank = False, null = True)
+    ParentRelease = models.CharField(max_length = 50, blank = False, default = "master")
     
     def __str__(self):
         return self.ReleaseNumber
