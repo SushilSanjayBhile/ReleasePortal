@@ -32,14 +32,15 @@ def createReleaseDB(release, parentRelease):
     dump_command = "sudo -u postgres pg_dump -h localhost -U " + userName + " -Fc \"" + parentRelease + "\" > /data/testing1.sql"
     restore_command = "sudo -u postgres pg_restore -h localhost -d " + release + " -U " + userName + " /data/testing1.sql"
 
-    fp = open('/data/createdb.sh', 'w')
+    fp = open('createdb.sh', 'w')
     fp.write(dump_command)
     fp.write("\n")
     fp.write(restore_command)
     fp.write("\n")
     fp.close()
 
-    requests.get("http://172.16.187.83:5000/")
+    with open('createdb.sh', 'rb') as f:
+        r = requests.post("http://" + hostName + ":5000/createdb", files={'createdb.sh': f})
 
     databaseExistsString = "\'NAME\': \'" + release + "\',"
     with open('dp/settings.py', 'r') as fp:
