@@ -18,7 +18,7 @@ def createReleaseDB(release, parentRelease):
     rows = cur.fetchall()
     for row in rows:
         if release in row:
-        	return 0
+            return 0
 
     # creating and granting privileges to database
     cur.execute(sql.SQL("CREATE DATABASE {}").format(
@@ -29,17 +29,7 @@ def createReleaseDB(release, parentRelease):
             sql.Identifier(release), sql.Identifier(userName))
         )
 
-
-    string = "echo " + hostName + ":" + portNumber + ":" + release + ":" + userName + ":" + passwd
-    #os.system(string + ">> ~/.pgpass")
-
-    #os.system("pg_dump -h localhost -U " + userName + " -Fc master -f backup.sql")
-    #os.system("sudo -u postgres pg_dump -h localhost -U " + userName + " -Fc master > ./testing1.sql")
-
-    #os.system("pg_restore -h localhost -d " + release + " -U " + userName + " backup.sql")
-    #os.system("sudo -u postgres pg_restore -h localhost -d " + release + " -U " + userName + " testing1.sql")
-
-    dump_command = "sudo -u postgres pg_dump -h localhost -U " + userName + " -Fc " + parentRelease + " > /data/testing1.sql"
+    dump_command = "sudo -u postgres pg_dump -h localhost -U " + userName + " -Fc \"" + parentRelease + "\" > /data/testing1.sql"
     restore_command = "sudo -u postgres pg_restore -h localhost -d " + release + " -U " + userName + " /data/testing1.sql"
 
     fp = open('/data/createdb.sh', 'w')
@@ -47,17 +37,8 @@ def createReleaseDB(release, parentRelease):
     fp.write("\n")
     fp.write(restore_command)
     fp.write("\n")
-    #fp.write("expect <<END")
-    #fp.write("\n")
-    #fp.write("expect \"Password:\"")
-    #fp.write("\n")
-    #fp.write("send \"!lovert3\r\"")
-    #fp.write("\n")
-    #fp.write("END")
     fp.close()
 
-    #os.system("chmod +x /data/createdb.sh")
-    #os.system("/bin/su -s /bin/bash -c \"/data/createdb.sh\" postgres")
     requests.get("http://172.16.187.83:5000/")
 
     databaseExistsString = "\'NAME\': \'" + release + "\',"
