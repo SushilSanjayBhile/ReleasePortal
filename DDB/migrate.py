@@ -12,19 +12,19 @@ def Migrate(request, typ):
     print(typ)
     if typ == "":
         return HttpResponse("Please enter type of migration fake/real")
-    cmd = "python3 manage.py makemigrations"
+    cmd = "python3 /portal/app/manage.py makemigrations"
     print("This is migration type:- ", typ)
     os.system(cmd)
     flag = 0
 
     for db in settings.DATABASES:
         if typ == "fake":
-            cmd = "python3 manage.py migrate --database='"+ db +"' --fake" 
+            cmd = "python3 /portal/app/manage.py migrate --database='"+ db +"' --fake" 
             print("\n",cmd)
             os.system(cmd)
             flag = 1
         if typ == "real":
-            cmd = "python3 manage.py migrate --database='"+ db +"'" 
+            cmd = "python3 /portal/app/manage.py migrate --database='"+ db +"'" 
             print("\n",cmd)
             os.system(cmd)
             flag = 1
