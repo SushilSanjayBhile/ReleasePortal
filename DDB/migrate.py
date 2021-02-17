@@ -15,7 +15,6 @@ def Migrate(request, typ):
     cmd = "python3 manage.py makemigrations"
     print("This is migration type:- ", typ)
     os.system(cmd)
-    time.sleep(10)
     flag = 0
 
     for db in settings.DATABASES:
@@ -30,7 +29,6 @@ def Migrate(request, typ):
             os.system(cmd)
             flag = 1
 
-        time.sleep(2)
-    if flag == 1:
-        os.system("git add /app/DDB/migrations/; git status; git commit -m \"Added Migrations Files\"; git push;")
+    #if flag == 1:
+    #    os.system("git add /app/DDB/migrations/; git status; git commit -m \"Added Migrations Files\"; git push;")
     return HttpResponse("Uncomment the migration code")

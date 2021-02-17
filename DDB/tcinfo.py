@@ -375,95 +375,10 @@ def updateStatusData(updatedData, data, Release):
      return 1
 
 def TcCountByFilter(request, Release):
-    #try:
-    #    countDict = {}
-    #    replaceDict = {'Storage-DrivesetTCs':'Storage-Driveset','StoragePVC':'Storage-PVC','VagrantCluster':'Vagrant Cluster','SoftwareSolution':'Software Solution','ManagementTestcases': "Management", "MultizoneCluster":"Multizone Cluster",  "NetworkTestCases":"Network", "Rbac":"RBAC","StorageMirrored-Tests":"Storage-Mirrored","Additionaltests":"Additional", "HelmTestCases":"Helm","Interfacetestcases":"Interface","Kubernetes-tests": "Kubernetes", "ManagementTestcases":"Management", "MultizoneCluster":"Multizone Cluster", "NetworkTestCases":"Network","QOSTestcases":"QOS","StorageMirrored-Tests":"Storage-Mirrored","StorageRemote-Tests":"Storage-Remote","StorageSnapshot-Tests":"Storage-Snapshot","Upgradetests":"Upgrade", "Storage-Tests":"Storage"}
-    #    for i in replaceDict:
-    #        data = TC_INFO.objects.filter(Domain = i).using(Release)
-    #        serializer = TC_INFO_SERIALIZER(data, many = True)
-
-    #        for d in serializer.data:
-    #            card = d['CardType']
-    #            tcid = d['TcID']
-    #            dat = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
-    #            d = json.dumps(d)
-    #            d = json.loads(d)
-    #            updatedData = d
-
-    #            updatedData['Domain'] = replaceDict[i]
-    #            print(dat.Domain)
-    #            #print(updatedData, "\n",dat)
-    #            updateData(updatedData, dat, Release)
-
-    #    statusData = TC_STATUS.objects.using(Release).all()
-    #    statusSerializer = TC_STATUS_SERIALIZER(statusData, many = True)
-
-    #    for status in statusSerializer.data:
-    #        stat = TC_STATUS.objects.using(Release).get(id = status['id'])
-    #        serializer = TC_STATUS_SERIALIZER(stat)
-    #        newData = status
-
-    #        for rc in replaceDict:
-    #            if rc in status['Domain']:
-    #                for key in serializer.data:
-    #                    if key == 'Domain':
-    #                        newData[key] = replaceDict[rc]
-    #                    else:
-    #                        newData[key] = status[key]
-    #                #print(newData['TcID'], newData['Domain'])
-    #                updateStatusData(newData, stat, Release)
-    #except:
-    #    pass
-
-    ##return HttpResponse(json.dumps(countDict))
-    ##statusData = TC_STATUS.objects.using(Release).all()
-    ##statusSerializer = TC_STATUS_SERIALIZER(statusData, many = True)
-
-    ##for status in statusSerializer.data:
-    ##    stat = TC_INFO.objects.using(Release).filter(TcID = status['TcID']).get(CardType = status['CardType'])
-    ##    s = TC_STATUS.objects.using(Release).get(id = status['id'])
-
-    ##    serializer = TC_INFO_SERIALIZER(stat)
-    ##    newData = status
-
-    ##    for key in status:
-    ##        if key == 'Domain' or key == 'SubDomain' or key == 'TcName':
-    ##            newData[key] = serializer.data[key]
-    ##        else:
-    ##            newData[key] = status[key]
-    ##    updateStatusData(newData, s, Release)
-
-
-
     ##UNCOMMENT FROM BELOW
     print("FETCHING ALL TC INFO")
     infodata = TC_INFO.objects.using(Release).all()
     ser = TC_INFO_SERIALIZER(infodata, many = True)
-
-    #for i in ser.data:
-    #    try:
-    #        sd = TC_INFO.objects.using(Release).get(TcID = i['TcID'], CardType = i['CardType'])
-    #    except:
-    #        print("COMING INSIDE EXCEPT")
-    #        sd = TC_INFO.objects.using(Release).filter(TcID = i['TcID'], CardType = i['CardType'])
-    #        ss = TC_INFO_SERIALIZER(sd, many = True)
-    #        c = 0
-
-    #        for i in ss.data:
-    #            c += 1
-    #            if c > 1:
-    #                singledata = TC_INFO.objects.using(Release).get(id = i['id'])
-    #                singleserializer = TC_INFO_SERIALIZER(singledata)
-    #                updatedData = singleserializer.data
-    #                if i['CardType'] == "BOS":
-    #                    updatedData['CardType'] = "NYNJ"
-    #                elif i['CardType'] == "NYNJ":
-    #                    updatedData['CardType'] = "BOS"
-
-    #                #print(i['id'], i['TcID'], i['CardType'], updatedData['CardType'])
-    #                #updateData(updatedData, singledata, Release)
-
-    #        #print("\n")
 
     count = 0
     diction = {}
@@ -493,7 +408,6 @@ def TcCountByFilter(request, Release):
         if len(diction[i]["id"]) == 1:
             for key in diction[i]["id"]:
                 print(diction[i]["id"][key])
-                #TC_INFO.objects.using(Release).get(id = diction[i]["id"][key]).delete()
 
     guidata = TC_INFO_GUI.objects.using(Release).all()
     guiser = TC_INFO_GUI_SERIALIZER(guidata, many = True)
@@ -510,49 +424,7 @@ def TcCountByFilter(request, Release):
                 if records != 1:
                     TC_INFO_GUI.objects.using(Release).get(id = i["id"]).delete()
                     records -= 1
-
-
-            # LOGIC TO DELETE DUPLICATE TCS
-
-            #c = 0
-            #for i in ss.data:
-            #    c += 1
-
-            #    if c > 1:
-            #        continue
-            #        print(i['id'], i['TcID'], i['CardType'], i["Domain"], i["SubDomain"])
-            #        #data = TC_INFO.objects.using(Release).get(id = i['id']).delete()
-            #        #print(data, c)
-            #        #print(i['TcID'], i['CardType'], len(ss.data), i['id'], c)
-            ##print()
-
-    #infodata = TC_INFO.objects.using(Release).all()
-    #ser = TC_INFO_SERIALIZER(infodata, many = True)
-
-    #for i in ser.data:
-    #    if i["CardType"] == "BOS" or i["CardType"] == "NYNJ":
-    #        tcinfo = TC_INFO.objects.using(Release).filter(TcID = i["TcID"])
-    #        tcinfoser = TC_INFO_SERIALIZER(tcinfo, many = True)
-
-    #        if len(tcinfoser.data) != 2:
-    #            if len(tcinfoser.data) == 1:
-    #                data = TC_INFO.objects.using(Release).get(id = tcinfoser.data[0]['id'])
-    #                s = TC_INFO_SERIALIZER(data)
-    #                newData = s.data
-
-    #                newData['CardType'] = "BOS"
-    #                if s.data['CardType'] == "BOS":
-    #                    newData['CardType'] = "NYNJ"
-
-    #                del newData['id']
-    #                #print(newData['CardType'], s.data['CardType'], newData)
-    #                fd = TcInfoForm(newData)
-
-    #                if fd.is_valid():
-    #                    data = fd.save(commit = False)
-    #                    data.save(using = Release)
-
-    return HttpResponse("HELLO")
+    return HttpResponse("DELETED DUPLICATE TCS")
 
 
 def TcCountByFilter2(request, Release):

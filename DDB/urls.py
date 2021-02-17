@@ -17,15 +17,24 @@ from .getStatistics import BUG_WISE_BLOCKED_TCS
 from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO
 from .releaseBuildInfo import RELEASEBUILDINFOGETPOSTVIEW,RELEASEBUILDINFODELETEVIEW
 from .createRelease import mergeDB
+from .removeReleaseResults import  removeOldReleaseData
+from .applicability import Applicable, AddPlatform,GetPlatformList, GetPlatformWiseTCList
 
 # my scripts
 from .cleanup import RemoveStatus
 from .migrate import Migrate
 
 urlpatterns = [
+    #applicability api's
+    path('applicable/platformList/', GetPlatformList),
+    path('applicable/platformwisetc/<str:platform>', GetPlatformWiseTCList),
+    path('applicable/', Applicable),
+    path('applicable/add/<str:Platform>', AddPlatform),
+
     # my scripts URLs
     path('removestatus/<str:Release>', RemoveStatus),
     path('migrate/<str:typ>', Migrate),
+    path('updateOldStatusData/<str:Release>',removeOldReleaseData),
 
     #all api
     path('mergeDB/<str:Release>', mergeDB),

@@ -358,3 +358,6 @@ class RELEASEBUILDSINFO(models.Model):
     def __str__(self):
         return self.buildName
 
+class APPLICABILITY(models.Model):
+    Platform = models.CharField(max_length = 100, blank = False, default = "NO PLATFORM")
+    ApplicableTCs = models.TextField()

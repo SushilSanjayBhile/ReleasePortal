@@ -124,6 +124,14 @@ DATABASES = {
         'HOST': hostName,
         'PORT': portNumber,
         },
+    'OCP-4.6': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'OCP-4.6',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'DSS-3.1': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'DSS-3.1',
