@@ -23,10 +23,26 @@ def GetPlatformWiseTCList(request, platform):
     infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
     finalData = []
 
+    atd = {}
+
+    data = APPLICABILITY.objects.all()
+    serializer = APPLICABILITY_SERIALIZER(data, many = True)
+
+    for row in serializer.data:
+        pf = row["Platform"]
+        at = json.loads(row["ApplicableTCs"].replace("'", "\""))
+        for tc in at["CLI"]:
+            if tc not in atd:
+                atd[tc] = []
+            atd[tc].append(pf)
+
     for tc in infoserializer.data:
         for tcid in cliTCIDs:
             if tc["id"] == tcid:
+                tc["Platform"] = atd[tc["id"]]
                 finalData.append(tc)
+
+    #print(json.dumps(finalData, indent = 2))
     return JsonResponse({'Data': finalData}, status = 200)
 
 @csrf_exempt
