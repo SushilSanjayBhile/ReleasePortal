@@ -3,8 +3,10 @@ from django.http import HttpResponse, JsonResponse
 from django.db.models.functions import Trunc
 import json, time, os
 
-from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER, TC_STATUS_GUI_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, TC_INFO_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER
-from .models import TC_INFO, TC_STATUS, LOGS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LATEST_TC_STATUS
+from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER, TC_STATUS_GUI_SERIALIZER, \
+        LATEST_TC_STATUS_GUI_SERIALIZER, TC_INFO_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, \
+        APPLICABILITY_SERIALIZER
+from .models import TC_INFO, TC_STATUS, LOGS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LATEST_TC_STATUS, APPLICABILITY
 from .forms import TcInfoForm
 from django.db.models import Q
 
@@ -73,6 +75,19 @@ def updateGuiData(updatedData, data, Release):
 @csrf_exempt
 def WHOLE_TC_INFO(request, Release):
     if request.method == "GET":
+        atd = {}
+
+        data = APPLICABILITY.objects.all()
+        serializer = APPLICABILITY_SERIALIZER(data, many = True)
+
+        for row in serializer.data:
+            pf = row["Platform"]
+            at = json.loads(row["ApplicableTCs"].replace("'", "\""))
+            for tc in at["CLI"]:
+                if tc not in atd:
+                    atd[tc] = []
+                atd[tc].append(pf)
+
         #for db in settings.DATABASES:
         #    print(db)
 
@@ -230,6 +245,9 @@ def WHOLE_TC_INFO(request, Release):
                     info['CurrentStatus'] = statusDict[card][tcid][-1]
             except:
                 pass
+
+            if info["id"] in atd:
+                info["Platform"] = atd[info["id"]]
 
             AllInfoData.append(info)
         #return HttpResponse("COMING")
