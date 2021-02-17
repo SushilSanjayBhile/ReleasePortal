@@ -1,9 +1,9 @@
+import json
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import json
 
-from .models import TC_INFO, TC_INFO_GUI, APPLICABILITY
 from .forms import APPLICABILITY_FORM
+from .models import TC_INFO, TC_INFO_GUI, APPLICABILITY
 from .serializers import APPLICABILITY_SERIALIZER, TC_INFO_SERIALIZER
 
 @csrf_exempt
@@ -19,16 +19,15 @@ def GetPlatformWiseTCList(request, platform):
     cliData = json.loads(serializer.data["ApplicableTCs"].replace("\'","\""))
     cliTCIDs = cliData["CLI"]
 
-    #infodata = TC_INFO.objects.all().using("master").filter(~Q(Domain = "GUI"))
-    infodata = TC_INFO.objects.all().using("DMC Master")
+    infodata = TC_INFO.objects.all().using("master")
     infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
+    finalData = []
 
     for tc in infoserializer.data:
         for tcid in cliTCIDs:
             if tc["id"] == tcid:
-                print(tc["id"], tcid)
-    
-    return JsonResponse({'Data': serializer.data}, status = 200)
+                finalData.append(tc)
+    return JsonResponse({'Data': finalData}, status = 200)
 
 @csrf_exempt
 def AddPlatform(request, Platform):
