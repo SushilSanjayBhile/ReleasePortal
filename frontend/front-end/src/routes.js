@@ -50,6 +50,7 @@ const ReleaseTestMetricsGUI = React.lazy(() => import('./views/Release/ReleaseTe
 const ReleaseSanityResult = React.lazy(() => import('./views/Release/ReleaseSanityResult/ReleaseSanityResult'))
 const teamwork = React.lazy(() => import('./views/TeamWorkComponent/TaskOverView'))
 const MyTestMetrics = React.lazy(() => import('./views/Release/MyTestMetrics/MyTestMetrics'));
+const adminDashboard = React.lazy(() => import('./views/Release/adminDashboard/adminDashboard'));
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -69,7 +70,9 @@ const routes = [
   { path: '/release/settings', name: 'settings', exact: true, component: Settings },
   { path: '/release/sanityresults', name: 'sanityresults', exact: true, component: ReleaseSanityResult },
   { path: '/release/teamwork', name: 'teamwork', exact: true, component: teamwork },
-  { path: '/release/mytestmatrics', name: 'teamwork', exact: true, component: MyTestMetrics },
+  { path: '/release/mytestmatrics', name: 'MyTestMetrics', exact: true, component: MyTestMetrics },
+  { path: '/release/adminDashboard', name: 'adminDashboard', exact: true, component: adminDashboard },
+
 ];
 
 export default routes;

@@ -121,7 +121,7 @@ class TestCasesLifecycle extends Component {
 
                     cellEditor: 'selectionEditor',
                     cellEditorParams: {
-                        values: this.props.users.map(item => item.email)
+                        values: this.props.users.map(item => item.name)
                     }
                 },
                 {
@@ -1265,7 +1265,7 @@ class TestCasesLifecycle extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
     user: state.auth.currentUser,
-    users: state.user && state.user.users ? state.user.users.map(item => item.email) : [],
+    users: state.user && state.user.users ? state.user.users.map(item => item.name) : [],
     selectedRelease: getCurrentRelease(state, state.release.current.id),
     data: state.testcase.all[state.release.current.id],
     tcDetails: state.testcase.testcaseDetail,

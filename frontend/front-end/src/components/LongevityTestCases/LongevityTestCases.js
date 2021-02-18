@@ -785,7 +785,7 @@ class LongevityTestCases extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
     user: state.auth.currentUser,
-    users: ['Select Assignee', 'Jenkin', ...state.user.users.map(item => item.email)],
+    users: ['Select Assignee', 'Jenkin', ...state.user.users.map(item => item.name)],
     selectedRelease: getCurrentRelease(state, state.release.current.id),
     data: state.testcase.longevity,
     E2EDetails: state.testcase.e2eDetails, //E2EDetails

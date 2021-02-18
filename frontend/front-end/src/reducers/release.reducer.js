@@ -42,7 +42,6 @@ let domainDetail = {
 
 function getAggregate(release) {
     release = release.data;
-    
     if(release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master" ){
         alldomains = ['Cluster Management', 'Application Management', 'Multizone','AirGapped','ApplicationDR','Tenant', 'Project','User Management','Service Provider','Others'];
         domainDetail = {
@@ -275,7 +274,7 @@ export const getTCForStatus = (state, id) => {
     ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'].map(item => p[item] = { Total:0,Pass: 0, Skip: 0, Fail: 0, NotTested: 0,Blocked:0 });
     let visibleP = { Total:0,Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
     let visibleGUIP = { Total:0,Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
-    if (release.Priority) {
+    if (release.TcAggregate.Priority) {
         p = { ...p, ...release.TcAggregate.Priority }
         
     }
@@ -295,6 +294,8 @@ export const getTCForStatus = (state, id) => {
 
         })
     }
+
+   
 
     if(state.release.options.selectedPriority){
         if (release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master" ) {
@@ -363,6 +364,7 @@ export const getTCForStatus = (state, id) => {
         },
         ]
     }];
+
 
     data.push({
         labels: ['Total', str],

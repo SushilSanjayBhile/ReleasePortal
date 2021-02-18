@@ -6,9 +6,7 @@ import axios from 'axios';
 import { connect } from 'react-redux';
 import { getCurrentRelease } from '../../../reducers/release.reducer';
 import { saveUserPendingApproval, saveSingleTestCase, saveTestCase, updateTCEdit } from '../../../actions';
-import {
-    Col, Row, Button,
-    Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Collapse, UncontrolledPopover, PopoverHeader, PopoverBody
+import {Col, Row, Button,Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Collapse, UncontrolledPopover, PopoverHeader, PopoverBody
 } from 'reactstrap';
 import './PendingForApproval.scss';
 import { AgGridReact } from 'ag-grid-react';
@@ -20,14 +18,14 @@ import EditPendingForApproval from './EditPendingForApproval';
 import { wsPA } from '../../../constants';
 
 class PendingForApproval extends Component {
-    workingStatusOptions = [{ value: 'APPROVED', text: 'APPROVED' }, { value: 'UNAPPROVED', text: 'UNAPPROVED' }];
+    workingStatusOptions = [{ value: 'Select Status', text: 'Select Status' },{ value: 'APPROVED', text: 'APPROVED' }, { value: 'UNAPPROVED', text: 'UNAPPROVED' }];
     editedRows = {};
     isAnyChanged = false;
 
     constructor(props) {
         super(props);
         this.state = {
-            approveState: 'UNAPPROVED',
+            approveState: 'CREATED',
             reasonForUnapproval: '',
             rowsChecked: {},
 
@@ -154,6 +152,37 @@ class PendingForApproval extends Component {
             ],
             modules: AllCommunityModules
         }
+
+        this.getNotificationToAdmin();
+    }
+
+    getNotificationToAdmin = () =>{
+        if(this.props.user){
+           
+            // console.clear();
+            console.log("coming in function",this.props.user.role,this.props)
+            let release = this.props.selectedRelease.ReleaseNumber;
+            let url = `/api/wholetcinfo/${release}?`;
+            url += ('&WorkingStatus=' + 'CREATED');
+
+            console.log("url for admin to approve tc",url)
+            axios.get(url)
+            .then(response => {
+                if(response.data){
+                    console.log("data for cli tc",response.data.length)
+                    if(response.data.length >= 1){
+                        this.setState({PendingForApprovalDataList : true })
+                    }
+                    else{
+                        this.setState({PendingForApprovalDataList : false})
+                    }
+                }
+                console.log("changing state ",this.state.PendingForApprovalDataList)
+            }).catch(err => {
+                console.log("Error",err);
+            })
+            }
+       
     }
 
     renderEditedCell = (params) => {
@@ -333,6 +362,15 @@ class PendingForApproval extends Component {
         }
         url += ('&WorkingStatus=' + 'CREATED');
 
+        console.clear();
+        console.log("props for user",this.props.user,this.props.users)
+        this.getNotificationToAdmin();
+
+        if (this.props.user && this.props.user.role != 'ADMIN') {
+            let user = this.props.user.name;
+            url += ('&Assignee=' + user)
+        }
+
         axios.get(url)
         .then(response => {
             this.setState({
@@ -347,7 +385,7 @@ class PendingForApproval extends Component {
         this.props.updateTCEdit({ Master: true, errors: {} });
         this.getTC(e.data);
     }
-    toggle = () => this.setState({ modal: !this.state.modal });
+    toggle = () => this.setState({ modal: !this.state.modal,rowSelect:false });
     toggleMultiple = () => this.setState({ modalMultiple: !this.state.modalMultiple });
     toggleAllSAVE = () => {
         this.setState({ multipleChanges: !this.state.multipleChanges })
@@ -400,13 +438,15 @@ class PendingForApproval extends Component {
         let items = [];
         let currentUser = "UNKNOWN"
         let tcResult = ''
-        if(this.props.user){
-            currentUser = this.props.user.email
+        let tcName = 'TC NOT AUTOMATED'
+        if(this.props.currentUser){
+            currentUser = this.props.currentUser.name
         }
         let selectedRows = this.gridApi.getSelectedRows();
         selectedRows.forEach(item => {
-            tcResult = item.CurrentStatus.Result
-            console.log("selected row",item.CurrentStatus.Result)
+            tcResult = item.CurrentStatus.Result;
+            tcName = item.TcName;
+            console.log("selected row",item.CurrentStatus.Result,item)
             let pushable = {
                 TcID: item.TcID,
                 CardType: item.CardType,
@@ -432,20 +472,29 @@ class PendingForApproval extends Component {
                     if(item[each] ==  'APPROVED'){
                         if(tcResult === ""){
                             console.log("coming in tcresult",tcResult)
-                            pushable.stateUserMapping =  {"Manual Assignee" : item.Creator,"Manual WorkingStatus" : "Inprogress","Automation Assignee" : "-","Automation WorkingStatus":"AUTO_ASSIGNED"}
+                            // pushable.stateUserMapping =  {"Manual Assignee" : item.Assignee,"Manual WorkingStatus" : "Inprogress","Automation Assignee" : "-","Automation WorkingStatus":"AUTO_ASSIGNED"}
+                            pushable.stateUserMapping =  {"Manual Assignee" : item.Assignee,"Manual WorkingStatus" : "Inprogress"}
                             pushable["Manual WorkingStatus"] = "Inprogress"
-                            pushable["Manual Assignee"] = item.Creator
-                            pushable["Automation WorkingStatus"] = "AUTO_ASSIGNED"
-                            pushable["Automation Assignee"] = "-"
+                            pushable["Manual Assignee"] = item.Assignee
+                            // pushable["Automation WorkingStatus"] = "AUTO_ASSIGNED"
+                            // pushable["Automation Assignee"] = "-"
 
                         }
                         else{
-                            pushable.stateUserMapping =  {"Manual Assignee" : item.Creator,"Manual WorkingStatus" : "MANUAL_COMPLETED","Automation Assignee" : "-","Automation WorkingStatus":"AUTO_ASSIGNED"}
+                            // pushable.stateUserMapping =  {"Manual Assignee" : item.Assignee,"Manual WorkingStatus" : "MANUAL_COMPLETED","Automation Assignee" : "-","Automation WorkingStatus":"AUTO_ASSIGNED"}
+                            pushable.stateUserMapping =  {"Manual Assignee" : item.Assignee,"Manual WorkingStatus" : "MANUAL_COMPLETED"}
                             pushable["Manual WorkingStatus"] = "MANUAL_COMPLETED"
-                            pushable["Manual Assignee"] = item.Creator
-                            pushable["Automation WorkingStatus"] = "AUTO_ASSIGNED"
-                            pushable["Automation Assignee"] = "-"
+                            pushable["Manual Assignee"] = item.Assignee
+                            // pushable["Automation WorkingStatus"] = "AUTO_ASSIGNED"
+                            // pushable["Automation Assignee"] = "-"
                         }
+
+                        // if(tcName !== 'TC NOT AUTOMATED'){
+
+                        //     pushable.stateUserMapping =  {"Automation Assignee" : item.stateUserMapping["Automation Assignee"],"Automation WorkingStatus":item.stateUserMapping["Automation WorkingStatus"]}
+                        //     pushable["Automation WorkingStatus"] = item.stateUserMapping["Automation WorkingStatus"]
+                        //     pushable["Automation Assignee"] = item.stateUserMapping["Automation Assignee"]
+                        // }
                         
                     }
                     if(item[each] == 'UNAPPROVED'){
@@ -455,6 +504,7 @@ class PendingForApproval extends Component {
             })
             items.push(pushable);
         })
+        console.log("before put request data",items)
         axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
         .then(res => {
             this.gridOperations(true);
@@ -483,23 +533,32 @@ class PendingForApproval extends Component {
         };
 
         let currentUser = "UNKNOWN"
-        if(this.props.currentUser){
-            currentUser = this.props.currentUser
+        if(this.props.user.currentUser){
+            currentUser = this.props.user.currentUser.name
         }
 
         if(this.state.approveState == 'APPROVED'){
+
             // data.stateUserMapping = {'APPROVED':`${currentUser}`}
-            data.stateUserMapping = {"Manual Assignee":"-","Manual WorkingStatus":"Inprogress","Automation Assignee":"-","Automation WorkingStatus":"AUTO_ASSIGNED"}
+            // data.stateUserMapping = {"Manual Assignee":data.Assignee,"Manual WorkingStatus":"Inprogress","Automation Assignee":"-","Automation WorkingStatus":"AUTO_ASSIGNED"}
+            data.stateUserMapping = {"Manual Assignee":data.Assignee,"Manual WorkingStatus":"Inprogress"}
             data["Manual WorkingStatus"] = "Inprogress"
-            data["Manual Assignee"] = "-"
-            data["Automation WorkingStatus"] = "AUTO_ASSIGNED"
-            data["Automation Assignee"] = "-"
+            data["Manual Assignee"] = data.Assignee
+            // data["Automation WorkingStatus"] = "AUTO_ASSIGNED"
+            // data["Automation Assignee"] = "-"
         }
 
         if(this.state.approveState == 'UNAPPROVED'){
             data.stateUserMapping = {"UNAPPROVED":`${currentUser}`}
             // data.stateUserMapping = {'Manual Assignee':'','Manual WorkingStatus':'','Automation Assignee':'','Automation WorkingStatus':''}
         }
+
+        if(this.state.approveState == 'CREATED'){
+            data.stateUserMapping = {"CREATED":`${currentUser}`}
+        }
+
+        data.UnapproveTCReason = this.state.reasonForUnapproval
+        console.log("before single tc save",this.props.tcDetails,data)
 
         axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, [data] )
             .then(res => {
@@ -588,7 +647,10 @@ class PendingForApproval extends Component {
                                                 <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                             }
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
-                                            <span className='rp-app-table-title'>Pending For Approval</span>
+                                            <span className='rp-app-table-title'>CLI Test Cases Pending For Approval</span> &nbsp;&nbsp;&nbsp;&nbsp;
+                                            {
+                                                this.state.PendingForApprovalDataList ? <i class="fa fa-bell" aria-hidden="true"> New Tc's Are Added. Needs to be approve/unapprove </i> : null
+                                            }
 
                                         </div>
                                     </div>
@@ -634,6 +696,7 @@ class PendingForApproval extends Component {
                                                 </div>
                                             }
                                             {
+                                                // this.props.user && this.props.user.isAdmin &&
                                                 this.props.user &&
                                                 <div style={{ width: '8rem', marginLeft: '0.5rem' }}>
                                                     <span>
@@ -689,6 +752,9 @@ class PendingForApproval extends Component {
                                                     </span>
                                                 </div>
                                             }
+
+                                            
+
                                             <div class="col-md-2">
                                                 <Input type="text" id="filter-text-box" placeholder="Filter..." onChange={(e) => this.onFilterTextBoxChanged(e.target.value)} />
                                             </div>

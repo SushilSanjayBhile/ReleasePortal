@@ -188,12 +188,12 @@ class CreateMultiple extends Component {
             "URL": `/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`
         };
         data.WorkingStatus = 'CREATED'
-        let currentUser = this.props.currentUser.email
+        let currentUser = this.props.currentUser.name
         data.stateUserMapping = {"CREATED" : `${currentUser}`}
         data.TcName = this.getTcName(`${data.TcName}`);
         data.Creator = data.Creator;
-        // data.Assignee = data.Creator;
-        console.log("data before post request",data);
+        data.Assignee = currentUser
+        // console.log("data before post request",data,this.props.currentUser.name);
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
 
@@ -426,7 +426,7 @@ class CreateMultiple extends Component {
             subdomains.sort();
         }
         let allCards = ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'];
-        let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.email);
+        let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.name);
 
         let cards = ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(item => ({ value: item, selected: this.state.addTC.CardType && this.state.addTC.CardType.includes(item) }));
         let servers = ['Intel', 'Dell', 'Lenovo'].map(item => ({ value: item, selected: this.state.addTC.ServerType && this.state.addTC.ServerType.includes(item) }));

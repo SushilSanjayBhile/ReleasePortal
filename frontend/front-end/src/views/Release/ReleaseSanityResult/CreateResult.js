@@ -200,7 +200,7 @@ class CreateResult extends Component {
         }
     }
     render() {
-        let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.email);
+        let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.name);
         let cards = ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(item => ({ value: item, selected: this.state.addTC.CardType && this.state.addTC.CardType.includes(item) }));
         let multiselect = { 'CardType': cards, };
         return (

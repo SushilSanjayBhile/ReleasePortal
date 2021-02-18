@@ -205,7 +205,7 @@ class CreateTC extends Component {
     }
     render() {
 
-        let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.email);
+        let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.name);
 
         let cards = this.props.selectedRelease.CardType ? this.props.selectedRelease.CardType.map(item => ({ value: item, selected: this.state.addTC.CardType && this.state.addTC.CardType.includes(item) })) : [];
         let servers = this.props.selectedRelease.ServerType ? this.props.selectedRelease.ServerType.map(item => ({ value: item, selected: this.state.addTC.ServerType && this.state.addTC.ServerType.includes(item) })) : [];

@@ -22,8 +22,9 @@ class Login extends Component {
     
     localStorage.setItem('user',JSON.stringify(user));
 
-    let email = user.profileObj.email;
-    let name = user.profileObj.name;
+      let email = user.profileObj.email;
+      let name = user.profileObj.name;
+   
    
     axios.post('/user/login', { email: email, name: name })
       .then(res => {
@@ -50,6 +51,10 @@ class Login extends Component {
         this.auth2 = gapi.auth2.init({
           'apiKey': 'AIzaSyCx0M1qs_LyfAgVmkTmDE6qIfgUiDekM-I',
           'client_id': '271454306292-q477q7slv0vpe1gep84habq5m2gv58k3.apps.googleusercontent.com',
+         
+          //new token
+          // 'apiKey': 'AIzaSyD-ngwn8edSCCFudBTyoxAWz4TB4XNLoQU',
+          // 'client_id': '256255355384-c2vb4kqmrg8pgnrn7tdvbvi1g1b9moc3.apps.googleusercontent.com',
           'scope': this.SCOPE
         }).then(() => {
           this.GoogleAuth = gapi.auth2.getAuthInstance();

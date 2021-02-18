@@ -49,7 +49,7 @@ class DefaultHeader extends Component {
         if (res.data && res.data.role === 'ADMIN') {
           this.props.logInSuccess({ email: email, name: name, isAdmin: true, role: res.data.role });
         } else {
-          this.props.logInSuccess({ email: email, name: name, isAdmin: true, role: res.data.role });
+          this.props.logInSuccess({ email: email, name: name, isAdmin: false, role: res.data.role });
         }
         this.props.history.push('/');
       })
@@ -118,7 +118,7 @@ class DefaultHeader extends Component {
               {this.props.selectedReleaseNumber }
               <i className="fa fa-caret-down" style={{ paddingLeft: '10px' }} aria-hidden="true"></i>
             </DropdownToggle>
-            <DropdownMenu>
+            <DropdownMenu className="dropdown-menu pre-scrollable">
               {
                 this.props.releases
                   .map(release => <DropdownItem onClick={e => {
@@ -174,6 +174,10 @@ class DefaultHeader extends Component {
                   {
                     this.props.currentUser && this.props.currentUser.isAdmin &&
                     <DropdownItem onClick={() => this.props.history.push('/release/settings')}><i className="fas fa-archive"></i>Create User</DropdownItem>
+                  }
+                  {
+                    this.props.currentUser && this.props.currentUser.isAdmin &&
+                    <DropdownItem onClick={() => this.props.history.push('/release/adminDashboard')}><i className="fas fa-archive"></i>Admin Dashboard</DropdownItem>
                   }
                   <DropdownItem onClick={() => this.props.onLogout()}><i className="fa fa-lock"></i>Logout</DropdownItem>
                 </React.Fragment>

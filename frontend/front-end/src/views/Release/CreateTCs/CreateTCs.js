@@ -113,8 +113,7 @@ class CreateTCs extends Component {
         let currentUser = this.props.currentUser.email
         data.stateUserMapping = {"CREATED" : `${currentUser}`}
         data.TcName = this.getTcName(`${data.TcName}`);
-        data.Creator = data.Creator;
-        data.Assignee = data.Creator;
+        data.Assignee = currentUser
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 // this.getTcs();
@@ -216,7 +215,7 @@ class CreateTCs extends Component {
     }
     render() {
 
-        let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.email);
+        let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.name);
 
         let cards = ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(item => ({ value: item, selected: this.state.addTC.CardType && this.state.addTC.CardType.includes(item) }));
         let servers = ['Intel', 'Dell', 'Lenovo'].map(item => ({ value: item, selected: this.state.addTC.ServerType && this.state.addTC.ServerType.includes(item) }));

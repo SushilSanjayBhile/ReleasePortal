@@ -91,7 +91,6 @@ app.use('/rest/epic/:id', (req, res) => {
     })
 }, err => { })
 
-
 // app.use('/rest/DSSepic/:id', (req, res) => {
 //     // var str = `?jql=project%20in%20(SPEK%2C%20DWS)%20AND%20issuetype%20in%20(Bug%2C%20Epic%2C%20Improvement%2C%20Task)%20AND%20%22Epic%20Link%22%20%3D%20DWS-6707%20ORDER%20BY%20summary%20ASC%2C%20created%20DESC&fields=key,summary,status&maxResults=2000`
 //     var str = `?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20%3D%20Bug%20AND%20%22Epic%20Link%22%20%3D%20DWS-6707%20order%20by%20created%20&fields=key,summary,status&maxResults=2000`
@@ -116,6 +115,7 @@ app.use('/rest/epic/:id', (req, res) => {
 //     })
 // }, err => { })
 
+
 app.use('/rest/DMCfeaturedetail/:id', (req, res) => {
     var str = `?jql=project%3D%20SPEK%20and%20%22Epic%20Link%22%20%3D%20${req.params.id}%20order%20by%20created%20DESC&fields=key,summary,subtasks,created,progress,status,updated,priority&maxResults=2000`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult, response) {
@@ -139,7 +139,6 @@ app.use('/rest/DMCfeaturedetail/:id', (req, res) => {
 
 app.use('/rest/bugs/total/:id', (req, res) => {
     var totalBugsStr = `?jql=fixVersion%20in%20(${req.params.id})%20AND%20type%20in%20("Bug")&fields=key,status,priority,summary&maxResults=2000`
-    
     console.log("url for bugs",totalBugsStr)
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
         if (response.statusCode === 401) {
@@ -300,60 +299,60 @@ app.get('/users', (req, res) => {
     res.send(users);
 })
 
-// GET ALL TCs of this release
-app.get('/api/tcinfo/:release', (req, res) => {
-    console.log('called')
-    if (allTcs && allTcs[req.params.release]) {
-        let data = Object.keys(allTcs[req.params.release]).map(item => allTcs[req.params.release][item]);
+// // GET ALL TCs of this release
+// app.get('/api/tcinfo/:release', (req, res) => {
+//     console.log('called')
+//     if (allTcs && allTcs[req.params.release]) {
+//         let data = Object.keys(allTcs[req.params.release]).map(item => allTcs[req.params.release][item]);
 
-        res.send(data.filter(item => item ? true : false));
-    } else {
-        res.send([]);
-    }
-});
+//         res.send(data.filter(item => item ? true : false));
+//     } else {
+//         res.send([]);
+//     }
+// });
 
-app.post('/api/tcinfo/:release', (req, res) => {
-    if (allTcs && allTcs[req.params.release]) {
-        if (allTcs[req.params.release][req.body.TcID]) {
-            res.status(401).send({ 'message': 'Duplicate TcID' });
-            return;
-        } else {
-            allTcs[req.params.release][req.body.TcID] = { ...req.body, Activity: [req.body.Activity], LatestE2EBuilds: [] };
-            allTcs['master'][req.body.TcID] = { ...req.body, Activity: [req.body.Activity], LatestE2EBuilds: [], WorkingStatus: 'UNASSIGNED', Assignee: 'ADMIN', CurrentStatus: 'NotTested', Build: '' };
-        }
-    } else {
-        allTcs[req.params.release] = { [req.body.TcID]: { ...req.body, Activity: [req.body.Activity], LatestE2EBuilds: [] } };
-        allTcs['master'][req.body.TcID] = { ...req.body, Activity: [req.body.Activity], LatestE2EBuilds: [], WorkingStatus: 'UNASSIGNED', Assignee: 'ADMIN', CurrentStatus: 'NotTested', Build: '' };
-    }
-    // addAssignee(allTcs[req.params.release][req.body.TcID], req.params.release)
-    res.send({ message: 'ok' });
-});
+// app.post('/api/tcinfo/:release', (req, res) => {
+//     if (allTcs && allTcs[req.params.release]) {
+//         if (allTcs[req.params.release][req.body.TcID]) {
+//             res.status(401).send({ 'message': 'Duplicate TcID' });
+//             return;
+//         } else {
+//             allTcs[req.params.release][req.body.TcID] = { ...req.body, Activity: [req.body.Activity], LatestE2EBuilds: [] };
+//             allTcs['master'][req.body.TcID] = { ...req.body, Activity: [req.body.Activity], LatestE2EBuilds: [], WorkingStatus: 'UNASSIGNED', Assignee: 'ADMIN', CurrentStatus: 'NotTested', Build: '' };
+//         }
+//     } else {
+//         allTcs[req.params.release] = { [req.body.TcID]: { ...req.body, Activity: [req.body.Activity], LatestE2EBuilds: [] } };
+//         allTcs['master'][req.body.TcID] = { ...req.body, Activity: [req.body.Activity], LatestE2EBuilds: [], WorkingStatus: 'UNASSIGNED', Assignee: 'ADMIN', CurrentStatus: 'NotTested', Build: '' };
+//     }
+//     // addAssignee(allTcs[req.params.release][req.body.TcID], req.params.release)
+//     res.send({ message: 'ok' });
+// });
 
-app.put('/api/:release/tcinfo/id/:id', (req, res) => {
-    if (allTcs && allTcs[req.params.release] && allTcs[req.params.release][req.params.id] &&
-        allTcs[req.params.release][req.params.id].TcID === req.body.TcID) {
-        allTcs[req.params.release][req.body.TcID] = {
-            ...req.body,
-            Activity: [...allTcs[req.params.release][req.body.TcID].Activity, req.body.Activity],
-            LatestE2EBuilds: [...allTcs[req.params.release][req.body.TcID].LatestE2EBuilds, req.body.LatestE2EBuilds]
-        };
-        allTcs['master'][req.body.TcID] = { ...req.body, Activity: [req.body.Activity], LatestE2EBuilds: [], WorkingStatus: 'UNASSIGNED', Assignee: 'ADMIN', CurrentStatus: 'NotTested', Build: '' };
-        res.send({ message: 'ok' });
-    } else {
-        res.status(404).send({ 'message': 'TC not found' })
-    }
-});
+// app.put('/api/:release/tcinfo/id/:id', (req, res) => {
+//     if (allTcs && allTcs[req.params.release] && allTcs[req.params.release][req.params.id] &&
+//         allTcs[req.params.release][req.params.id].TcID === req.body.TcID) {
+//         allTcs[req.params.release][req.body.TcID] = {
+//             ...req.body,
+//             Activity: [...allTcs[req.params.release][req.body.TcID].Activity, req.body.Activity],
+//             LatestE2EBuilds: [...allTcs[req.params.release][req.body.TcID].LatestE2EBuilds, req.body.LatestE2EBuilds]
+//         };
+//         allTcs['master'][req.body.TcID] = { ...req.body, Activity: [req.body.Activity], LatestE2EBuilds: [], WorkingStatus: 'UNASSIGNED', Assignee: 'ADMIN', CurrentStatus: 'NotTested', Build: '' };
+//         res.send({ message: 'ok' });
+//     } else {
+//         res.status(404).send({ 'message': 'TC not found' })
+//     }
+// });
 
-app.delete('/api/:release/tcinfo/id/:id', (req, res) => {
-    if (allTcs && allTcs[req.params.release] && allTcs[req.params.release][req.params.id] &&
-        allTcs[req.params.release][req.params.id].TcID === req.body.TcID) {
-        allTcs[req.params.release][req.body.TcID] = null;
-        allTcs['master'][req.body.TcID] = null;
-        res.send({ message: 'ok' });
-    } else {
-        res.status(404).send({ 'message': 'TC not found' })
-    }
-});
+// app.delete('/api/:release/tcinfo/id/:id', (req, res) => {
+//     if (allTcs && allTcs[req.params.release] && allTcs[req.params.release][req.params.id] &&
+//         allTcs[req.params.release][req.params.id].TcID === req.body.TcID) {
+//         allTcs[req.params.release][req.body.TcID] = null;
+//         allTcs['master'][req.body.TcID] = null;
+//         res.send({ message: 'ok' });
+//     } else {
+//         res.status(404).send({ 'message': 'TC not found' })
+//     }
+// });
 
 
 
@@ -388,216 +387,216 @@ app.delete('/api/:release/tcinfo/id/:id', (req, res) => {
 
 
 // GET ALL PENDING TCS FOR APPROVAL TO ADMIN FROM OTHER USERS
-app.get('/user/:release/pendingApproval/user/:email', (req, res) => {
-    let tcs = [];
-    if (assignedTCs[req.params.release] && assignedTCs[req.params.release][req.params.email]) {
-        assignedTCs[req.params.release][req.params.email].forEach(item => {
-            if ((allTcs[req.params.release][item].WorkingStatus === 'UPDATED') || (allTcs[req.params.release][item].WorkingStatus === 'DELETED') || allTcs[req.params.release][item].WorkingStatus === 'CREATED') {
-                tcs.push(allTcs[req.params.release][item]);
-            }
-        })
-    }
-    res.send(tcs);
-});
+// app.get('/user/:release/pendingApproval/user/:email', (req, res) => {
+//     let tcs = [];
+//     if (assignedTCs[req.params.release] && assignedTCs[req.params.release][req.params.email]) {
+//         assignedTCs[req.params.release][req.params.email].forEach(item => {
+//             if ((allTcs[req.params.release][item].WorkingStatus === 'UPDATED') || (allTcs[req.params.release][item].WorkingStatus === 'DELETED') || allTcs[req.params.release][item].WorkingStatus === 'CREATED') {
+//                 tcs.push(allTcs[req.params.release][item]);
+//             }
+//         })
+//     }
+//     res.send(tcs);
+// });
 
-// UPDATE PENDING TC WITH APPROVED/NONAPPROVED FROM ADMIN
-app.put('/user/:release/pendingApproval/tcinfo/:id', (req, res) => {
-    if (allTcs[req.params.release] && allTcs[req.params.release][req.params.id]) {
-        if (req.body.WorkingStatus === 'APPROVED') {
-            switch (req.body.OldWorkingStatus) {
-                case 'CREATED':
-                case 'UPDATED':
-                    allTcs['master'][req.params.id] = { ...req.body, WorkingStatus: 'UNASSIGNED', Assignee: 'ADMIN', LatestE2EBuilds: [] };
-                    if (allTcs[req.params.release][req.params.id].Assignee && allTcs[req.params.release][req.params.id].Assignee !== 'ADMIN') {
-                        allTcs[req.params.release][req.params.id] = { ...req.body, LatestE2EBuilds: [], Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity], WorkingStatus: 'MANUAL_ASSIGNED' };
-                    } else {
-                        allTcs[req.params.release][req.params.id] = { ...req.body, LatestE2EBuilds: [], Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity], WorkingStatus: 'UNASSIGNED', Assignee: 'ADMIN' };
-                    }
-                    res.send({ message: 'ok' });
-                    break;
-                case 'DELETED':
-                    if (allTcs[req.params.release][req.params.id].TcID === req.params.id) {
-                        removeAssignee(allTcs[req.params.release][req.params.id], req.params.release);
-                        allTcs[req.params.release][req.params.id] = null;
-                    }
-                    res.send({ message: 'ok' });
-                    break;
-                default:
-                    res.status(404).send({ 'message': 'Invalid Working Status' });
-                    break;
+// // UPDATE PENDING TC WITH APPROVED/NONAPPROVED FROM ADMIN
+// app.put('/user/:release/pendingApproval/tcinfo/:id', (req, res) => {
+//     if (allTcs[req.params.release] && allTcs[req.params.release][req.params.id]) {
+//         if (req.body.WorkingStatus === 'APPROVED') {
+//             switch (req.body.OldWorkingStatus) {
+//                 case 'CREATED':
+//                 case 'UPDATED':
+//                     allTcs['master'][req.params.id] = { ...req.body, WorkingStatus: 'UNASSIGNED', Assignee: 'ADMIN', LatestE2EBuilds: [] };
+//                     if (allTcs[req.params.release][req.params.id].Assignee && allTcs[req.params.release][req.params.id].Assignee !== 'ADMIN') {
+//                         allTcs[req.params.release][req.params.id] = { ...req.body, LatestE2EBuilds: [], Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity], WorkingStatus: 'MANUAL_ASSIGNED' };
+//                     } else {
+//                         allTcs[req.params.release][req.params.id] = { ...req.body, LatestE2EBuilds: [], Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity], WorkingStatus: 'UNASSIGNED', Assignee: 'ADMIN' };
+//                     }
+//                     res.send({ message: 'ok' });
+//                     break;
+//                 case 'DELETED':
+//                     if (allTcs[req.params.release][req.params.id].TcID === req.params.id) {
+//                         removeAssignee(allTcs[req.params.release][req.params.id], req.params.release);
+//                         allTcs[req.params.release][req.params.id] = null;
+//                     }
+//                     res.send({ message: 'ok' });
+//                     break;
+//                 default:
+//                     res.status(404).send({ 'message': 'Invalid Working Status' });
+//                     break;
 
-            }
-        } else if (req.body.WorkingStatus === 'UNAPPROVED') {
-            allTcs[req.params.release][req.params.id] = { ...req.body, Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity], LatestE2EBuilds: [] };
-        }
-        res.send('ok');
-    } else {
-        //error
-        res.status(404).send({ 'message': 'TC Not found' });
-    }
-});
+//             }
+//         } else if (req.body.WorkingStatus === 'UNAPPROVED') {
+//             allTcs[req.params.release][req.params.id] = { ...req.body, Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity], LatestE2EBuilds: [] };
+//         }
+//         res.send('ok');
+//     } else {
+//         //error
+//         res.status(404).send({ 'message': 'TC Not found' });
+//     }
+// });
 
-// GET ALL PENDING TCS FOR USER TO GET APPROVED BY ADMIN
-app.get('/user/:release/myPendingApproval/user/:email', (req, res) => {
-    let tcs = [];
-    if (assignedTCs[req.params.release] && assignedTCs[req.params.release][req.params.email]) {
-        assignedTCs[req.params.release][req.params.email].forEach(item => {
-            if ((allTcs[req.params.release][item].WorkingStatus === 'UNAPPROVED') || (allTcs[req.params.release][item].WorkingStatus === 'UPDATED') || (allTcs[req.params.release][item].WorkingStatus === 'DELETED') || allTcs[req.params.release][item].WorkingStatus === 'CREATED') {
-                tcs.push(allTcs[req.params.release][item]);
-            }
-        })
-    }
-    res.send(tcs);
-});
+// // GET ALL PENDING TCS FOR USER TO GET APPROVED BY ADMIN
+// app.get('/user/:release/myPendingApproval/user/:email', (req, res) => {
+//     let tcs = [];
+//     if (assignedTCs[req.params.release] && assignedTCs[req.params.release][req.params.email]) {
+//         assignedTCs[req.params.release][req.params.email].forEach(item => {
+//             if ((allTcs[req.params.release][item].WorkingStatus === 'UNAPPROVED') || (allTcs[req.params.release][item].WorkingStatus === 'UPDATED') || (allTcs[req.params.release][item].WorkingStatus === 'DELETED') || allTcs[req.params.release][item].WorkingStatus === 'CREATED') {
+//                 tcs.push(allTcs[req.params.release][item]);
+//             }
+//         })
+//     }
+//     res.send(tcs);
+// });
 
-// UPDATE MY PENDING APPROVAL TCS
-app.put('/user/:release/myPendingApproval/tcinfo/:id', (req, res) => {
-    if (allTcs[req.params.release] && allTcs[req.params.release][req.params.id]) {
-        allTcs[req.params.release][req.params.id] = { ...req.body, Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity], LatestE2EBuilds: [] };
-        res.send('ok');
-    } else {
-        //error
-        res.status(404).send({ 'message': 'TC Not found' });
-    }
-});
+// // UPDATE MY PENDING APPROVAL TCS
+// app.put('/user/:release/myPendingApproval/tcinfo/:id', (req, res) => {
+//     if (allTcs[req.params.release] && allTcs[req.params.release][req.params.id]) {
+//         allTcs[req.params.release][req.params.id] = { ...req.body, Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity], LatestE2EBuilds: [] };
+//         res.send('ok');
+//     } else {
+//         //error
+//         res.status(404).send({ 'message': 'TC Not found' });
+//     }
+// });
 
-//  GET REGRESSION TCS  FOR ASSIGNINING
-app.get('/user/:release/assignTcs/user/:email', (req, res) => {
-    let tcs = [];
-    if (assignedTCs[req.params.release] && assignedTCs[req.params.release][req.params.email]) {
-        assignedTCs[req.params.release][req.params.email].forEach(item => {
-            if ((allTcs[req.params.release][item].WorkingStatus === 'UNASSIGNED')) {
-                tcs.push(allTcs[req.params.release][item]);
-            }
-        })
-    }
-    res.send(tcs);
-})
-//  UPDATE SINGLE REGRESSION TC  FOR ASSIGNINING
-app.put('/user/:release/assignTcs/tcinfo/:id', (req, res) => {
-    if (allTcs[req.params.release] && allTcs[req.params.release][req.params.id]) {
-        allTcs[req.params.release][req.params.id] = { ...req.body, Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity], LatestE2EBuilds: [] };
-        res.send('ok');
-    } else {
-        //error
-        res.status(404).send({ 'message': 'TC Not found' });
-    }
-})
-//  UPDATE ALL REGRESSION TCS  FOR ASSIGNINING
-app.put('/user/:release/assignTcs/alltcinfo', (req, res) => {
-    if (req.body.data) {
-        req.body.data.forEach(data => {
-            removeAssignee(allTcs[req.params.release][data.TcID], req.params.release);
-            allTcs[req.params.release][data.TcID].Assignee = data.Assignee;
-            allTcs[req.params.release][data.TcID].WorkingStatus = data.WorkingStatus;
-            allTcs[req.params.release][data.TcID].Activity = [...allTcs[req.params.release][data.TcID].Activity, data.Activity]
-            addAssignee(allTcs[req.params.release][data.TcID], req.params.release)
-        })
-        res.send({ message: 'ok' });
-    } else {
-        res.status(401).send({ 'message': 'Failed to update TCs' });
-    }
-})
+// //  GET REGRESSION TCS  FOR ASSIGNINING
+// app.get('/user/:release/assignTcs/user/:email', (req, res) => {
+//     let tcs = [];
+//     if (assignedTCs[req.params.release] && assignedTCs[req.params.release][req.params.email]) {
+//         assignedTCs[req.params.release][req.params.email].forEach(item => {
+//             if ((allTcs[req.params.release][item].WorkingStatus === 'UNASSIGNED')) {
+//                 tcs.push(allTcs[req.params.release][item]);
+//             }
+//         })
+//     }
+//     res.send(tcs);
+// })
+// //  UPDATE SINGLE REGRESSION TC  FOR ASSIGNINING
+// app.put('/user/:release/assignTcs/tcinfo/:id', (req, res) => {
+//     if (allTcs[req.params.release] && allTcs[req.params.release][req.params.id]) {
+//         allTcs[req.params.release][req.params.id] = { ...req.body, Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity], LatestE2EBuilds: [] };
+//         res.send('ok');
+//     } else {
+//         //error
+//         res.status(404).send({ 'message': 'TC Not found' });
+//     }
+// })
+// //  UPDATE ALL REGRESSION TCS  FOR ASSIGNINING
+// app.put('/user/:release/assignTcs/alltcinfo', (req, res) => {
+//     if (req.body.data) {
+//         req.body.data.forEach(data => {
+//             removeAssignee(allTcs[req.params.release][data.TcID], req.params.release);
+//             allTcs[req.params.release][data.TcID].Assignee = data.Assignee;
+//             allTcs[req.params.release][data.TcID].WorkingStatus = data.WorkingStatus;
+//             allTcs[req.params.release][data.TcID].Activity = [...allTcs[req.params.release][data.TcID].Activity, data.Activity]
+//             addAssignee(allTcs[req.params.release][data.TcID], req.params.release)
+//         })
+//         res.send({ message: 'ok' });
+//     } else {
+//         res.status(401).send({ 'message': 'Failed to update TCs' });
+//     }
+// })
 
-app.get('/user/:release/myRegression/:email', (req, res) => {
-    let tcs = [];
-    if (assignedTCs[req.params.release] && assignedTCs[req.params.release][req.params.email]) {
-        assignedTCs[req.params.release][req.params.email].forEach(item => {
-            if ((allTcs[req.params.release][item].WorkingStatus === 'MANUAL_ASSIGNED')) {
-                tcs.push(allTcs[req.params.release][item]);
-            }
-        })
-    }
-    res.send(tcs);
-})
-// UPDATE MY REGRESSION TC
-app.put('/user/:release/myRegression/tcinfo/:id', (req, res) => {
-    if (allTcs[req.params.release] && allTcs[req.params.release][req.params.id]) {
-        if (req.body.WorkingStatus === 'MANUAL_COMPLETED') {
-            allTcs[req.params.release][req.params.id] = {
-                ...req.body,
-                Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity],
-                LatestE2EBuilds: [...allTcs[req.params.release][req.params.id].LatestE2EBuilds, req.body.LatestE2EBuilds],
-            };
-            console.log(allTcs[req.params.release][req.params.id]);
-        } else {
-            allTcs[req.params.release][req.params.id] = {
-                ...req.body,
-                Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity],
-            };
-        }
-        res.send('ok');
-    } else {
-        //error
-        res.status(404).send({ 'message': 'TC Not found' });
-    }
-})
-app.get('/test/:release/tcinfo/details/id/:id', (req, res) => {
-    if (allTcs && allTcs[req.params.release] && allTcs[req.params.release][req.params.id]) {
-        res.send(allTcs[req.params.release][req.params.id])
-    } else {
-        res.send({})
-    }
-});
-function addAssignee(tc, release) {
-    if (!assignedTCs[release]) {
-        assignedTCs[release] = { 'ADMIN': [] };
-    }
-    if (!tc.Assignee || tc.WorkingStatus.search('COMPLETED') >= 0) {
-        tc.Assignee = 'ADMIN';
-    }
-    if (assignedTCs[release][tc.Assignee] && !assignedTCs[release][tc.Assignee].includes(tc.TcID)) {
-        assignedTCs[release][tc.Assignee].push(tc.TcID);
-    }
-    if (!assignedTCs[release][tc.Assignee]) {
-        assignedTCs[release][tc.Assignee] = [tc.TcID];
-    }
-}
-function removeAssignee(tc, release) {
-    if (!assignedTCs[release]) {
-        return;
-    }
-    if (!tc.Assignee || tc.WorkingStatus.search('COMPLETED') >= 0) {
-        tc.Assignee = 'ADMIN';
-    }
-    if (assignedTCs[release] && assignedTCs[release][tc.Assignee]) {
-        let index = assignedTCs[release][tc.Assignee].indexOf(tc.TcID);
-        assignedTCs[release][tc.Assignee].splice(index, 1);
-    }
-}
-app.put('/test/:release/tcinfo/details/all', (req, res) => {
-    if (req.body.data) {
-        req.body.data.forEach(data => {
-            removeAssignee(allTcs[req.params.release][data.TcID], req.params.release);
-            allTcs[req.params.release][data.TcID].Assignee = data.Assignee;
-            allTcs[req.params.release][data.TcID].WorkingStatus = data.WorkingStatus;
-            addAssignee(allTcs[req.params.release][data.TcID], req.params.release)
-        })
-        res.send({ message: 'ok' });
-    } else {
-        res.status(401).send({ 'message': 'Failed to update TCs' });
-    }
-});
-app.put('/test/:release/tcinfo/details/id/:id', (req, res) => {
-    if (allTcs && allTcs[req.params.release] && allTcs[req.params.release][req.params.id] &&
-        allTcs[req.params.release][req.params.id].TcID === req.body.TcID) {
-        removeAssignee(allTcs[req.params.release][req.body.TcID], req.params.release);
-        allTcs[req.params.release][req.body.TcID] = {
-            ...req.body,
-            LatestE2EBuilds: [...allTcs[req.params.release][req.body.TcID].LatestE2EBuilds, ...req.body.ManualBuilds, ...req.body.AutoBuilds],
-            Activity: [...allTcs[req.params.release][req.body.TcID].Activity, req.body.Activity],
-            ManualBuilds: [...allTcs[req.params.release][req.body.TcID].ManualBuilds, ...req.body.ManualBuilds],
-            AutoBuilds: [...allTcs[req.params.release][req.body.TcID].AutoBuilds, ...req.body.AutoBuilds],
-        };
-        if (allTcs[req.params.release][req.body.TcID].LatestE2EBuilds.length > 0) {
-            let e2e = allTcs[req.params.release][req.body.TcID].LatestE2EBuilds;
-            allTcs[req.params.release][req.body.TcID].CurrentStatus = e2e[e2e.length - 1].Result;
-        } else {
-            allTcs[req.params.release][req.body.TcID].CurrentStatus = 'NotTested';
-        }
-        if (allTcs[req.params.release][req.body.TcID].TcName === '') {
-            allTcs[req.params.release][req.body.TcID].TcName = 'TC NOT AUTOMATED'
-        }
+// app.get('/user/:release/myRegression/:email', (req, res) => {
+//     let tcs = [];
+//     if (assignedTCs[req.params.release] && assignedTCs[req.params.release][req.params.email]) {
+//         assignedTCs[req.params.release][req.params.email].forEach(item => {
+//             if ((allTcs[req.params.release][item].WorkingStatus === 'MANUAL_ASSIGNED')) {
+//                 tcs.push(allTcs[req.params.release][item]);
+//             }
+//         })
+//     }
+//     res.send(tcs);
+// })
+// // UPDATE MY REGRESSION TC
+// app.put('/user/:release/myRegression/tcinfo/:id', (req, res) => {
+//     if (allTcs[req.params.release] && allTcs[req.params.release][req.params.id]) {
+//         if (req.body.WorkingStatus === 'MANUAL_COMPLETED') {
+//             allTcs[req.params.release][req.params.id] = {
+//                 ...req.body,
+//                 Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity],
+//                 LatestE2EBuilds: [...allTcs[req.params.release][req.params.id].LatestE2EBuilds, req.body.LatestE2EBuilds],
+//             };
+//             console.log(allTcs[req.params.release][req.params.id]);
+//         } else {
+//             allTcs[req.params.release][req.params.id] = {
+//                 ...req.body,
+//                 Activity: [...allTcs[req.params.release][req.params.id].Activity, req.body.Activity],
+//             };
+//         }
+//         res.send('ok');
+//     } else {
+//         //error
+//         res.status(404).send({ 'message': 'TC Not found' });
+//     }
+// })
+// app.get('/test/:release/tcinfo/details/id/:id', (req, res) => {
+//     if (allTcs && allTcs[req.params.release] && allTcs[req.params.release][req.params.id]) {
+//         res.send(allTcs[req.params.release][req.params.id])
+//     } else {
+//         res.send({})
+//     }
+// });
+// function addAssignee(tc, release) {
+//     if (!assignedTCs[release]) {
+//         assignedTCs[release] = { 'ADMIN': [] };
+//     }
+//     if (!tc.Assignee || tc.WorkingStatus.search('COMPLETED') >= 0) {
+//         tc.Assignee = 'ADMIN';
+//     }
+//     if (assignedTCs[release][tc.Assignee] && !assignedTCs[release][tc.Assignee].includes(tc.TcID)) {
+//         assignedTCs[release][tc.Assignee].push(tc.TcID);
+//     }
+//     if (!assignedTCs[release][tc.Assignee]) {
+//         assignedTCs[release][tc.Assignee] = [tc.TcID];
+//     }
+// }
+// function removeAssignee(tc, release) {
+//     if (!assignedTCs[release]) {
+//         return;
+//     }
+//     if (!tc.Assignee || tc.WorkingStatus.search('COMPLETED') >= 0) {
+//         tc.Assignee = 'ADMIN';
+//     }
+//     if (assignedTCs[release] && assignedTCs[release][tc.Assignee]) {
+//         let index = assignedTCs[release][tc.Assignee].indexOf(tc.TcID);
+//         assignedTCs[release][tc.Assignee].splice(index, 1);
+//     }
+// }
+// app.put('/test/:release/tcinfo/details/all', (req, res) => {
+//     if (req.body.data) {
+//         req.body.data.forEach(data => {
+//             removeAssignee(allTcs[req.params.release][data.TcID], req.params.release);
+//             allTcs[req.params.release][data.TcID].Assignee = data.Assignee;
+//             allTcs[req.params.release][data.TcID].WorkingStatus = data.WorkingStatus;
+//             addAssignee(allTcs[req.params.release][data.TcID], req.params.release)
+//         })
+//         res.send({ message: 'ok' });
+//     } else {
+//         res.status(401).send({ 'message': 'Failed to update TCs' });
+//     }
+// });
+// app.put('/test/:release/tcinfo/details/id/:id', (req, res) => {
+//     if (allTcs && allTcs[req.params.release] && allTcs[req.params.release][req.params.id] &&
+//         allTcs[req.params.release][req.params.id].TcID === req.body.TcID) {
+//         removeAssignee(allTcs[req.params.release][req.body.TcID], req.params.release);
+//         allTcs[req.params.release][req.body.TcID] = {
+//             ...req.body,
+//             LatestE2EBuilds: [...allTcs[req.params.release][req.body.TcID].LatestE2EBuilds, ...req.body.ManualBuilds, ...req.body.AutoBuilds],
+//             Activity: [...allTcs[req.params.release][req.body.TcID].Activity, req.body.Activity],
+//             ManualBuilds: [...allTcs[req.params.release][req.body.TcID].ManualBuilds, ...req.body.ManualBuilds],
+//             AutoBuilds: [...allTcs[req.params.release][req.body.TcID].AutoBuilds, ...req.body.AutoBuilds],
+//         };
+//         if (allTcs[req.params.release][req.body.TcID].LatestE2EBuilds.length > 0) {
+//             let e2e = allTcs[req.params.release][req.body.TcID].LatestE2EBuilds;
+//             allTcs[req.params.release][req.body.TcID].CurrentStatus = e2e[e2e.length - 1].Result;
+//         } else {
+//             allTcs[req.params.release][req.body.TcID].CurrentStatus = 'NotTested';
+//         }
+//         if (allTcs[req.params.release][req.body.TcID].TcName === '') {
+//             allTcs[req.params.release][req.body.TcID].TcName = 'TC NOT AUTOMATED'
+//         }
         // if (req.body.ManualBuilds) {
         //     if (!Array.isArray(allTcs[req.params.release][req.body.TcID].ManualBuilds)) {
         //         allTcs[req.params.release][req.body.TcID].ManualBuilds = [];
@@ -616,127 +615,127 @@ app.put('/test/:release/tcinfo/details/id/:id', (req, res) => {
         //             [...allTcs[req.params.release][req.body.TcID].AutoBuilds, req.body.AutoBuilds]
         //     };
         // }
-        addAssignee(allTcs[req.params.release][req.body.TcID], req.params.release)
-        // jsonfile.writeFileSync('./tcDetails.json', allTcs);
-        res.send({ message: 'ok' });
-    } else {
-        res.status(401).send({ 'message': 'Failed to update ' + req.params.id });
-    }
-});
-app.delete('/test/:release/tcinfo/details/id/:id', (req, res) => {
-    if (allTcs && allTcs[req.params.release] && allTcs[req.params.release][req.params.id] &&
-        allTcs[req.params.release][req.params.id].TcID === req.params.id) {
-        removeAssignee(allTcs[req.params.release][req.params.id], req.params.release);
-        allTcs[req.params.release][req.params.id] = null;
-        // jsonfile.writeFileSync('./tcDetails.json', allTcs);
-        res.send({ message: 'ok' });
-    } else {
-        res.status(401).send({ 'message': 'Failed to delete ' + req.params.id });
-    }
-});
+//         addAssignee(allTcs[req.params.release][req.body.TcID], req.params.release)
+//         // jsonfile.writeFileSync('./tcDetails.json', allTcs);
+//         res.send({ message: 'ok' });
+//     } else {
+//         res.status(401).send({ 'message': 'Failed to update ' + req.params.id });
+//     }
+// });
+// app.delete('/test/:release/tcinfo/details/id/:id', (req, res) => {
+//     if (allTcs && allTcs[req.params.release] && allTcs[req.params.release][req.params.id] &&
+//         allTcs[req.params.release][req.params.id].TcID === req.params.id) {
+//         removeAssignee(allTcs[req.params.release][req.params.id], req.params.release);
+//         allTcs[req.params.release][req.params.id] = null;
+//         // jsonfile.writeFileSync('./tcDetails.json', allTcs);
+//         res.send({ message: 'ok' });
+//     } else {
+//         res.status(401).send({ 'message': 'Failed to delete ' + req.params.id });
+//     }
+// });
 
-app.post('/api/release', (req, res) => {
-    console.log(req.body)
-    let found = releases.filter(item => item.ReleaseNumber === req.body.ReleaseNumber)[0];
-    if (found && found.ReleaseNumber) {
-        res.status(401).send({ message: 'Release already exsiting' });
-        return;
-    }
-    let master = releases.filter(item => item.ReleaseNumber === 'master')[0];
-    let release = { ...master, ...req.body, };
-    allTcs[req.body.ReleaseNumber] = { ...allTcs.master };
-    assignedTCs[req.body.ReleaseNumber] = { "ADMIN": Object.keys(allTcs.master) }
-    releases.push(release);
-    assignPriority(req.body.Priority, req.body.ReleaseNumber);
-    res.send('ok');
-})
-app.put('/api/release/:release', (req, res) => {
-    let found = releases.filter(item => item.ReleaseNumber === req.body.ReleaseNumber)[0];
-    if (!found) {
-        res.status(401).send({ message: 'Release not existing' });
-        return;
-    }
-    releases.forEach((item, index) => {
-        if (item.ReleaseNumber === req.body.ReleaseNumber) {
-            if (item.Priority !== req.body.Priority) {
-                assignPriority(req.body.Priority, item.ReleaseNumber);
-            }
-            releases[index] = { ...item, ...req.body };
-            console.log(releases[index]);
-        }
-    })
+// app.post('/api/release', (req, res) => {
+//     console.log(req.body)
+//     let found = releases.filter(item => item.ReleaseNumber === req.body.ReleaseNumber)[0];
+//     if (found && found.ReleaseNumber) {
+//         res.status(401).send({ message: 'Release already exsiting' });
+//         return;
+//     }
+//     let master = releases.filter(item => item.ReleaseNumber === 'master')[0];
+//     let release = { ...master, ...req.body, };
+//     allTcs[req.body.ReleaseNumber] = { ...allTcs.master };
+//     assignedTCs[req.body.ReleaseNumber] = { "ADMIN": Object.keys(allTcs.master) }
+//     releases.push(release);
+//     assignPriority(req.body.Priority, req.body.ReleaseNumber);
+//     res.send('ok');
+// })
+// app.put('/api/release/:release', (req, res) => {
+//     let found = releases.filter(item => item.ReleaseNumber === req.body.ReleaseNumber)[0];
+//     if (!found) {
+//         res.status(401).send({ message: 'Release not existing' });
+//         return;
+//     }
+//     releases.forEach((item, index) => {
+//         if (item.ReleaseNumber === req.body.ReleaseNumber) {
+//             if (item.Priority !== req.body.Priority) {
+//                 assignPriority(req.body.Priority, item.ReleaseNumber);
+//             }
+//             releases[index] = { ...item, ...req.body };
+//             console.log(releases[index]);
+//         }
+//     })
 
-    res.send('ok');
-})
-app.delete('/api/release/:release', (req, res) => {
-    let index = null;
-    releases.forEach((item, i) => {
-        if (item.ReleaseNumber === req.params.release) {
-            index = i;
-        }
-    });
-    if (index) {
-        releases.splice(index, 1);
-        allTcs[req.params.release] = null;
-        assignedTCs[req.params.release] = null;
-        res.send('ok');
-    } else {
-        res.status(404).send({ message: 'release not found' })
-    }
+//     res.send('ok');
+// })
+// app.delete('/api/release/:release', (req, res) => {
+//     let index = null;
+//     releases.forEach((item, i) => {
+//         if (item.ReleaseNumber === req.params.release) {
+//             index = i;
+//         }
+//     });
+//     if (index) {
+//         releases.splice(index, 1);
+//         allTcs[req.params.release] = null;
+//         assignedTCs[req.params.release] = null;
+//         res.send('ok');
+//     } else {
+//         res.status(404).send({ message: 'release not found' })
+//     }
 
-});
-app.post('/dummy/api/sanity/e2e/:release', (req, res) => {
-    console.log(req.body);
-    res.send(200);
-})
-let data = [{
-    Date: new Date().toISOString(), Result: 'Pass', id: 1, NoOfTCsPassed: 200, User: 'achavan@diamanti.com',
-    Bug: 'dws-101',
-    Notes: `
-    asdasd
-    asdasda
-    asdadsasd
-    asdasdad
-    `,
-    E2EFocus: 'Daily',
-    CardType: ['BOS', 'NYNJ'],
-    Type: 'E2E'
-}]
-app.get('/dummy/api/sanity/e2e/:release', (req, res) => {
-    res.send(data);
-})
-app.get('/dummy/api/sanity/longevity/:release', (req, res) => {
-    res.send(data);
-})
-app.get('/dummy/api/sanity/stress/:release', (req, res) => {
-    res.send(data);
-})
-app.put('/dummy/api/sanity/e2e/:release', (req, res) => {
-    console.log(req.body)
-    data = req.body
-    res.status(200).send({})
-})
-app.get('/dummy/api/wholetcinfo/:release', (req, res) => {
-    res.status(200).send(initTC);
-})
-app.get('/dummy/api/tcinfo/:release/id/:tcid/card/:card', (req, res) => {
-    console.log(req.params)
-    initTC.forEach(each => {
-        if (each.CardType === req.params.card && each.TcID === req.params.tcid) {
-            console.log('found')
-            each.Activity = selectedTC.Activty;
-            each.StatusList = selectedTC.StatusList;
-            res.send({ ...selectedTC, ...each });
-        }
-    })
+// });
+// app.post('/dummy/api/sanity/e2e/:release', (req, res) => {
+//     console.log(req.body);
+//     res.send(200);
+// })
+// let data = [{
+//     Date: new Date().toISOString(), Result: 'Pass', id: 1, NoOfTCsPassed: 200, User: 'achavan@diamanti.com',
+//     Bug: 'dws-101',
+//     Notes: `
+//     asdasd
+//     asdasda
+//     asdadsasd
+//     asdasdad
+//     `,
+//     E2EFocus: 'Daily',
+//     CardType: ['BOS', 'NYNJ'],
+//     Type: 'E2E'
+// }]
+// app.get('/dummy/api/sanity/e2e/:release', (req, res) => {
+//     res.send(data);
+// })
+// app.get('/dummy/api/sanity/longevity/:release', (req, res) => {
+//     res.send(data);
+// })
+// app.get('/dummy/api/sanity/stress/:release', (req, res) => {
+//     res.send(data);
+// })
+// app.put('/dummy/api/sanity/e2e/:release', (req, res) => {
+//     console.log(req.body)
+//     data = req.body
+//     res.status(200).send({})
+// })
+// app.get('/dummy/api/wholetcinfo/:release', (req, res) => {
+//     res.status(200).send(initTC);
+// })
+// app.get('/dummy/api/tcinfo/:release/id/:tcid/card/:card', (req, res) => {
+//     console.log(req.params)
+//     initTC.forEach(each => {
+//         if (each.CardType === req.params.card && each.TcID === req.params.tcid) {
+//             console.log('found')
+//             each.Activity = selectedTC.Activty;
+//             each.StatusList = selectedTC.StatusList;
+//             res.send({ ...selectedTC, ...each });
+//         }
+//     })
     // res.send({});
-})
-app.post('/dummy/api/tcinfo/:release', (req, res) => {
-    console.log(req.body);
-    req.body.CardType = req.body.CardType[0];
-    initTC.push(req.body);
-    res.send({})
-})
+// })
+// app.post('/dummy/api/tcinfo/:release', (req, res) => {
+//     console.log(req.body);
+//     req.body.CardType = req.body.CardType[0];
+//     initTC.push(req.body);
+//     res.send({})
+// })
 
 // FOR PRODUCTION: 
 // app.use('/', express.static('./build'));
@@ -748,15 +747,15 @@ const server = app.listen('5051');
 
 var gracefulShutdown = function () {
     console.log("Shutting down....");
-    jsonfile.writeFileSync('./users.json', users);
-    console.log('updated users')
-    jsonfile.writeFileSync('./currentAssigned.json', assignedTCs);
-    console.log('updated assigned')
-    jsonfile.writeFileSync('./releases.json', releases);
-    console.log('updated releases')
-    jsonfile.writeFileSync('./tcCompleteSort.json', allTcs);
-    console.log('updated initTC')
-    jsonfile.writeFileSync('./initTC.json', initTC);
+    // jsonfile.writeFileSync('./users.json', users);
+    // console.log('updated users')
+    // jsonfile.writeFileSync('./currentAssigned.json', assignedTCs);
+    // console.log('updated assigned')
+    // jsonfile.writeFileSync('./releases.json', releases);
+    // console.log('updated releases')
+    // jsonfile.writeFileSync('./tcCompleteSort.json', allTcs);
+    // console.log('updated initTC')
+    // jsonfile.writeFileSync('./initTC.json', initTC);
 
     // jsonfile.writeFileSync('./releases.json', updatedReleases);
     // jsonfile.writeFileSync('./tcCompleteSort.json', tcs);

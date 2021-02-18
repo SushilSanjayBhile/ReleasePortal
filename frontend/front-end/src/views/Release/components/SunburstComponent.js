@@ -11,8 +11,6 @@ class SunburstComponent extends Component {
     mouseHover = false;
 
     componentWillReceiveProps(newProps) {
-        console.log('data')
-        console.log(this.props.data);
         if (this.props.data && this.props.data.data && this.props.data.componentType) {
             setTimeout(() => this.generateArcs(this.props.data.data, this.props.data.componentType), 100)
         }

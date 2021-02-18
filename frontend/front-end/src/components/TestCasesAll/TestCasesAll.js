@@ -70,36 +70,7 @@ class TestCasesAll extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            // 'WorkingStatus1' : {
-            // headerName: "Manual Working Status", field: "stateUserMapping.Manual WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-            // width: '180',
-            // editable: false,
-            // cellClass: 'cell-wrap-text',
-            // },
-            // 'WorkingStatus2' : {
-            //     headerName: "Automation Working Status", field: "stateUserMapping.Automation WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-            //     width: '180',
-            //     editable: false,
-            //     cellClass: 'cell-wrap-text',
-            // },
-            // 'Manual Assignee' : {
-            //     headerName: "Manual Assignee ", field: "stateUserMapping.Manual Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-            //     cellClass: 'cell-wrap-text',
-            //     cellEditor: 'selectionEditor',
-            //     cellEditorParams: {
-            //         values: this.props.users.map(item => item.name)
-            //     }
-            // },
-
-            // 'Automation Assignee' : {
-            //     headerName: "Automation Assignee", field: "stateUserMapping.Automation Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-            //     cellClass: 'cell-wrap-text',
-            //     cellEditor: 'selectionEditor',
-            //     cellEditorParams: {
-            //         values: this.props.users.map(item => item.name)
-            //     }
-            // },
-          
+                     
             'Description': {
                 headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '520',
@@ -136,6 +107,12 @@ class TestCasesAll extends Component {
                     values: ['COMPLETED', 'NOT_COMPLETED']
                 }
             },
+            'OS' : {
+                headerName: "OS", field: "OS", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '80',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
             'Bug' : {
                 headerName: "Bug", field: "CurrentStatus.Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
                 cellClass: 'cell-wrap-text'
@@ -165,6 +142,7 @@ class TestCasesAll extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+
             'SubDomain' : {
                 headerName: "SubDomain", field: "SubDomain", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
@@ -183,6 +161,18 @@ class TestCasesAll extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+            'applicable' : {
+                headerName: "applicable", field: "applicable", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'Platform' : {
+                headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
         }
         
         this.state = {
@@ -196,8 +186,8 @@ class TestCasesAll extends Component {
             delete: false,
     
             tableColumnsTcs: [
-                {id: 1, value: "Show Skip", isChecked: false},
-                {id: 2, value: "Show Not Applicable", isChecked: false},
+                {id: 1, value: "Skip", isChecked: false},
+                {id: 2, value: "NA", isChecked: false},
                 {id: 3, value: "Applicable", isChecked: true},
             ],
 
@@ -224,24 +214,21 @@ class TestCasesAll extends Component {
                 {id: 12, value: "Domain", isChecked: false},
                 {id: 13, value: "SubDomain", isChecked: false},
                 {id: 14, value: "Steps", isChecked: false},
+                {id: 15, value: "OS", isChecked: false},
+                {id: 16, value: "applicable", isChecked: false},
+                {id: 17, value: "Platform", isChecked: false},
               ],
               
             columnDefs: [
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
-                // columnDefDict['Manual Assignee'],
-                // columnDefDict['WorkingStatus1'],
-                // columnDefDict['Automation Assignee'],
-                // columnDefDict['WorkingStatus2'],
                 columnDefDict['Description'],
                 columnDefDict['Steps'],
                 columnDefDict['Status'],
                 columnDefDict['Build'],
+                columnDefDict['OS'],
                 columnDefDict['Bug'],
                 columnDefDict['Priority'],
-                columnDefDict['Assignee'],
-                // columnDefDict['Notes'],
-
             ],
             
             defaultColDef: { resizable: true },
@@ -293,6 +280,7 @@ class TestCasesAll extends Component {
         let tableColumnsTcs = this.state.tableColumnsTcs
         tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked) 
         this.setState({tableColumnsTcs: tableColumnsTcs})
+        
     }
 
     handleCheckChieldElementTcs = (event) => {
@@ -305,7 +293,9 @@ class TestCasesAll extends Component {
     }
    
     showSelectedTCs = () =>{
+        
         this.getTcsToShow(this.props.selectedRelease.ReleaseNumber , true);
+        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, this.state.Priority);
         this.setState({ popoverOpen2: !this.state.popoverOpen2 });
     }
 
@@ -365,38 +355,7 @@ class TestCasesAll extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-
-            // 'WorkingStatus1' : {
-            //     headerName: "Manual Working Status", field: "stateUserMapping.Manual WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-            //     width: '180',
-            //     editable: false,
-            //     cellClass: 'cell-wrap-text',
-            // },
-            // 'WorkingStatus2' : {
-            //     headerName: "Automation Working Status", field: "stateUserMapping.Automation WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-            //     width: '180',
-            //     editable: false,
-            //     cellClass: 'cell-wrap-text',
-            // },
-
-            // 'Manual Assignee' : {
-            //     headerName: "Manual Assignee ", field: "stateUserMapping.Manual Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-            //     cellClass: 'cell-wrap-text',
-            //     cellEditor: 'selectionEditor',
-            //     cellEditorParams: {
-            //         values: this.props.users.map(item => item.name)
-            //     }
-            // },
-
-            // 'Automation Assignee' : {
-            //     headerName: "Automation Assignee", field: "stateUserMapping.Automation Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-            //     cellClass: 'cell-wrap-text',
-            //     cellEditor: 'selectionEditor',
-            //     cellEditorParams: {
-            //         values: this.props.users.map(item => item.name)
-            //     }
-            // },
-          
+           
           'Description': {
               headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               width: '520',
@@ -432,6 +391,12 @@ class TestCasesAll extends Component {
                   values: ['COMPLETED', 'NOT_COMPLETED']
               }
           },
+          'OS' : {
+            headerName: "OS", field: "OS", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            width: '80',
+            editable: false,
+            cellClass: 'cell-wrap-text',
+        },
           'Bug' : {
               headerName: "Bug", field: "CurrentStatus.Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
               cellClass: 'cell-wrap-text'
@@ -445,7 +410,7 @@ class TestCasesAll extends Component {
         
               cellEditor: 'selectionEditor',
               cellEditorParams: {
-                  values: this.props.users.map(item => item.email)
+                  values: this.props.users.map(item => item.name)
               }
           },
           'WorkingStatus' : {
@@ -475,6 +440,18 @@ class TestCasesAll extends Component {
           },
           'Notes' : { 
             headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            width: '180',
+            editable: false,
+            cellClass: 'cell-wrap-text',
+        },
+        'applicable' : {
+            headerName: "applicable", field: "applicable", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            width: '180',
+            editable: false,
+            cellClass: 'cell-wrap-text',
+        },
+        'Platform' : {
+            headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
             width: '180',
             editable: false,
             cellClass: 'cell-wrap-text',
@@ -823,6 +800,7 @@ class TestCasesAll extends Component {
                 this.gridOperations(true);
             })
     }
+    
     getTcs(CardType, domain, subDomain, priority, all, selectedRelease, updateRelease) {
         let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
         if (!release) {
@@ -831,9 +809,10 @@ class TestCasesAll extends Component {
         this.gridOperations(false);
         let startingIndex = this.pageNumber * this.rows;
         let url = `/api/wholetcinfo/${release}?index=${startingIndex}&count=${this.rows}`;
+        // let url = `/api/wholetcinfo/${release}?`;
         if (all) {
-            // url = `/api/wholetcinfo/${release}?`;
-            url = `/api/wholetcinfo/${release}`;
+            url = `/api/wholetcinfo/${release}?`;
+            // url = `/api/wholetcinfo/${release}`;
         }
         if (CardType || domain || subDomain || priority) {
             url = `/api/wholetcinfo/${release}?`;
@@ -842,6 +821,18 @@ class TestCasesAll extends Component {
             if (subDomain) url += ('&SubDomain=' + subDomain);
             if (priority) url += ('&Priority=' + priority);
         }
+        url += ('&WorkingStatus=' + 'Manual Assignee')
+        
+        let str1 = ''
+        this.state.tableColumnsTcs.forEach(item=>{
+            if(item.isChecked == true){
+                str1 = str1 + item.value + ","
+
+            } 
+        })
+        
+        url += ('&applicable=' + str1);
+        
         axios.get(url)
             .then(all => {
                 // Filters should not go away if data is reloaded
@@ -868,7 +859,7 @@ class TestCasesAll extends Component {
         let ApplicableTcs = []
         
         for(let i = 0; i < this.allTCsToShow.length; i++){
-            if(this.allTCsToShow[i].Priority == 'Skip' ){
+            if(this.allTCsToShow[i].Priority == 'Skip' || this.allTCsToShow[i].Priority == 'Skp' ){
                 skipTcs.push(this.allTCsToShow[i])
             }
             if(this.allTCsToShow[i].Priority == 'NA'){
@@ -880,12 +871,12 @@ class TestCasesAll extends Component {
         }
         showTc = []
         this.state.tableColumnsTcs.forEach(item=>{
-            if(item.isChecked == true  && item.value == 'Show Skip'){
+            if(item.isChecked == true  && item.value == 'Skip'){
                 skipTcs.forEach(skipTC=>{
                     showTc.push(skipTC)
                 })
             } 
-            if(item.isChecked == true && item.value == 'Show Not Applicable' ){
+            if(item.isChecked == true && item.value == 'NA' ){
                 NATcs.forEach(NATC=>{
                     showTc.push(NATC)
                 })
@@ -974,7 +965,8 @@ class TestCasesAll extends Component {
                 }
             };
             
-            ['Priority', 'Assignee',  'WorkingStatus'].map(each => {
+            ['Priority', 'Assignee',  'WorkingStatus','applicable','OS'].map(each => {
+                let Manual_Assignee = item.stateUserMapping["Manual Assignee"]
                 if (item[each]) {
                     pushable[each] = item[each]
                     let old = item[each];
@@ -985,18 +977,21 @@ class TestCasesAll extends Component {
 
                     if(each ==  'Assignee'){
                         auto_assignee = item[each]
+                        auto_workingState = "AUTO_ASSIGNED"
                         pushable["Automation Assignee"] = item[each]
+                        pushable["Automation WorkingStatus"] = auto_workingState
 
                     }
                    
-                    if(each == 'WorkingStatus'){
-                        auto_workingState = item[each]
-                        pushable["Automation WorkingStatus"] = item[each]
-                    }
+                    // if(each == 'WorkingStatus'){
+                    //     auto_workingState = item[each]
+                    //     pushable["Automation WorkingStatus"] = item[each]
+                    // }
 
-                    pushable.stateUserMapping =  {"Manual Assignee" : item.Creator,"Manual WorkingStatus" : "Inprogress","Automation Assignee" : auto_assignee ,"Automation WorkingStatus":auto_workingState}
+
+                    pushable.stateUserMapping =  {"Manual Assignee" : Manual_Assignee,"Manual WorkingStatus" : "Inprogress","Automation Assignee" : auto_assignee ,"Automation WorkingStatus":auto_workingState}
                     pushable["Manual WorkingStatus"] = "Inprogress"
-                    pushable["Manual Assignee"] = item.Creator
+                    pushable["Manual Assignee"] = Manual_Assignee
                 }
             })
             if (this.state.multi && this.state.multi.Build ) {
@@ -1012,6 +1007,7 @@ class TestCasesAll extends Component {
                 status.Bugs = this.state.multi.Bugs;
                 status.CardType = item.CardType;
                 status.TcID = item.TcID;
+                status.OS = item.OS;
                 status.Activity = {
                     Release: this.props.selectedRelease.ReleaseNumber,
                     "TcID": item.TcID,
@@ -1023,6 +1019,7 @@ class TestCasesAll extends Component {
                 }
                 statusItems.push(status)
             }
+            
             items.push(pushable);
         })
         
@@ -1037,6 +1034,7 @@ class TestCasesAll extends Component {
     }
     saveMultipleTcStatus(statusItems, items) {
         this.gridOperations(false);
+
         axios.post(`/api/tcstatusUpdate/${this.props.selectedRelease.ReleaseNumber}`, statusItems)
             .then(res => {
                 this.gridOperations(true);
@@ -1087,8 +1085,8 @@ class TestCasesAll extends Component {
 
     textFields = [
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus',
-        'automationStateUser','manualStateUser',
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus','applicable',
+        'automationStateUser','manualStateUser','OS'
         // 'Manual Assignee','Automation Assignee', 'Manual WorkingStatus','Automation Assignee'
     ];
     whichFieldsUpdated(old, latest) {
@@ -1365,23 +1363,23 @@ class TestCasesAll extends Component {
                                                         <div>
                                                             <input type="checkbox" onClick={this.handleAllCheckedTCs}  value="checkedall" /> Check / Uncheck All
 
-                                                                <ul>
-                                                                {
-                                                                this.state.tableColumnsTcs.map((columnName) => {
-                                                                    return (<CheckBox handleCheckChieldElement={this.handleCheckChieldElementTcs}  {...columnName} />)
-                                                                })
-                                                                }
-                                                                </ul>
+                                                            <ul>
+                                                            {
+                                                            this.state.tableColumnsTcs.map((columnName) => {
+                                                                return (<CheckBox handleCheckChieldElement={this.handleCheckChieldElementTcs}  {...columnName} />)
+                                                            })
+                                                            }
+                                                            </ul>
 
-                                                                <input type="checkbox" onClick={this.handleAllCheckedStatusTCs}  value="checkedall" /> Check / Uncheck All
+                                                            <input type="checkbox" onClick={this.handleAllCheckedStatusTCs}  value="checkedall" /> Check / Uncheck All
 
-                                                                <ul>
-                                                                {
-                                                                this.state.statusColumn.map((columnName) => {
-                                                                    return (<CheckBox handleCheckChieldElement={this.handleCheckChieldElementStatusTcs}  {...columnName} />)
-                                                                })
-                                                                }
-                                                                </ul>
+                                                            <ul>
+                                                            {
+                                                            this.state.statusColumn.map((columnName) => {
+                                                                return (<CheckBox handleCheckChieldElement={this.handleCheckChieldElementStatusTcs}  {...columnName} />)
+                                                            })
+                                                            }
+                                                            </ul>
                                                                 
                                                             <Button onClick={() => this.showSelectedTCs()}>Show Selected TC</Button>
                                                         </div>
@@ -1416,9 +1414,9 @@ class TestCasesAll extends Component {
                                                             <PopoverBody>
                                                                 {
                                                                     [
-                                                                        { labels: 'Priority', values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] },
+                                                                        // { labels: 'Priority', values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] },
                                                                         { labels: 'Assignee', values: [{ value: '', text: 'Select Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
-                                                                        { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(wsA.map(each => ({ value: each, text: each })))] },
+                                                                        // { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(wsA.map(each => ({ value: each, text: each })))] },
                                                                     ].map(each => <FormGroup className='rp-app-table-value'>
                                                                         <Label className='rp-app-table-label' htmlFor={each.labels}>
                                                                             {each.header}
@@ -1442,6 +1440,72 @@ class TestCasesAll extends Component {
                                                                         </Input>
                                                                     </FormGroup>)
                                                                 }
+                                                                <Row>
+                                                                    <Col md="6">
+                                                                        <FormGroup className='rp-app-table-value'>
+                                                                            <Input disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Priority} onChange={(e) => {
+                                                                                this.isAnyChanged = true;
+                                                                                let selectedRows = this.gridApi.getSelectedRows();
+                                                                                if (e.target.value && e.target.value !== '') {
+                                                                                    selectedRows.forEach(item => {
+                                                                                        this.onCellEditing(item, 'Priority', e.target.value)
+                                                                                        item['Priority'] = e.target.value;
+                                                                                    })
+                                                                                }
+                                                                                this.setState({ multi: { ...this.state.multi, Priority: e.target.value } })
+                                                                                
+                                                                                setTimeout(this.gridApi.redrawRows(), 0);
+                                                                            }} type="select" id={`select_Priority`} >
+                                                                            {
+                                                                                ['Priority','P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'].map(item => <option value={item}>{item}</option>)
+                                                                            }
+                                                                            </Input>
+                                                                        </FormGroup>
+                                                                    </Col>
+                                                                    <Col md="6">
+                                                                        <FormGroup className='rp-app-table-value'>
+                                                                            <Input disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.OS} onChange={(e) => {
+                                                                                this.isAnyChanged = true;
+                                                                                let selectedRows = this.gridApi.getSelectedRows();
+                                                                                if (e.target.value && e.target.value !== '') {
+                                                                                    selectedRows.forEach(item => {
+                                                                                        this.onCellEditing(item, 'OS', e.target.value)
+                                                                                        item['OS'] = e.target.value;
+                                                                                    })
+                                                                                }
+                                                                                this.setState({ multi: { ...this.state.multi, OS: e.target.value } })
+                                                                                
+                                                                                setTimeout(this.gridApi.redrawRows(), 0);
+                                                                            }} type="select" id={`select_OS`} >
+                                                                            {
+                                                                                ['Operating System','CentOS', 'RHEL'].map(item => <option value={item}>{item}</option>)
+                                                                            }
+                                                                            </Input>
+                                                                        </FormGroup>
+                                                                    </Col>
+                                                                    <Col md="6">
+                                                                        <FormGroup className='rp-app-table-value'>
+                                                                            <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Build} onChange={(e) => {
+                                                                                this.isAnyChanged = true;
+                                                                                let selectedRows = this.gridApi.getSelectedRows();
+                                                                                if (e.target.value && e.target.value !== '') {
+                                                                                    selectedRows.forEach(item => {
+                                                                                        this.onCellEditing(item, 'applicable', e.target.value)
+                                                                                        item['applicable'] = e.target.value;
+                                                                                    })
+                                                                                }
+                                                                                this.setState({ multi: { ...this.state.multi, applicable: e.target.value } })
+                                                                                setTimeout(this.gridApi.redrawRows(), 0);
+                                                                            }} type="select" id={`select_Status`} >
+                                                                                {
+                                                                                    ["Applicability","Applicable","NA","Skip"].map(item => <option value={item}>{item}</option>)
+                                                                                }
+                                                                            </Input> 
+                                                                        </FormGroup>
+                                                                    </Col>
+
+                                                                </Row>
+
                                                                 <Row>
                                                                     <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>

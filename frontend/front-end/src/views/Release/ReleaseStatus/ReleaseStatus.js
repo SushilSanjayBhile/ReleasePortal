@@ -2,27 +2,13 @@
 // Issues faced on customer side (jira - list)
 // customers to be given to
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import {
-    Badge, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table, Button, Input, Collapse
-    , Modal, ModalHeader, ModalBody, ModalFooter, Progress
-} from 'reactstrap';
+import {Form, FormGroup, Col, Row, Table, Button, Input, Collapse} from 'reactstrap';
 import { connect } from 'react-redux';
-import AppTable from '../../../components/AppTable/AppTable';
 import { getCurrentRelease } from '../../../reducers/release.reducer';
-import { alldomains, getTCStatusForSunburst } from '../../../reducers/release.reducer';
-import { TABLE_OPTIONS } from '../../../constants';
-import { Bar, Doughnut, Line, Pie, Polar, Radar } from 'react-chartjs-2';
-import { AgGridReact } from 'ag-grid-react';
 import axios from 'axios';
 import { saveSingleFeature,saveBugs } from '../../../actions';
 import './ReleaseStatus.scss'
-// import sunburst from '../../../reducers/domains.js'
-import Sunburst from '../components/Sunburst';
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
-
-
-
 
 let allBugs = []
 const options = {
@@ -47,7 +33,11 @@ class ReleaseStatus extends Component {
             blockedBugOpen:false,
             blockedBugList:[],
             BugsList:[],
-            totalBugList:[]
+            totalBugList:[],
+            releaseInfo: false,
+            fixVersion:'',
+            epicLink:'',
+            save:false
         }
     }
     initialize() {
@@ -60,7 +50,9 @@ class ReleaseStatus extends Component {
             this.setState({ ...this.state, ...this.props.statusPage });
         }
         
-        
+        console.log("selected release from release status",this.props,this.props.selectedRelease)
+        console.log("bug reducer",this.props.bug);
+        let fixVersion = this.props.selectedRelease.fixVersion;
         let tempRelease = this.props.selectedRelease.ReleaseNumber
         let release = this.props.selectedRelease.ReleaseNumber
             let totalCount = 0
@@ -76,8 +68,13 @@ class ReleaseStatus extends Component {
             if(tempRelease === 'DSS-3.1') {
                 tempRelease='3.1.0'
             }
-
-            axios.get('/rest/bugs/total/' + tempRelease)
+            if(tempRelease === 'Overlay=3.1' || tempRelease === 'OCP-4.5') {
+                tempRelease = "\"Spek 3.1.0\""
+            }
+            tempRelease="\"Spektra 3.0\""
+            fixVersion = "\"" + fixVersion + "\""
+            // axios.get('/rest/bugs/total/' + tempRelease)
+            axios.get('/rest/bugs/total/' + fixVersion)
             .then(response => {
                 totalBugs = response;
                 maxResults = response.data.maxResults
@@ -86,7 +83,8 @@ class ReleaseStatus extends Component {
 
                 for(let i = 0; i < totalCount ; i++){
                     startAt = startAt + response.data.maxResults + 1
-                    let url = '/rest/bugs/totalCount/'  + tempRelease + "/" + startAt
+                    // let url = '/rest/bugs/totalCount/'  + tempRelease + "/" + startAt
+                    let url = '/rest/bugs/totalCount/'  + fixVersion + "/" + startAt
                     axios.get(url).then(response1=>{
                         for(let i = 0 ;i < response1['data']['issues'].length ;i++){
                             totalBugs['data']['issues'].push(response1['data']['issues'][i])
@@ -232,6 +230,49 @@ class ReleaseStatus extends Component {
             this.setState({BugsList:list})
         }
     }
+
+    handleChange = (e) => {
+        if(e.target.name == 'fixVersion'){
+            this.setState({
+                fixVersion: e.target.value.trim()
+            })
+        }
+        
+        if(e.target.name == 'epicLink'){
+            this.setState({
+                epicLink: e.target.value.trim()
+            })
+        }
+    };
+
+    handleSubmit = (e) => {
+        // e.preventDefault();
+        // e.target.reset();
+        this.setState({
+            save : true
+        })
+        let fixVersion = this.state.fixVersion;
+        let epicLink = this.state.epicLink;
+        let formData = {
+            "fixVersion": fixVersion,
+            "epicLink": epicLink,
+        }
+
+        let url = ''
+        axios.post(url,formData)
+        .then(response=>{
+            alert("added successfully");
+            this.reset();
+        })
+        .catch(err=>{
+            console.log("err",err);
+        })
+    }
+
+    reset = () =>{
+        document.getElementById('fixVersion').value='';
+        document.getElementById('epicLink').value='';
+    }
     
     render() {
         let featuresCount = 0;
@@ -269,8 +310,57 @@ class ReleaseStatus extends Component {
         }
         return (
             <div>
+                {/* {
+                    this.props.currentUser && this.props.currentUser.isAdmin &&
+                    <Row>
+                        <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                                <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ releaseInfo: !this.state.releaseInfo })}>
+                                    <div class="row">
+                                        <div class='col-md-6'>
+                                            <div class='row'>
+                                                <div class='col-md-4'>
+                                                    {
+                                                        !this.state.releaseInfo &&
+                                                        <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                                    }
+                                                    {
+                                                        this.state.releaseInfo &&
+                                                        <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                                    }
+                                                    <span className='rp-app-table-title'>Release Info</span>
+                                                </div>
+                                            
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <Collapse isOpen={this.state.releaseInfo}>
+                                <div>
+                                    <Form>
+                                        <FormGroup row>
+                                            <Col sm={6}>
+                                                <Input type = "text" name = "fixVersion" id = "fixVersion" placeholder = "Enter Fix Version "/>
+                                            </Col>
+                                        </FormGroup>
+
+                                        <FormGroup row>
+                                            <Col sm={6}>
+                                                <Input type = "text" name = "epicLink" id = "epicLink" placeholder = "Enter Epic Link "/>
+                                            </Col>
+                                        </FormGroup>
+
+                                        <Button outline color="success" id = 'submit' onClick={this.handleSubmit} > Save </Button>
+                                    </Form>
+                                </div>
+                            </Collapse>
+                        </Col>
+                    </Row>
+                } */}
+
                 <Row>
+                
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                    
                         <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ bugOpen: !this.state.bugOpen })}>
                             <div class="row">
                                 <div class='col-md-6'>

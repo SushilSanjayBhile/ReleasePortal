@@ -9,33 +9,18 @@ var httpProxy = require('http-proxy');
 // FOR DEVELOPMENT:
 var APP_URL = 'http://localhost:3000';
 
-// FOR PRODUCTION:
-// var APP_URL = 'http://localhost:5051';
-
-// var DJANGOURL = '/api/tcinfo'
-// // var DATA_URL = 'http://172.16.19.57:8000';
-// // var DATA_URL = 'http://localhost:5051';
-// var djangourl = 'http://localhost:8000';
-
-// var APP_URL = 'http://localhost:5000';
 
 var BACK = ['/django'];
 var URL = ['/api'];
 var USER = ['/user'];
 var JIRA = ['/rest'];
 var TEST = ['/dummy'];
-//  var DATA_URL = 'http://localhost:8000';
-//  var DATA_URL = 'http://localhost:5051';
-// var DATA_URL = 'http://172.16.19.57:8000';
-// var DATA_URL = 'http://192.168.1.34:8000';
-// var DATA_URL = 'http://172.16.19.57:8000';
-// var DATA_URL = 'http://@vagserv3:8000';
-
 
 // FOR DEVELOPMENT:
-var DATA_URL = 'http://qaserv2:8000';
-// var DATA_URL = 'http://release:8000';
-var DJANGO_URL = 'http://localhost:8000';
+// var DATA_URL = 'http://qaserv2:8000';
+var DATA_URL = 'http://release:8000';
+// var DATA_URL = 'http://172.16.187.83:8000';
+var DJANGO_URL = 'http://172.16.187.83:8000';
 // var DATA_URL = 'http://192.168.1.76:8000';
 
 // FOR PRODUCTION:

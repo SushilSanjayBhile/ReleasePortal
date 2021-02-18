@@ -57,15 +57,22 @@ export default {
     //   url: '/release/settings',
     //   icon: 'fa fa-cogs',
     // },
+    // {
+    //   name: 'Team Work',
+    //   url: '/release/teamwork',
+    //   icon: 'fa fa-bars',
+    // },
+
     {
-      name: 'Team Work',
-      url: '/release/teamwork',
-      icon: 'fa fa-bars',
+      name: 'My Test Metrics',
+      url: '/release/mytestmatrics',
+      icon: 'fa fa-table',
     },
 
+
     // {
-    //   name: 'My Test Metrics',
-    //   url: '/release/mytestmatrics',
+    //   name: 'ADMIN Dashboard',
+    //   url: '/release/admindashboard',
     //   icon: 'fa fa-table',
     // },
 
@@ -75,6 +82,8 @@ export default {
       attributes: { target: '_blank' },
       icon: 'fa fa-bug',
     },
+
+    
    
     
   ],

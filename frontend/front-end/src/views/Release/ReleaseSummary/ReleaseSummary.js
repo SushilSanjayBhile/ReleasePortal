@@ -126,12 +126,13 @@ for (var i = 0; i <= elements; i++) {
 
 
 
-
+var releaseData = '';
 class ReleaseSummary extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
+            releaseData:'',
             selectedPriority: ['P0', 'P1'],
             selectedPriorityGUI: ['P0', 'P1'],
             cntr: 0,
@@ -236,19 +237,30 @@ class ReleaseSummary extends Component {
     }
     componentWillReceiveProps(newProps) {
         if(this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
-            this.initialize(newProps.selectedRelease.ReleaseNumber);
+            this.initialize(newProps.selectedRelease.ReleaseNumber,newProps.selectedRelease);
+            // this.initialize(newProps.selectedRelease);
+            this.setState({
+                releaseData : newProps.selectedRelease
+            })
+            
         }
     }
     componentDidMount() {
         this.initialize(this.props.selectedRelease.ReleaseNumber);
+        // this.initialize(this.props.selectedRelease);
     }
-    initialize(release) {
+
+    initialize(release,newReleaseData) {
+       
+        let fixVersion = newReleaseData.fixVersion;
         this.reset();
+        // let temp = release.ReleaseNumber;;
         let temp = release;
         let totalCount = 0
         let maxResults = 0
         let totalBugs = []
 
+       
         if(temp === 'Spektra 2.4') {
             temp='2.4.0'
         }
@@ -256,8 +268,13 @@ class ReleaseSummary extends Component {
             temp="\"Spektra 3.0\""
         }
         if(temp === 'DSS-3.1') {
-            temp="3.1.0"
+            temp = "3.1.0"
         }
+        if(temp === 'Overlay-3.1' || temp === 'OCP-4.5') {
+            temp = "\"Spek 3.1.0\""
+        }
+
+        fixVersion = "\"" + fixVersion + "\""
 
         // if(release === 'DSS-3.1'){
         //     axios.get('/rest/DSSepic/' + temp)
@@ -269,9 +286,10 @@ class ReleaseSummary extends Component {
         //         console.log('err ', err);
         //     });
         // }
-        
+        // console.log("Currrent Selected release number",this.props.selectedRelease.ReleaseNumber,this.props.selectedRelease.fixVersion)
         if(release === 'DMC-3.0'){
-            axios.get('/rest/epic/' + temp)
+            // axios.get('/rest/epic/' + temp)
+            axios.get('/rest/epic/' + fixVersion)
             .then(res => {
                 this.props.saveFeatures({ data: res.data, id: release })
                 this.setState({ showFeatures: true })
@@ -281,7 +299,8 @@ class ReleaseSummary extends Component {
         }
         else{
 
-            axios.get('/rest/features/' + temp)
+            // axios.get('/rest/features/' + temp)
+            axios.get('/rest/features/' + fixVersion)
             .then(res => {
                 this.props.saveFeatures({ data: res.data, id: release })
                 this.setState({ showFeatures: true })
@@ -292,7 +311,8 @@ class ReleaseSummary extends Component {
         }
         
         // Function to get list of all bugs
-        axios.get('/rest/bugs/total/' + temp)
+        // axios.get('/rest/bugs/total/' + temp)
+        axios.get('/rest/bugs/total/' + fixVersion)
             .then(res => {
                 totalBugs = res;
                 maxResults = res.data.maxResults
@@ -301,7 +321,8 @@ class ReleaseSummary extends Component {
 
                 for(let i = 0; i < totalCount ; i++){
                     startAt = startAt + res.data.maxResults + 1
-                    let url = '/rest/bugs/totalCount/'  + temp + "/" + startAt
+                    // let url = '/rest/bugs/totalCount/'  + temp + "/" + startAt
+                    let url = '/rest/bugs/totalCount/'  + fixVersion + "/" + startAt
                     axios.get(url).then(res1=>{
                         for(let i = 0 ;i < res1['data']['issues'].length ;i++){
                             totalBugs['data']['issues'].push(res1['data']['issues'][i])
@@ -314,7 +335,8 @@ class ReleaseSummary extends Component {
             }, err => {
                 console.log('err ', err);
             })
-        axios.get('/rest/bugs/open/' + temp)
+            // axios.get('/rest/bugs/open/' + temp)
+            axios.get('/rest/bugs/open/' + fixVersion)
             .then(res => {
                 this.props.saveBugs({ data: { open: res.data.total }, id: release })
                 this.setState({ showBugs: true, cntr: 4 })
@@ -322,7 +344,8 @@ class ReleaseSummary extends Component {
             }, err => {
                 console.log('err ', err);
             })
-        axios.get('/rest/bugs/resolved/' + temp)
+        // axios.get('/rest/bugs/resolved/' + temp)
+        axios.get('/rest/bugs/resolved/' + fixVersion)
             .then(res => {
                 this.props.saveBugs({ data: { resolved: res.data.total }, id: release})
                 this.setState({ showBugs: true, cntr: 6 })
@@ -330,6 +353,7 @@ class ReleaseSummary extends Component {
             }, err => {
                 console.log('err ', err);
             })
+
     }
 
    
@@ -396,6 +420,7 @@ class ReleaseSummary extends Component {
                 formattedArrays[item] = data[item].split(',');
             }
         })
+        data.ParentRelease = this.props.ParentRelease
         data = { ...data, ...formattedArrays };
         if (isNaN(data.QARateOfProgress)) {
             data.QARateOfProgress = 0;
@@ -411,6 +436,8 @@ class ReleaseSummary extends Component {
             .then(res => {
                 this.props.saveReleaseBasicInfo({ id: data.ReleaseNumber, data: data });
                 this.reset();
+                window.location.reload()
+                // this.history.push('/release/summary')
             }, error => {
                 alert('error in updating');
             });
@@ -421,7 +448,9 @@ class ReleaseSummary extends Component {
             this.momToggle();
         }
     }
-    toggle = () => this.setState({ modal: !this.state.modal });
+    toggle = () => this.setState({ modal: !this.state.modal },()=>{
+
+    });
     momToggle = () => this.setState({ momModal: !this.state.momModal });
     getFeatureDetails(dws) {
         axios.post('/rest/featuredetail', { data: dws }).then(res => {
@@ -434,7 +463,6 @@ class ReleaseSummary extends Component {
     componentDidMount(){
     }
     render() {
-        
         if(this.props.selectedRelease.TcAggregate){
             var allGUI = this.props.selectedRelease.TcAggregate.allGUI
         }
@@ -528,6 +556,8 @@ class ReleaseSummary extends Component {
                                         { key: 'Kubernetes', value: this.props.selectedRelease.KubernetesVersion , field: 'KubernetesVersion' },
                                         { key: 'Docker', value: this.props.selectedRelease.DockerVersion , field: 'DockerVersion' },
                                         { key: 'Helm', value: this.props.selectedRelease.HelmVersion , field: 'HelmVersion' },
+                                        { key: 'fixVersion', value: this.props.selectedRelease.fixVersion , field: 'fixVersion' },
+                                        { key: 'epicLink', value: this.props.selectedRelease.epicLink , field: 'epicLink' },
                                     ].map((item, index) => {
                                         return (
                                             <tr>

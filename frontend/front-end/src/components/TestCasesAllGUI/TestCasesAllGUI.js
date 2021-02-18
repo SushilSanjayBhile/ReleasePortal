@@ -11,12 +11,8 @@ import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 import { getCurrentRelease, getTCForStrategy } from '../../reducers/release.reducer';
-import { getEachTCStatusScenario } from '../../reducers/testcase.reducer';
 import { saveSingleTestCase, saveTestCase, updateTCEdit, saveReleaseBasicInfo } from '../../actions';
-import {
-    Badge, Card, CardBody, CardHeader, Col, Pagination, PaginationItem, PaginationLink, Row, Table, Button,
-    UncontrolledPopover, PopoverHeader, PopoverBody,
-    Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Collapse
+import {Col,Row, Button,UncontrolledPopover, PopoverBody,Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Collapse
 } from 'reactstrap';
 import './TestCasesAllGUI.scss';
 import { AgGridReact } from 'ag-grid-react';
@@ -109,6 +105,12 @@ class TestCasesAllGUI extends Component {
               headerName: "Bug", field: "CurrentStatus.Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
               cellClass: 'cell-wrap-text'
           },
+          'OS' : {
+            headerName: "OS", field: "OS", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            width: '80',
+            editable: false,
+            cellClass: 'cell-wrap-text',
+        },
           'Priority' :  {
               headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
           }, 
@@ -118,7 +120,7 @@ class TestCasesAllGUI extends Component {
         
               cellEditor: 'selectionEditor',
               cellEditorParams: {
-                  values: this.props.users.map(item => item.email)
+                  values: this.props.users.map(item => item.name)
               }
           },
           'WorkingStatus' : {
@@ -148,6 +150,12 @@ class TestCasesAllGUI extends Component {
           },
           'Notes' : { 
                 headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'applicable' : {
+                headerName: "applicable", field: "applicable", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -191,6 +199,9 @@ class TestCasesAllGUI extends Component {
                 {id: 12, value: "Domain", isChecked: false},
                 {id: 13, value: "SubDomain", isChecked: false},
                 {id: 14, value: "Steps", isChecked: false},
+                {id: 15, value: "OS", isChecked: false},
+                {id: 16, value: "applicable", isChecked: false},
+
               ],
               
             columnDefs: [
@@ -200,6 +211,7 @@ class TestCasesAllGUI extends Component {
                 columnDefDict['Steps'],
                 columnDefDict['Status'],
                 columnDefDict['Build'],
+                columnDefDict['OS'],
                 columnDefDict['Bug'],
                 columnDefDict['Priority'],
                 columnDefDict['Assignee'],
@@ -361,6 +373,12 @@ class TestCasesAllGUI extends Component {
                   values: ['COMPLETED', 'NOT_COMPLETED']
               }
           },
+          'OS' : {
+            headerName: "OS", field: "OS", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            width: '80',
+            editable: false,
+            cellClass: 'cell-wrap-text',
+        },
           'Bug' : {
               headerName: "Bug", field: "CurrentStatus.Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
               cellClass: 'cell-wrap-text'
@@ -374,7 +392,7 @@ class TestCasesAllGUI extends Component {
         
               cellEditor: 'selectionEditor',
               cellEditorParams: {
-                  values: this.props.users.map(item => item.email)
+                  values: this.props.users.map(item => item.name)
               }
           },
           'WorkingStatus' : {
@@ -404,6 +422,12 @@ class TestCasesAllGUI extends Component {
           },
           'Notes' : { 
                 headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'applicable' : {
+                headerName: "applicable", field: "applicable", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -636,14 +660,14 @@ class TestCasesAllGUI extends Component {
     //         });
     // }
 
+    // 
+     // // RELEASE
     updateReleaseInfo() {
         axios.get(`/api/release/` + this.props.selectedRelease.ReleaseNumber)
             .then(res => {
-                res.data.forEach(item => {
-                    this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
-                });
+                this.props.saveReleaseBasicInfo({ id: res.ReleaseNumber, data: res });
             }, error => {
-        });
+            });
     }
 
     // DELETE TC
@@ -775,7 +799,7 @@ class TestCasesAllGUI extends Component {
         let startingIndex = this.pageNumber * this.rows;
         let url = `/api/wholeguitcinfo/${release}?index=${startingIndex}&count=${this.rows}`;
         if (all) {
-            url = `/api/wholeguitcinfo/${release}`;
+            url = `/api/wholeguitcinfo/${release}?`;
         }
         if (CardType || domain || subDomain || priority) {
             url = `/api/wholeguitcinfo/${release}?`;
@@ -783,6 +807,18 @@ class TestCasesAllGUI extends Component {
             if (domain) url += ('&Domain=' + domain);
             if (subDomain) url += ('&SubDomain=' + subDomain);
             if (priority) url += ('&Priority=' + priority);
+        }
+        url += ('&WorkingStatus=' + 'Manual Assignee')
+        
+        let str1 = ''
+        this.state.tableColumnsTcs.forEach(item=>{
+            if(item.isChecked == true){
+                str1 = str1 + item.value + ","
+            } 
+        })
+        if(!all){
+            url += ('&applicable=' + str1);
+
         }
         
         axios.get(url)
@@ -910,6 +946,8 @@ class TestCasesAllGUI extends Component {
         this.gridOperations(false);
         let items = [];
         let statusItems = [];
+        let auto_assignee = ''
+        let auto_workingState = ''
         let selectedRows = this.gridApi.getSelectedRows();
         selectedRows.forEach(item => {
             let pushable = {
@@ -929,7 +967,8 @@ class TestCasesAllGUI extends Component {
                    
                 }
             };
-            ['Priority', 'Assignee', 'WorkingStatus'].map(each => {
+            ['Priority', 'Assignee', 'WorkingStatus','applicable','OS'].map(each => {
+                let Manual_Assignee = item.stateUserMapping["Manual Assignee"]
                 if (item[each]) {
                     pushable[each] = item[each]
                     let old = item[each];
@@ -937,6 +976,22 @@ class TestCasesAllGUI extends Component {
                         old = `${this.editedRows[`${item.TcID}_${item.CardType}`][each].originalValue}`
                     }
                     pushable.Activity.LogData += `${each}:{old: ${old}, new: ${item[each]}}, `
+                    if(each ==  'Assignee'){
+                        auto_assignee = item[each]
+                        auto_workingState = "AUTO_ASSIGNED"
+                        pushable["Automation Assignee"] = item[each]
+                        pushable["Automation WorkingStatus"] = auto_workingState
+
+                    }
+                    // if(each == 'WorkingStatus'){
+                    //     auto_workingState = item[each]
+                    //     pushable["Automation WorkingStatus"] = item[each]
+                    // }
+
+
+                    pushable.stateUserMapping =  {"Manual Assignee" : Manual_Assignee,"Manual WorkingStatus" : "Inprogress","Automation Assignee" : auto_assignee ,"Automation WorkingStatus":auto_workingState}
+                    pushable["Manual WorkingStatus"] = "Inprogress"
+                    pushable["Manual Assignee"] = Manual_Assignee
                 }
             })
             if (this.state.multi && this.state.multi.Build) {
@@ -953,6 +1008,7 @@ class TestCasesAllGUI extends Component {
                 status.CardType = item.CardType;
                 status.TcID = item.TcID;
                 status.BrowserName = item.BrowserName;
+                status.OS = item.OS;
                 status.Activity = {
                     Release: this.props.selectedRelease.ReleaseNumber,
                     "tcInfoNum":item.id,
@@ -1043,7 +1099,7 @@ class TestCasesAllGUI extends Component {
 
     textFields = [
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus','BrowserName','CardType'
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus','BrowserName','CardType','OS','applicable',
     ];
     whichFieldsUpdated(old, latest) {
         let changes = {};
@@ -1098,6 +1154,7 @@ class TestCasesAllGUI extends Component {
         status.Notes = this.props.tcDetails.Notes;
         status.Scenario = this.props.tcDetails.Scenario;
         status.TcName = this.getTcName(`${this.props.tcDetails.TcName}`);
+        // status.AutomatedTcName = this.getTcName(`${this.props.tcDetails.AutomatedTcName}`);
         status.Build = this.props.testcaseEdit.Build;
         status.Result = this.props.testcaseEdit.CurrentStatus;
         status.CardType = this.props.tcDetails.CardType;
@@ -1408,9 +1465,9 @@ class TestCasesAllGUI extends Component {
                                                             <PopoverBody>
                                                                 {
                                                                     [
-                                                                        { labels: 'Priority', values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] },
+                                                                        // { labels: 'Priority', values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] },
                                                                         { labels: 'Assignee', values: [{ value: '', text: 'Select Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
-                                                                        { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(ws.map(each => ({ value: each, text: each })))] },
+                                                                        // { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Working Status' }, ...(ws.map(each => ({ value: each, text: each })))] },
                                                                     ].map(each => <FormGroup className='rp-app-table-value'>
                                                                         <Label className='rp-app-table-label' htmlFor={each.labels}>
                                                                             {each.header}
@@ -1435,6 +1492,68 @@ class TestCasesAllGUI extends Component {
                                                                     </FormGroup>)
                                                                 }
                                                                 <Row>
+                                                                <Col md="6">
+                                                                        <FormGroup className='rp-app-table-value'>
+                                                                            <Input disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Priority} onChange={(e) => {
+                                                                                this.isAnyChanged = true;
+                                                                                let selectedRows = this.gridApi.getSelectedRows();
+                                                                                if (e.target.value && e.target.value !== '') {
+                                                                                    selectedRows.forEach(item => {
+                                                                                        this.onCellEditing(item, 'Priority', e.target.value)
+                                                                                        item['Priority'] = e.target.value;
+                                                                                    })
+                                                                                }
+                                                                                this.setState({ multi: { ...this.state.multi, Priority: e.target.value } })
+                                                                                
+                                                                                setTimeout(this.gridApi.redrawRows(), 0);
+                                                                            }} type="select" id={`select_Priority`} >
+                                                                            {
+                                                                                ['Priority','P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'].map(item => <option value={item}>{item}</option>)
+                                                                            }
+                                                                            </Input>
+                                                                        </FormGroup>
+                                                                    </Col>
+                                                                    <Col md="6">
+                                                                        <FormGroup className='rp-app-table-value'>
+                                                                            <Input disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.OS} onChange={(e) => {
+                                                                                this.isAnyChanged = true;
+                                                                                let selectedRows = this.gridApi.getSelectedRows();
+                                                                                if (e.target.value && e.target.value !== '') {
+                                                                                    selectedRows.forEach(item => {
+                                                                                        this.onCellEditing(item, 'OS', e.target.value)
+                                                                                        item['OS'] = e.target.value;
+                                                                                    })
+                                                                                }
+                                                                                this.setState({ multi: { ...this.state.multi, OS: e.target.value } })
+                                                                                
+                                                                                setTimeout(this.gridApi.redrawRows(), 0);
+                                                                            }} type="select" id={`select_OS`} >
+                                                                            {
+                                                                                ['Operating System','CentOS', 'RHEL'].map(item => <option value={item}>{item}</option>)
+                                                                            }
+                                                                            </Input>
+                                                                        </FormGroup>
+                                                                    </Col>
+                                                                    <Col md="6">
+                                                                        <FormGroup className='rp-app-table-value'>
+                                                                            <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Build} onChange={(e) => {
+                                                                                this.isAnyChanged = true;
+                                                                                let selectedRows = this.gridApi.getSelectedRows();
+                                                                                if (e.target.value && e.target.value !== '') {
+                                                                                    selectedRows.forEach(item => {
+                                                                                        this.onCellEditing(item, 'applicable', e.target.value)
+                                                                                        item['applicable'] = e.target.value;
+                                                                                    })
+                                                                                }
+                                                                                this.setState({ multi: { ...this.state.multi, applicable: e.target.value } })
+                                                                                setTimeout(this.gridApi.redrawRows(), 0);
+                                                                            }} type="select" id={`select_Status`} >
+                                                                                {
+                                                                                    ["Applicability","Applicable","NA","Skip"].map(item => <option value={item}>{item}</option>)
+                                                                                }
+                                                                            </Input> 
+                                                                        </FormGroup>
+                                                                    </Col>
                                                                     <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
                                                                             {/* <Label className='rp-app-table-label' htmlFor='Result'>
@@ -1853,7 +1972,7 @@ class TestCasesAllGUI extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
     user: state.auth.currentUser,
-    users: state.user && state.user.users ? state.user.users.map(item => item.email) : [],
+    users: state.user && state.user.users ? state.user.users.map(item => item.name) : [],
     selectedRelease: getCurrentRelease(state, state.release.current.id),
     data: state.testcase.all[state.release.current.id],
     tcDetails: state.testcase.testcaseDetail,

@@ -133,7 +133,7 @@ class AdminGrid extends Component {
                     editable: true,
                     cellEditor: 'selectionEditor',
                     cellEditorParams: {
-                        values: this.props.users.map(item => item.email)
+                        values: this.props.users.map(item => item.name)
                     }
                 }
             ],
@@ -290,8 +290,8 @@ class AdminGrid extends Component {
         this.getTC(e.data);
     }
     getTcs() {
-        if (this.props.user && this.props.user.email) {
-            axios.get(`/user/${this.props.selectedRelease.ReleaseNumber}/assigned/${this.props.user.email}`)
+        if (this.props.user && this.props.user.name) {
+            axios.get(`/user/${this.props.selectedRelease.ReleaseNumber}/assigned/${this.props.user.name}`)
                 .then(res => {
                     if (this.props.user && this.props.user.isAdmin) {
                         axios.get(`/user/${this.props.selectedRelease.ReleaseNumber}/assigned/ADMIN`)
@@ -330,7 +330,7 @@ class AdminGrid extends Component {
         if (this.props.testcaseEdit.Status !== this.props.testcaseEdit.original.Status) {
             Status = this.props.testcaseEdit.Status
         }
-        let header = `${Status}: ${release}, REPORTER: ${this.props.user.email}`;
+        let header = `${Status}: ${release}, REPORTER: ${this.props.user.name}`;
 
         let Assignee = this.props.testcaseEdit.Assignee ? this.props.testcaseEdit.Assignee : 'UNASSIGNED';
 
@@ -775,60 +775,11 @@ class AdminGrid extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
     user: state.auth.currentUser,
-    users: state.user.users.map(item => item.email),
+    users: state.user.users.map(item => item.name),
     selectedRelease: getCurrentRelease(state, state.release.current.id),
     data: state.user.details,
     tcDetails: state.testcase.testcaseDetail,
     testcaseEdit: state.testcase.testcaseEdit,
 })
 export default connect(mapStateToProps, { saveUserDetails, saveTestCase, getCurrentRelease, saveSingleTestCase, updateTCEdit })(AdminGrid);
-
-
-
-
-
-                // {
-                //     headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                //     editable: true,
-                //     cellEditor: 'selectionEditor',
-                //     cellEditorParams: {
-                //         values: ['achavan@diamanti.com']
-                //     }
-                // },
-                // {
-                //     headerName: "Orchestration Platform", field: "OrchestrationPlatform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                //     editable: true,
-                //     cellEditor: 'selectionEditor',
-                //     cellEditorParams: {
-                //         values: ['dcx-k8s']
-                //     }
-                // },
-                // {
-                //     headerName: 'Mood', field: "mood", cellRenderer: "moodRenderer",
-                //     cellEditorParams: {
-                //         values: ['Toyota', 'Ford', 'Porsche']
-                //     },
-                //     cellEditor: "moodEditor",
-                //     editable: true,
-                // },
-                // {
-                //     headerName: 'Date', field: "date",
-                //     cellEditor: "datePicker",
-                //     filter: 'agDateColumnFilter',
-                //     sortable: true,
-                //     editable: true,
-                // },
-                // {
-                //     headerName: "Model", field: "model", sortable: true, filter: true, editable: true, cellStyle: this.renderEditedCell,
-                //     cellEditor: 'agLargeTextCellEditor',
-                //     cellEditorParams: {
-                //         maxLength: '300',   // override the editor defaults
-                //         cols: '50',
-                //         rows: '6'
-                //     }
-                // },
-                // {
-                //     headerName: "Price", field: "price", sortable: true, filter: 'agNumberColumnFilter', valueParser: this.numberParser,
-                //     cellStyle: this.renderEditedCell, editable: true,
-                //     cellEditor: 'numericEditor'
-                // }
+              

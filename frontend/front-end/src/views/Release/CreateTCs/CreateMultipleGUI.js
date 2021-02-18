@@ -204,6 +204,10 @@ class CreateMultiple extends Component {
         data.BrowserName = 'NB'
         data.CardType = 'COMMON'
 
+        let currentUser = this.props.currentUser.name
+        data.stateUserMapping = {"CREATED" : `${currentUser}`}
+        data.Assignee = currentUser
+
         axios.post(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 this.currentID += 1;
@@ -436,7 +440,7 @@ class CreateMultiple extends Component {
             subdomains.sort();
         }
         let allCards = ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'];
-        let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.email);
+        let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.name);
 
         let cards = ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(item => ({ value: item, selected: this.state.addTC.CardType && this.state.addTC.CardType.includes(item) }));
         let servers = ['Intel', 'Dell', 'Lenovo'].map(item => ({ value: item, selected: this.state.addTC.ServerType && this.state.addTC.ServerType.includes(item) }));

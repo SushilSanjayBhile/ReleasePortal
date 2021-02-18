@@ -42,7 +42,7 @@ class createUser extends Component {
                 gender: e.target.id.trim()
             })
         }
-      };
+    };
     
     handleSubmit = (e) => {
         // e.preventDefault();

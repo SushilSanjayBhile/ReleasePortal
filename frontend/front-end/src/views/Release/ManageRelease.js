@@ -1,31 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import {
-    Badge,
-    Button,
-    Card,
-    CardBody,
-    CardFooter,
-    CardHeader,
-    Col,
-    Collapse,
-    DropdownItem,
-    DropdownMenu,
-    DropdownToggle,
-    Fade,
-    Form,
-    FormGroup,
-    FormText,
-    FormFeedback,
-    Input,
-    InputGroup,
-    InputGroupAddon,
-    InputGroupButtonDropdown,
-    InputGroupText,
-    Label,
-    Row,
-    Modal, ModalHeader, ModalBody, ModalFooter,
-    Table
+    Button,Col,Input,Row,Modal, ModalHeader, ModalBody, ModalFooter,Table,FormGroup,Label,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { saveReleaseBasicInfo, deleteRelease, releaseChange } from '../../actions';
@@ -37,6 +13,8 @@ class ManageRelease extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            parentReleaseList:['master',"DMC Master","DCX-DMC-Master"],
+            selectedParentRelease:'',
             release: this.props.allReleases[0] ? this.props.allReleases[0].ReleaseNumber : '',
             updatedValues: {},
             basic: { editing: false, updated: {}, open: false },
@@ -45,6 +23,27 @@ class ManageRelease extends Component {
             this.props.history.push('/');
         }
     }
+
+    componentDidMount(){
+        let data = []
+        let releaseInfoURL = `/api/release/info`;
+        axios.get(releaseInfoURL)
+        .then(res => {
+          res.data.forEach(item => {
+            data.push(item.ReleaseNumber)
+          });
+          this.setState({
+            parentReleaseList : data
+          })
+          console.log("release info",data)
+        }, error => {
+            console.log("Error Getting release Info")
+          
+        });
+
+    }
+
+    
     reset() {
         this.setState({
             release: this.props.allReleases[0] ? this.props.allReleases[0].ReleaseNumber : '',
@@ -100,7 +99,8 @@ class ManageRelease extends Component {
                 formattedArrays[item] = data[item].split(',');
             }
         })
-        console.log('priority ')
+
+        data.ParentRelease = this.state.selectedParentRelease
         data = { ...data, ...formattedArrays };
         if (isNaN(data.QARateOfProgress)) {
             data.QARateOfProgress = 0;
@@ -110,26 +110,31 @@ class ManageRelease extends Component {
         if (!data.QARateOfProgress) {
             data.QARateOfProgress = 0;
         }
+       
         axios.post(`/api/release`, { ...data })
             .then(single => {
                 alert('successfully added the release');
-                this.props.history.push('/release/summary');
-                axios.get(`/api/release/all`)
-                    .then(res => {
-                        
-                        res.data.forEach(item => {
-                            // this.props.updateNavBar({ id: item.ReleaseNumber });
+                // this.props.history.push('/release/summary');
+                window.location.reload()
+                // console.log("selected release",this.props.selectedRelease)
+                // axios.get(`/api/release/info`)
+                //     .then(res => {
+                //         // console.log("infor result before for",res)
+                //         // this.props.saveReleaseBasicInfo({ id: res.ReleaseNumber, data: res });
 
-                            this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
-                        });
-                        this.props.releaseChange({ id: data.ReleaseNumber })
-                        // if (res.data[res.data.length - 1]) {
-                        //     this.props.releaseChange({ id: res.data[res.data.length - 1].ReleaseNumber });
-                        // }
-                       
-                        this.reset();
-                    }, error => {
-                    });
+                //         res.data.forEach(item => {
+                //             console.log("result for info",item)
+                //             // this.props.updateNavBar({ id: item.ReleaseNumber });
+                //             this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
+                //         });
+                //         this.props.releaseChange({ id: data.ReleaseNumber })
+                //         // if (res.data[res.data.length - 1]) {
+                //         //     this.props.releaseChange({ id: res.data[res.data.length - 1].ReleaseNumber });
+                //         // }
+                //         this.reset();
+                //         // window.location.reload()
+                //     }, error => {
+                //     });
             }, error => {
                 alert('error in updating');
             });
@@ -143,7 +148,7 @@ class ManageRelease extends Component {
         return (
             (
                 <div style={{ marginLeft: '1rem', marginTop: '1rem' }}>
-                    <Row>
+                    {/* <Row>
                         <Col xs="4">
                             <FormGroup>
                                 <Label htmlFor="selectRelease">Release</Label>
@@ -160,8 +165,10 @@ class ManageRelease extends Component {
                                 'marginRight': '0.5rem'
                             }}></i> Delete</Button>
                         </Col>
-                    </Row>
+                    </Row> */}
+                    
                     <Row>
+                        
                         <Col xs="12" sm="12" lg="10" className="rp-summary-tables" style={{ marginLeft: '1rem', marginTop: '1rem' }}>
                             <div className='rp-app-table-header'>
                                 <span className='rp-app-table-title'>Add Release</span>
@@ -169,15 +176,43 @@ class ManageRelease extends Component {
                                     <i className="fa fa-check-square-o"></i>
                                 </Button>
                             </div>
+
+
                             <Row>
+                            <Col xs="12" sm="12" md="8" lg="8">
+                                <div className='rp-app-table-header'>
+                                    <span className='rp-app-table-title' >Parent Release</span>
+                                    <Row>
+                                        <Col xs="12" sm="12" md="5" lg="5">
+                                        {
+                                            [
+                                                { labels: 'Parent Release', values: [{ value: '', text: 'Select Release' },...(this.state.parentReleaseList.map(each => ({ value: each, text: each })))] },
+                                            ].map(each => <FormGroup className='rp-app-table-value'>
+                                                <Input onChange={(e) => {
+                                                    this.setState({ selectedParentRelease: e.target.value},()=>{
+                                                    })
+                                                }} type="select" id={`select_${each.labels}`}>
+                                                    {
+                                                        each.values.map(item => <option value={item.value}>{item.text}</option>)
+                                                    }
+                                                </Input>
+                                            </FormGroup>)
+                                        }
+                                        </Col>
+                                    </Row>
+                                </div>
+                            </Col>
+                        </Row>
+                            
+                            {
+                                this.state.selectedParentRelease ? 
+                                <Row>
                                 <Col xs="12" sm="12" md="5" lg="5">
                                     <Table scroll responsive style={{ overflow: 'scroll', }}>
                                         <tbody>
-
                                             {
-
                                                 [
-                                                    { key: 'Release Number', value: '', field: 'ReleaseNumber' },
+                                                    { key: 'Release Name', value: '', field: 'ReleaseNumber' },
                                                     { key: 'Operating System', value: '', field: 'FinalOS' },
                                                     { key: 'Docker Core RPM Number', value: '', field: 'FinalDockerCore' },
                                                     { key: 'Build Number', field: 'BuildNumber', value: '' },
@@ -293,7 +328,9 @@ class ManageRelease extends Component {
                                         </tbody>
                                     </Table>
                                 </Col>
-                            </Row>
+                            </Row> : null
+                            }
+                            
 
                             {/* <Card>
                                 <CardHeader>
@@ -314,6 +351,8 @@ class ManageRelease extends Component {
                             </Card> */}
                         </Col>
                     </Row>
+
+
                     <Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                         <ModalHeader toggle={() => this.toggle()}>Confirmation</ModalHeader>
                         <ModalBody>

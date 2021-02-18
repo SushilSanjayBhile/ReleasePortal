@@ -11,9 +11,6 @@ class CheckBoxRenderer extends Component {
         }
     }
     onChange(e) {
-        console.log('props')
-        console.log(this.props);
-        console.log(e.target.checked);
         this.setState({ value: e.target.checked })
         this.props.saveMultiPendingApproval({ [`${this.props.data.TcID}_${this.props.data.CardType}`]: { checked: e.target.checked, TcID: this.props.data.TcID, CardType: this.props.data.CardType } });
     }

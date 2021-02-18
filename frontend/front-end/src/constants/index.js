@@ -356,11 +356,11 @@ export const wsPUA = [
 ]
 
 export const wsM = [
-    'MANUAL_TESTING','INPROGRESS','MANUAL_COMPLETED','DELETED'
+    'MANUAL_ASSIGNED','INPROGRESS','MANUAL_COMPLETED','DELETED'
 ]
 
 export const wsA = [
-    'AUTO_TESTING', 'INPROGRESS','AUTO_COMPLETED'
+    'AUTO_ASSIGNED', 'INPROGRESS','AUTO_COMPLETED'
 ]
 
 export const ws = [

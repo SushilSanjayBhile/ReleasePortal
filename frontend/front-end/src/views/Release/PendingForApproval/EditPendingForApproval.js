@@ -140,7 +140,7 @@ class EditPendingForApproval extends Component {
                                     [
                                         { field: 'CardType', header: 'Card Type' },
                                         { field: 'ServerType', header: 'Server Type' },
-                                        { field: 'OrchestrationPlatform', header: 'Orchestration Platform' },
+                                        // { field: 'OrchestrationPlatform', header: 'Orchestration Platform' },
                                     ].map(item => (
                                         <Col xs="6" md="4" lg="3">
                                             <FormGroup className='rp-app-table-value'>

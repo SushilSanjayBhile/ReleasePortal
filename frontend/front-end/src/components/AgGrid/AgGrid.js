@@ -139,7 +139,7 @@ class AgGrid extends Component {
 
                     cellEditor: 'selectionEditor',
                     cellEditorParams: {
-                        values: this.props.users.map(item => item.email)
+                        values: this.props.users.map(item => item.name)
                     }
                 },
                 {
@@ -374,7 +374,7 @@ class AgGrid extends Component {
         if (data.WorkingStatus !== data.original.WorkingStatus) {
             WorkingStatus = data.WorkingStatus
         }
-        let header = `${WorkingStatus}: ${release}, REPORTER: ${this.props.user.email}`;
+        let header = `${WorkingStatus}: ${release}, REPORTER: ${this.props.user.name}`;
 
         let Assignee = data.Assignee ? data.Assignee : 'ADMIN';
 
@@ -856,7 +856,7 @@ class AgGrid extends Component {
 
 const mapStateToProps = (state, ownProps) => ({
     user: state.auth.currentUser,
-    users: state.user.users.map(item => item.email),
+    users: state.user.users.map(item => item.name),
     selectedRelease: getCurrentRelease(state, state.release.current.id),
     data: state.testcase.all[state.release.current.id],
     tcDetails: state.testcase.testcaseDetail,

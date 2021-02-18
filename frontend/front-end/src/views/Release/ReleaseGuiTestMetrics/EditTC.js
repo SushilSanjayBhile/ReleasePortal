@@ -158,6 +158,26 @@ class EditTC extends Component {
                                     }
                                 </FormGroup>
                             </Col>
+
+                            {/* <Col xs="12" md="6" lg="6">
+                                <FormGroup className='rp-app-table-value'>
+                                    <Label className='rp-app-table-label' htmlFor="Result">
+                                        Oprating System
+                                                        </Label>
+                                    {
+                                        !this.props.isEditing ?
+                                            <div className='rp-app-table-value'><span className='rp-edit-TC-span'>{this.props.testcaseDetail && this.props.testcaseDetail.OS}</span></div> :
+                                            <Input value={this.props.testcaseEdit && this.props.testcaseEdit.OS} onChange={(e) => this.props.updateTCEdit({
+                                                ...this.props.testcaseEdit, OS: e.target.value,
+                                                errors: { ...this.props.testcaseEdit.errors, OS: null }
+                                            })} type="select" >
+                                                <option value=''>Select OS</option>
+                                                <option value='CentOS'>CentOS</option>
+                                                <option value='RHEL'>RHEL</option>
+                                            </Input>
+                                    }
+                                </FormGroup>
+                            </Col> */}
                         </FormGroup>
                     }
                     
@@ -334,7 +354,7 @@ class EditTC extends Component {
 }
 const mapStateToProps = (state, ownProps) => ({
     currentUser: state.auth.currentUser,
-    users: state.user.users.map(item => item.email),
+    users: state.user.users.map(item => item.name),
     selectedRelease: getCurrentRelease(state, state.release.current.id),
     selectedTC: state.testcase.all[state.release.current.id],
     testcaseDetail: state.testcase.testcaseDetail,

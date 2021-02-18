@@ -431,7 +431,7 @@ class UserTCGUI extends Component {
 }
 const mapStateToProps = (state, ownProps) => ({
     currentUser: state.auth.currentUser,
-    users: state.user.users.map(item => item.email),
+    users: state.user.users.map(item => item.name),
     selectedRelease: getCurrentRelease(state, state.release.current.id),
     selectedTC: state.testcase.all[state.release.current.id],
     testcaseDetail: state.testcase.testcaseDetail,

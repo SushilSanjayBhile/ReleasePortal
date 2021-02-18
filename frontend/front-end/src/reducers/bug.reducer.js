@@ -53,7 +53,7 @@ function all(state = initialState.features, action) {
             state[action.payload.id] = {
                 bugCount: bugCount, bug: allBugs
             }
-
+           
             return { ...state };
 
         default:

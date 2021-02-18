@@ -102,7 +102,6 @@ class DefaultLayout extends Component {
             // this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
           });
           if (this.allReleases1[0]) {
-            // console.log(this.allReleases1[0])
             this.getReleaseData(this.allReleases1[0] )
             this.props.releaseChange({ id: this.allReleases1[0]  });
           }
