@@ -426,7 +426,6 @@ def get_cli_priorityDict(cliTcInfo,cliStatus):
                         myDict['Priority'][priority][result] += 1
                 except:
                     continue
-    print(myDict["Priority"])
     return myDict["Priority"]
 
 

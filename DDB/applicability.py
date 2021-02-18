@@ -8,16 +8,22 @@ from .serializers import APPLICABILITY_SERIALIZER, TC_INFO_SERIALIZER
 
 @csrf_exempt
 def GetPlatformList(request):
+    platformList = []
     data = APPLICABILITY.objects.all()
     serializer = APPLICABILITY_SERIALIZER(data, many = True)
-    return JsonResponse({'Data': serializer.data}, status = 200)
+
+    for data in serializer.data:
+        platformList.append(data["Platform"])
+    return JsonResponse({"PlatformList": platformList}, status = 200)
 
 @csrf_exempt
 def GetPlatformWiseTCList(request, platform):
     data = APPLICABILITY.objects.get(Platform = platform)
     serializer = APPLICABILITY_SERIALIZER(data)
     cliData = json.loads(serializer.data["ApplicableTCs"].replace("\'","\""))
-    cliTCIDs = cliData["CLI"]
+    cliTCIDs = []
+    if "CLI" in cliData:
+        cliTCIDs = cliData["CLI"]
 
     infodata = TC_INFO.objects.all().using("master")
     infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
@@ -31,10 +37,11 @@ def GetPlatformWiseTCList(request, platform):
     for row in serializer.data:
         pf = row["Platform"]
         at = json.loads(row["ApplicableTCs"].replace("'", "\""))
-        for tc in at["CLI"]:
-            if tc not in atd:
-                atd[tc] = []
-            atd[tc].append(pf)
+        if "CLI" in at:
+            for tc in at["CLI"]:
+                if tc not in atd:
+                    atd[tc] = []
+                atd[tc].append(pf)
 
     for tc in infoserializer.data:
         for tcid in cliTCIDs:
