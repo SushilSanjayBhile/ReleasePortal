@@ -1644,36 +1644,6 @@ def RELEASEINFO(request, Release):
             data = RELEASES.objects.using("universal").values("ReleaseNumber").all()
             serializer = RELEASE_SERIALIZER(data, many = True)
             return HttpResponse(json.dumps(serializer.data))
-            #data = RELEASES.objects.all()
-            #serializer = RELEASE_SERIALIZER(data, many = True)
-            #t = time.time()
-
-            #for i in serializer.data:
-            #    data = json.dumps(i)
-            #    data = json.loads(data)
-    
-            #    if(i['ReleaseNumber'] != "universal"):
-            #        if i["ReleaseNumber"] != "TestDatabase":
-            #            st = time.time()
-            #            a = TCAGGREGATE(i['ReleaseNumber'])
-
-            #            #st = time.time()
-            #            #a = TCAGGREGATEOLD(i['ReleaseNumber'])
-            #            #print(time.time() - st, "\n")
-            #            data['Priority'] = a["Priority"]
-
-            #        data['TcAggregate'] = a
-            #    #list.append(data)
-            #    if i["ReleaseNumber"] == "DMC-3.0":
-            #        list.insert(0, data)
-            #    elif "Spektra" in i["ReleaseNumber"]:
-            #        list.insert(1, data)
-            #    else:
-            #        list.append(data)
-
-
-            ## return JsonResponse(json.dumps(list), status = 200)
-            #return HttpResponse(json.dumps(list))
         else:
             t = time.time()
             
@@ -1683,24 +1653,9 @@ def RELEASEINFO(request, Release):
             serData = json.dumps(serializer.data)
             serData = json.loads(serData)
 
-            #if Release != "TestDatabase":
             aggregateData = TCAGGREGATE(Release)
             serData['TcAggregate'] = aggregateData
-            # return JsonResponse({'data': json.dumps(serializer.data)}, status = 200)
             return HttpResponse(json.dumps(serData))
-
-    #elif request.method == "DELETE":
-    #    try:
-    #        data = RELEASES.objects.get(ReleaseNumber__icontains = Release).delete()
-    #        if "Activity" in req:
-    #           AD = request['Activity']
-    #           GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
-    #        # return JsonResponse({'Success': "DELETED SUCCESSFULLY"}, status = 200)
-    #        return HttpResponse("DELETED SUCCESSFULLY")
-    #    except RELEASES.DoesNotExist:
-    #        error_message = "OBJECT NOT PRESENT CANNOT BE DELETED!!"
-    #        # return JsonResponse({'Error': error_message}, status = 400)
-    #        return HttpResponse(error_message)
 
     elif request.method == "PUT":
         try:
