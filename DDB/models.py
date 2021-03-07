@@ -27,7 +27,7 @@ class TC_INFO(models.Model):
     Notes = models.TextField(blank = True, default = "NO NOTES PROVIDED")
     CardType = models.CharField(max_length = 100, blank = True, default=None)
     ServerType = ArrayField(models.CharField(max_length = 10, blank = True, default=None), blank = True)
-    # OrchestrationPlatform = ArrayField(models.CharField(max_length = 10, blank = True, default = "UNKNOWN"), blank = True, default = list)
+    Platform = ArrayField(models.CharField(max_length = 10, blank = True, default = "UNKNOWN"), blank = True, default = list)
     WorkingStatus = models.CharField(max_length = 50, blank = True, default = "CREATED")
     Date = models.DateTimeField(auto_now = True, blank = True)
     Assignee = models.CharField(max_length = 50, blank = True, default = "UNKNOWN")
