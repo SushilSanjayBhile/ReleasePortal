@@ -361,3 +361,8 @@ class RELEASEBUILDSINFO(models.Model):
 class APPLICABILITY(models.Model):
     Platform = models.CharField(max_length = 100, blank = False, default = "NO PLATFORM")
     ApplicableTCs = models.TextField()
+
+class AUTOMATION_COUNT(models.Model):
+    DateRange = models.DateTimeField(auto_now = False, blank = False)
+    Total = models.IntegerField()
+    Automated = models.IntegerField()
