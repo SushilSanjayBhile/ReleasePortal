@@ -299,31 +299,36 @@ def TC_INFO_GET_POST_VIEW(request, Release):
 
 # Function to update TC INFO data
 def updateData(updatedData, data, Release):
-     data.TcID = updatedData['TcID']
-     data.id = updatedData['id']
-     data.TcName = updatedData['TcName']
-     data.Domain = updatedData['Domain']
-     data.SubDomain = updatedData['SubDomain']
-     data.Scenario = updatedData['Scenario']
-     data.Description = updatedData['Description']
-     data.Steps = updatedData['Steps']
-     data.ExpectedBehaviour = updatedData['ExpectedBehaviour']
-     data.Notes = updatedData['Notes']
-     data.CardType = updatedData['CardType']
-     data.ServerType = updatedData['ServerType']
-     data.WorkingStatus = updatedData['WorkingStatus']
-     data.Date = updatedData['Date']
-     data.Assignee = updatedData['Assignee']
-     data.Creator = updatedData['Creator']
-     data.Priority = updatedData['Priority']
-     data.Tag = updatedData['Tag']
-     data.stateUserMapping = updatedData['stateUserMapping']
-     data.applicable = updatedData['applicable']
-     data.OS = updatedData['OS']
-     data.UnapproveTCReason = updatedData['UnapproveTCReason']
- 
-     data.save(using = Release)
-     return 1
+    if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"]:
+        update_automation_count("increaseTotal", "CLI")
+
+    #print("\n\n\n updatedData",updatedData)
+    data.TcID = updatedData['TcID']
+    data.id = updatedData['id']
+    data.TcName = updatedData['TcName']
+    data.Domain = updatedData['Domain']
+    data.SubDomain = updatedData['SubDomain']
+    data.Scenario = updatedData['Scenario']
+    data.Description = updatedData['Description']
+    data.Steps = updatedData['Steps']
+    data.ExpectedBehaviour = updatedData['ExpectedBehaviour']
+    data.Notes = updatedData['Notes']
+    data.CardType = updatedData['CardType']
+    data.ServerType = updatedData['ServerType']
+    data.WorkingStatus = updatedData['WorkingStatus']
+    data.Date = updatedData['Date']
+    data.Assignee = updatedData['Assignee']
+    data.Creator = updatedData['Creator']
+    data.Priority = updatedData['Priority']
+    data.Tag = updatedData['Tag']
+    data.stateUserMapping = updatedData['stateUserMapping']
+    data.applicable = updatedData['applicable']
+    data.OS = updatedData['OS']
+    data.UnapproveTCReason = updatedData['UnapproveTCReason']
+    data.Platform = updatedData['Platform']
+
+    data.save(using = Release)
+    return 1
 
 # Function to update TC STATUS data
 def updateStatusData(updatedData, data, Release):
