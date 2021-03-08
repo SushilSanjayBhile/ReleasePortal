@@ -364,5 +364,7 @@ class APPLICABILITY(models.Model):
 
 class AUTOMATION_COUNT(models.Model):
     DateRange = models.DateTimeField(auto_now = False, blank = False)
-    Total = models.IntegerField()
-    Automated = models.IntegerField()
+    TotalCli = models.IntegerField()
+    AutomatedCli = models.IntegerField()
+    TotalGui = models.IntegerField()
+    AutomatedGui = models.IntegerField()

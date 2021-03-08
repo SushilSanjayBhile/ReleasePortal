@@ -7,10 +7,10 @@ from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZE
         APPLICABILITY_SERIALIZER, AUTOMATION_COUNT_SERIALIZER
 from .models import TC_INFO, TC_STATUS, LOGS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LATEST_TC_STATUS, APPLICABILITY, \
         AUTOMATION_COUNT
-from .forms import TcInfoForm
+from .forms import TcInfoForm, AUTOMATION_COUNT_FORM
 from django.db.models import Q
 
-import json, time, os
+import json, time, os, pytz
 from dp import settings
 import datetime
 from .forms import LogForm
@@ -23,26 +23,83 @@ def get_previous_monday_date():
     previous_monday = now - (datetime.timedelta(days = 7) + datetime.timedelta(days = now.weekday()))
     return previous_monday
 
+def get_total_cli():
+    infodata = TC_INFO.objects.using(rootRelease).all()
+    return len(infodata)
+
+def get_automated_cli():
+    infodata = TC_INFO.objects.using(rootRelease).filter(~Q(TcName = "TC NOT AUTOMATED"))
+    return len(infodata)
+
+def get_total_gui():
+    infodata = TC_INFO_GUI.objects.using(rootRelease).all()
+    return len(infodata)
+
+def get_automated_gui():
+    infodata = TC_INFO_GUI.objects.using(rootRelease).filter(~Q(TcName = "TC NOT AUTOMATED"))
+    return len(infodata)
+
 def get_previous_monday_record():
     previous_monday = get_previous_monday_date()
-    data = AUTOMATION_COUNT.objects.using(rootRelease).filter(DateRange = monday)
+    data = AUTOMATION_COUNT.objects.using(rootRelease).filter(DateRange = previous_monday)
 
-def get_if_monday_present():
-    monday = now - datetime.timedelta(days = now.weekday())
+    if len(data) == 0:
+        recordDict = {}
+        recordDict["TotalCli"] = get_total_cli()
+        recordDict["AutomatedCli"] = get_automated_cli()
+        recordDict["TotalGui"] = get_total_gui()
+        recordDict["AutomatedGui"] = get_automated_gui()
+
+        return recordDict
+    else:
+        print(len(data))
+
+def get_current_monday_record():
+    monday = get_current_monday_date()
     data = AUTOMATION_COUNT.objects.using(rootRelease).filter(DateRange = monday)
     serializer = AUTOMATION_COUNT_SERIALIZER(data, many = True)
-    return serializer.data
+
+    if len(data) == 0:
+        recordDict = {}
+        recordDict["TotalCli"] = get_total_cli()
+        recordDict["AutomatedCli"] = get_automated_cli()
+        recordDict["TotalGui"] = get_total_gui()
+        recordDict["AutomatedGui"] = get_automated_gui()
+
+        return recordDict
+    else:
+        data = AUTOMATION_COUNT.objects.using(rootRelease).get(DateRange = monday)
+        serializer = AUTOMATION_COUNT_SERIALIZER(data)
+        return data
+
+def gcmr():
+        monday = get_current_monday_date()
+        data = AUTOMATION_COUNT.objects.using(rootRelease).get(DateRange = monday)
+        serializer = AUTOMATION_COUNT_SERIALIZER(data)
+        return serializer.data
+
+def get_if_monday_present():
+    monday = get_current_monday_date()
+    data = AUTOMATION_COUNT.objects.using(rootRelease).filter(DateRange = monday)
+    serializer = AUTOMATION_COUNT_SERIALIZER(data, many = True)
+    return len(serializer.data)
 
 def get_current_monday_date():
+    now = datetime.date.today()
     monday = now - datetime.timedelta(days = now.weekday())
     return monday
 
 def create_current_monday_record():
-    automation_count_dict = {}
-    automation_count_dict["DateRange"] = get_current_monday_date()
-    #automation_count_dict["Total"] = 
-    #automation_count_dict["Automated"] = 
-    print("Created")
+    data = get_previous_monday_record()
+    data["DateRange"] = get_current_monday_date()
+
+    fd = AUTOMATION_COUNT_FORM(data)
+    if fd.is_valid():
+        print("CREATING NEW MONDAY RECORD")
+        data = fd.save(commit = False)
+        data.save(using = rootRelease)
+    else:
+        print("Error: ", fd.errors)
 
 @csrf_exempt
 def automation_count_get_post_view(request):
@@ -50,20 +107,33 @@ def automation_count_get_post_view(request):
         previous_monday = get_previous_monday_date()
         monday_present = get_if_monday_present()
 
+        update_automation_count("increaseTotal", "GUI")
+        update_automation_count("increaseAutomated", "GUI")
+        update_automation_count("increaseTotal", "CLI")
+        update_automation_count("increaseAutomated", "CLI")
+
         return HttpResponse("get method")
 
     if request.method == "POST":
         return HttpResponse("POST method")
 
-def update_automation_count(operation):
-    if operation == "increaseTotal":
-        monday_present = get_if_monday_present()
+def update_automation_count(operation, interface):
+    monday_present = get_if_monday_present()
 
-        #if monday_present == 0:
+    if monday_present == 0:
+        create_current_monday_record()
+    else:
+        oldRecord = get_current_monday_record()
+        updatedRecord = get_current_monday_record()
 
-
-    #if operation == "increaseAutomated":
-    #if operation == "decreaseTotal":
-    #if operation == "decreaseAutomated":
-
-
+        if interface == "CLI":
+            if operation == "increaseTotal":
+                oldRecord.TotalCli += 1
+            if operation == "increaseAutomated":
+                oldRecord.AutomatedCli += 1
+        if interface == "GUI":
+            if operation == "increaseTotal":
+                oldRecord.TotalGui += 1
+            if operation == "increaseAutomated":
+                oldRecord.AutomatedGui += 1
+        oldRecord.save(using = rootRelease)
