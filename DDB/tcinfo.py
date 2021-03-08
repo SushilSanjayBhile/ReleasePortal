@@ -441,9 +441,6 @@ def TcCountByFilter2(request, Release):
                 dat.delete()
         return HttpResponse(json.dumps(countDict))
 
-
-
-
 @csrf_exempt
 def MULTIPLE_TC_INFO_UPDATION(request, Release):
     if request.method == "PUT":
@@ -454,8 +451,8 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
             card = req['CardType']
             tcid = req['TcID']
             
+            # update Data Master
             try:
-                # for master release
                 if Release != "TestDatabase":
                     if "dmc" in Release.lower():
                         master = "DMC Master"
@@ -475,6 +472,27 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
                     AD = requests['Activity']
                     GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], master)
         
+            except:
+                pass
+
+            # update data in rootMaster
+            try:
+                if Release != "TestDatabase":
+                    master = rootRelease
+                dataMaster = TC_INFO.objects.using(master).filter(TcID = tcid).get(CardType = card)
+                serializerMaster = TC_INFO_SERIALIZER(dataMaster)
+                updatedDataMaster = serializerMaster.data
+
+                for key in req:
+                    if key in updatedDataMaster and (key != "CardType" and key != "TcID" and key != "Priority" and key != "applicable"):
+                        updatedDataMaster[key] = req[key]
+
+                updateData(updatedDataMaster, dataMaster, master)
+
+                if "Activity" in requests:
+                    AD = requests['Activity']
+                    GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], master)
+
             except:
                 pass
 
@@ -668,6 +686,38 @@ def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
         for d in serializer.data:
             singleData = TC_INFO.objects.using(Release).get(id= d['id'])
             singleSerializer = TC_INFO_SERIALIZER(singleData)
+
+            updatedData = singleSerializer.data
+
+            for key in req:
+                if key == "NewTcID":
+                    verifyData = TC_INFO.objects.using(Release).filter(TcID = req['NewTcID']).filter(CardType = d['CardType'])
+                    if len(verifyData) > 0:
+                        errRecords.append(req)
+                        continue
+                    updatedData['TcID'] = req['NewTcID']
+                elif key != "Activity":
+                    updatedData[key] = req[key]
+
+            res = updateData(updatedData, singleData, Release)
+            if res == 0:
+                errRecords.append(req)
+            elif "Activity" in req:
+                AD = req['Activity']
+                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+
+        if len(errRecords) > 0:
+            return JsonResponse({'Conflict': errRecords}, status = 409)
+
+        # code to update tc in dmc-dcx-master release
+        Release = rootRelease
+        data = TC_INFO.objects.using(Release).filter(TcID = id)
+        serializer = TC_INFO_SERIALIZER(data, many = True)
+
+        for d in serializer.data:
+            singleData = TC_INFO.objects.using(Release).get(id= d['id'])
+            singleSerializer = TC_INFO_SERIALIZER(singleData)
+
             updatedData = singleSerializer.data
 
             for key in req:

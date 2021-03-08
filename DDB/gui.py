@@ -108,13 +108,12 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     print(fd.errors)
 
 
-        #post data in dmc-dmc-masterrelease
+        #post data in dmc-dmc-master release
         master = rootRelease
         if Release != master and Release != "TestDatabase":
             Release = master
             conflictFlag = False
 
-            # post request for current release
             data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = req["CardType"])
             if len(data) != 0:
                 conflictFlag = True
@@ -133,6 +132,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             
         return HttpResponse("SUCCESSFULLY UPDATED")
 
+    # THIS PUT REQUEST DON'T NEED TO GO IN ALL PARENT RELEASES. UPDATING ONLY RELEASE SPECIFIC VALUES
     if request.method == "PUT":
         requests = json.loads(request.body.decode("utf-8"))
 
@@ -175,6 +175,120 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             elif "Automation WorkingStatus" in oldworkingStatus:
                 workingState += "\"Automation WorkingStatus\"" + ":\"" + oldworkingStatus["Automation WorkingStatus"] + "\","
             
+            if "Manual Assignee" in req:
+                workingState += "\"Manual Assignee\"" + ":\"" + req["Manual Assignee"] + "\""
+            elif "Manual Assignee" in oldworkingStatus:
+                workingState += "\"Manual Assignee\"" + ":\"" + oldworkingStatus["Manual Assignee"] + "\""
+
+            workingState += "}"
+
+            #print("after update working status",workingState)
+            updatedData["stateUserMapping"] = workingState
+
+            for row in req:
+                if "CardType" not in row or "TcID" not in row or "BrowserName" not in row and req[row] != "undefined":
+                    updatedData[row] = req[row]
+
+            updateGuiTcInfo(data, updatedData, Release)
+
+            # UPDATE GUI TC INFO IN DCX-DMC-Master release
+            if Release != "TestDatabase":
+                if "dmc" in Release.lower():
+                    master = "DMC Master"
+                else:
+                    master = "master"
+            data = TC_INFO_GUI.objects.using(master).get(TcID = req['TcID'], CardType = req["CardType"])
+            dataSer = TC_INFO_GUI_SERIALIZER(data)
+
+            updatedData = dataSer.data
+            oldworkingStatus = updatedData["stateUserMapping"]
+            oldworkingStatus = oldworkingStatus.replace("\'","\"")
+            try:
+                oldworkingStatus = json.loads(oldworkingStatus)
+            except:
+                workingStatusReplace = "{\"CREATED\":\"DEFAULT\"}"
+                updatedData["stateUserMapping"] = workingStatusReplace
+                updateGuiTcInfo(updatedData, data, master)
+
+                data = TC_INFO_GUI.objects.using(master).filter(TcID = tcid).get(CardType = card)
+                serializer = TC_INFO_GUI_SERIALIZER(data)
+                updatedData = serializer.data
+                oldworkingStatus = updatedData["stateUserMapping"]
+                oldworkingStatus = oldworkingStatus.replace("\'","\"")
+                oldworkingStatus = json.loads(oldworkingStatus)
+
+            workingState = "{"
+
+            if "Manual WorkingStatus" in req:
+                workingState += "\"Manual WorkingStatus\"" + ":\"" + req["Manual WorkingStatus"] + "\","
+            elif "Manual WorkingStatus" in oldworkingStatus:
+                workingState += "\"Manual WorkingStatus\"" + ":\"" + oldworkingStatus["Manual WorkingStatus"] + "\","
+
+            if "Automation Assignee" in req:
+                workingState += "\"Automation Assignee\"" + ":\"" + req["Automation Assignee"] + "\","
+            elif "Automation Assignee" in oldworkingStatus:
+                workingState += "\"Automation Assignee\"" + ":\"" + oldworkingStatus["Automation Assignee"] + "\","
+
+            if "Automation WorkingStatus" in req:
+                workingState += "\"Automation WorkingStatus\"" + ":\"" + req["Automation WorkingStatus"] + "\","
+            elif "Automation WorkingStatus" in oldworkingStatus:
+                workingState += "\"Automation WorkingStatus\"" + ":\"" + oldworkingStatus["Automation WorkingStatus"] + "\","
+
+            if "Manual Assignee" in req:
+                workingState += "\"Manual Assignee\"" + ":\"" + req["Manual Assignee"] + "\""
+            elif "Manual Assignee" in oldworkingStatus:
+                workingState += "\"Manual Assignee\"" + ":\"" + oldworkingStatus["Manual Assignee"] + "\""
+
+            workingState += "}"
+
+            #print("after update working status",workingState)
+            updatedData["stateUserMapping"] = workingState
+
+            for row in req:
+                if "CardType" not in row or "TcID" not in row or "BrowserName" not in row and req[row] != "undefined":
+                    updatedData[row] = req[row]
+
+            updateGuiTcInfo(data, updatedData, master)
+
+            # UPDATE ROOTRELEASE
+            Release = rootRelease
+            data = TC_INFO_GUI.objects.using(Release).get(TcID = req['TcID'], CardType = req["CardType"])
+            dataSer = TC_INFO_GUI_SERIALIZER(data)
+
+            updatedData = dataSer.data
+            oldworkingStatus = updatedData["stateUserMapping"]
+            oldworkingStatus = oldworkingStatus.replace("\'","\"")
+            try:
+                oldworkingStatus = json.loads(oldworkingStatus)
+            except:
+                workingStatusReplace = "{\"CREATED\":\"DEFAULT\"}"
+                updatedData["stateUserMapping"] = workingStatusReplace
+                updateGuiTcInfo(updatedData, data, Release)
+
+                data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+                serializer = TC_INFO_GUI_SERIALIZER(data)
+                updatedData = serializer.data
+                oldworkingStatus = updatedData["stateUserMapping"]
+                oldworkingStatus = oldworkingStatus.replace("\'","\"")
+                oldworkingStatus = json.loads(oldworkingStatus)
+
+            workingState = "{"
+
+            if "Manual WorkingStatus" in req:
+                workingState += "\"Manual WorkingStatus\"" + ":\"" + req["Manual WorkingStatus"] + "\","
+            elif "Manual WorkingStatus" in oldworkingStatus:
+                workingState += "\"Manual WorkingStatus\"" + ":\"" + oldworkingStatus["Manual WorkingStatus"] + "\","
+
+            if "Automation Assignee" in req:
+                workingState += "\"Automation Assignee\"" + ":\"" + req["Automation Assignee"] + "\","
+            elif "Automation Assignee" in oldworkingStatus:
+                workingState += "\"Automation Assignee\"" + ":\"" + oldworkingStatus["Automation Assignee"] + "\","
+
+            if "Automation WorkingStatus" in req:
+                workingState += "\"Automation WorkingStatus\"" + ":\"" + req["Automation WorkingStatus"] + "\","
+            elif "Automation WorkingStatus" in oldworkingStatus:
+                workingState += "\"Automation WorkingStatus\"" + ":\"" + oldworkingStatus["Automation WorkingStatus"] + "\","
+
             if "Manual Assignee" in req:
                 workingState += "\"Manual Assignee\"" + ":\"" + req["Manual Assignee"] + "\""
             elif "Manual Assignee" in oldworkingStatus:
@@ -279,7 +393,6 @@ def GUI_TC_STATUS_GET_POST_VIEW(request, Release):
                     data.save(using = Release)
                 else:
                     print(fd.errors)
-
 
         return HttpResponse("SUCCESSFULLY UPDATED")
 
