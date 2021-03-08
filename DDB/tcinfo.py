@@ -27,6 +27,44 @@ def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
     else:
         print("INVALID", fd.errors)
 
+def add_cli_tcs_in_given_release(infoserializer, master):
+    for tc in infoserializer.data:
+        tcid = tc["TcID"]
+        cardtype = tc["CardType"]
+
+        singletc = TC_INFO.objects.using(master).filter(TcID = tcid, CardType = cardtype)
+        if len(singletc) == 0:
+            try:
+                tc = TC_INFO.objects.using(release).get(TcID = tcid, CardType = cardtype)
+                tc = TC_INFO_SERIALIZER(tc).data
+                fd = TcInfoForm(tc)
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    data.save(using = master)
+                else:
+                    print("INVALID", fd.errors)
+            except:
+                pass
+
+def add_gui_tcs_in_given_release(serializer, master):
+    for gui in serializer.data:
+        tcid = gui["TcID"]
+        card = gui["CardType"]
+        browsername = gui["BrowserName"]
+
+        singledata = TC_INFO_GUI.objects.using(master).filter(TcID = tcid, CardType = card, BrowserName = browsername)
+        if len(singledata) == 0:
+            try:
+                tc = TC_INFO_GUI.objects.using(master).filter(TcID = tcid, CardType = card, BrowserName = browsername)
+                tc = TC_INFO_GUI_SERIALIZER(tc).data
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    data.save(using = master)
+                else:
+                    print("INVALID", fd.errors)
+            except:
+                pass
+
 def sync_tcs(request):
     ignore_db = ["TestDatabase", "2.3.0"]
     for release in settings.DATABASES:
@@ -40,50 +78,32 @@ def sync_tcs(request):
         else:
             master = "master"
 
-        print(release)
-        
         infodata = TC_INFO.objects.using(release).all()
         infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
-        c = 0
 
-        for tc in infoserializer.data:
-            tcid = tc["TcID"]
-            cardtype = tc["CardType"]
+        data_gui = TC_INFO_GUI.objects.using(release).all()
+        serializer_gui = TC_INFO_GUI_SERIALIZER(data_gui, many = True)
 
-            # store tc in master/DMC master if not present
-            singletc = TC_INFO.objects.using(master).filter(TcID = tcid, CardType = cardtype)
-            if len(singletc) == 0:
-                try:
-                    tc = TC_INFO.objects.using(release).get(TcID = tcid, CardType = cardtype)
-                    tc = TC_INFO_SERIALIZER(tc).data
-                    fd = TcInfoForm(tc)
-                    if fd.is_valid():
-                        data = fd.save(commit = False)
-                        data.save(using = master)
-                        print(tcid, cardtype, master)
-                        c+=1
-                    else:
-                        print("INVALID", fd.errors)
-                except:
-                    pass
+        print("\nTotal cli and gui tcs", len(infodata), len(data_gui))
 
-            # store tc in rootRelease if not present
-            master = rootRelease
-            singletc = TC_INFO.objects.using(master).filter(TcID = tcid, CardType = cardtype)
-            if len(singletc) == 0:
-                try:
-                    tc = TC_INFO.objects.using(release).get(TcID = tcid, CardType = cardtype)
-                    fd = LogForm(tc)
-                    if fd.is_valid():
-                        data = fd.save(commit = False)
-                        #data.save(using = master)
-                        print(tcid, cardtype, master)
-                    else:
-                        print("INVALID", fd.errors)
-                except:
-                    pass
+        # updating tc info in parent master
+        print("Adding GUI TCs from " + release + " release into " + master + " release")
+        add_gui_tcs_in_given_release(serializer_gui, master)
 
-    print(c)
+        # store tc in master/DMC master if not present
+        print("Adding CLI TCs from " + release + " release into " + master + " release")
+        add_cli_tcs_in_given_release(infoserializer, master)
+
+        master = rootRelease
+
+        # store tc in rootRelease if not present
+        print("Adding GUI TCs from " + release + " release into " + master + " release")
+        add_gui_tcs_in_given_release(serializer_gui, master)
+
+        # store tc in rootRelease if not present
+        print("Adding CLI TCs from " + release + " release into " + master + " release")
+        add_cli_tcs_in_given_release(infoserializer, master)
+
     return HttpResponse("INSIDE SYNC TCS")
     
 
