@@ -15,6 +15,7 @@ import datetime
 from .forms import LogForm
 from itertools import chain
 from .new import rootRelease
+from .new import rootRelease
 
 def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
     Timestamp = datetime.datetime.now()
@@ -25,6 +26,66 @@ def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
         data.save(using = Release)
     else:
         print("INVALID", fd.errors)
+
+def sync_tcs(request):
+    ignore_db = ["TestDatabase", "2.3.0"]
+    for release in settings.DATABASES:
+        if release in ignore_db:
+            continue
+        if "master" in release.lower():
+            continue
+
+        if "dmc" in release.lower():
+            master = "DMC Master"
+        else:
+            master = "master"
+
+        print(release)
+        
+        infodata = TC_INFO.objects.using(release).all()
+        infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
+        c = 0
+
+        for tc in infoserializer.data:
+            tcid = tc["TcID"]
+            cardtype = tc["CardType"]
+
+            # store tc in master/DMC master if not present
+            singletc = TC_INFO.objects.using(master).filter(TcID = tcid, CardType = cardtype)
+            if len(singletc) == 0:
+                try:
+                    tc = TC_INFO.objects.using(release).get(TcID = tcid, CardType = cardtype)
+                    tc = TC_INFO_SERIALIZER(tc).data
+                    fd = TcInfoForm(tc)
+                    if fd.is_valid():
+                        data = fd.save(commit = False)
+                        data.save(using = master)
+                        print(tcid, cardtype, master)
+                        c+=1
+                    else:
+                        print("INVALID", fd.errors)
+                except:
+                    pass
+
+            # store tc in rootRelease if not present
+            master = rootRelease
+            singletc = TC_INFO.objects.using(master).filter(TcID = tcid, CardType = cardtype)
+            if len(singletc) == 0:
+                try:
+                    tc = TC_INFO.objects.using(release).get(TcID = tcid, CardType = cardtype)
+                    fd = LogForm(tc)
+                    if fd.is_valid():
+                        data = fd.save(commit = False)
+                        #data.save(using = master)
+                        print(tcid, cardtype, master)
+                    else:
+                        print("INVALID", fd.errors)
+                except:
+                    pass
+
+    print(c)
+    return HttpResponse("INSIDE SYNC TCS")
+    
 
 #attaching tcid to tcinfo row 
 def createInfoDict(data, Release):
