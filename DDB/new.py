@@ -1,20 +1,13 @@
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, JsonResponse
-#from django.db.models.functions import Trunc
+from django.http import HttpResponse
 
-from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER, TC_STATUS_GUI_SERIALIZER, \
-        LATEST_TC_STATUS_GUI_SERIALIZER, TC_INFO_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, \
-        APPLICABILITY_SERIALIZER, AUTOMATION_COUNT_SERIALIZER
-from .models import TC_INFO, TC_STATUS, LOGS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LATEST_TC_STATUS, APPLICABILITY, \
-        AUTOMATION_COUNT
-from .forms import TcInfoForm, AUTOMATION_COUNT_FORM
+from .serializers import AUTOMATION_COUNT_SERIALIZER
+from .models import TC_INFO, TC_INFO_GUI, AUTOMATION_COUNT
+from .forms import AUTOMATION_COUNT_FORM
 from django.db.models import Q
 
 import json, time, os, pytz
-from dp import settings
 import datetime
-from .forms import LogForm
-from itertools import chain
 
 rootRelease = "DCX-DMC-Master"
 
