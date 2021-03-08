@@ -14,6 +14,7 @@ from dp import settings
 import datetime
 from .forms import LogForm
 from itertools import chain
+from .new import rootRelease
 
 def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
     Timestamp = datetime.datetime.now()
@@ -239,27 +240,51 @@ def TC_INFO_GET_POST_VIEW(request, Release):
             # post request for master release
             if "dmc" in Release.lower():
                 master = dmcMaster
-            if Release != master and Release != "5.0.0":
+            if Release != master and Release != "TestDatabase":
                 data = TC_INFO.objects.using(master).filter(TcID = req['TcID']).filter(CardType = card)
                 if len(data) != 0:
                     errorMsg[master].append('Duplicate: ' + req['TcID'] + ' with ' + card)
                 else:
-                	serializer = TC_INFO_SERIALIZER(data, many = True)
-                	newData  = req
-                	newData = json.dumps(newData)
-                	newData = json.loads(newData)
-                	newData['CardType'] = card
-                	
-                	fd = TcInfoForm(newData)
-                
-                	if fd.is_valid():
-                	    data = fd.save(commit = False)
-                	    data.save(using = master)
-                	    
-                	    if "Activity" in req:
-                	        AD = req['Activity']
-                	        GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
-                
+                    serializer = TC_INFO_SERIALIZER(data, many = True)
+                    newData  = req
+                    newData = json.dumps(newData)
+                    newData = json.loads(newData)
+                    newData['CardType'] = card
+
+                    fd = TcInfoForm(newData)
+
+                    if fd.is_valid():
+                        data = fd.save(commit = False)
+                        data.save(using = master)
+
+                        if "Activity" in req:
+                            AD = req['Activity']
+                            GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, master)
+
+            # post request for dmc-dxc-master release
+            master = rootRelease
+            data = TC_INFO.objects.using(master).filter(TcID = req['TcID']).filter(CardType = card)
+            if len(data) == 0:
+                serializer = TC_INFO_SERIALIZER(data, many = True)
+                newData  = req
+                newData = json.dumps(newData)
+                newData = json.loads(newData)
+                newData['CardType'] = card
+
+                fd = TcInfoForm(newData)
+
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    data.save(using = master)
+                    update_automation_count("increaseTotal", "CLI")
+
+                    if newData["TcName"] != "TC NOT AUTOMATED":
+                        update_automation_count("increaseAutomated", "CLI")
+
+                    if "Activity" in req:
+                        AD = req['Activity']
+                        GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, master)
+
         return HttpResponse("SUCCESSFULLY UPDATED")
 
     elif request.method == "GET":
@@ -300,7 +325,7 @@ def TC_INFO_GET_POST_VIEW(request, Release):
 # Function to update TC INFO data
 def updateData(updatedData, data, Release):
     if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"]:
-        update_automation_count("increaseTotal", "CLI")
+        update_automation_count("increaseAutomated", "CLI")
 
     #print("\n\n\n updatedData",updatedData)
     data.TcID = updatedData['TcID']

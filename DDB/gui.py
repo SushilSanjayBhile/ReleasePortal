@@ -8,6 +8,7 @@ from django.db.models import Q
 
 from .forms import GuiInfoForm, LogForm, GuiStatusForm, GuiLatestStatusForm, GuiLogsForm
 import datetime
+from .new import rootRelease
 
 def GenerateGUILogData(userName, requestType, url, logData, tcInfoNum, Release):
     Timestamp = datetime.datetime.now()
@@ -83,6 +84,32 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 print(fd.errors)
 
         # post request for master release
+        if "dmc" in Release.lower():
+            master = dmcMaster
+        if Release != master and Release != "TestDatabase":
+            Release = master
+            conflictFlag = False
+
+            # post request for current release
+            data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = req["CardType"])
+            if len(data) != 0:
+                conflictFlag = True
+            else:
+                fd = GuiInfoForm(req)
+
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    data.save(using = Release)
+
+                    if "Activity" in req:
+                        AD = req['Activity']
+                        #GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
+                else:
+                    print(fd.errors)
+
+
+        #post data in dmc-dmc-masterrelease
+        master = rootRelease
         if Release != master and Release != "TestDatabase":
             Release = master
             conflictFlag = False
