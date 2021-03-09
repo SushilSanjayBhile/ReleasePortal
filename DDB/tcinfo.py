@@ -120,7 +120,7 @@ def WHOLE_TC_INFO(request, Release):
     if request.method == "GET":
         atd = {}
 
-        data = APPLICABILITY.objects.all()
+        data = APPLICABILITY.objects.all().using(rootRelesae)
         serializer = APPLICABILITY_SERIALIZER(data, many = True)
 
         for row in serializer.data:
@@ -665,6 +665,20 @@ def MULTIPLE_TC_UPDATION(request, Release):
 @csrf_exempt
 def GET_TC_INFO_BY_ID(request, Release, id, card):
     if request.method == "GET":
+        atd = {}
+
+        data = APPLICABILITY.objects.all().using(rootRelease)
+        serializer = APPLICABILITY_SERIALIZER(data, many = True)
+
+        for row in serializer.data:
+            pf = row["Platform"]
+            at = json.loads(row["ApplicableTCs"].replace("'", "\""))
+            if "CLI" in at:
+                for tc in at["CLI"]:
+                    if tc not in atd:
+                        atd[tc] = []
+                    atd[tc].append(pf)
+        #print(json.dumps(atd, indent = 2))
         infoData = TC_INFO.objects.using(Release).filter(TcID = id).get(CardType = card)
         activityData = LOGS.objects.using(Release).filter(TcID = id).filter(CardType = card)
 
@@ -682,6 +696,9 @@ def GET_TC_INFO_BY_ID(request, Release, id, card):
                 tcdata['StatusList'].append(status)
         except:
             return JsonResponse({'Not Found': "Record Not Found"}, status = 404)
+        print(tcdata["id"], "\n", atd)
+        if tcdata["id"] in atd:
+            tcdata["Platform"] = atd[tcdata["id"]]
         return HttpResponse(json.dumps(tcdata))
 
 @csrf_exempt
