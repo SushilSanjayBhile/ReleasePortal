@@ -14,8 +14,7 @@ from dp import settings
 import datetime
 from .forms import LogForm
 from itertools import chain
-from .new import rootRelease
-from .new import rootRelease
+from .new import rootRelease, update_automation_count
 
 def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
     Timestamp = datetime.datetime.now()
@@ -112,47 +111,9 @@ def createInfoDict(data, Release):
     infoDict = {}
 
     for row in data:
-        #d = TC_INFO_GUI.objects.using(Release).get(id = row["id"])
-        #sd = TC_INFO_GUI_SERIALIZER(d)
-        #updatedData = json.dumps(sd.data)
-        #updatedData = json.loads(updatedData)
-
-        #if updatedData["AutomatedTcName"] == "":
-        #    updatedData["AutomatedTcName"] = "TC NOT AUTOMATED"
-
-        #updateGuiData(updatedData, d, Release)
-                
         infoDict[row["id"]] = row
 
     return infoDict
-
-def updateGuiData(updatedData, data, Release):
-     data.TcID = updatedData['TcID']
-     data.id = updatedData['id']
-     data.Domain = updatedData['Domain']
-     data.SubDomain = updatedData['SubDomain']
-     data.Scenario = updatedData['Scenario']
-     data.Description = updatedData['Description']
-     data.Steps = updatedData['Steps']
-     data.ExpectedBehaviour = updatedData['ExpectedBehaviour']
-     data.Notes = updatedData['Notes']
-     data.CardType = updatedData['CardType']
-     data.ServerType = updatedData['ServerType']
-     data.WorkingStatus = updatedData['WorkingStatus']
-     data.Date = updatedData['Date']
-     data.Assignee = updatedData['Assignee']
-     data.Creator = updatedData['Creator']
-     data.Priority = updatedData['Priority']
-     data.Tag = updatedData['Tag']
-     data.AutomatedTcName = updatedData['AutomatedTcName']
-     data.BrowserName = updatedData['BrowserName']
-     data.stateUserMapping = updatedData['stateUserMapping']
-     data.applicable = updatedData['applicable']
-     data.OS = updatedData['OS']
-     data.UnapproveTCReason = updatedData['UnapproveTCReason']
-
-     data.save(using = Release)
-     return 1
 
 @csrf_exempt
 def WHOLE_TC_INFO(request, Release):

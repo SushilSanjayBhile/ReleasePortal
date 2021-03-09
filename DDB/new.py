@@ -94,23 +94,30 @@ def create_current_monday_record():
     else:
         print("Error: ", fd.errors)
 
+def get_all_weeks_records():
+    data = AUTOMATION_COUNT.objects.using(rootRelease).all()
+    serializer = AUTOMATION_COUNT_SERIALIZER(data, many = True)
+    return json.dumps(serializer.data)
+
 @csrf_exempt
 def automation_count_get_post_view(request):
     if request.method == "GET":
-        previous_monday = get_previous_monday_date()
-        monday_present = get_if_monday_present()
-
-        update_automation_count("increaseTotal", "GUI")
-        update_automation_count("increaseAutomated", "GUI")
-        update_automation_count("increaseTotal", "CLI")
-        update_automation_count("increaseAutomated", "CLI")
-
-        return HttpResponse("get method")
+        if get_if_monday_present() > 0:
+            return HttpResponse(get_all_weeks_records())
+        else:
+            create_current_monday_record()
+            return HttpResponse(get_all_weeks_records())
 
     if request.method == "POST":
         return HttpResponse("POST method")
 
 def update_automation_count(operation, interface):
+    # These are some sample function calls
+    # update_automation_count("increaseTotal", "GUI")
+    # update_automation_count("increaseAutomated", "GUI")
+    # update_automation_count("increaseTotal", "CLI")
+    # update_automation_count("increaseAutomated", "CLI")
+
     monday_present = get_if_monday_present()
 
     if monday_present == 0:
@@ -124,9 +131,17 @@ def update_automation_count(operation, interface):
                 oldRecord.TotalCli += 1
             if operation == "increaseAutomated":
                 oldRecord.AutomatedCli += 1
+            if operation == "decreaseTotal":
+                oldRecord.TotalCli -= 1
+            if operation == "decreaseAutomated":
+                oldRecord.AutomatedCli -= 1
         if interface == "GUI":
             if operation == "increaseTotal":
                 oldRecord.TotalGui += 1
             if operation == "increaseAutomated":
                 oldRecord.AutomatedGui += 1
+            if operation == "decreaseTotal":
+                oldRecord.TotalGui -= 1
+            if operation == "decreaseAutomated":
+                oldRecord.AutomatedGui -= 1
         oldRecord.save(using = rootRelease)
