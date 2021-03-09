@@ -97,16 +97,28 @@ def create_current_monday_record():
 def get_all_weeks_records():
     data = AUTOMATION_COUNT.objects.using(rootRelease).all()
     serializer = AUTOMATION_COUNT_SERIALIZER(data, many = True)
-    return json.dumps(serializer.data)
+    data = serializer.data
+    for i in range(len(data)):
+        if i < (len(data) - 1):
+            data[i]["totalCLIDelta"] = data[i + 1]["TotalCli"] - data[i]["TotalCli"]
+            data[i]["automatedCLIDelta"] = data[i + 1]["AutomatedCli"] - data[i]["AutomatedCli"]
+            data[i]["totalGUIDelta"] = data[i + 1]["TotalGui"] - data[i]["TotalGui"]
+            data[i]["automatedGUIDelta"] = data[i + 1]["AutomatedGui"] - data[i]["AutomatedGui"]
+        else:
+            data[i]["totalCLIDelta"] = data[i]["TotalCli"]
+            data[i]["automatedCLIDelta"] = data[i]["AutomatedCli"]
+            data[i]["totalGUIDelta"] = data[i]["TotalGui"]
+            data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"]
+    return data
 
 @csrf_exempt
 def automation_count_get_post_view(request):
     if request.method == "GET":
         if get_if_monday_present() > 0:
-            return HttpResponse(get_all_weeks_records())
+            return HttpResponse(json.dumps(get_all_weeks_records()))
         else:
             create_current_monday_record()
-            return HttpResponse(get_all_weeks_records())
+            return HttpResponse(json.dumps(get_all_weeks_records()))
 
     if request.method == "POST":
         return HttpResponse("POST method")
