@@ -30,6 +30,7 @@ class TC_INFO(models.Model):
     Platform = ArrayField(models.CharField(max_length = 10, blank = True, default = "UNKNOWN"), blank = True, default = list)
     WorkingStatus = models.CharField(max_length = 50, blank = True, default = "CREATED")
     Date = models.DateTimeField(auto_now = True, blank = True)
+    AutomationDate = models.DateTimeField(auto_now = False, blank = True,null = True)
     Assignee = models.CharField(max_length = 50, blank = True, default = "UNKNOWN")
     Creator = models.CharField(max_length = 50, blank = True, default = "ANONYMOUS")
     Tag = models.CharField(max_length = 20, blank = True, default = "NO TAG")
@@ -58,6 +59,7 @@ class TC_INFO_GUI(models.Model):
     ServerType = ArrayField(models.CharField(max_length = 10, blank = True, default=None), blank = True)
     WorkingStatus = models.CharField(max_length = 50, blank = True, default = "CREATED")
     Date = models.DateTimeField(auto_now = True, blank = True)
+    AutomationDate = models.DateTimeField(auto_now = False, blank = True,null = True)
     Assignee = models.CharField(max_length = 50, blank = True, default = "UNKNOWN")
     Creator = models.CharField(max_length = 50, blank = True, default = "ANONYMOUS")
     Tag = models.CharField(max_length = 20, blank = True, default = "NO TAG")
@@ -70,6 +72,7 @@ class TC_INFO_GUI(models.Model):
     applicable = models.TextField(blank = True, null = True, default = 'Applicable')
     OS = models.TextField(blank = True, null = True, default = 'NO OS')
     UnapproveTCReason = models.TextField(blank = True, default = "NO REASON PROVIDED")
+    Platform = ArrayField(models.CharField(max_length = 10, blank = True, default = "UNKNOWN"), blank = True, default = list)
 
     def __str__(self):
         return self.TcID

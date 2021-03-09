@@ -6,6 +6,8 @@ from .forms import APPLICABILITY_FORM
 from .models import TC_INFO, TC_INFO_GUI, APPLICABILITY
 from .serializers import APPLICABILITY_SERIALIZER, TC_INFO_SERIALIZER
 
+from .new import rootRelease
+
 @csrf_exempt
 def GetPlatformList(request):
     platformList = []
@@ -87,7 +89,6 @@ def Applicable(request):
 
             for tc in tcs:
                 platformWiseDict[interface].append(tc)
-
             try:
                 flag = 1
                 oldData = {}
@@ -96,7 +97,6 @@ def Applicable(request):
 
                 for i in serializer.data:
                     oldData[i] = serializer.data[i]
-
                 oldData["ApplicableTCs"] = json.loads(oldData["ApplicableTCs"].replace("\'","\""))
 
                 for interface in oldData["ApplicableTCs"]:
@@ -137,10 +137,10 @@ def Applicable(request):
         return JsonResponse({'Data': serializer.data}, status = 200)
 
 def updateApplicableeTCs(updatedData, data):
-     data.ApplicableTCs = updatedData["ApplicableTCs"]
+    data.ApplicableTCs = updatedData["ApplicableTCs"]
 
-     data.save()
-     return 1
+    data.save(using = rootRelease)
+    return 1
 
 @csrf_exempt
 def Applicable1(request):

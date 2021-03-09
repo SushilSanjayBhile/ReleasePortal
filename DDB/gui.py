@@ -2,8 +2,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 import json, time
 
-from .serializers import TC_INFO_GUI_SERIALIZER, LOG_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, GUI_LOGS_SERIALIZER
-from .models import TC_INFO_GUI, LOGS, GUI_LATEST_TC_STATUS, LOGSGUI, GUI_TC_STATUS
+from .serializers import TC_INFO_GUI_SERIALIZER, LOG_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, GUI_LOGS_SERIALIZER, \
+        APPLICABILITY_SERIALIZER
+from .models import TC_INFO_GUI, LOGS, GUI_LATEST_TC_STATUS, LOGSGUI, GUI_TC_STATUS, APPLICABILITY
 from django.db.models import Q
 
 from .forms import GuiInfoForm, LogForm, GuiStatusForm, GuiLatestStatusForm, GuiLogsForm
@@ -399,6 +400,20 @@ def GUI_TC_STATUS_GET_POST_VIEW(request, Release):
 @csrf_exempt
 def WHOLE_GUI_TC_INFO(request, Release):
     if request.method == "GET":
+        atd = {}
+
+        data = APPLICABILITY.objects.all()
+        serializer = APPLICABILITY_SERIALIZER(data, many = True)
+
+        for row in serializer.data:
+            pf = row["Platform"]
+            at = json.loads(row["ApplicableTCs"].replace("'", "\""))
+            if "GUI" in at:
+                for tc in at["GUI"]:
+                    if tc not in atd:
+                        atd[tc] = []
+                    atd[tc].append(pf)
+
         startTime = time.time()
         AllInfoData = []
         statusDict = {}
@@ -539,6 +554,9 @@ def WHOLE_GUI_TC_INFO(request, Release):
             except:
                 info["StatusList"] = {}
                 info["CurrentStatus"] = {}
+
+            if info["id"] in atd:
+                info["Platform"] = atd[info["id"]]
 
             AllInfoData.append(info)
 
