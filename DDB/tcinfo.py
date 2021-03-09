@@ -303,25 +303,26 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                 errorMsg[Release].append('Duplicate: ' + req['TcID'] + ' with ' + card)
                 conflictFlag = True
             else:
-            	serializer = TC_INFO_SERIALIZER(data, many = True)
-            	newData  = req
-            	newData = json.dumps(newData)
-            	newData = json.loads(newData)
-            	newData['CardType'] = card
-            	fd = TcInfoForm(newData)
+                serializer = TC_INFO_SERIALIZER(data, many = True)
+                newData  = req
+                newData = json.dumps(newData)
+                newData = json.loads(newData)
+                newData['CardType'] = card
+                fd = TcInfoForm(newData)
 
-            	if fd.is_valid():
-            	    data = fd.save(commit = False)
-            	    data.save(using = Release)
-            	    
-            	    if "Activity" in req:
-            	        AD = req['Activity']
-            	        GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    print(req['TcID'], card, Release)
+                    data.save(using = Release)
+
+                    if "Activity" in req:
+                        AD = req['Activity']
+                        GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
 
             # post request for master release
             if "dmc" in Release.lower():
                 master = dmcMaster
-            if Release != master and Release != "TestDatabase":
+            if Release != master and Release != "TestDatabase" and "master" not in Release.lower():
                 data = TC_INFO.objects.using(master).filter(TcID = req['TcID']).filter(CardType = card)
                 if len(data) != 0:
                     errorMsg[master].append('Duplicate: ' + req['TcID'] + ' with ' + card)
@@ -337,6 +338,7 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                     if fd.is_valid():
                         data = fd.save(commit = False)
                         data.save(using = master)
+                        print(req['TcID'], card, master)
 
                         if "Activity" in req:
                             AD = req['Activity']
@@ -357,6 +359,7 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                 if fd.is_valid():
                     data = fd.save(commit = False)
                     data.save(using = master)
+                    print(req['TcID'], card, master)
                     update_automation_count("increaseTotal", "CLI")
 
                     if newData["TcName"] != "TC NOT AUTOMATED":
