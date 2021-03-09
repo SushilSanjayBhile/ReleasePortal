@@ -369,10 +369,11 @@ def TC_INFO_GET_POST_VIEW(request, Release):
 
 # Function to update TC INFO data
 def updateData(updatedData, data, Release):
-    if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"]:
+    if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"] and Release == rootRelease:
         update_automation_count("increaseAutomated", "CLI")
+    if data.TcName != "TC NOT AUTOMATED" and updatedData["TcName"] == "TC NOT AUTOMATED" and Release == rootRelease:
+        update_automation_count("decreaseAutomated", "CLI")
 
-    #print("\n\n\n updatedData",updatedData)
     data.TcID = updatedData['TcID']
     data.id = updatedData['id']
     data.TcName = updatedData['TcName']
