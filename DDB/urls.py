@@ -32,8 +32,10 @@ urlpatterns = [
 
     #Automation Count
     path('automationCount/<str:Release>', AutomationCount),
+    path('automationCountForGUI/<str:Release>', AutomationCountForGUI),
     path('applicabilityData/<str:Release>', ApplicabilityData),
     path('automationCountByDomain/<str:Release>/<str:Platform>', AutomationCountByDomain),
+    path('automationCountByDomainForGUI/<str:Release>/<str:Platform>', AutomationCountByDomainForGUI),
     path('automation/', automation_count_get_post_view),
 
     #applicability api's

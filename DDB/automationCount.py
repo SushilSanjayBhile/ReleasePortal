@@ -10,11 +10,6 @@ from .serializers import  TC_INFO_SERIALIZER,APPLICABILITY_SERIALIZER,TC_INFO_GU
 from .tcinfo import updateData
 from .new import rootRelease
 
-@csrf_exempt
-def checkTCCount(request, Release):
-    print("hello")
-
-
 
 @csrf_exempt
 def AutomationCount(request, Release):
@@ -57,7 +52,23 @@ def AutomationCount(request, Release):
                     if tc["TcName"] != "TC NOT AUTOMATED":
                         dict1[platform][key_automated] += 1
 
-    return JsonResponse({'Data': dict1}, status = 200)
+    
+    dict2 = {}
+    tempList = []
+
+    for platform in dict1:
+            for data in dict1[platform]:
+                print(platform,data,dict1[platform][data])
+                dict2["Platform"] = platform
+                dict2[data] =  dict1[platform][data]
+            tempList.append(dict2)
+            dict2 = {}
+    print("\n\n",tempList)
+    #dict2.push(tempList)
+
+    print(dict2)
+
+    return JsonResponse({'Data': tempList}, status = 200)
 
 
 @csrf_exempt
@@ -65,10 +76,10 @@ def AutomationCountByDomain(request,Release,Platform):
     
     release = "DCX-DMC-Master"
 
-    if Platform == "DCX" or Platform == "DSS" or Platform == "OCP":
-        release = "master"
-    elif Platform  == "DMC":
-        release = "DMC Master"
+   # if Platform == "DCX" or Platform == "DSS" or Platform == "OCP":
+   #     release = "master"
+   # elif Platform  == "DMC":
+   #     release = "DMC Master"
     
     domains = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(release).all()
     
@@ -79,66 +90,70 @@ def AutomationCountByDomain(request,Release,Platform):
     priority = infodata.values('Priority').distinct()
 
     dict1 = {}
-    for d in domains:
-        dom = d["Domain"]
-        if dom not in dict1:
-            dict1[dom] = {}
 
-    for i in dict1:
-        if "Total_TCs" not in dict1[i]:
-            dict1[i]["Total_TCs"] = 0
-        if "Automated_TCs"  not in dict1[i]:
-            dict1[i]["Automated_TCs"] = 0
-        if "Automation_Perc" not in dict1[i]:
-            dict1[i]["Automation_Perc"] = 0
+    for tc in infoserializer.data:
+        if len(tc["Platform"]) >= 1:
+            for platform in tc["Platform"]:
+                if platform not in dict1:
+                    dict1[platform] = {}
+                dom = tc["Domain"]
+                if dom not in dict1[platform]:
+                    dict1[platform][dom] = {}
+                if "Total_TCs" not in dict1[platform][dom]:
+                    dict1[platform][dom]["Total_TCs"] = 1
+                else:
+                    dict1[platform][dom]["Total_TCs"] += 1
+                if "Automated_TCs" not in dict1[platform][dom]:
+                    dict1[platform][dom]["Automated_TCs"] = 0
+                if tc["TcName"] != "TC NOT AUTOMATED":
+                    dict1[platform][dom]["Automated_TCs"] += 1
+                #print(dict1,"\n\n")
 
-        for j in priority:
-            prior = j["Priority"]
-            if prior == "P0" or prior == "P1":
-                if prior not in dict1:
-                    dict1[i][prior] = {"Total":0,"Automated":0}
+                prior = tc["Priority"]
+                dict1[platform][dom]["P0_Total"] = 0
+                dict1[platform][dom]["P1_Total"] = 0
+                dict1[platform][dom]["P0_Automated"] = 0
+                dict1[platform][dom]["P1_Automated"] = 0
+                if prior == "P0" or prior == "P1":
+                    key_total = prior + "_Total"
+                     
+                    if key_total not in dict1[platform][dom]:
+                        dict1[platform][dom][key_total] = 1
+                    else:
+                        dict1[platform][dom][key_total] += 1
 
-    for d in domains:
-        dom = d["Domain"]
-        print(dom)
-        Total_TCs =  TC_INFO.objects.using(release).filter(Domain = dom)
-        Total_TCs =  TC_INFO_SERIALIZER(Total_TCs, many = True)
+                    key_automated = prior + "_Automated"
+                    if key_automated not in dict1[platform][dom]:
+                        dict1[platform][dom][key_automated] = 0
+                    if tc["TcName"] != "TC NOT AUTOMATED":
+                        dict1[platform][dom][key_automated] += 1
 
-        dict1[dom]["Total_TCs"] = len(Total_TCs.data)
-        
-        Automated_TCs =  TC_INFO.objects.using(release).filter(Domain = dom).filter(~Q(TcName = 'TC NOT AUTOMATED'))
-        Automated_TCs =  TC_INFO_SERIALIZER(Automated_TCs, many = True)
-        dict1[dom]["Automated_TCs"] = len(Automated_TCs.data) 
-        
-        P0_TCs =  TC_INFO.objects.using(release).filter(Domain = dom).filter(Priority = "P0")
-        P0_TCs =  TC_INFO_SERIALIZER(P0_TCs, many = True)
-        dict1[dom]['P0']["Total"] = len(P0_TCs.data)
-        
-        P0_TCs_Automated =  TC_INFO.objects.using(release).filter(Domain = dom).filter(Priority = "P0").filter(~Q(TcName = "TC NOT AUTOMATED"))
-        P0_TCs_Automated =  TC_INFO_SERIALIZER(P0_TCs_Automated, many = True)
-        dict1[dom]['P0']["Automated"] = len(P0_TCs_Automated.data)
-        
-        P1_TCs =  TC_INFO.objects.using(release).filter(Domain = dom).filter(Priority = "P1")
-        P1_TCs =  TC_INFO_SERIALIZER(P1_TCs, many = True)
-        dict1[dom]["P1"]["Total"] = len(P1_TCs.data)
-        
-        P1_TCs_Automated =  TC_INFO.objects.using(release).filter(Domain = dom).filter(Priority = "P1").filter(~Q(TcName = "TC NOT AUTOMATED"))
-        P1_TCs_Automated =  TC_INFO_SERIALIZER(P1_TCs_Automated, many = True)
-        dict1[dom]["P1"]["Automated"] = len(P1_TCs_Automated.data)
-
-        #print(dict1.keys())
-
-
-
-        print("\n")
+                #print(tc)
 
     print(dict1)
+    dict2 = {}
+    tempList = []
+
+    for platform in dict1:
+        for dom in dict1[platform]:
+            for data in dict1[platform][dom]:
+                print(platform,dom,data,dict1[platform][dom][data])
+                dict2["Platform"] = platform
+                dict2["Domain"] = dom
+                dict2[data] =  dict1[platform][dom][data]
+            tempList.append(dict2)
+            dict2 = {}
+    print("\n\n",tempList)
+    #dict2.push(tempList)
+
+    print(dict2)
+        
 
 
 
     #for info in infoserializer.data:
     #    print(info)
-    return JsonResponse({'Data': dict1}, status = 200)
+    return JsonResponse({'Data': tempList}, status = 200)
 
 
 @csrf_exempt
@@ -173,6 +188,144 @@ def ApplicabilityData(request,Release):
             updateData(updatedData, data, Release)
             #info["Platform"] = atd[info["id"]]
     return JsonResponse({'Data': 'Success'}, status = 200)
+
+
+
+@csrf_exempt
+def AutomationCountForGUI(request, Release):
+    
+    platformList = []
+    release = Release
+
+    infodata = TC_INFO_GUI.objects.all().using(rootRelease)
+    priority =  infodata.values('Priority').distinct()
+    dict1 = {}
+
+    infoserializer = TC_INFO_GUI_SERIALIZER(infodata, many = True)
+    for tc in infoserializer.data:
+        if len(tc["Platform"]) >= 1:
+            for platform in tc["Platform"]:
+                if platform not in dict1:
+                    dict1[platform] = {}
+
+                if "Total_TCs" not in dict1[platform]:
+                    dict1[platform]["Total_TCs"] = 0
+                else:
+                    dict1[platform]["Total_TCs"] += 1
+
+                if "Automated_TCs" not in dict1[platform]:
+                    dict1[platform]["Automated_TCs"] = 0
+                if tc["TcName"] != "TC NOT AUTOMATED":
+                    dict1[platform]["Automated_TCs"] += 1
+
+                prior = tc["Priority"]
+                if prior == "P0" or prior == "P1":
+                    key_total = prior + "_Total"
+                    if key_total not in dict1[platform]:
+                        dict1[platform][key_total] = 1
+                    else:
+                        dict1[platform][key_total] += 1
+
+                    key_automated = prior + "_Automated"
+                    if key_automated not in dict1[platform]:
+                        dict1[platform][key_automated] = 0
+                    if tc["TcName"] != "TC NOT AUTOMATED":
+                        dict1[platform][key_automated] += 1
+
+    
+    dict2 = {}
+    tempList = []
+
+    for platform in dict1:
+            for data in dict1[platform]:
+                print(platform,data,dict1[platform][data])
+                dict2["Platform"] = platform
+                dict2[data] =  dict1[platform][data]
+            tempList.append(dict2)
+            dict2 = {}
+
+    print(dict2)
+
+    return JsonResponse({'Data': tempList}, status = 200)
+
+
+@csrf_exempt
+def AutomationCountByDomainForGUI(request,Release,Platform):
+    
+    release = "DCX-DMC-Master"
+
+   # if Platform == "DCX" or Platform == "DSS" or Platform == "OCP":
+   #     release = "master"
+   # elif Platform  == "DMC":
+   #     release = "DMC Master"
+    
+    
+    infodata = TC_INFO_GUI.objects.all().using(release).filter(~Q(Domain = "GUI"))
+    infoserializer = TC_INFO_GUI_SERIALIZER(infodata, many = True)
+    
+    priority = infodata.values('Priority').distinct()
+
+    dict1 = {}
+
+    for tc in infoserializer.data:
+        print(tc,"GUI")
+        if len(tc["Platform"]) >= 1:
+            for platform in tc["Platform"]:
+                if platform not in dict1:
+                    dict1[platform] = {}
+                dom = tc["Domain"]
+                if dom not in dict1[platform]:
+                    dict1[platform][dom] = {}
+                if "Total_TCs" not in dict1[platform][dom]:
+                    dict1[platform][dom]["Total_TCs"] = 1
+                else:
+                    dict1[platform][dom]["Total_TCs"] += 1
+                if "Automated_TCs" not in dict1[platform][dom]:
+                    dict1[platform][dom]["Automated_TCs"] = 0
+                if tc["TcName"] != "TC NOT AUTOMATED":
+                    dict1[platform][dom]["Automated_TCs"] += 1
+                #print(dict1,"\n\n")
+
+                prior = tc["Priority"]
+                dict1[platform][dom]["P0_Total"] = 0
+                dict1[platform][dom]["P1_Total"] = 0
+                dict1[platform][dom]["P0_Automated"] = 0
+                dict1[platform][dom]["P1_Automated"] = 0
+                if prior == "P0" or prior == "P1":
+                    key_total = prior + "_Total"
+                     
+                    if key_total not in dict1[platform][dom]:
+                        dict1[platform][dom][key_total] = 1
+                    else:
+                        dict1[platform][dom][key_total] += 1
+
+                    key_automated = prior + "_Automated"
+                    if key_automated not in dict1[platform][dom]:
+                        dict1[platform][dom][key_automated] = 0
+                    if tc["TcName"] != "TC NOT AUTOMATED":
+                        dict1[platform][dom][key_automated] += 1
+
+                #print(tc)
+
+    print(dict1)
+    dict2 = {}
+    tempList = []
+
+    for platform in dict1:
+        for dom in dict1[platform]:
+            for data in dict1[platform][dom]:
+                print(platform,dom,data,dict1[platform][dom][data])
+                dict2["Platform"] = platform
+                dict2["Domain"] = dom
+                dict2[data] =  dict1[platform][dom][data]
+            tempList.append(dict2)
+            dict2 = {}
+    print("\n\n",tempList)
+    print(dict2)
+
+    #for info in infoserializer.data:
+    #    print(info)
+    return JsonResponse({'Data': tempList}, status = 200)
 
 
 
