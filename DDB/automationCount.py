@@ -34,7 +34,7 @@ def AutomationCount(request, Release):
                     dict1[platform] = {}
 
                 if "Total_TCs" not in dict1[platform]:
-                    dict1[platform]["Total_TCs"] = 1
+                    dict1[platform]["Total_TCs"] = 0
                 else:
                     dict1[platform]["Total_TCs"] += 1
 
@@ -57,8 +57,7 @@ def AutomationCount(request, Release):
                     if tc["TcName"] != "TC NOT AUTOMATED":
                         dict1[platform][key_automated] += 1
 
-    print(json.dumps(dict1, indent=2))
-    return JsonResponse({'Data': 'Success'}, status = 200)
+    return JsonResponse({'Data': dict1}, status = 200)
 
 
 @csrf_exempt
