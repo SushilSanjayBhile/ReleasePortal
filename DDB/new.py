@@ -100,15 +100,17 @@ def get_all_weeks_records():
     data = serializer.data
     for i in range(len(data)):
         if i < (len(data) - 1):
-            data[i]["totalCLIDelta"] = data[i + 1]["TotalCli"] - data[i]["TotalCli"]
-            data[i]["automatedCLIDelta"] = data[i + 1]["AutomatedCli"] - data[i]["AutomatedCli"]
-            data[i]["totalGUIDelta"] = data[i + 1]["TotalGui"] - data[i]["TotalGui"]
-            data[i]["automatedGUIDelta"] = data[i + 1]["AutomatedGui"] - data[i]["AutomatedGui"]
+            data[i]["totalCLIDelta"] = data[i]["TotalCli"] - data[i + 1]["TotalCli"]
+            data[i]["automatedCLIDelta"] = data[i]["AutomatedCli"] - data[i + 1]["AutomatedCli"]
+            data[i]["totalGUIDelta"] = data[i]["TotalGui"] - data[i + 1]["TotalGui"]
+            data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"] - data[i + 1]["AutomatedGui"]
         else:
             data[i]["totalCLIDelta"] = data[i]["TotalCli"]
             data[i]["automatedCLIDelta"] = data[i]["AutomatedCli"]
             data[i]["totalGUIDelta"] = data[i]["TotalGui"]
             data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"]
+        data[i]["automation_perc_cli"] = round(data[i]["AutomatedCli"] * 100 / data[i]["TotalCli"], 2)
+        data[i]["automation_perc_gui"] = round(data[i]["AutomatedGui"] * 100 / data[i]["TotalGui"], 2)
     return data
 
 @csrf_exempt
