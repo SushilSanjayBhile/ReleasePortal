@@ -20,6 +20,7 @@ from .createRelease import mergeDB
 from .removeReleaseResults import  removeOldReleaseData
 from .applicability import Applicable, AddPlatform,GetPlatformList, GetPlatformWiseTCList
 from .automationCount import * 
+from .domain_subdomain import get_domain_subdomain_list
 
 # my scripts
 from .cleanup import RemoveStatus
@@ -27,6 +28,7 @@ from .migrate import Migrate
 from .new import automation_count_get_post_view
 
 urlpatterns = [
+    path ('getdomainsubdomainlist/<str:release>/<str:interface>', get_domain_subdomain_list),
 
     #Automation Count
     path('automationCount/<str:Release>', AutomationCount),
