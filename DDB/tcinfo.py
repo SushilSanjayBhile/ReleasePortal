@@ -7,7 +7,7 @@ from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZE
         LATEST_TC_STATUS_GUI_SERIALIZER, TC_INFO_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, \
         APPLICABILITY_SERIALIZER
 from .models import TC_INFO, TC_STATUS, LOGS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LATEST_TC_STATUS, APPLICABILITY
-from .forms import TcInfoForm
+from .forms import TcInfoForm, GuiInfoForm
 from django.db.models import Q
 
 from dp import settings
@@ -26,7 +26,7 @@ def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
     else:
         print("INVALID", fd.errors)
 
-def add_cli_tcs_in_given_release(infoserializer, master):
+def add_cli_tcs_in_given_release(infoserializer, master, release):
     for tc in infoserializer.data:
         tcid = tc["TcID"]
         cardtype = tc["CardType"]
@@ -45,7 +45,7 @@ def add_cli_tcs_in_given_release(infoserializer, master):
             except:
                 pass
 
-def add_gui_tcs_in_given_release(serializer, master):
+def add_gui_tcs_in_given_release(serializer, master, release):
     for gui in serializer.data:
         tcid = gui["TcID"]
         card = gui["CardType"]
@@ -54,8 +54,9 @@ def add_gui_tcs_in_given_release(serializer, master):
         singledata = TC_INFO_GUI.objects.using(master).filter(TcID = tcid, CardType = card, BrowserName = browsername)
         if len(singledata) == 0:
             try:
-                tc = TC_INFO_GUI.objects.using(master).filter(TcID = tcid, CardType = card, BrowserName = browsername)
+                tc = TC_INFO_GUI.objects.using(release).get(TcID = tcid, CardType = card, BrowserName = browsername)
                 tc = TC_INFO_GUI_SERIALIZER(tc).data
+                fd = GuiInfoForm(tc)
                 if fd.is_valid():
                     data = fd.save(commit = False)
                     data.save(using = master)
@@ -87,21 +88,21 @@ def sync_tcs(request):
 
         # updating tc info in parent master
         print("Adding GUI TCs from " + release + " release into " + master + " release")
-        add_gui_tcs_in_given_release(serializer_gui, master)
+        add_gui_tcs_in_given_release(serializer_gui, master, release)
 
         # store tc in master/DMC master if not present
         print("Adding CLI TCs from " + release + " release into " + master + " release")
-        add_cli_tcs_in_given_release(infoserializer, master)
+        add_cli_tcs_in_given_release(infoserializer, master, release)
 
         master = rootRelease
 
         # store tc in rootRelease if not present
         print("Adding GUI TCs from " + release + " release into " + master + " release")
-        add_gui_tcs_in_given_release(serializer_gui, master)
+        add_gui_tcs_in_given_release(serializer_gui, master, release)
 
         # store tc in rootRelease if not present
         print("Adding CLI TCs from " + release + " release into " + master + " release")
-        add_cli_tcs_in_given_release(infoserializer, master)
+        add_cli_tcs_in_given_release(infoserializer, master, release)
 
     return HttpResponse("INSIDE SYNC TCS")
     
