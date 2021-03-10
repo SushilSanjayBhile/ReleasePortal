@@ -110,10 +110,15 @@ def AutomationCountByDomain(request,Release,Platform):
                 #print(dict1,"\n\n")
 
                 prior = tc["Priority"]
-                #dict1[platform][dom]["P0_Total"] = 0
-                #dict1[platform][dom]["P1_Total"] = 0
-                #dict1[platform][dom]["P0_Automated"] = 0
-                #dict1[platform][dom]["P1_Automated"] = 0
+                if "P0_Total" not in dict1[platform][dom]:
+                    dict1[platform][dom]["P0_Total"] = 0
+                if "P1_Total" not in dict1[platform][dom]:
+                    dict1[platform][dom]["P1_Total"] = 0
+                if "P0_Automated" not in dict1[platform][dom]:
+                    dict1[platform][dom]["P0_Automated"] = 0
+                if "P1_Automated" not in dict1[platform][dom]:
+                    dict1[platform][dom]["P1_Automated"] = 0
+
                 if prior == "P0" or prior == "P1":
                     key_total = prior + "_Total"
                      
