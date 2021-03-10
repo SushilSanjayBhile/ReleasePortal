@@ -273,7 +273,8 @@ def TC_INFO_GET_POST_VIEW(request, Release):
 
                 if fd.is_valid():
                     data = fd.save(commit = False)
-                    data.save(using = Release)
+                    if "master" not in Release:
+                        data.save(using = Release)
 
                     if "Activity" in req:
                         AD = req['Activity']

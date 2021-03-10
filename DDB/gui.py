@@ -77,7 +77,8 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
 
             if fd.is_valid():
                 data = fd.save(commit = False)
-                data.save(using = Release)
+                if "master" not in Release:
+                    data.save(using = Release)
 
                 d = TC_INFO_GUI.objects.using(Release).get(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = req["CardType"])
                 dSer = TC_INFO_GUI_SERIALIZER(d)
