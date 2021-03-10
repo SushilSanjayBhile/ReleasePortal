@@ -66,7 +66,7 @@ def add_gui_tcs_in_given_release(serializer, master):
                 pass
 
 def sync_tcs(request):
-    ignore_db = ["TestDatabase", "2.3.0"]
+    ignore_db = ["TestDatabase", "2.3.0", "Spektra 2.4"]
     for release in settings.DATABASES:
         if release in ignore_db:
             continue
