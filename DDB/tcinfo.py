@@ -120,7 +120,7 @@ def WHOLE_TC_INFO(request, Release):
     if request.method == "GET":
         atd = {}
 
-        data = APPLICABILITY.objects.all().using(rootRelesae)
+        data = APPLICABILITY.objects.all().using(rootRelease)
         serializer = APPLICABILITY_SERIALIZER(data, many = True)
 
         for row in serializer.data:
