@@ -51,22 +51,15 @@ def AutomationCount(request, Release):
                         dict1[platform][key_automated] = 0
                     if tc["TcName"] != "TC NOT AUTOMATED":
                         dict1[platform][key_automated] += 1
-
-    
     dict2 = {}
     tempList = []
 
     for platform in dict1:
             for data in dict1[platform]:
-                print(platform,data,dict1[platform][data])
                 dict2["Platform"] = platform
                 dict2[data] =  dict1[platform][data]
             tempList.append(dict2)
             dict2 = {}
-    print("\n\n",tempList)
-    #dict2.push(tempList)
-
-    print(dict2)
 
     return JsonResponse({'Data': tempList}, status = 200)
 

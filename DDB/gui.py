@@ -362,14 +362,12 @@ def WHOLE_GUI_TC_INFO(request, Release):
                 if "Applicable" not in updatedData["applicable"]:
                     updatedData["applicable"] = "Applicable"
                     updateGuiTcInfo(updatedData, data, Release)
-                print("count ",c)
             except:
                 pass
 
         infodataUpdate1 = TC_INFO_GUI.objects.all().using(Release).filter(stateUserMapping = "{\"CREATED\":\"DEFAULT\"}")
         infoserializerUpdate1 = TC_INFO_GUI_SERIALIZER(infodataUpdate1, many = True)
         c = 0
-        print("Started to update")
     
         for i in infoserializerUpdate1.data:
                 break
@@ -388,10 +386,8 @@ def WHOLE_GUI_TC_INFO(request, Release):
                     SUM = json.dumps(updatedData2["stateUserMapping"])
                     if "CREATED" in SUM:
                         c+=1
-                        print("INSIDE IF", len(infoserializerUpdate1.data),  c)
                         updatedData2["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\",\"Automation Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
                         updateGuiTcInfo(data1, updatedData2, Release)
-        print("DONE")
 
         if Applicable != 'None':
             if "," in Applicable:

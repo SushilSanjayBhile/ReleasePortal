@@ -72,6 +72,17 @@ def AddPlatform(request, Platform):
     else:
         return JsonResponse({'Error': "Platform " + Platform + " already exists"}, status = 400)
 
+def update_rootRelease(request):
+    data = APPLICABILITY.objects.all()
+    serializer = APPLICABILITY_SERIALIZER(data, many = True)
+
+    for i in serializer.data:
+        fd = APPLICABILITY_FORM(i)
+        if fd.is_valid():
+            data = fd.save(commit = False)
+            #data.save(using = rootRelease)
+    return HttpResponse("DONE")
+
 @csrf_exempt
 def Applicable(request):
     if request.method == "POST":
@@ -115,8 +126,8 @@ def Applicable(request):
             if flag == 0:
                 fd = APPLICABILITY_FORM(finalData)
                 if fd.is_valid():
-                    print("VALID FORM DATA", platformWiseDict)
-                    fd.save()
+                    data = fd.save(commit = False)
+                    data.save(using = rootRelease)
                 else:
                     print('error', fd.errors)
             elif flag == 1:
