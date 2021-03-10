@@ -66,6 +66,8 @@ def add_gui_tcs_in_given_release(serializer, master, release):
                 pass
 
 def sync_tcs(request):
+    return HttpResponse("UNCOMMENT CODE")
+
     ignore_db = ["TestDatabase", "2.3.0", "Spektra 2.4"]
     for release in settings.DATABASES:
         if release in ignore_db:
@@ -259,6 +261,7 @@ def TC_INFO_GET_POST_VIEW(request, Release):
         req['stateUserMapping'] = json.dumps(req['stateUserMapping'])
 
         for card in cards:
+            flag = 0
             # post request for current release
             data = TC_INFO.objects.using(Release).filter(TcID = req['TcID']).filter(CardType = card)
             if len(data) != 0:
@@ -275,6 +278,7 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                 if fd.is_valid():
                     data = fd.save(commit = False)
                     if "master" not in Release:
+                        flag = 1
                         data.save(using = Release)
 
                     if "Activity" in req:
@@ -302,6 +306,7 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                     if fd.is_valid():
                         data = fd.save(commit = False)
                         data.save(using = master)
+                        flag = 1
 
                         if "Activity" in req:
                             AD = req['Activity']
@@ -322,14 +327,17 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                 if fd.is_valid():
                     data = fd.save(commit = False)
                     data.save(using = master)
-                    update_automation_count("increaseTotal", "CLI")
-
-                    if newData["TcName"] != "TC NOT AUTOMATED":
-                        update_automation_count("increaseAutomated", "CLI")
+                    flag = 1
 
                     if "Activity" in req:
                         AD = req['Activity']
                         GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, master)
+
+            if flag == 1:
+                update_automation_count("increaseTotal", "CLI")
+
+                if newData["TcName"] != "TC NOT AUTOMATED":
+                    update_automation_count("increaseAutomated", "CLI")
 
         return HttpResponse("SUCCESSFULLY UPDATED")
 
@@ -419,7 +427,6 @@ def updateStatusData(updatedData, data, Release):
 
 def TcCountByFilter(request, Release):
     ##UNCOMMENT FROM BELOW
-    print("FETCHING ALL TC INFO")
     infodata = TC_INFO.objects.using(Release).all()
     ser = TC_INFO_SERIALIZER(infodata, many = True)
 
@@ -447,10 +454,10 @@ def TcCountByFilter(request, Release):
 
             diction[i["TcID"]]["id"][i["Priority"]] = i["id"]
     c = 0
-    for i in diction:
-        if len(diction[i]["id"]) == 1:
-            for key in diction[i]["id"]:
-                print(diction[i]["id"][key])
+    #for i in diction:
+    #    if len(diction[i]["id"]) == 1:
+    #        for key in diction[i]["id"]:
+    #            print(diction[i]["id"][key])
 
     guidata = TC_INFO_GUI.objects.using(Release).all()
     guiser = TC_INFO_GUI_SERIALIZER(guidata, many = True)
@@ -484,7 +491,7 @@ def TcCountByFilter2(request, Release):
             updatedData = d
 
             if "-" not in d['TcID']:
-                print(d['TcID'], d['CardType'])
+                #print(d['TcID'], d['CardType'])
                 dat.delete()
         return HttpResponse(json.dumps(countDict))
 
@@ -574,7 +581,7 @@ def MULTIPLE_TC_UPDATION(request, Release):
         errRecords = []
 
         for req in requests:
-            print("tc for updation",req,"\n\n")
+            #print("tc for updation",req,"\n\n")
             card = req['CardType']
             tcid = req['TcID']
 
@@ -697,7 +704,7 @@ def GET_TC_INFO_BY_ID(request, Release, id, card):
                 tcdata['StatusList'].append(status)
         except:
             return JsonResponse({'Not Found': "Record Not Found"}, status = 404)
-        print(tcdata["id"], "\n", atd)
+        #print(tcdata["id"], "\n", atd)
         if tcdata["id"] in atd:
             tcdata["Platform"] = atd[tcdata["id"]]
         return HttpResponse(json.dumps(tcdata))
