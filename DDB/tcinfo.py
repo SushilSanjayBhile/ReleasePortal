@@ -14,8 +14,7 @@ from dp import settings
 import datetime
 from .forms import LogForm
 from itertools import chain
-from .new import rootRelease
-from .new import rootRelease
+from .new import rootRelease, update_automation_count
 
 def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
     Timestamp = datetime.datetime.now()
@@ -112,54 +111,16 @@ def createInfoDict(data, Release):
     infoDict = {}
 
     for row in data:
-        #d = TC_INFO_GUI.objects.using(Release).get(id = row["id"])
-        #sd = TC_INFO_GUI_SERIALIZER(d)
-        #updatedData = json.dumps(sd.data)
-        #updatedData = json.loads(updatedData)
-
-        #if updatedData["AutomatedTcName"] == "":
-        #    updatedData["AutomatedTcName"] = "TC NOT AUTOMATED"
-
-        #updateGuiData(updatedData, d, Release)
-                
         infoDict[row["id"]] = row
 
     return infoDict
-
-def updateGuiData(updatedData, data, Release):
-     data.TcID = updatedData['TcID']
-     data.id = updatedData['id']
-     data.Domain = updatedData['Domain']
-     data.SubDomain = updatedData['SubDomain']
-     data.Scenario = updatedData['Scenario']
-     data.Description = updatedData['Description']
-     data.Steps = updatedData['Steps']
-     data.ExpectedBehaviour = updatedData['ExpectedBehaviour']
-     data.Notes = updatedData['Notes']
-     data.CardType = updatedData['CardType']
-     data.ServerType = updatedData['ServerType']
-     data.WorkingStatus = updatedData['WorkingStatus']
-     data.Date = updatedData['Date']
-     data.Assignee = updatedData['Assignee']
-     data.Creator = updatedData['Creator']
-     data.Priority = updatedData['Priority']
-     data.Tag = updatedData['Tag']
-     data.AutomatedTcName = updatedData['AutomatedTcName']
-     data.BrowserName = updatedData['BrowserName']
-     data.stateUserMapping = updatedData['stateUserMapping']
-     data.applicable = updatedData['applicable']
-     data.OS = updatedData['OS']
-     data.UnapproveTCReason = updatedData['UnapproveTCReason']
-
-     data.save(using = Release)
-     return 1
 
 @csrf_exempt
 def WHOLE_TC_INFO(request, Release):
     if request.method == "GET":
         atd = {}
 
-        data = APPLICABILITY.objects.all()
+        data = APPLICABILITY.objects.all().using(rootRelesae)
         serializer = APPLICABILITY_SERIALIZER(data, many = True)
 
         for row in serializer.data:
@@ -408,10 +369,11 @@ def TC_INFO_GET_POST_VIEW(request, Release):
 
 # Function to update TC INFO data
 def updateData(updatedData, data, Release):
-    if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"]:
+    if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"] and Release == rootRelease:
         update_automation_count("increaseAutomated", "CLI")
+    if data.TcName != "TC NOT AUTOMATED" and updatedData["TcName"] == "TC NOT AUTOMATED" and Release == rootRelease:
+        update_automation_count("decreaseAutomated", "CLI")
 
-    #print("\n\n\n updatedData",updatedData)
     data.TcID = updatedData['TcID']
     data.id = updatedData['id']
     data.TcName = updatedData['TcName']
@@ -703,6 +665,20 @@ def MULTIPLE_TC_UPDATION(request, Release):
 @csrf_exempt
 def GET_TC_INFO_BY_ID(request, Release, id, card):
     if request.method == "GET":
+        atd = {}
+
+        data = APPLICABILITY.objects.all().using(rootRelease)
+        serializer = APPLICABILITY_SERIALIZER(data, many = True)
+
+        for row in serializer.data:
+            pf = row["Platform"]
+            at = json.loads(row["ApplicableTCs"].replace("'", "\""))
+            if "CLI" in at:
+                for tc in at["CLI"]:
+                    if tc not in atd:
+                        atd[tc] = []
+                    atd[tc].append(pf)
+        #print(json.dumps(atd, indent = 2))
         infoData = TC_INFO.objects.using(Release).filter(TcID = id).get(CardType = card)
         activityData = LOGS.objects.using(Release).filter(TcID = id).filter(CardType = card)
 
@@ -720,6 +696,9 @@ def GET_TC_INFO_BY_ID(request, Release, id, card):
                 tcdata['StatusList'].append(status)
         except:
             return JsonResponse({'Not Found': "Record Not Found"}, status = 404)
+        print(tcdata["id"], "\n", atd)
+        if tcdata["id"] in atd:
+            tcdata["Platform"] = atd[tcdata["id"]]
         return HttpResponse(json.dumps(tcdata))
 
 @csrf_exempt

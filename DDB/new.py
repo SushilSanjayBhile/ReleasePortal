@@ -94,23 +94,44 @@ def create_current_monday_record():
     else:
         print("Error: ", fd.errors)
 
+def get_all_weeks_records():
+    data = AUTOMATION_COUNT.objects.using(rootRelease).all()
+    serializer = AUTOMATION_COUNT_SERIALIZER(data, many = True)
+    data = serializer.data
+    for i in range(len(data)):
+        if i < (len(data) - 1):
+            data[i]["totalCLIDelta"] = data[i]["TotalCli"] - data[i + 1]["TotalCli"]
+            data[i]["automatedCLIDelta"] = data[i]["AutomatedCli"] - data[i + 1]["AutomatedCli"]
+            data[i]["totalGUIDelta"] = data[i]["TotalGui"] - data[i + 1]["TotalGui"]
+            data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"] - data[i + 1]["AutomatedGui"]
+        else:
+            data[i]["totalCLIDelta"] = data[i]["TotalCli"]
+            data[i]["automatedCLIDelta"] = data[i]["AutomatedCli"]
+            data[i]["totalGUIDelta"] = data[i]["TotalGui"]
+            data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"]
+        data[i]["automation_perc_cli"] = round(data[i]["AutomatedCli"] * 100 / data[i]["TotalCli"], 2)
+        data[i]["automation_perc_gui"] = round(data[i]["AutomatedGui"] * 100 / data[i]["TotalGui"], 2)
+    return data
+
 @csrf_exempt
 def automation_count_get_post_view(request):
     if request.method == "GET":
-        previous_monday = get_previous_monday_date()
-        monday_present = get_if_monday_present()
-
-        update_automation_count("increaseTotal", "GUI")
-        update_automation_count("increaseAutomated", "GUI")
-        update_automation_count("increaseTotal", "CLI")
-        update_automation_count("increaseAutomated", "CLI")
-
-        return HttpResponse("get method")
+        if get_if_monday_present() > 0:
+            return HttpResponse(json.dumps(get_all_weeks_records()))
+        else:
+            create_current_monday_record()
+            return HttpResponse(json.dumps(get_all_weeks_records()))
 
     if request.method == "POST":
         return HttpResponse("POST method")
 
 def update_automation_count(operation, interface):
+    # These are some sample function calls
+    # update_automation_count("increaseTotal", "GUI")
+    # update_automation_count("increaseAutomated", "GUI")
+    # update_automation_count("increaseTotal", "CLI")
+    # update_automation_count("increaseAutomated", "CLI")
+
     monday_present = get_if_monday_present()
 
     if monday_present == 0:
@@ -124,9 +145,17 @@ def update_automation_count(operation, interface):
                 oldRecord.TotalCli += 1
             if operation == "increaseAutomated":
                 oldRecord.AutomatedCli += 1
+            if operation == "decreaseTotal":
+                oldRecord.TotalCli -= 1
+            if operation == "decreaseAutomated":
+                oldRecord.AutomatedCli -= 1
         if interface == "GUI":
             if operation == "increaseTotal":
                 oldRecord.TotalGui += 1
             if operation == "increaseAutomated":
                 oldRecord.AutomatedGui += 1
+            if operation == "decreaseTotal":
+                oldRecord.TotalGui -= 1
+            if operation == "decreaseAutomated":
+                oldRecord.AutomatedGui -= 1
         oldRecord.save(using = rootRelease)
