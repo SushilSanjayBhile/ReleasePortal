@@ -128,6 +128,9 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 if fd.is_valid():
                     data = fd.save(commit = False)
                     data.save(using = Release)
+                    update_automation_count("increaseTotal", "GUI")
+                    if req["TcName"] != "TC NOT AUTOMATED":
+                        update_automation_count("increaseAutomated", "GUI")
                     
                     if "Activity" in req:
                         AD = req['Activity']

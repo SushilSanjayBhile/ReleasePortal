@@ -273,7 +273,6 @@ def TC_INFO_GET_POST_VIEW(request, Release):
 
                 if fd.is_valid():
                     data = fd.save(commit = False)
-                    print(req['TcID'], card, Release)
                     data.save(using = Release)
 
                     if "Activity" in req:
@@ -283,6 +282,8 @@ def TC_INFO_GET_POST_VIEW(request, Release):
             # post request for master release
             if "dmc" in Release.lower():
                 master = dmcMaster
+            else:
+                master = "master"
             if Release != master and Release != "TestDatabase" and "master" not in Release.lower():
                 data = TC_INFO.objects.using(master).filter(TcID = req['TcID']).filter(CardType = card)
                 if len(data) != 0:
@@ -299,7 +300,6 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                     if fd.is_valid():
                         data = fd.save(commit = False)
                         data.save(using = master)
-                        print(req['TcID'], card, master)
 
                         if "Activity" in req:
                             AD = req['Activity']
@@ -320,7 +320,6 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                 if fd.is_valid():
                     data = fd.save(commit = False)
                     data.save(using = master)
-                    print(req['TcID'], card, master)
                     update_automation_count("increaseTotal", "CLI")
 
                     if newData["TcName"] != "TC NOT AUTOMATED":
