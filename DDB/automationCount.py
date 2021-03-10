@@ -132,32 +132,17 @@ def AutomationCountByDomain(request,Release,Platform):
                         dict1[platform][dom][key_automated] = 0
                     if tc["TcName"] != "TC NOT AUTOMATED":
                         dict1[platform][dom][key_automated] += 1
-
-                #print(tc)
-
-    print(dict1)
     dict2 = {}
     tempList = []
 
     for platform in dict1:
         for dom in dict1[platform]:
             for data in dict1[platform][dom]:
-                print(platform,dom,data,dict1[platform][dom][data])
                 dict2["Platform"] = platform
                 dict2["Domain"] = dom
                 dict2[data] =  dict1[platform][dom][data]
             tempList.append(dict2)
             dict2 = {}
-    print("\n\n",tempList)
-    #dict2.push(tempList)
-
-    print(dict2)
-        
-
-
-
-    #for info in infoserializer.data:
-    #    print(info)
     return JsonResponse({'Data': tempList}, status = 200)
 
 
