@@ -163,13 +163,11 @@ def ApplicabilityData(request,Release):
                 if tc not in atd:
                     atd[tc] = []
                 atd[tc].append(pf)
-    print(atd)
     infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
     infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
     c = 0
     for info in infoserializer.data:
         c+=1
-        print(c)
         updatedData = info
         if info["id"] in atd:
             info['Platform'] = atd[info["id"]]
@@ -228,13 +226,10 @@ def AutomationCountForGUI(request, Release):
 
     for platform in dict1:
             for data in dict1[platform]:
-                print(platform,data,dict1[platform][data])
                 dict2["Platform"] = platform
                 dict2[data] =  dict1[platform][data]
             tempList.append(dict2)
             dict2 = {}
-
-    print(dict2)
 
     return JsonResponse({'Data': tempList}, status = 200)
 
@@ -258,7 +253,6 @@ def AutomationCountByDomainForGUI(request,Release,Platform):
     dict1 = {}
 
     for tc in infoserializer.data:
-        print(tc,"GUI")
         if len(tc["Platform"]) >= 1:
             for platform in tc["Platform"]:
                 if platform not in dict1:
@@ -274,7 +268,6 @@ def AutomationCountByDomainForGUI(request,Release,Platform):
                     dict1[platform][dom]["Automated_TCs"] = 0
                 if tc["TcName"] != "TC NOT AUTOMATED":
                     dict1[platform][dom]["Automated_TCs"] += 1
-                #print(dict1,"\n\n")
 
                 prior = tc["Priority"]
                 dict1[platform][dom]["P0_Total"] = 0
@@ -295,27 +288,16 @@ def AutomationCountByDomainForGUI(request,Release,Platform):
                     if tc["TcName"] != "TC NOT AUTOMATED":
                         dict1[platform][dom][key_automated] += 1
 
-                #print(tc)
-
-    print(dict1)
     dict2 = {}
     tempList = []
 
     for platform in dict1:
         for dom in dict1[platform]:
             for data in dict1[platform][dom]:
-                print(platform,dom,data,dict1[platform][dom][data])
                 dict2["Platform"] = platform
                 dict2["Domain"] = dom
                 dict2[data] =  dict1[platform][dom][data]
             tempList.append(dict2)
             dict2 = {}
-    print("\n\n",tempList)
-    print(dict2)
 
-    #for info in infoserializer.data:
-    #    print(info)
     return JsonResponse({'Data': tempList}, status = 200)
-
-
-
