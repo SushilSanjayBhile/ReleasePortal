@@ -95,7 +95,7 @@ def create_current_monday_record():
         print("Error: ", fd.errors)
 
 def get_all_weeks_records():
-    data = AUTOMATION_COUNT.objects.using(rootRelease).all()
+    data = AUTOMATION_COUNT.objects.using(rootRelease).all().order_by("-DateRange")
     serializer = AUTOMATION_COUNT_SERIALIZER(data, many = True)
     data = serializer.data
     for i in range(len(data)):
