@@ -77,7 +77,7 @@ urlpatterns = [
     path('wholetcinfo/<str:Release>', WHOLE_TC_INFO),
     path('sync', sync_tcs),
     path('wholeguitcinfo/<str:Release>', WHOLE_GUI_TC_INFO),
-    path('tcinfogui/<str:Release>/id/<str:id>/browsername/<str:browserName>',GET_TC_INFO_GUI_ID),
+    path('tcinfogui/<str:Release>/id/<str:id>/browsername/<str:browserName>', GET_TC_INFO_GUI_ID),
     path('sanity/<str:SanityType>/<str:Release>', SANITY_VIEW),
 
     path('user/login', USER_LOGIN_VIEW),

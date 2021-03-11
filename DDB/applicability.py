@@ -115,7 +115,6 @@ def Applicable(request):
             if flag == 0:
                 fd = APPLICABILITY_FORM(finalData)
                 if fd.is_valid():
-                    print("VALID FORM DATA", platformWiseDict)
                     fd.save()
                 else:
                     print('error', fd.errors)
@@ -149,7 +148,6 @@ def Applicable1(request):
         platformWiseDict = {}
 
         for platform in req:
-            print(platform)
             if platform not in platformWiseDict:
                 platformWiseDict[platform] = {}
 
@@ -163,7 +161,6 @@ def Applicable1(request):
             serializer = APPLICABILITY_SERIALIZER(data, many = True)
             if len(serializer.data) != 0:
                 applicabletcs = json.loads(serializer.data)
-                print(applicabletcs)
                 for interface in applicabletcs["ApplicableTCs"]:
                     for tc in applicabletcs["ApplicableTCs"][interface]:
                         if inteface not in platformWiseDict[platform]:

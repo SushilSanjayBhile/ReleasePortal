@@ -51,6 +51,8 @@ def updateGuiTcInfo(data, updatedData, Release):
     data.applicable = updatedData['applicable']
     data.OS = updatedData['OS']
     data.UnapproveTCReason = updatedData['UnapproveTCReason']
+    data.Platform = updatedData['Platform']
+    print(updatedData['Platform'])
 
     data.save(using = Release)
 
@@ -246,6 +248,20 @@ def updateGuiLatestStatusData(updatedData, data, Release):
 @csrf_exempt
 def GET_TC_INFO_GUI_ID(request, Release, id, browserName):
     if request.method == "GET":
+        atd = {}
+
+        data = APPLICABILITY.objects.all().using(rootRelease)
+        serializer = APPLICABILITY_SERIALIZER(data, many = True)
+
+        for row in serializer.data:
+            pf = row["Platform"]
+            at = json.loads(row["ApplicableTCs"].replace("'", "\""))
+            if "GUI" in at:
+                for tc in at["GUI"]:
+                    if tc not in atd:
+                        atd[tc] = []
+                    atd[tc].append(pf)
+
         try:
             infoData = TC_INFO_GUI.objects.using(Release).filter(TcID = id).get(BrowserName = browserName)
         except:
@@ -266,6 +282,10 @@ def GET_TC_INFO_GUI_ID(request, Release, id, browserName):
             tcdata['StatusList'] = []
             for status in statusSerializer.data:
                 tcdata['StatusList'].append(status)
+
+            if tcdata["id"] in atd:
+                tcdata["Platform"] = atd[tcdata["id"]]
+                print(tcdata["Platform"])
         except:
             pass
         return HttpResponse(json.dumps(tcdata))
