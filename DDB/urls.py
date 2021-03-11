@@ -19,7 +19,7 @@ from .releaseBuildInfo import RELEASEBUILDINFOGETPOSTVIEW,RELEASEBUILDINFODELETE
 from .createRelease import mergeDB
 from .removeReleaseResults import  removeOldReleaseData
 from .applicability import Applicable, AddPlatform,GetPlatformList, GetPlatformWiseTCList, update_rootRelease
-from .automationCount import * 
+from .automationCount import *
 from .domain_subdomain import get_domain_subdomain_list
 
 # my scripts
@@ -34,8 +34,8 @@ urlpatterns = [
     path('automationCount/<str:Release>', AutomationCount),
     path('automationCountForGUI/<str:Release>', AutomationCountForGUI),
     path('applicabilityData/<str:Release>', ApplicabilityData),
-    path('automationCountByDomain/<str:Release>/<str:Platform>', AutomationCountByDomain),
-    path('automationCountByDomainForGUI/<str:Release>/<str:Platform>', AutomationCountByDomainForGUI),
+    path('automationCountByDomain/<str:Platform>', AutomationCountByDomain),
+    path('automationCountByDomainForGUI/<str:Platform>', GUIAutomationCountByDomain),
     path('automation/', automation_count_get_post_view),
 
     #applicability api's

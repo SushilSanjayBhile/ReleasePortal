@@ -88,6 +88,7 @@ def Applicable(request, release):
     if request.method == "POST":
         if release != rootRelease:
             return HttpResponse("YOU CANNOT ADD PLATFORM IN RELEASE OTHER THAN DCX_DMC_MASTER")
+
         req = json.loads(request.body.decode("utf-8"))
 
         for data in req:

@@ -240,8 +240,8 @@ def WHOLE_TC_INFO(request, Release):
             except:
                 pass
 
-            if info["id"] in atd:
-                info["Platform"] = atd[info["id"]]
+            #if info["id"] in atd:
+            #    info["Platform"] = atd[info["id"]]
 
             AllInfoData.append(info)
         #return HttpResponse("COMING")
