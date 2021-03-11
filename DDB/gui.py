@@ -66,6 +66,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
         master = dmcMaster
 
     if request.method == "POST":
+        flag = 0
         req = json.loads(request.body.decode("utf-8"))
         conflictFlag = False
 
@@ -80,6 +81,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             if fd.is_valid():
                 data = fd.save(commit = False)
                 if "master" not in Release:
+                    flag = 1
                     data.save(using = Release)
 
                 d = TC_INFO_GUI.objects.using(Release).get(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = req["CardType"])
@@ -107,6 +109,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
 
                 if fd.is_valid():
                     data = fd.save(commit = False)
+                    flag = 1
                     data.save(using = Release)
 
                     if "Activity" in req:
@@ -131,15 +134,18 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 if fd.is_valid():
                     data = fd.save(commit = False)
                     data.save(using = Release)
-                    update_automation_count("increaseTotal", "GUI")
-                    if req["TcName"] != "TC NOT AUTOMATED":
-                        update_automation_count("increaseAutomated", "GUI")
+                    flag = 1
                     
                     if "Activity" in req:
                         AD = req['Activity']
                         #GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
                 else:
                     print(fd.errors)
+
+        if flag == 1:
+            update_automation_count("increaseTotal", "GUI")
+            if req["TcName"] != "TC NOT AUTOMATED":
+                update_automation_count("increaseAutomated", "GUI")
             
         return HttpResponse("SUCCESSFULLY UPDATED")
 
@@ -214,7 +220,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 for row in req:
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
-                d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
+                d = TC_INFO_GUI.objects.using(Release).get(TcID = req['TcID'], CardType = req["CardType"], BrowserName = data["BrowserName"])
                 updateGuiTcInfo(d, updatedData, master)
 
             # UPDATE ROOTRELEASE
@@ -382,14 +388,12 @@ def WHOLE_GUI_TC_INFO(request, Release):
                 if "Applicable" not in updatedData["applicable"]:
                     updatedData["applicable"] = "Applicable"
                     updateGuiTcInfo(updatedData, data, Release)
-                print("count ",c)
             except:
                 pass
 
         infodataUpdate1 = TC_INFO_GUI.objects.all().using(Release).filter(stateUserMapping = "{\"CREATED\":\"DEFAULT\"}")
         infoserializerUpdate1 = TC_INFO_GUI_SERIALIZER(infodataUpdate1, many = True)
         c = 0
-        print("Started to update")
     
         for i in infoserializerUpdate1.data:
                 break
@@ -408,10 +412,8 @@ def WHOLE_GUI_TC_INFO(request, Release):
                     SUM = json.dumps(updatedData2["stateUserMapping"])
                     if "CREATED" in SUM:
                         c+=1
-                        print("INSIDE IF", len(infoserializerUpdate1.data),  c)
                         updatedData2["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\",\"Automation Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
                         updateGuiTcInfo(data1, updatedData2, Release)
-        print("DONE")
 
         if Applicable != 'None':
             if "," in Applicable:

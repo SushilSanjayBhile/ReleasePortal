@@ -18,7 +18,7 @@ from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_
 from .releaseBuildInfo import RELEASEBUILDINFOGETPOSTVIEW,RELEASEBUILDINFODELETEVIEW
 from .createRelease import mergeDB
 from .removeReleaseResults import  removeOldReleaseData
-from .applicability import Applicable, AddPlatform,GetPlatformList, GetPlatformWiseTCList
+from .applicability import Applicable, AddPlatform,GetPlatformList, GetPlatformWiseTCList, update_rootRelease
 from .automationCount import * 
 from .domain_subdomain import get_domain_subdomain_list
 
@@ -42,6 +42,7 @@ urlpatterns = [
     path('applicable/platformList/', GetPlatformList),
     path('applicable/platformwisetc/<str:platform>', GetPlatformWiseTCList),
     path('applicable/', Applicable),
+    path('updateapplicable/', update_rootRelease),
     path('applicable/add/<str:Platform>', AddPlatform),
 
     # my scripts URLs

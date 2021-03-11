@@ -51,8 +51,6 @@ def AutomationCount(request, Release):
                         dict1[platform][key_automated] = 0
                     if tc["TcName"] != "TC NOT AUTOMATED":
                         dict1[platform][key_automated] += 1
-
-    
     dict2 = {}
     tempList = []
 
@@ -62,9 +60,6 @@ def AutomationCount(request, Release):
                 dict2[data] =  dict1[platform][data]
             tempList.append(dict2)
             dict2 = {}
-    #dict2.push(tempList)
-
-
     return JsonResponse({'Data': tempList}, status = 200)
 
 
@@ -107,10 +102,15 @@ def AutomationCountByDomain(request,Release,Platform):
                 #print(dict1,"\n\n")
 
                 prior = tc["Priority"]
-                dict1[platform][dom]["P0_Total"] = 0
-                dict1[platform][dom]["P1_Total"] = 0
-                dict1[platform][dom]["P0_Automated"] = 0
-                dict1[platform][dom]["P1_Automated"] = 0
+                if "P0_Total" not in dict1[platform][dom]:
+                    dict1[platform][dom]["P0_Total"] = 0
+                if "P1_Total" not in dict1[platform][dom]:
+                    dict1[platform][dom]["P1_Total"] = 0
+                if "P0_Automated" not in dict1[platform][dom]:
+                    dict1[platform][dom]["P0_Automated"] = 0
+                if "P1_Automated" not in dict1[platform][dom]:
+                    dict1[platform][dom]["P1_Automated"] = 0
+
                 if prior == "P0" or prior == "P1":
                     key_total = prior + "_Total"
                      
@@ -124,17 +124,12 @@ def AutomationCountByDomain(request,Release,Platform):
                         dict1[platform][dom][key_automated] = 0
                     if tc["TcName"] != "TC NOT AUTOMATED":
                         dict1[platform][dom][key_automated] += 1
-
-                #print(tc)
-
-    print(dict1)
     dict2 = {}
     tempList = []
 
     for platform in dict1:
         for dom in dict1[platform]:
             for data in dict1[platform][dom]:
-                print(platform,dom,data,dict1[platform][dom][data])
                 dict2["Platform"] = platform
                 dict2["Domain"] = dom
                 dict2[data] =  dict1[platform][dom][data]
@@ -165,7 +160,6 @@ def ApplicabilityData(request,Release):
                 if tc not in atd2:
                     atd2[tc] = []
                 atd2[tc].append(pf)
-    #print(atd)
     infodata = TC_INFO.objects.all().using(Release).filter(~Q(Domain = "GUI"))
     infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
     c = 0
@@ -244,8 +238,6 @@ def AutomationCountForGUI(request, Release):
                         dict1[platform][key_automated] = 0
                     if tc["TcName"] != "TC NOT AUTOMATED":
                         dict1[platform][key_automated] += 1
-
-    
     dict2 = {}
     tempList = []
 
@@ -255,8 +247,6 @@ def AutomationCountForGUI(request, Release):
                 dict2[data] =  dict1[platform][data]
             tempList.append(dict2)
             dict2 = {}
-
-
     return JsonResponse({'Data': tempList}, status = 200)
 
 
@@ -308,7 +298,6 @@ def AutomationCountByDomainForGUI(request,Release,Platform):
                     if tc["TcName"] != "TC NOT AUTOMATED":
                         dict1[platform][dom][key_automated] += 1
 
-
     dict2 = {}
     tempList = []
 
@@ -321,9 +310,4 @@ def AutomationCountByDomainForGUI(request,Release,Platform):
             tempList.append(dict2)
             dict2 = {}
 
-    #for info in infoserializer.data:
-    #    print(info)
     return JsonResponse({'Data': tempList}, status = 200)
-
-
-
