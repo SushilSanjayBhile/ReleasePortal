@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Col, Row, Table, Button, Collapse, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
+import {Col, Row, Table, Button, Collapse, Input, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import { connect } from 'react-redux';
 import { getCurrentRelease } from '../../../reducers/release.reducer';
 import { getEachTCStatusScenario } from '../../../reducers/testcase.reducer';
@@ -29,6 +29,56 @@ const options = {
     },
     maintainAspectRatio: false
 }
+
+
+function daysInThisMonth() {
+    var now = new Date();
+    return new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+}
+
+let month = new Date().getMonth() + 1;
+let year = new Date().getFullYear();
+let dayInCurrentMonth = daysInThisMonth();
+
+let tempDateStart = ''
+let tempDateEnd = ''
+let tempDateStartGUI = ''
+let tempDateEndGUI = ''
+let tempDateStartAPI = ''
+let tempDateEndAPI = ''
+let tempDateStartAPIGUI = ''
+let tempDateEndAPIGUI = ''
+let globalDate = 0
+if(month >= '10'){
+
+    tempDateStart = year +"-"+ month +"-"+ "01"
+    tempDateEnd = year +"-"+ month +"-"+ dayInCurrentMonth
+
+    tempDateStartGUI = year +"-"+ month +"-"+ "01"
+    tempDateEndGUI = year +"-"+ month +"-"+ dayInCurrentMonth
+
+    tempDateStartAPI = year +"-"+ month +"-"+ "01"
+    tempDateEndAPI = year +"-"+ month +"-"+ dayInCurrentMonth
+
+    tempDateStartAPIGUI = year +"-"+ month +"-"+ "01"
+    tempDateEndAPIGUI = year +"-"+ month +"-"+ dayInCurrentMonth
+}
+else{
+
+    tempDateStart = year + "-" + "0" + month + "-" + "01"
+    tempDateEnd =year + "-" + "0" + month + "-" + dayInCurrentMonth
+
+    tempDateStartGUI = year +"-0"+ month +"-"+ "01"
+    tempDateEndGUI = year +"-0"+ month +"-"+ dayInCurrentMonth
+
+    tempDateStartAPI = year +"-"+ month +"-"+ "01"
+    tempDateEndAPI = year +"-"+ month +"-"+ dayInCurrentMonth
+   
+    tempDateStartAPIGUI = year +"-"+ month +"-"+ "01"
+    tempDateEndAPIGUI = year +"-"+ month +"-"+ dayInCurrentMonth
+}
+
+
 const loading = () => <div className="animated fadeIn pt-3 text-center">Loading...</div>;
 class ReleaseTestCase extends Component {
     constructor(props) {
@@ -59,8 +109,35 @@ class ReleaseTestCase extends Component {
             allSubDomainwiseStatus:[],
             subDomainModal:false,
             overlayNoRowsTemplate: '<span class="ag-overlay-loading-center">No rows to show</span>',
+            platformWiseDomain : [],
+            platformWiseDomainGUI : [],
+           
+            automationCountView : false,
+            automationCountViewGUI : false,
+           
+            automationCountWithRangeView : false,
+            automationCountData : [],
+            automationCountDataGUI : [],
+
+            automationCountDataGUI : [],
+            automationCountDataWithRange : [],
+            automationCountDataWithRangeForGUI : [],
+            automationCountDataByDomain : [],
 
 
+            startDate : tempDateStartAPI,
+            endDate : tempDateEndAPI,
+           
+            startDateToShow : tempDateStart,
+            endDateToShow : tempDateEnd,
+
+            startDateGUI : tempDateStartAPIGUI,
+            endDateGUI : tempDateEndAPIGUI,
+            
+            startDateToShowGUI : tempDateStartGUI,
+            endDateToShowGUI : tempDateEndGUI,
+            
+            globalDate : false
         }
     }
     componentWillReceiveProps(newProps) {
@@ -75,8 +152,6 @@ class ReleaseTestCase extends Component {
         if (this.state.domainSelected) {
             axios.get(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}/tcinfo/domain/${this.state.domainSelected}`)
                 .then(res => {
-                    console.log('for ', this.props.selectedRelease.ReleaseNumber)
-                    console.log(res.data)
                     this.props.saveTestCase({ data: res.data, id: this.props.selectedRelease.ReleaseNumber });
                 }, error => {
                 })
@@ -98,7 +173,6 @@ class ReleaseTestCase extends Component {
         })
         data = { ...data, ...formattedDates };
         data.Domain = this.state.domainSelected;
-        console.log('saved data ', data);
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 this.getTcs();
@@ -120,8 +194,7 @@ class ReleaseTestCase extends Component {
     }
     
     sunburstClick(node) {
-        console.log('clicked node');
-        console.log(node);
+       
         if (alldomains.includes(node.data.name)) {
             this.setState({ doughnuts: getTCStatusForUISubDomains(this.props.selectedRelease, node.data.name), domainSelected: false })
             return true;
@@ -259,12 +332,9 @@ class ReleaseTestCase extends Component {
 
         this.state.allTestCaseStatusCLI.map((item)=>{
             if(item['Domain'] == domainName){
-                console.log("subDomain",item['subDomain-cli'])
                 for (const [key, value] of Object.entries(item['subDomain-cli'])) {
-                    console.log(key, value);
                     let arr = {}
                     arr['subDomain'] = key
-
                     for(const [key1, value1] of Object.entries(value)){
                         if(key1 == 'Tested'){
                             for(const [key2, value2] of Object.entries(value1)){
@@ -290,6 +360,7 @@ class ReleaseTestCase extends Component {
 
         
     }
+
 
 
     renderTableDataSubDomain  = () => {
@@ -396,10 +467,365 @@ class ReleaseTestCase extends Component {
         
     }
 
+    getAutomationCountDataWithRange = (startDate,endDate,intf) =>{
+        
+        let tempList = []
+        let tempListGUI = []
+        
+        axios.get('/api/automation/',{
+            params: {
+                startdate:startDate,
+                enddate :endDate
+            },
+        })
+        .then(response=>{
+            let data = response.data
+            data.map((item)=>{
+                console.log("automation dateRange data",item)
+                tempList.push({
+                    "AutomatedCli": item.AutomatedCli,
+                    "DateRange": item.DateRange,
+                    "TotalCli": item.TotalCli,
+                    "Increase_In_Total" : item.totalCLIDelta,
+                    "Increase_In_Automation" : item.automatedCLIDelta,
+                    "Automation_Perc" : item.automation_perc_cli
+                })
+
+                tempListGUI.push({
+                    "AutomatedGui": item.AutomatedGui,
+                    "DateRange": item.DateRange,
+                    "TotalGui": item.TotalGui,
+                    "Increase_In_Total" : item.totalGUIDelta,
+                    "Increase_In_Automation" : item.automatedGUIDelta,
+                    "Automation_Perc" : item.automation_perc_gui
+                })
+            })
+
+            if(intf == 'CLI'){
+                this.setState({
+                    automationCountDataWithRange : tempList,
+                })
+            }
+            else if(intf == 'GUI'){
+                this.setState({
+                    automationCountDataWithRangeForGUI : tempListGUI
+                })
+            }
+        })
+        .catch(error=>{
+            console.log("Error",error)
+        })
+    }
+
+
+    getAutomationCountDataGUI = () => {
+        let tempList = []
+        let dict1= {}
+        let automation_perc = 0
+        axios.get('/api/automationCountForGUI/' + this.props.selectedRelease.ReleaseNumber)
+        .then(response=>{
+            response.data.Data.map((item)=>{
+                automation_perc = 0
+                if(item.Total_TCs > 0){
+                    automation_perc = (item.Automated_TCs / item.Total_TCs) * 100
+                }
+                tempList.push({
+                    "Platform" : item.Platform,
+                    "P0_Automated" : item.P0_Automated,
+                    "P0_Total" : item.P0_Total,
+                    "P1_Automated" : item.P1_Automated,
+                    "P1_Total" : item.P1_Total,
+                    "Total_TCs" : item.Total_TCs,
+                    "Automated_TCs" : item.Automated_TCs,
+                    "Automation_Perc" : automation_perc
+                })
+               
+            })
+              this.setState({
+                automationCountDataGUI : tempList
+              })
+        })
+        .catch(error=>{
+            console.log("Error Getting Data",error)
+        })
+    }
+
+    selectedPlatformNameGUI = (platformName) =>{
+        let tempListByDomain = []
+        let automation_perc = 0
+        axios.get('/api/automationCountByDomainForGUI/' + '/' + platformName)
+        .then(response=>{
+            response.data.Data.map((item)=>{
+                if(item.Platform == platformName){
+                    if(item.Total_TCs > 0){
+                        automation_perc = (item.Automated_TCs / item.Total_TCs) * 100
+                    }
+                    tempListByDomain.push({
+                        "Domain" : item.Domain,
+                        "P0_Automated" : item.P0_Automated,
+                        "P0_Total" : item.P0_Total,
+                        "P1_Automated" : item.P1_Automated,
+                        "P1_Total" : item.P1_Total,
+                        "Total_TCs" : item.Total_TCs,
+                        "Automated_TCs" : item.Automated_TCs,
+                        "Automation_Perc" : automation_perc
+                    })
+                }
+            })
+             
+            this.setState({
+                platformWiseDomainGUI : tempListByDomain
+            })
+        })
+        .catch(error=>{
+            console.log("Error Getting Data",error)
+        })
+    }
+
+    getAutomationCountData = () => {
+        let tempList = []
+        let dict1= {}
+        let automation_perc = 0
+        axios.get('/api/automationCount/' + this.props.selectedRelease.ReleaseNumber)
+        .then(response=>{
+            response.data.Data.map((item)=>{
+                    automation_perc = 0
+                    if(item.Total_TCs > 0){
+                        automation_perc = (item.Automated_TCs / item.Total_TCs) * 100
+                    }
+                    tempList.push({
+                        "Platform" : item.Platform,
+                        "P0_Automated" : item.P0_Automated,
+                        "P0_Total" : item.P0_Total,
+                        "P1_Automated" : item.P1_Automated,
+                        "P1_Total" : item.P1_Total,
+                        "Total_TCs" : item.Total_TCs,
+                        "Automated_TCs" : item.Automated_TCs,
+                        "Automation_Perc" : automation_perc
+                    })
+               
+            })
+              this.setState({
+                automationCountData : tempList
+              })
+        })
+        .catch(error=>{
+            console.log("Error Getting Data",error)
+        })
+    }
+
+    selectedPlatformName = (platformName) =>{
+        let tempListByDomain = []
+        let automation_perc = 0
+        axios.get('/api/automationCountByDomain/' + '/' + platformName)
+        .then(response=>{
+            response.data.Data.map((item)=>{
+                if(item.Platform == platformName){
+                    if(item.Total_TCs > 0){
+                        automation_perc = (item.Automated_TCs / item.Total_TCs) * 100
+                    }
+                    tempListByDomain.push({
+                        "Domain" : item.Domain,
+                        "P0_Automated" : item.P0_Automated,
+                        "P0_Total" : item.P0_Total,
+                        "P1_Automated" : item.P1_Automated,
+                        "P1_Total" : item.P1_Total,
+                        "Total_TCs" : item.Total_TCs,
+                        "Automated_TCs" : item.Automated_TCs,
+                        "Automation_Perc" : automation_perc
+                    })
+                }
+            })
+             
+            this.setState({
+                platformWiseDomain : tempListByDomain
+            })
+        })
+        .catch(error=>{
+            console.log("Error Getting Data",error)
+        })
+    }
+
+    renderTableDataForAutomationCountGUI  = (list1) => {
+        return this.state.automationCountDataGUI === 0 ? (
+            <div>Loading...</div>
+        ) : (
+            this.state.automationCountDataGUI.map((e, i) => {
+            return (
+                    <tr key={i}> 
+                        <td onClick={() => this.selectedPlatformNameGUI(e.Platform)}>
+                            <a href='#' style={{color: 'green'}}>{e.Platform}</a>
+                        </td>
+                        {/* <td>
+                            {e.Platform}
+                        </td> */}
+                        <td>{e.P0_Total}</td>
+                        <td>{e.P0_Automated}</td>
+                        <td>{e.P1_Total}</td>
+                        <td>{e.P1_Automated}</td>
+                        <td>{e.Total_TCs}</td>
+                        <td>{e.Automated_TCs}</td>
+                        <td>{e.Automation_Perc.toFixed(0)}%</td>
+                    </tr>    
+                ); 
+            })
+        )
+    }
+    renderTableDataForPlatforWiseDomainGUI = ()=>{
+
+        return this.state.platformWiseDomainGUI === -1  ? (
+            <div>Loading...</div>
+        ) : (
+            this.state.platformWiseDomainGUI.map((e, i) => {
+                return (
+                    <tr key={i}> 
+                        <td>
+                            {e.Domain}
+                        </td>
+                        <td>{e.P0_Total}</td>
+                        <td>{e.P0_Automated}</td>
+                        <td>{e.P1_Total}</td>
+                        this     <td>{e.P1_Automated}</td>
+                        <td>{e.Total_TCs}</td>
+                        <td>{e.Automated_TCs}</td>
+                        <td>{e.Automation_Perc.toFixed(0)}%</td>
+                    </tr>    
+                ); 
+            })
+        )
+    }
+
+    renderTableDataForAutomationCount  = (list1) => {
+        return this.state.automationCountData === 0 ? (
+            <div>Loading...</div>
+        ) : (
+            this.state.automationCountData.map((e, i) => {
+            return (
+                    <tr key={i}> 
+                        <td onClick={() => this.selectedPlatformName(e.Platform)}>
+                            <a href='#' style={{color: 'green'}}>{e.Platform}</a>
+                        </td>
+                        {/* <td>
+                            {e.Platform}
+                        </td> */}
+                        <td>{e.P0_Total}</td>
+                        <td>{e.P0_Automated}</td>
+                        <td>{e.P1_Total}</td>
+                        <td>{e.P1_Automated}</td>
+                        <td>{e.Total_TCs}</td>
+                        <td>{e.Automated_TCs}</td>
+                        <td>{e.Automation_Perc.toFixed(0)}%</td>
+                    </tr>    
+                ); 
+            })
+        )
+    }
+
+    renderTableDataForPlatforWiseDomain = ()=>{
+        return this.state.platformWiseDomain === 0 ? (
+            <div>Loading...</div>
+        ) : (
+            this.state.platformWiseDomain.map((e, i) => {
+            return (
+                    <tr key={i}> 
+                        <td>
+                            {e.Domain}
+                        </td>
+                        <td>{e.P0_Total}</td>
+                        <td>{e.P0_Automated}</td>
+                        <td>{e.P1_Total}</td>
+                        <td>{e.P1_Automated}</td>
+                        <td>{e.Total_TCs}</td>
+                        <td>{e.Automated_TCs}</td>
+                        <td>{e.Automation_Perc.toFixed(0)}%</td>
+                    </tr>    
+                ); 
+            })
+        )
+    }
+
+    renderTableDataForAutomationCountWithRange = () =>{
+        return this.state.automationCountDataWithRange === 0 ? (
+            <div>Loading...</div>
+        ) : (
+            this.state.automationCountDataWithRange.map((e, i) => {
+            return (
+                    <tr key={i}> 
+                        <td width="140px" height="50px">{e.DateRange}</td>
+                        <td>{e.TotalCli}</td>
+                        <td>{e.Increase_In_Total}</td>
+                        <td>{e.AutomatedCli}</td>
+                        <td>{e.Increase_In_Automation}</td>
+                        <td>{e.Automation_Perc}%</td>
+                    </tr>    
+                ); 
+            })
+        )
+    }
+
+    renderTableDataForAutomationCountWithRangeForGUI = () =>{
+        return this.state.automationCountDataWithRangeForGUI === 0 ? (
+            <div>Loading...</div>
+        ) : (
+            this.state.automationCountDataWithRangeForGUI.map((e, i) => {
+            return (
+                    <tr key={i}> 
+                        <td width="140px" height="50px">{e.DateRange}</td>
+                        <td>{e.TotalGui}</td>
+                        <td>{e.Increase_In_Total}</td>
+                        
+                        <td>{e.AutomatedGui}</td>
+                        <td>{e.Increase_In_Automation}</td>
+                        
+                        <td>{e.Automation_Perc}%</td>
+                    </tr>    
+                ); 
+            })
+        )
+    }
+    selectedStartDate = (startDate) =>{
+        tempDateStart = startDate['StartDate']
+        this.setState({
+            startDate : tempDateStart,
+        },()=>{
+            this.globalDate = 1
+        })
+    }
+    
+    selectedEndDate = (endDate) =>{
+        tempDateEnd = endDate['EndDate']
+        this.setState({
+            endDate : tempDateEnd,
+        },()=>{
+            this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');
+        })
+    }
+
+    selectedStartDateGUI = (startDate) =>{
+        tempDateStartGUI = startDate['StartDate1']
+        this.setState({
+            startDateGUI : tempDateStartGUI,
+        })
+    }
+    
+    selectedEndDateGUI = (endDate) =>{
+        tempDateEndGUI = endDate['EndDate1']
+        this.setState({
+            endDateGUI : tempDateEndGUI,
+        },()=>{
+            this.getAutomationCountDataWithRange(this.state.startDateGUI,this.state.endDateGUI,'GUI');
+        })
+    }
 
     render() {
+        let DATE1 = tempDateStart     
+        let DATE2 = tempDateEnd 
+        let DATE3 = tempDateStartGUI     
+        let DATE4 = tempDateEndGUI 
+        
         return (
             <div>
+                <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'marginLeft': '1.5rem' }}>
                         <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ metricsOpen: !this.state.metricsOpen })}>
@@ -582,218 +1008,474 @@ class ReleaseTestCase extends Component {
                         </Collapse>
                     </Col>
                 </Row>
-
-                {/* {this.props.selectedRelease.ReleaseNumber === 'DMC-3.0' || this.props.selectedRelease == "DMC Master" ?       //TODO 
-                        <> */}
-                            <div>
-                            <Row>
-                                <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                                    <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
-                                        <div class="row">
-                                            <div class='col-lg-12'>
-                                                <div style={{ display: 'flex' }}>
-                                                    <div onClick={() => this.setState({ showTable: !this.state.showTable },()=>{this.getReleaseData();})} style={{ display: 'inlineBlock' }}>
-                                                    
-                                                    {
-                                                        !this.state.showTable &&
-                                                        <i className="fa fa-angle-down rp-rs-down-arrow"></i>
-                                                    }
-                                                    {
-                                                        this.state.showTable &&
-                                                        <i className="fa fa-angle-up rp-rs-down-arrow"></i>
-                                                    }
-                                                    <div className='rp-icon-button'></div>
-                                                    <span className='rp-app-table-title'>Test Case Status (CLI + GUI)</span>
-                                                
-                                                    </div>
-                                                </div>
+                    <Row>
+                        <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                            <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                                <div class="row">
+                                    <div class='col-lg-12'>
+                                        <div style={{ display: 'flex' }}>
+                                            <div onClick={() => this.setState({ showTable: !this.state.showTable },()=>{this.getReleaseData();})} style={{ display: 'inlineBlock' }}>
+                                            
+                                            {
+                                                !this.state.showTable &&
+                                                <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                            }
+                                            {
+                                                this.state.showTable &&
+                                                <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                            }
+                                            <div className='rp-icon-button'></div>
+                                            <span className='rp-app-table-title'>Test Case Status (CLI + GUI)</span>
+                                        
                                             </div>
                                         </div>
                                     </div>
-
-                                    <Collapse isOpen={this.state.showTable}>
-                                        <Row style={
-                                            {
-                                                marginRight: '0',
-                                                marginLeft: '0'
-                                            }
-                                            }>
-                                            <Col xs="12" sm="12" md="12" lg="12">
-                                                <div style={{ marginLeft: '1rem', marginTop: '1rem', overflowY: 'scroll', maxHeight: '80rem' }}>
-                                                    <Table scroll responsive style={{ overflow: 'scroll'}} >
-                                                        <thead>
-                                                            <tr>
-                                                            <th>Domain</th>
-                                                            <th>Pass</th>
-                                                            <th>Fail</th>
-                                                            <th>Block</th>
-                                                            <th>Not Tested</th>
-                                                            <th>Total</th>
-
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {
-                                                                this.state.allTestCaseStatus.length > 1 ? this.renderTableDataAll() : <span class="ag-overlay-loading-center">Loading ...</span>
-                                                            }
-                                                        </tbody>
-                                                    </Table>
-
-
-                                                   
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                    </Collapse>
-                                </Col>
-                            </Row>
+                                </div>
                             </div>
 
-                            <div>
-                            <Row>
-                                <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                                    <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
-                                        <div class="row">
-                                            <div class='col-lg-12'>
-                                                <div style={{ display: 'flex' }}>
-                                                    <div onClick={() => this.setState({ showTableCLI: !this.state.showTableCLI },()=>{this.getReleaseDataCLI();})} style={{ display: 'inlineBlock' }}>
-                                                    
+                            <Collapse isOpen={this.state.showTable}>
+                                <Row style={
+                                    {
+                                        marginRight: '0',
+                                        marginLeft: '0'
+                                    }
+                                    }>
+                                    <Col xs="12" sm="12" md="12" lg="12">
+                                        <div style={{ marginLeft: '1rem', marginTop: '1rem', overflowY: 'scroll', maxHeight: '80rem' }}>
+                                            <Table scroll responsive style={{ overflow: 'scroll'}} >
+                                                <thead>
+                                                    <tr>
+                                                    <th>Domain</th>
+                                                    <th>Pass</th>
+                                                    <th>Fail</th>
+                                                    <th>Block</th>
+                                                    <th>Not Tested</th>
+                                                    <th>Total</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
                                                     {
-                                                        !this.state.showTableCLI &&
-                                                        <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                                        this.state.allTestCaseStatus.length > 1 ? this.renderTableDataAll() : <span class="ag-overlay-loading-center">Loading ...</span>
                                                     }
-                                                    {
-                                                        this.state.showTableCLI &&
-                                                        <i className="fa fa-angle-up rp-rs-down-arrow"></i>
-                                                    }
-                                                    <div className='rp-icon-button'></div>
-                                                    <span className='rp-app-table-title'>Test Case Status (CLI)</span>
-                                                
-                                                    </div>
-                                                </div>
+                                                </tbody>
+                                            </Table>
+
+
+                                            
+                                        </div>
+                                    </Col>
+                                </Row>
+                            </Collapse>
+                        </Col>
+                    </Row>
+                </div>
+
+                <div>
+                    <Row>
+                        <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                            <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                                <div class="row">
+                                    <div class='col-lg-12'>
+                                        <div style={{ display: 'flex' }}>
+                                            <div onClick={() => this.setState({ showTableCLI: !this.state.showTableCLI },()=>{this.getReleaseDataCLI();})} style={{ display: 'inlineBlock' }}>
+                                            
+                                            {
+                                                !this.state.showTableCLI &&
+                                                <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                            }
+                                            {
+                                                this.state.showTableCLI &&
+                                                <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                            }
+                                            <div className='rp-icon-button'></div>
+                                            <span className='rp-app-table-title'>Test Case Status (CLI)</span>
+                                        
                                             </div>
                                         </div>
                                     </div>
-
-                                    <Collapse isOpen={this.state.showTableCLI}>
-                                        <Row style={
-                                            {
-                                                marginRight: '0',
-                                                marginLeft: '0'
-                                            }
-                                            }>
-                                            <Col xs="12" sm="12" md="12" lg="12">
-                                                <div style={{ marginLeft: '1rem', marginTop: '1rem', overflowY: 'scroll', maxHeight: '30rem' }}>
-                                                    <Table scroll responsive style={{ overflow: 'scroll'}} >
-                                                        <thead>
-                                                            <tr>
-                                                            <th>Domain</th>
-                                                            <th>Pass</th>
-                                                            <th>Fail</th>
-                                                            <th>Block</th>
-                                                            <th>Not Tested</th>
-                                                            <th>Total</th>
-
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {
-                                                                this.state.allTestCaseStatusCLI.length > 1 ? this.renderTableDataCLI() : <span class="ag-overlay-loading-center">Loading ...</span>
-                                                            }
-                                                        </tbody>
-                                                    </Table>
-
-                                                    
-
-                                                    {
-                                                        this.state.allSubDomainwiseStatus.length && 
-                                                        <Table scroll responsive style={{ overflow: 'scroll'}} >
-                                                            {/* <div> SubDomain List for selected Domain</div> */}
-                                                            <thead>
-                                                                <tr>
-                                                                <th>SubDomain</th>
-                                                                <th>Pass</th>
-                                                                <th>Fail</th>
-                                                                <th>Block</th>
-                                                                <th>Not Tested</th>
-                                                                <th>Total</th>
-
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                {
-                                                                    this.state.allSubDomainwiseStatus.length > 1 ? this.renderTableDataSubDomain() : <span class="ag-overlay-loading-center">Loading ...</span>
-                                                                }
-                                                            </tbody>
-                                                        </Table>
-                                                    }
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                    </Collapse>
-                                </Col>
-                            </Row>
+                                </div>
                             </div>
 
-                            <div>
-                            <Row>
-                                <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                                    <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
-                                        <div class="row">
-                                            <div class='col-lg-12'>
-                                                <div style={{ display: 'flex' }}>
-                                                    <div onClick={() => this.setState({ showTableGUI: !this.state.showTableGUI },()=>{this.getReleaseDataGUI();})} style={{ display: 'inlineBlock' }}>
-                                                    
+                        <Collapse isOpen={this.state.showTableCLI}>
+                            <Row style={
+                                {
+                                    marginRight: '0',
+                                    marginLeft: '0'
+                                }
+                                }>
+                                <Col xs="12" sm="12" md="12" lg="12">
+                                    <div style={{ marginLeft: '1rem', marginTop: '1rem', overflowY: 'scroll', maxHeight: '30rem' }}>
+                                        <Table scroll responsive style={{ overflow: 'scroll'}} >
+                                            <thead>
+                                                <tr>
+                                                <th>Domain</th>
+                                                <th>Pass</th>
+                                                <th>Fail</th>
+                                                <th>Block</th>
+                                                <th>Not Tested</th>
+                                                <th>Total</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {
+                                                    this.state.allTestCaseStatusCLI.length > 1 ? this.renderTableDataCLI() : <span class="ag-overlay-loading-center">Loading ...</span>
+                                                }
+                                            </tbody>
+                                        </Table>
+                                        {
+                                            this.state.allSubDomainwiseStatus.length && 
+                                            <Table scroll responsive style={{ overflow: 'scroll'}} >
+                                                {/* <div> SubDomain List for selected Domain</div> */}
+                                                <thead>
+                                                    <tr>
+                                                    <th>SubDomain</th>
+                                                    <th>Pass</th>
+                                                    <th>Fail</th>
+                                                    <th>Block</th>
+                                                    <th>Not Tested</th>
+                                                    <th>Total</th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
                                                     {
-                                                        !this.state.showTableGUI &&
-                                                        <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                                        this.state.allSubDomainwiseStatus.length > 1 ? this.renderTableDataSubDomain() : <span class="ag-overlay-loading-center">Loading ...</span>
                                                     }
-                                                    {
-                                                        this.state.showTableGUI &&
-                                                        <i className="fa fa-angle-up rp-rs-down-arrow"></i>
-                                                    }
-                                                    <div className='rp-icon-button'></div>
-                                                    <span className='rp-app-table-title'>Test Case Status (GUI)</span>
-                                                
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                                </tbody>
+                                            </Table>
+                                        }
                                     </div>
-
-                                    <Collapse isOpen={this.state.showTableGUI}>
-                                        <Row style={
-                                            {
-                                                marginRight: '0',
-                                                marginLeft: '0'
-                                            }
-                                            }>
-                                            <Col xs="12" sm="12" md="12" lg="12">
-                                                <div style={{ marginLeft: '1rem', marginTop: '1rem', overflowY: 'scroll', maxHeight: '30rem' }}>
-                                                    <Table scroll responsive style={{ overflow: 'scroll'}} >
-                                                        <thead>
-                                                            <tr>
-                                                            <th>Domain</th>
-                                                            <th>Pass</th>
-                                                            <th>Fail</th>
-                                                            <th>Block</th>
-                                                            <th>Not Tested</th>
-                                                            <th>Total</th>
-
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            {
-                                                                this.state.allTestCaseStatusGUI.length > 1 ? this.renderTableDataGUI() : <span class="ag-overlay-loading-center">Loading ...</span>
-                                                            }
-                                                        </tbody>
-                                                    </Table>
-                                                </div>
-                                            </Col>
-                                        </Row>
-                                    </Collapse>
                                 </Col>
                             </Row>
+                        </Collapse>
+                    </Col>
+                </Row>
+            </div>
+
+            <div>
+                <Row>
+                    <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                            <div class="row">
+                                <div class='col-lg-12'>
+                                    <div style={{ display: 'flex' }}>
+                                        <div onClick={() => this.setState({ showTableGUI: !this.state.showTableGUI },()=>{this.getReleaseDataGUI();})} style={{ display: 'inlineBlock' }}>
+                                        
+                                        {
+                                            !this.state.showTableGUI &&
+                                            <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                        }
+                                        {
+                                            this.state.showTableGUI &&
+                                            <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                        }
+                                        <div className='rp-icon-button'></div>
+                                        <span className='rp-app-table-title'>Test Case Status (GUI)</span>
+                                    
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    <Collapse isOpen={this.state.showTableGUI}>
+                        <Row style={
+                            {
+                                marginRight: '0',
+                                marginLeft: '0'
+                            }
+                            }>
+                            <Col xs="12" sm="12" md="12" lg="12">
+                                <div style={{ marginLeft: '1rem', marginTop: '1rem', overflowY: 'scroll', maxHeight: '30rem' }}>
+                                    <Table scroll responsive style={{ overflow: 'scroll'}} >
+                                        <thead>
+                                            <tr>
+                                            <th>Domain</th>
+                                            <th>Pass</th>
+                                            <th>Fail</th>
+                                            <th>Block</th>
+                                            <th>Not Tested</th>
+                                            <th>Total</th>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {
+                                                this.state.allTestCaseStatusGUI.length > 1 ? this.renderTableDataGUI() : <span class="ag-overlay-loading-center">Loading ...</span>
+                                            }
+                                        </tbody>
+                                    </Table>
+                                </div>
+                            </Col>
+                        </Row>
+                    </Collapse>
+                </Col>
+                </Row>
+                <Row>
+                    <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                            <div class="row">
+                                <div class='col-lg-12'>
+                                    <div style={{ display: 'flex' }}>
+                                        <div onClick={() => this.setState({ automationCountView: !this.state.automationCountView },()=>{this.getAutomationCountData();})} style={{ display: 'inlineBlock' }}>
+                                        
+                                        {
+                                            !this.state.automationCountView &&
+                                            <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                        }
+                                        {
+                                            this.state.automationCountView &&
+                                            <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                        }
+                                        <div className='rp-icon-button'></div>
+                                        <span className='rp-app-table-title'>CLI Automation Percentage Platformwise</span>
+                                    
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <Collapse isOpen={this.state.automationCountView}>
+                            <Row>
+                                <div style={{ marginRight: '4rem' ,marginLeft: '4rem', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
+                                    {/* <Table scroll responsive style={{ overflow: 'scroll' }}> */}
+                                    <Table>
+                                        <tbody>
+                                            {/* <th width="100px" height="50px" ><b>Task List Name</b></th> */}
+                                            <th width="100px" height="50px" ><b>Platform</b></th>
+                                            <th width="100px" height="50px" ><b>P0 TCs</b></th>
+                                            <th width="100px" height="50px" ><b>P0 Automated</b></th>
+                                            <th width="100px" height="50px" ><b>P1 TCs</b></th>
+                                            <th width="100px" height="50px" ><b>P1 Automated</b></th>
+                                            <th width="100px" height="50px" ><b>Total TCs</b></th>
+                                            <th width="100px" height="70px" ><b>Automated TCs</b></th>
+                                            <th width="100px" height="70px" ><b>Automated Percentage</b></th>
+                                                {
+                                                    this.state.automationCountData ? this.renderTableDataForAutomationCount() : null
+                                                }
+                                        </tbody>
+                                    </Table>
+
+                                    {
+                                            this.state.platformWiseDomain.length && 
+                                            <Table scroll responsive style={{ overflow: 'scroll'}} >
+                                                <thead>
+                                                    <tr>
+                                                    <th width="100px" height="50px" ><b>Domain</b></th>
+                                                    <th width="100px" height="50px" ><b>P0 TCs</b></th>
+                                                    <th width="100px" height="50px" ><b>P0 Automated</b></th>
+                                                    <th width="100px" height="50px" ><b>P1 TCs</b></th>
+                                                    <th width="100px" height="50px" ><b>P1 Automated</b></th>
+                                                    <th width="100px" height="50px" ><b>Total TCs</b></th>
+                                                    <th width="100px" height="70px" ><b>Automated TCs</b></th>
+                                                    <th width="100px" height="70px" ><b>Automated Percentage</b></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {
+                                                        this.state.platformWiseDomain.length > 1 ? this.renderTableDataForPlatforWiseDomain() : <span class="ag-overlay-loading-center">Loading ...</span>
+                                                    }
+                                                </tbody>
+                                            </Table>
+                                        }
+                                </div>
+                            </Row>
+                        </Collapse>
+                    </Col>
+                </Row>
+
+
+
+                <Row>
+                    <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                            <div class="row">
+                                <div class='col-lg-12'>
+                                    <div style={{ display: 'flex' }}>
+                                        <div onClick={() => this.setState({ automationCountViewGUI: !this.state.automationCountViewGUI },()=>{this.getAutomationCountDataGUI();})} style={{ display: 'inlineBlock' }}>
+                                        
+                                        {
+                                            !this.state.automationCountViewGUI &&
+                                            <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                        }
+                                        {
+                                            this.state.automationCountViewGUI &&
+                                            <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                        }
+                                        <div className='rp-icon-button'></div>
+                                        <span className='rp-app-table-title'>GUI Automation Percentage Platformwise</span>
+                                    
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <Collapse isOpen={this.state.automationCountViewGUI}>
+                            <Row>
+                                <div style={{ marginRight: '4rem' ,marginLeft: '4rem', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
+                                    {/* <Table scroll responsive style={{ overflow: 'scroll' }}> */}
+                                    <Table>
+                                        <tbody>
+                                            {/* <th width="100px" height="50px" ><b>Task List Name</b></th> */}
+                                            <th width="100px" height="50px" ><b>Platform</b></th>
+                                            <th width="100px" height="50px" ><b>P0 TCs</b></th>
+                                            <th width="100px" height="50px" ><b>P0 Automated</b></th>
+                                            <th width="100px" height="50px" ><b>P1 TCs</b></th>
+                                            <th width="100px" height="50px" ><b>P1 Automated</b></th>
+                                            <th width="100px" height="50px" ><b>Total TCs</b></th>
+                                            <th width="100px" height="70px" ><b>Automated TCs</b></th>
+                                            <th width="100px" height="70px" ><b>Automated Percentage</b></th>
+                                                {
+                                                    this.state.automationCountDataGUI ? this.renderTableDataForAutomationCountGUI() : null
+                                                }
+                                        </tbody>
+                                    </Table>
+
+                                    {
+                                            this.state.platformWiseDomainGUI.length && 
+                                            <Table scroll responsive style={{ overflow: 'scroll'}} >
+                                                <thead>
+                                                    <tr>
+                                                    <th width="100px" height="50px" ><b>Domain</b></th>
+                                                    <th width="100px" height="50px" ><b>P0 TCs</b></th>
+                                                    <th width="100px" height="50px" ><b>P0 Automated</b></th>
+                                                    <th width="100px" height="50px" ><b>P1 TCs</b></th>
+                                                    <th width="100px" height="50px" ><b>P1 Automated</b></th>
+                                                    <th width="100px" height="50px" ><b>Total TCs</b></th>
+                                                    <th width="100px" height="70px" ><b>Automated TCs</b></th>
+                                                    <th width="100px" height="70px" ><b>Automated Percentage</b></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {
+                                                        this.state.platformWiseDomainGUI.length > 0 ? this.renderTableDataForPlatforWiseDomainGUI() : <span class="ag-overlay-loading-center">Loading ...</span>
+                                                    }
+                                                </tbody>
+                                            </Table>
+                                        }
+                                </div>
+                            </Row>
+                        </Collapse>
+                    </Col>
+                </Row>
+
+            <Row>
+                <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                    <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                        <div class="row">
+                            <div class='col-lg-12'>
+                                <div style={{ display: 'flex' }}>
+                                    <div onClick={() => this.setState({ automationCountWithRangeView: !this.state.automationCountWithRangeView },()=>{this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');})} style={{ display: 'inlineBlock' }}>
+                                    
+                                    {
+                                        !this.state.automationCountWithRangeView &&
+                                        <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                    }
+                                    {
+                                        this.state.automationCountWithRangeView &&
+                                        <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                    }
+                                    <div className='rp-icon-button'></div>
+                                    <span className='rp-app-table-title'>CLI Weekly Automation Progress</span>
+                                
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <Collapse isOpen={this.state.automationCountWithRangeView}>
+                        <Row>
+                            
+                            <div style={{ marginRight: '4rem' ,marginLeft: '4rem', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
+                                <div class="row"  style={{marginTop:'1rem'}}>
+                                    <div class="col-md-3">
+                                        From Date<Input  type="date" id="StartDate" value={DATE1} onChange={(e) => this.selectedStartDate({ StartDate: e.target.value })} ></Input>
+                                    </div> 
+
+                                    <div class="col-md-3">
+                                        To Date<Input  type="date" id="EndDate" value={DATE2} onChange={(e) => this.selectedEndDate({ EndDate: e.target.value })} />
+                                    </div> 
+                                </div>
+                                <Table>
+                                    <tbody>
+                                        <th width="130px" height="50px" ><b>Date </b></th>
+                                        <th width="130px" height="50px" ><b>Total TCs</b></th>
+                                        <th width="130px" height="50px" ><b>Increase IN Total TCs</b></th>
+                                        <th width="130px" height="70px" ><b>Total Automated TCs</b></th>
+                                        <th width="130px" height="70px" ><b>Increase In Automated TCs</b></th>
+                                        <th width="130px" height="70px" ><b>Automated Percentage</b></th>
+                                            {
+                                                this.state.automationCountDataWithRange ? this.renderTableDataForAutomationCountWithRange() : null
+                                            }
+                                    </tbody>
+                                </Table>
+                            </div>
+                        </Row>
+                    </Collapse>
+                </Col>
+            </Row>
+
+            <Row>
+                <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                    <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                        <div class="row">
+                            <div class='col-lg-12'>
+                                <div style={{ display: 'flex' }}>
+                                    <div onClick={() => this.setState({ automationCountWithRangeViewForGUI: !this.state.automationCountWithRangeViewForGUI },()=>{this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');})} style={{ display: 'inlineBlock' }}>
+                                    
+                                    {
+                                        !this.state.automationCountWithRangeViewForGUI &&
+                                        <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                    }
+                                    {
+                                        this.state.automationCountWithRangeViewForGUI &&
+                                        <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                    }
+                                    <div className='rp-icon-button'></div>
+                                    <span className='rp-app-table-title'>GUI Weekly Automation Progress</span>
+                                
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <Collapse isOpen={this.state.automationCountWithRangeViewForGUI}>
+                        <Row>
+                            <div style={{ marginRight: '4rem' ,marginLeft: '4rem', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
+                                <div class="row"  style={{marginTop:'1rem'}}>
+                                    <div class="col-md-3">
+                                        From Date<Input  type="date" id="StartDate1" value={DATE3} onChange={(e) => this.selectedStartDateGUI({ StartDate1: e.target.value })} ></Input>
+                                    </div> 
+
+                                    <div class="col-md-3">
+                                        To Date<Input  type="date" id="EndDate1" value={DATE4} onChange={(e) => this.selectedEndDateGUI({ EndDate1: e.target.value })} />
+                                    </div>         
+                                    
+                                </div>
+                                <Table>
+                                    <tbody>
+                                        <th width="130px" height="50px" ><b>Date </b></th>
+                                        <th width="130px" height="50px" ><b>Total TCs</b></th>
+                                        <th width="130px" height="50px" ><b>Increase IN Total TCs</b></th>
+                                        <th width="130px" height="70px" ><b>Total Automated TCs</b></th>
+                                        <th width="130px" height="70px" ><b>Increase In Automated TCs</b></th>
+                                        <th width="130px" height="70px" ><b>Automated Percentage</b></th>
+                                            {
+                                                this.state.automationCountDataWithRangeForGUI ? this.renderTableDataForAutomationCountWithRangeForGUI() : null
+                                            }
+                                    </tbody>
+                                </Table>
+                            </div>
+                        </Row>
+                    </Collapse>
+                </Col>
+            </Row>
                             </div>
                     {/* </>
                 : null

@@ -177,7 +177,11 @@ class DefaultHeader extends Component {
                   }
                   {
                     this.props.currentUser && this.props.currentUser.isAdmin &&
-                    <DropdownItem onClick={() => this.props.history.push('/release/adminDashboard')}><i className="fas fa-archive"></i>Admin Dashboard</DropdownItem>
+                    <DropdownItem onClick={() => this.props.history.push('/release/adminDashboard')}><i className="fas fa-archive"></i>Admin Dashboard For CLI</DropdownItem>
+                  }
+                  {
+                    this.props.currentUser && this.props.currentUser.isAdmin &&
+                    <DropdownItem onClick={() => this.props.history.push('/release/adminDashboardGUI')}><i className="fas fa-archive"></i>Admin Dashboard For GUI</DropdownItem>
                   }
                   <DropdownItem onClick={() => this.props.onLogout()}><i className="fa fa-lock"></i>Logout</DropdownItem>
                 </React.Fragment>

@@ -47,7 +47,8 @@ class TestCasesAll extends Component {
     isApiUnderProgress = false;
     isAnyChanged = false;
     isBlockedOrFailed = false;
-    allTCsToShow = []
+    allTCsToShow = [];
+    platformList = [];
     constructor(props) {
         super(props);
         let columnDefDict = {
@@ -173,6 +174,12 @@ class TestCasesAll extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+            'ExpectedBehaviour' : {
+                headerName: "ExpectedBehaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
         }
         
         this.state = {
@@ -184,6 +191,7 @@ class TestCasesAll extends Component {
             rowSelect: false,
             isEditing: false,
             delete: false,
+            displayPlatforms:[],
     
             tableColumnsTcs: [
                 {id: 1, value: "Skip", isChecked: false},
@@ -217,6 +225,7 @@ class TestCasesAll extends Component {
                 {id: 15, value: "OS", isChecked: false},
                 {id: 16, value: "applicable", isChecked: false},
                 {id: 17, value: "Platform", isChecked: false},
+                {id: 18, value: "ExpectedBehaviour", isChecked: false},
               ],
               
             columnDefs: [
@@ -456,6 +465,12 @@ class TestCasesAll extends Component {
             editable: false,
             cellClass: 'cell-wrap-text',
         },
+        'ExpectedBehaviour' : {
+            headerName: "ExpectedBehaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            width: '180',
+            editable: false,
+            cellClass: 'cell-wrap-text',
+        },
         }
         
         let tableColumns = this.state.tableColumns;
@@ -613,6 +628,24 @@ class TestCasesAll extends Component {
         })
         .catch(err=>{
             console.log("error",err)
+        })
+
+
+        axios.get('/api/applicable/platformList/')
+
+        .then(response=>{
+            if(response.data){
+                response.data.PlatformList.map((item)=>{
+                    this.platformList.push(item)
+                })
+            }
+            console.log("this.platformList",this.platformList)
+            this.setState({
+                displayPlatforms : this.platformList
+            })   
+        })
+        .catch(err=>{
+            console.log("error")
         })
     }
     componentWillReceiveProps(newProps) {
@@ -1228,6 +1261,8 @@ class TestCasesAll extends Component {
 
     render() {
 
+        console.log("displayPlatforms",this.state.displayPlatforms);
+
         let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
         let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
 
@@ -1707,7 +1742,7 @@ class TestCasesAll extends Component {
                                                     [
                                                         { field: 'Description', header: 'Description', type: 'text' },
                                                         { field: 'Steps', header: 'Steps', type: 'text' },
-                                                        { field: 'ExpectedBehaviour', header: 'Expected Behaviour', type: 'text' },
+                                                        { field: 'ExpectedBehaviour', header: 'ExpectedBehaviour', type: 'text' },
                                                         { field: 'Notes', header: 'Notes', type: 'text' },
 
                                                     ].map((item, index) => (

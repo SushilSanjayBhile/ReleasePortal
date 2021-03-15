@@ -18,7 +18,9 @@ var TEST = ['/dummy'];
 
 // FOR DEVELOPMENT:
 // var DATA_URL = 'http://qaserv2:8000';
-var DATA_URL = 'http://release:8000';
+var DATA_URL = 'http://172.16.187.83:8000';
+
+// var DATA_URL = 'http://release:8000';
 // var DATA_URL = 'http://172.16.187.83:8000';
 var DJANGO_URL = 'http://172.16.187.83:8000';
 // var DATA_URL = 'http://192.168.1.76:8000';

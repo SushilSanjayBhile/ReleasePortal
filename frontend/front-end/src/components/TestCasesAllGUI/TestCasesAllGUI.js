@@ -160,6 +160,12 @@ class TestCasesAllGUI extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+            'Platform' : {
+                headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
         }
         this.state = {
             updateCounter: 1,
@@ -201,6 +207,7 @@ class TestCasesAllGUI extends Component {
                 {id: 14, value: "Steps", isChecked: false},
                 {id: 15, value: "OS", isChecked: false},
                 {id: 16, value: "applicable", isChecked: false},
+                {id: 17, value: "Platform", isChecked: false},
 
               ],
               
@@ -428,6 +435,12 @@ class TestCasesAllGUI extends Component {
             },
             'applicable' : {
                 headerName: "applicable", field: "applicable", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'Platform' : {
+                headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -1099,7 +1112,7 @@ class TestCasesAllGUI extends Component {
 
     textFields = [
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus','BrowserName','CardType','OS','applicable',
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus','BrowserName','CardType','OS','applicable', 'Platform'
     ];
     whichFieldsUpdated(old, latest) {
         let changes = {};

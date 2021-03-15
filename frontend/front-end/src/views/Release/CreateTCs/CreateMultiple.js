@@ -86,7 +86,7 @@ class CreateMultiple extends Component {
                     editable: true, autoHeight: true, width: '420',
                 },
                 {
-                    headerName: "Expected Behaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                    headerName: "ExpectedBehaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
                     editable: true, autoHeight: true, width: '420',
                 },
                 {
@@ -100,6 +100,14 @@ class CreateMultiple extends Component {
                     cellClass: 'cell-wrap-text',
                     autoHeight: true
                 },
+                {
+                    headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                    width: '420',
+                    editable: true,
+                    cellClass: 'cell-wrap-text',
+                    autoHeight: true
+                },
+                
 
             ],
             defaultColDef: { resizable: true },
@@ -157,7 +165,7 @@ class CreateMultiple extends Component {
     textFields = [
         'Domain', 'SubDomain',
         'TcID', 'TcName', 'Scenario', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'Assignee','Creator',
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'Assignee','Creator', 'Platform'
     ];
     arrayFields = ['CardType']
     getTcName(name) {
@@ -193,7 +201,8 @@ class CreateMultiple extends Component {
         data.TcName = this.getTcName(`${data.TcName}`);
         data.Creator = data.Creator;
         data.Assignee = currentUser
-        // console.log("data before post request",data,this.props.currentUser.name);
+        data['ExpectedBehaviour'] = data['ExpectedBehaviour']
+        console.log("data before post request",data,this.props.currentUser.name);
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
 
@@ -350,7 +359,7 @@ class CreateMultiple extends Component {
     textFields = [
         'Domain', 'SubDomain',
         'TcID', 'TcName', 'Scenario', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes','Creator',
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes','Creator','Platform'
     ];
     arrayFields = ['CardType', 'ServerType']
     whichFieldsUpdated(old, latest) {

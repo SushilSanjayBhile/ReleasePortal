@@ -855,7 +855,7 @@ class PendingForApproval extends Component {
                                                     [
                                                         { field: 'Description', header: 'Description', type: 'text' },
                                                         { field: 'Steps', header: 'Steps', type: 'text' },
-                                                        { field: 'ExpectedBehaviour', header: 'Expected Behaviour', type: 'text' },
+                                                        { field: 'ExpectedBehaviour', header: 'ExpectedBehaviour', type: 'text' },
                                                         { field: 'Notes', header: 'Notes', type: 'text' },
 
                                                     ].map((item, index) => (

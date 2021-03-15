@@ -647,6 +647,7 @@ class adminDashboard extends Component {
         .then(response=>{
             if(response.data){
                 response.data.PlatformList.map((item)=>{
+                    // console.log(item['Platform'])
                     this.platformList.push(item)
                 })
             }
@@ -1155,7 +1156,7 @@ class adminDashboard extends Component {
         axios.get('/api/applicable/platformList/')
         .then(response=>{
             if(response.data){
-                // console.log(response.data.PlatformList)
+                console.log(response.data.PlatformList)
                 response.data.PlatformList.map((item)=>{
                     platformListTemp.push({value: item, isChecked: false})
                 })
@@ -1163,9 +1164,7 @@ class adminDashboard extends Component {
             this.setState({
                 platforms : platformListTemp
             })   
-
             console.log("platformalist",this.state.plaforms)
-
         })
     }
 
@@ -1208,8 +1207,6 @@ class adminDashboard extends Component {
             };
             
             allSelectedTc.push(item.id)
-
-            
         })
 
 
@@ -1222,10 +1219,7 @@ class adminDashboard extends Component {
         }
 
         console.log("selected platform and seleted row",data,allSelectedTc)
-
         let testList = []
-        
-
         data.map((item)=>{
             testList.push({
                 'Platform' : item,
@@ -1233,9 +1227,7 @@ class adminDashboard extends Component {
                 'Tcs' :  allSelectedTc
             })
         })
-
         console.log("finalData" , testList)
-        
         // finalData.push({
         //     id : item.id,
         //     Platforms : data,
@@ -1377,7 +1369,6 @@ class adminDashboard extends Component {
     }
 
     render() {
-
         console.log("platformList",this.state.platforms,this.platformList)
         let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
         let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
@@ -1571,7 +1562,7 @@ class adminDashboard extends Component {
                                                                 <Row>
                                                                     <Col>
                                                                         <FormGroup className='rp-app-table-value'>
-                                                                            <input type="checkbox" onClick={this.handleAllCheckedForplatforms}  value="checkedall" /> Check / Uncheck All
+                                                                            {/* <input type="checkbox" onClick={this.handleAllCheckedForplatforms}  value="checkedall" /> Check / Uncheck All */}
                                                                             <ul>
                                                                             {
                                                                             this.state.platforms.map((platformName) => {

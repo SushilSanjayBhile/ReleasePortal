@@ -51,6 +51,7 @@ const ReleaseSanityResult = React.lazy(() => import('./views/Release/ReleaseSani
 const teamwork = React.lazy(() => import('./views/TeamWorkComponent/TaskOverView'))
 const MyTestMetrics = React.lazy(() => import('./views/Release/MyTestMetrics/MyTestMetrics'));
 const adminDashboard = React.lazy(() => import('./views/Release/adminDashboard/adminDashboard'));
+const adminDashboardGUI = React.lazy(() => import('./views/Release/adminDashboard/adminDashboardGUI'));
 
 
 // https://github.com/ReactTraining/react-router/tree/master/packages/react-router-config
@@ -72,6 +73,7 @@ const routes = [
   { path: '/release/teamwork', name: 'teamwork', exact: true, component: teamwork },
   { path: '/release/mytestmatrics', name: 'MyTestMetrics', exact: true, component: MyTestMetrics },
   { path: '/release/adminDashboard', name: 'adminDashboard', exact: true, component: adminDashboard },
+  { path: '/release/adminDashboardGUI', name: 'adminDashboardGUI', exact: true, component: adminDashboardGUI },
 
 ];
 
