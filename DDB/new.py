@@ -113,6 +113,25 @@ def get_all_weeks_records():
         data[i]["automation_perc_gui"] = round(data[i]["AutomatedGui"] * 100 / data[i]["TotalGui"], 2)
     return data
 
+def calculate_all_weeks_records(data):
+    for i in range(len(data)):
+        if i < (len(data) - 1):
+            data[i]["totalCLIDelta"] = data[i]["TotalCli"] - data[i + 1]["TotalCli"]
+            data[i]["automatedCLIDelta"] = data[i]["AutomatedCli"] - data[i + 1]["AutomatedCli"]
+            data[i]["totalGUIDelta"] = data[i]["TotalGui"] - data[i + 1]["TotalGui"]
+            data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"] - data[i + 1]["AutomatedGui"]
+        else:
+            data[i]["totalCLIDelta"] = data[i]["TotalCli"]
+            data[i]["automatedCLIDelta"] = data[i]["AutomatedCli"]
+            data[i]["totalGUIDelta"] = data[i]["TotalGui"]
+            data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"]
+        data[i]["automation_perc_cli"] = round(data[i]["AutomatedCli"] * 100 / data[i]["TotalCli"], 2)
+        data[i]["automation_perc_gui"] = round(data[i]["AutomatedGui"] * 100 / data[i]["TotalGui"], 2)
+
+    for i in data:
+        i["DateRange"] = str((datetime.datetime.strptime(i["DateRange"], '%Y-%m-%dT%H:%M:%SZ')).date())
+    return data
+
 def get_start_monday(date):
     start_monday = date - datetime.timedelta(days = date.weekday())
     return start_monday
@@ -134,7 +153,7 @@ def automation_count_get_post_view(request):
             data = AUTOMATION_COUNT.objects.using(rootRelease).order_by("-DateRange").filter(DateRange__gte = start_week, DateRange__lt = end_week)
             serializer = AUTOMATION_COUNT_SERIALIZER(data, many = True)
 
-            return HttpResponse(json.dumps(serializer.data))
+            return HttpResponse(json.dumps(calculate_all_weeks_records(serializer.data)))
             #return HttpResponse(json.dumps(get_all_weeks_records()))
         else:
             create_current_monday_record()
