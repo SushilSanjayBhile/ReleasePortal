@@ -24,9 +24,13 @@ def GenerateGUILogData(userName, requestType, url, logData, tcInfoNum, Release):
 
 def updateGuiTcInfo(data, updatedData, Release):
     if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"] and Release == rootRelease:
+        updatedData['AutomationDate'] = datetime.datetime.now()
         update_automation_count("increaseAutomated", "GUI")
     if data.TcName != "TC NOT AUTOMATED" and updatedData["TcName"] == "TC NOT AUTOMATED" and Release == rootRelease:
         update_automation_count("decreaseAutomated", "GUI")
+
+    if data.TcName != updatedData["TcName"] and data.TcName == "TC NOT AUTOMATED": 
+        updatedData['AutomationDate'] = datetime.datetime.now()
 
     data.TcID = updatedData["TcID"] 
     data.Domain = updatedData["Domain"]
@@ -52,6 +56,7 @@ def updateGuiTcInfo(data, updatedData, Release):
     data.OS = updatedData['OS']
     data.UnapproveTCReason = updatedData['UnapproveTCReason']
     data.Platform = updatedData['Platform']
+    data.AutomationDate = updatedData['AutomationDate']
     print(updatedData['Platform'])
 
     data.save(using = Release)

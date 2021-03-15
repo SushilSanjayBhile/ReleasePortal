@@ -113,17 +113,45 @@ def get_all_weeks_records():
         data[i]["automation_perc_gui"] = round(data[i]["AutomatedGui"] * 100 / data[i]["TotalGui"], 2)
     return data
 
+def get_start_monday(date):
+    start_monday = date - datetime.timedelta(days = date.weekday())
+    return start_monday
+
+def get_end_monday(date):
+    end_monday = date + (datetime.timedelta(days = 7) - datetime.timedelta(days = date.weekday()))
+    return end_monday
+
 @csrf_exempt
 def automation_count_get_post_view(request):
     if request.method == "GET":
         if get_if_monday_present() > 0:
-            return HttpResponse(json.dumps(get_all_weeks_records()))
+            start_date = datetime.datetime.strptime(request.GET.get("startdate"), '%Y-%m-%d')
+            start_week = get_start_monday(start_date)
+
+            end_date = datetime.datetime.strptime(request.GET.get("enddate"), '%Y-%m-%d')
+            end_week = get_end_monday(end_date)
+
+            data = AUTOMATION_COUNT.objects.using(rootRelease).order_by("-DateRange").filter(DateRange__gte = start_week, DateRange__lt = end_week)
+            serializer = AUTOMATION_COUNT_SERIALIZER(data, many = True)
+
+            return HttpResponse(json.dumps(serializer.data))
+            #return HttpResponse(json.dumps(get_all_weeks_records()))
         else:
             create_current_monday_record()
             return HttpResponse(json.dumps(get_all_weeks_records()))
 
     if request.method == "POST":
         return HttpResponse("POST method")
+
+def custom_automation_count_get_view(request):
+    if request.method == "GET":
+        request = json.loads(request.body.decode("utf-8"))
+
+        start_date = request.GET.get("startdate", datetime.date.today())
+        end_date = request.GET.get("enddate", datetime.date.today())
+
+        print(start_date, end_date)
+    return HttpResponse("CUSTOM AUTOMATION COUNT")
 
 def update_automation_count(operation, interface):
     # These are some sample function calls

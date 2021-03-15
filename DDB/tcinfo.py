@@ -381,7 +381,10 @@ def updateData(updatedData, data, Release):
     if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"] and Release == rootRelease:
         update_automation_count("increaseAutomated", "CLI")
     if data.TcName != "TC NOT AUTOMATED" and updatedData["TcName"] == "TC NOT AUTOMATED" and Release == rootRelease:
+        print("2",updatedData['AutomationDate'])
         update_automation_count("decreaseAutomated", "CLI")
+    if data.TcName != updatedData["TcName"] and data.TcName == "TC NOT AUTOMATED":
+        updatedData['AutomationDate'] = datetime.datetime.now()
 
     data.TcID = updatedData['TcID']
     data.id = updatedData['id']
@@ -406,6 +409,8 @@ def updateData(updatedData, data, Release):
     data.OS = updatedData['OS']
     data.UnapproveTCReason = updatedData['UnapproveTCReason']
     data.Platform = updatedData['Platform']
+    data.AutomationDate = updatedData['AutomationDate']
+    print("data changing",data.AutomationDate)
 
     data.save(using = Release)
     return 1
@@ -581,7 +586,7 @@ def MULTIPLE_TC_UPDATION(request, Release):
         errRecords = []
 
         for req in requests:
-            #print("tc for updation",req,"\n\n")
+            print("tc for updation",req,"\n\n")
             card = req['CardType']
             tcid = req['TcID']
 
@@ -629,6 +634,7 @@ def MULTIPLE_TC_UPDATION(request, Release):
             workingState += "}"
 
             #print("after update working status",workingState)
+            print(oldworkingStatus, workingState)
             updatedData["stateUserMapping"] = workingState
 
             for key in req:

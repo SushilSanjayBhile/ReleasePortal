@@ -25,7 +25,7 @@ from .domain_subdomain import get_domain_subdomain_list
 # my scripts
 from .cleanup import RemoveStatus
 from .migrate import Migrate
-from .new import automation_count_get_post_view
+from .new import automation_count_get_post_view, custom_automation_count_get_view
 
 urlpatterns = [
     path ('getdomainsubdomainlist/<str:release>/<str:interface>', get_domain_subdomain_list),
@@ -37,6 +37,7 @@ urlpatterns = [
     path('automationCountByDomain/<str:Platform>', AutomationCountByDomain),
     path('automationCountByDomainForGUI/<str:Platform>', GUIAutomationCountByDomain),
     path('automation/', automation_count_get_post_view),
+    path('customautomation/', custom_automation_count_get_view),
 
     #applicability api's
     path('applicable/platformList/', GetPlatformList),

@@ -13,7 +13,6 @@ from .gui import updateGuiTcInfo
 
 @csrf_exempt
 def AutomationCount(request, Release):
-    
     platformList = []
     release = Release
 
