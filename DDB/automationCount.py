@@ -238,6 +238,7 @@ def AutomationCountForGUI(request, Release):
                 dict2[data] =  dict1[platform][data]
             tempList.append(dict2)
             dict2 = {}
+    print(tempList)
     return JsonResponse({'Data': tempList}, status = 200)
 
 

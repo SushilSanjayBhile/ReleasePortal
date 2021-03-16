@@ -42,7 +42,8 @@ urlpatterns = [
     #applicability api's
     path('applicable/platformList/', GetPlatformList),
     path('applicable/platformwisetc/<str:platform>', GetPlatformWiseTCList),
-    path('applicable/<str:Release>', Applicable),
+    #path('applicable/<str:Release>', Applicable),
+    path('applicable/', Applicable),
     path('updateapplicable/', update_rootRelease),
     path('applicable/add/<str:Platform>', AddPlatform),
 
