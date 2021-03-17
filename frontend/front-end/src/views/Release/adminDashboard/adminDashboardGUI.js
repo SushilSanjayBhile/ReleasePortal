@@ -1343,9 +1343,7 @@ class adminDashboardGUI extends Component {
         console.log("new added platform",this.newPlatFormValue)
         axios.post('/api/applicable/add/'+ this.newPlatFormValue)
         .then(response=>{
-            console.log(response.data);
             alert("Platform " + this.newPlatFormValue + " Added Successfully")
-
             this.setState({popoverOpenPlatformGUI: !this.state.popoverOpenPlatformGUI })
             this.getPlatformList();
         })
@@ -1403,7 +1401,6 @@ class adminDashboardGUI extends Component {
             })
         })
 
-        console.log("finalData" , testList)
         
         // finalData.push({
         //     id : item.id,
@@ -1411,18 +1408,22 @@ class adminDashboardGUI extends Component {
         //     Interface : "CLI" 
         // })
 
-
-        axios.post('/api/applicable/',testList)
-        .then(response=>{
-            this.gridOperations(true);
-            this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
-            alert("Platform Updated Successfully")
-            this.setState({popoverOpenPlatformGUI: !this.state.popoverOpenPlatformGUI })
-            console.log("response from applicable tc",response.data)
-        })
-        .catch(error=>{
-            alert("Error Updating Platforms")
-        })
+        if (this.props.selectedRelease.ReleaseNumber == "DCX-DMC-Master"){
+            axios.post('/api/applicable/' + this.props.selectedRelease.ReleaseNumber , testList)
+            .then(response=>{
+                this.gridOperations(true);
+                this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
+                alert("Platform Updated Successfully")
+                this.setState({popoverOpenPlatformGUI: !this.state.popoverOpenPlatformGUI })
+            })
+            .catch(error=>{
+                alert("Error Updating Platforms")
+                console.log(error,"error")
+            })
+        }
+        else{
+            alert("YOU CANNOT ADD PLATFORM IN RELEASE OTHER THAN DCX_DMC_MASTER")
+        }
 
     }
 

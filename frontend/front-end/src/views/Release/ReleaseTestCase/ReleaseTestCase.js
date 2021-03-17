@@ -553,7 +553,7 @@ class ReleaseTestCase extends Component {
     selectedPlatformNameGUI = (platformName) =>{
         let tempListByDomain = []
         let automation_perc = 0
-        axios.get('/api/automationCountByDomainForGUI/' + '/' + platformName)
+        axios.get('/api/automationCountByDomainForGUI/' + platformName)
         .then(response=>{
             response.data.Data.map((item)=>{
                 if(item.Platform == platformName){
@@ -673,7 +673,7 @@ class ReleaseTestCase extends Component {
     }
     renderTableDataForPlatforWiseDomainGUI = ()=>{
 
-        return this.state.platformWiseDomainGUI === -1  ? (
+        return this.state.platformWiseDomainGUI === 0  ? (
             <div>Loading...</div>
         ) : (
             this.state.platformWiseDomainGUI.map((e, i) => {
@@ -685,7 +685,7 @@ class ReleaseTestCase extends Component {
                         <td>{e.P0_Total}</td>
                         <td>{e.P0_Automated}</td>
                         <td>{e.P1_Total}</td>
-                        this     <td>{e.P1_Automated}</td>
+                        <td>{e.P1_Automated}</td>
                         <td>{e.Total_TCs}</td>
                         <td>{e.Automated_TCs}</td>
                         <td>{e.Automation_Perc.toFixed(0)}%</td>
