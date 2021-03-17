@@ -406,7 +406,7 @@ class CreateMultiple extends Component {
     getTcs() {
         this.props.saveTestCase({ data: [], id: this.props.selectedRelease.ReleaseNumber });
         this.props.saveSingleTestCase({});
-        axios.get(`/api/wholetcinfo/${this.props.selectedRelease.ReleaseNumber}`)
+        axios.get(`/api/wholeguitcinfo/${this.props.selectedRelease.ReleaseNumber}`)
             .then(all => {
                 if (all.data && all.data.length) {
                     this.props.saveTestCase({ data: all.data, id: this.props.selectedRelease.ReleaseNumber });
