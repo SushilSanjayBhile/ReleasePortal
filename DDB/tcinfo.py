@@ -121,23 +121,6 @@ def createInfoDict(data, Release):
 @csrf_exempt
 def WHOLE_TC_INFO(request, Release):
     if request.method == "GET":
-        atd = {}
-
-        data = APPLICABILITY.objects.all().using(rootRelease)
-        serializer = APPLICABILITY_SERIALIZER(data, many = True)
-
-        for row in serializer.data:
-            pf = row["Platform"]
-            at = json.loads(row["ApplicableTCs"].replace("'", "\""))
-            if "CLI" in at:
-                for tc in at["CLI"]:
-                    if tc not in atd:
-                        atd[tc] = []
-                    atd[tc].append(pf)
-
-        #for db in settings.DATABASES:
-        #    print(db)
-
         AllInfoData = []
         statusDict = {}
 
@@ -169,9 +152,10 @@ def WHOLE_TC_INFO(request, Release):
                         infodataone = infod
 
                 infodata = infodataone
+
         for i in infodata:
                 serializer = TC_INFO_SERIALIZER(i)
-                #print(serializer.data)
+
         if Domain != 'None':
             infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':
@@ -240,11 +224,7 @@ def WHOLE_TC_INFO(request, Release):
             except:
                 pass
 
-            #if info["id"] in atd:
-            #    info["Platform"] = atd[info["id"]]
-
             AllInfoData.append(info)
-        #return HttpResponse("COMING")
         return HttpResponse(json.dumps(AllInfoData))
 
 @csrf_exempt
