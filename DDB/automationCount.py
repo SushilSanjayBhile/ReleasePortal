@@ -182,7 +182,7 @@ def AutomationCountForGUI(request, Release):
     release = Release
     atd = {}
 
-    data = APPLICABILITY.objects.all()
+    data = APPLICABILITY.objects.all().using(rootRelease)
     serializer = APPLICABILITY_SERIALIZER(data, many = True)
 
     for row in serializer.data:
@@ -194,15 +194,23 @@ def AutomationCountForGUI(request, Release):
                     atd[tc] = []
                 atd[tc].append(pf)
 
+    for tc in atd:
+        try:
+            singletc = TC_INFO_GUI.objects.using(rootRelease).get(id = tc)
+            singletc.Platform = atd[tc]
+            singletc.save(using = rootRelease)
+        except:
+            pass
+
     infodata = TC_INFO_GUI.objects.all().using(rootRelease)
     priority =  infodata.values('Priority').distinct()
     dict1 = {}
 
     infoserializer = TC_INFO_GUI_SERIALIZER(infodata, many = True)
+    c = 0
     for tc in infoserializer.data:
         if len(tc["Platform"]) >= 1:
             for platform in tc["Platform"]:
-                print(platform)
                 if platform not in dict1:
                     dict1[platform] = {}
 
@@ -303,7 +311,7 @@ def AutomationCountByDomainForGUI(request,Release,Platform):
 
 @csrf_exempt
 def GUIAutomationCountByDomain(request, Platform):
-    infodata = TC_INFO_GUI.objects.all().using(rootRelease)
+    infodata = TC_INFO_GUI.objects.using(rootRelease).all()
     infoserializer = TC_INFO_GUI_SERIALIZER(infodata, many = True)
 
     priority = infodata.values('Priority').distinct()
@@ -315,6 +323,7 @@ def GUIAutomationCountByDomain(request, Platform):
             for platform in tc["Platform"]:
                 if platform not in dict1:
                     dict1[platform] = {}
+
                 dom = tc["Domain"]
                 if dom not in dict1[platform]:
                     dict1[platform][dom] = {}
@@ -359,8 +368,7 @@ def GUIAutomationCountByDomain(request, Platform):
                 dict2["Platform"] = platform
                 dict2["Domain"] = dom
                 dict2[data] =  dict1[platform][dom][data]
-        tempList.append(dict2)
-        dict2 = {}
+            tempList.append(dict2)
+            dict2 = {}
 
-    print(json.dumps(tempList, indent = 2))
     return JsonResponse({'Data': tempList}, status = 200)

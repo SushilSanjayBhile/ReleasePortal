@@ -1633,6 +1633,7 @@ def RELEASEINFOPOST(request):
 @csrf_exempt
 def RELEASEINFO(request, Release):
     if request.method == "GET":
+        print("COMING")
         list = []
 
         if(Release == "info"):
