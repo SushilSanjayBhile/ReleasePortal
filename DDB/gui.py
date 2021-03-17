@@ -349,20 +349,6 @@ def GUI_TC_STATUS_GET_POST_VIEW(request, Release):
 @csrf_exempt
 def WHOLE_GUI_TC_INFO(request, Release):
     if request.method == "GET":
-        atd = {}
-
-        data = APPLICABILITY.objects.all().using(rootRelease)
-        serializer = APPLICABILITY_SERIALIZER(data, many = True)
-
-        for row in serializer.data:
-            pf = row["Platform"]
-            at = json.loads(row["ApplicableTCs"].replace("'", "\""))
-            if "GUI" in at:
-                for tc in at["GUI"]:
-                    if tc not in atd:
-                        atd[tc] = []
-                    atd[tc].append(pf)
-
         startTime = time.time()
         AllInfoData = []
         statusDict = {}
@@ -379,7 +365,6 @@ def WHOLE_GUI_TC_INFO(request, Release):
 
         infodataUpdate = TC_INFO_GUI.objects.all().using(Release).filter(~Q(applicable = "Applicable"))
         infoserializerUpdate = TC_INFO_GUI_SERIALIZER(infodataUpdate, many = True)
-        c = 0
         for i in infoserializerUpdate.data:
             break
             tcid = i["TcID"]
@@ -388,7 +373,6 @@ def WHOLE_GUI_TC_INFO(request, Release):
                 data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).get(CardType = card)
                 serializer = TC_INFO_GUI_SERIALIZER(data)
                 updatedData = serializer.data
-                c+=1
 
                 if "Applicable" not in updatedData["applicable"]:
                     updatedData["applicable"] = "Applicable"
@@ -398,7 +382,6 @@ def WHOLE_GUI_TC_INFO(request, Release):
 
         infodataUpdate1 = TC_INFO_GUI.objects.all().using(Release).filter(stateUserMapping = "{\"CREATED\":\"DEFAULT\"}")
         infoserializerUpdate1 = TC_INFO_GUI_SERIALIZER(infodataUpdate1, many = True)
-        c = 0
     
         for i in infoserializerUpdate1.data:
                 break
@@ -416,7 +399,6 @@ def WHOLE_GUI_TC_INFO(request, Release):
                     updatedData2 = serializer1.data
                     SUM = json.dumps(updatedData2["stateUserMapping"])
                     if "CREATED" in SUM:
-                        c+=1
                         updatedData2["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\",\"Automation Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
                         updateGuiTcInfo(data1, updatedData2, Release)
 
@@ -478,7 +460,6 @@ def WHOLE_GUI_TC_INFO(request, Release):
 
         for info in infoserializer.data:
             info = json.loads(json.dumps(info))
-            #info["TcName"] =  info["AutomatedTcName"]
             info["TcName"] =  info["TcName"]
 
             #For stateUserMapping Of Test Case
@@ -509,5 +490,4 @@ def WHOLE_GUI_TC_INFO(request, Release):
             count = len(AllInfoData)
 
         requiredData = AllInfoData[index:count]
-        print(len(requiredData))
         return HttpResponse(json.dumps(requiredData))

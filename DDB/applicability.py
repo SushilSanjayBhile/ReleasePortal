@@ -84,13 +84,44 @@ def update_rootRelease(request):
     return HttpResponse("DONE")
 
 @csrf_exempt
-def Applicable(request, release):
-#def Applicable(request):
+def Applicable(request, Release):
     if request.method == "POST":
-        if release != rootRelease:
+        if Release != rootRelease:
             return HttpResponse("YOU CANNOT ADD PLATFORM IN RELEASE OTHER THAN DCX_DMC_MASTER")
 
         req = json.loads(request.body.decode("utf-8"))
+
+        tcwiseinterfacecli = {}
+        tcwiseinterfacegui = {}
+        for data in req:
+            tcs = data["Tcs"]
+            platform = data["Platform"]
+            interface = data["Interface"]
+
+            if interface == "GUI":
+                for tc in tcs:
+                    if tc not in tcwiseinterfacegui:
+                        tcwiseinterfacegui[tc] = []
+                    tcwiseinterfacegui[tc].append(platform)
+
+
+            if interface == "CLI":
+                for tc in tcs:
+                    if tc not in tcwiseinterfacecli:
+                        tcwiseinterfacecli[tc] = []
+                    tcwiseinterfacecli[tc].append(platform)
+
+        # save list of applicable platforms in tc_info itself code
+        for tc in tcwiseinterfacegui:
+            singletc = TC_INFO_GUI.objects.using(rootRelease).get(id = tc)
+            singletc.Platform = tcwiseinterfacegui[tc]
+            singletc.save(using = rootRelease)
+
+        # save list of applicable platforms in tc_info itself code
+        for tc in tcwiseinterfacecli:
+            singletc = TC_INFO.objects.using(rootRelease).get(id = tc)
+            singletc.Platform = tcwiseinterfacecli[tc]
+            singletc.save(using = rootRelease)
 
         for data in req:
             flag = 0
