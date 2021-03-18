@@ -481,9 +481,6 @@ def WHOLE_GUI_TC_INFO(request, Release):
                 info["StatusList"] = {}
                 info["CurrentStatus"] = {}
 
-            if info["id"] in atd:
-                info["Platform"] = atd[info["id"]]
-
             AllInfoData.append(info)
 
         if count > len(AllInfoData):
