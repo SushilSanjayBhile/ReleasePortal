@@ -90,7 +90,6 @@ def AutomationCountByDomain(request, Platform):
                     dict1[platform][dom]["Automated_TCs"] = 0
                 if tc["TcName"] != "TC NOT AUTOMATED":
                     dict1[platform][dom]["Automated_TCs"] += 1
-                #print(dict1,"\n\n")
 
                 prior = tc["Priority"]
                 if "P0_Total" not in dict1[platform][dom]:
@@ -246,13 +245,12 @@ def AutomationCountForGUI(request, Release):
                 dict2[data] =  dict1[platform][data]
             tempList.append(dict2)
             dict2 = {}
-    print(tempList)
     return JsonResponse({'Data': tempList}, status = 200)
 
 
 @csrf_exempt
 def AutomationCountByDomainForGUI(request,Release,Platform):
-    infodata = TC_INFO_GUI.objects.all().using(rootRelease).filter(~Q(Domain = "GUI"))
+    infodata = TC_INFO_GUI.objects.all().using(rootRelease)
     infoserializer = TC_INFO_GUI_SERIALIZER(infodata, many = True)
 
     priority = infodata.values('Priority').distinct()
@@ -306,7 +304,6 @@ def AutomationCountByDomainForGUI(request,Release,Platform):
                 dict2[data] =  dict1[platform][dom][data]
             tempList.append(dict2)
             dict2 = {}
-
     return JsonResponse({'Data': tempList}, status = 200)
 
 @csrf_exempt

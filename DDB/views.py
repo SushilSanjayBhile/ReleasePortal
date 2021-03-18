@@ -297,6 +297,31 @@ def get_cli_dataDict(cliTcInfo, cliStatus):
             pass
     return (cid,csd)
 
+def platform_wise_domain_subdomain_dict(cliTcInfo):
+    pwdd = {}
+    platforms = cliTcInfo.values('Platform').distinct()
+
+    for p in platforms:
+        platform = p["Platform"]
+
+        if len(platform) > 0:
+            for p in platform:
+                if p not in pwdd:
+                    pwdd[p] = {}
+
+                domainCliTcInfo = cliTcInfo.filter(Platform__contains = [p]).values("Domain").distinct()
+                for domain in domainCliTcInfo:
+                    domain = domain["Domain"]
+                    if domain not in pwdd[p]:
+                        pwdd[p][domain] = []
+
+                    subDomainCliTcInfo = domainCliTcInfo.all().values("SubDomain").distinct()
+                    for subdomain in subDomainCliTcInfo:
+                        subdomain = subdomain["SubDomain"]
+                        if subdomain not in pwdd[p][domain]:
+                            pwdd[p][domain].append(subdomain)
+    return pwdd
+
 def domain_cli_aggreggation(cliTcInfo, cliStatus):
     cid = {} #cid stands for cli info dict
     csd = {} #csd stands for cli status dict
@@ -701,6 +726,7 @@ def TCAGGREGATE(Release):
                 elif res == "Fail":
                     dictionary["allGUI"]["Fail"] += testedData[res]
 
+    dictionary["PlatformWiseDomainSubdomain"] = platform_wise_domain_subdomain_dict(cliTcInfo)
     return dictionary
 
 
