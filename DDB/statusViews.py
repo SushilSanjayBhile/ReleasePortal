@@ -17,8 +17,6 @@ from .latestStatusUpdate import latestResultUpdateFunction
 import datetime
 from .forms import LogForm
 
-from .createDB import createReleaseDB
-
 # Third party softwares / libraries
 import gzip
 import psycopg2

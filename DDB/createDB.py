@@ -1,10 +1,17 @@
-import psycopg2
+import psycopg2, json
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from constraints import *
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT # <-- ADD THIS LINE
 from psycopg2 import sql
 import os, requests
+from .new import rootRelease
+from .models import TC_INFO, TC_INFO_GUI
+from .serializers import TC_INFO_SERIALIZER, TC_INFO_GUI_SERIALIZER
+from .forms import TcInfoForm, GuiInfoForm
 
-def createReleaseDB(release, parentRelease):
+def createReleaseDB(platforms, release):
+    parentRelease = rootRelease
     con = psycopg2.connect(dbname='postgres',
         user=userName, host=hostName,
         password=passwd, port=portNumber)
@@ -42,6 +49,7 @@ def createReleaseDB(release, parentRelease):
     with open('createdb.sh', 'rb') as f:
         r = requests.post("http://" + hostName + ":5000/createdb", files={'createdb.sh': f})
 
+
     databaseExistsString = "\'NAME\': \'" + release + "\',"
     with open('dp/settings.py', 'r') as fp:
         f = fp.readlines()
@@ -76,4 +84,52 @@ def createReleaseDB(release, parentRelease):
 
     os.system("cp dp/settings.py dp/oldsettings.py")
     os.system("mv dp/newsettings.py dp/settings.py")
+
     return 1
+
+@csrf_exempt
+def cleanupdb(request):
+    req = json.loads(request.body.decode("utf-8"))
+
+    platforms = req["Platforms"]
+    release = req["ReleaseNumber"]
+    print(req)
+
+    # This statement cleans new created database's CLI info table, comment when not needed
+    TC_INFO.objects.using(release).all().delete()
+
+    # This statement cleans new created database's GUI info table, comment when not needed
+    TC_INFO_GUI.objects.using(release).all().delete()
+
+    # Below code-patch fetches CLI TC, which are only applicable for given platforms
+    cliList = []
+    cliTcInfo = TC_INFO.objects.using(rootRelease).all()
+    for platform in platforms:
+        platform = [platform]
+        clitcs = cliTcInfo.filter(Platform__contains = platform)
+        ser = TC_INFO_SERIALIZER(clitcs, many = True).data
+        for tc in ser:
+            if tc["id"] not in cliList:
+                cliList.append(tc["id"])
+                fd = TcInfoForm(tc)
+
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    data.save(using = release)
+
+    # Below code-patch fetches GUI TC, which are only applicable for given platforms
+    guiList = []
+    guiTcInfo = TC_INFO_GUI.objects.using(rootRelease).all()
+    for platform in platforms:
+        platform = [platform]
+        guitcs = guiTcInfo.filter(Platform__contains = platform)
+        ser = TC_INFO_GUI_SERIALIZER(guitcs, many = True).data
+        for tc in ser:
+            if tc["id"] not in guiList:
+                guiList.append(tc["id"])
+                fd = GuiInfoForm(tc)
+
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    data.save(using = release)
+    return HttpResponse("Updated Data", 200)

@@ -126,6 +126,8 @@ def WHOLE_TC_INFO(request, Release):
 
         index = int(request.GET.get('index', 0))
 
+        Platform = request.GET.getlist('Platform',[])
+        print("Printing platform", Platform)
         Domain = str(request.GET.get('Domain', None))
         SubDomain = str(request.GET.get('SubDomain', None))
         CardType = str(request.GET.get('CardType', None))
@@ -155,7 +157,9 @@ def WHOLE_TC_INFO(request, Release):
 
         for i in infodata:
                 serializer = TC_INFO_SERIALIZER(i)
-
+        
+        if Platform != []:
+            infodata = infodata.filter(Platform__contains = Platform)
         if Domain != 'None':
             infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':
@@ -202,8 +206,8 @@ def WHOLE_TC_INFO(request, Release):
 
         c= 0 
         for info in infoserializer.data:
-            info['StatusList'] = {"id": "", "TcID": info['TcID'], "TcName": info['TcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
-            info['CurrentStatus'] = {"id": "", "TcID": info['TcID'], "TcName": info['TcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
+            info['StatusList'] = {"id": "", "TcID": info['TcID'], "TcName": info['TcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Platform":info['Platform'], "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
+            info['CurrentStatus'] = {"id": "", "TcID": info['TcID'], "TcName": info['TcName'], "Build": "", "Result": "", "Bugs": "", "Date": "", "Platfom": info['Platform'], "Domain": info['Domain'], "SubDomain": info['SubDomain'], "CardType": info['CardType']}
 
             card = info['CardType']
             tcid = info['TcID']

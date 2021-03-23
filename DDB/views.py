@@ -297,31 +297,54 @@ def get_cli_dataDict(cliTcInfo, cliStatus):
             pass
     return (cid,csd)
 
-def platform_wise_domain_subdomain_dict(cliTcInfo):
-    pwdd = {}
-    platforms = cliTcInfo.values('Platform').distinct()
-
-    for p in platforms:
+def platform_wise_domain_subdomain_cli_dict(cliTcInfo):
+    pwddcli = {}
+    platformsCli = cliTcInfo.values('Platform').distinct()
+   
+    for p in platformsCli:
         platform = p["Platform"]
 
         if len(platform) > 0:
             for p in platform:
-                if p not in pwdd:
-                    pwdd[p] = {}
+                if p not in pwddcli:
+                    pwddcli[p] = {}
 
                 domainCliTcInfo = cliTcInfo.filter(Platform__contains = [p]).values("Domain").distinct()
                 for domain in domainCliTcInfo:
                     domain = domain["Domain"]
-                    if domain not in pwdd[p]:
-                        pwdd[p][domain] = []
+                    if domain not in pwddcli[p]:
+                        pwddcli[p][domain] = []
 
                     subDomainCliTcInfo = domainCliTcInfo.all().values("SubDomain").distinct()
                     for subdomain in subDomainCliTcInfo:
                         subdomain = subdomain["SubDomain"]
-                        if subdomain not in pwdd[p][domain]:
-                            pwdd[p][domain].append(subdomain)
-    return pwdd
+                        if subdomain not in pwddcli[p][domain]:
+                            pwddcli[p][domain].append(subdomain)
+    return pwddcli
+def platform_wise_domain_subdomain_gui_dict(guiTcInfo):
+    pwddgui = {}
+    platformsGui = guiTcInfo.values('Platform').distinct()
+    for p in platformsGui:
+        platform = p["Platform"]
 
+        if len(platform) > 0:
+            for p in platform:
+                if p not in pwddgui:
+                    pwddgui[p] = {}
+
+                domainGuiTcInfo = guiTcInfo.filter(Platform__contains = [p]).values("Domain").distinct()
+                for domain in domainGuiTcInfo:
+                    domain = domain["Domain"]
+                    if domain not in pwddgui[p]:
+                        pwddgui[p][domain] = []
+
+                    subDomainGuiTcInfo = domainGuiTcInfo.all().values("SubDomain").distinct()
+                    for subdomain in subDomainGuiTcInfo:
+                        subdomain = subdomain["SubDomain"]
+                        if subdomain not in pwddgui[p][domain]:
+                            pwddgui[p][domain].append(subdomain)
+
+    return pwddgui
 def domain_cli_aggreggation(cliTcInfo, cliStatus):
     cid = {} #cid stands for cli info dict
     csd = {} #csd stands for cli status dict
@@ -726,7 +749,8 @@ def TCAGGREGATE(Release):
                 elif res == "Fail":
                     dictionary["allGUI"]["Fail"] += testedData[res]
 
-    dictionary["PlatformWiseDomainSubdomain"] = platform_wise_domain_subdomain_dict(cliTcInfo)
+    dictionary["PlatformWiseDomainSubdomainCli"]= platform_wise_domain_subdomain_cli_dict(cliTcInfo)
+    dictionary["PlatformWiseDomainSubdomainGui"]= platform_wise_domain_subdomain_gui_dict(guiTcInfo)
     return dictionary
 
 
@@ -1637,24 +1661,38 @@ def RELEASEINFOPOST(request):
 
         fd = ReleaseInfoForm(req)
         if fd.is_valid():
-            res = createReleaseDB(req['ReleaseNumber'], req["ParentRelease"])
-            if res == 0:
-                print("Database already exists")
-            else:
-                print("Created Database succesfully")
             fd.save()
             if "Activity" in req:
                 AD = req['Activity']
                 GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
             # return JsonResponse({'Sucess': 'SUCCESSFULLY ADDED NEW RELEASE'}, status = 200)
             print("SUCCESSFULLY ADDED NEW RELEASE")
+            res = createReleaseDB(req['Platforms'], req["ReleaseNumber"])
+            if res == 0:
+                print("Database already exists")
+            else:
+                print("Created Database succesfully")
             return HttpResponse("SUCCESSFULLY ADDED NEW RELEASE")
         else:
             print(fd.errors)
             # GenerateLogData(1, 'POST', 'specificuserbyid/' + str(id) + " => " + json.dumps(req))
             # return JsonResponse({'Error': fd.errors}, status = 400)
             return HttpResponse(fd.errors)
+@csrf_exempt
+def RELEASEWISE_PLATFORM(request, Release):
+    if request.method == "GET":
+        print("COMING")
+        platformList = []
+        cliTcInfo = TC_INFO.objects.using(Release).all()
+        platformsCli = cliTcInfo.values('Platform').distinct()
+        for p in platformsCli:
+            platform = p["Platform"]
 
+            if len(platform) > 0:
+                for p in platform:
+                    if p not in platformList:
+                        platformList.append(p)
+    return HttpResponse(json.dumps(platformList))
 
 @csrf_exempt
 def RELEASEINFO(request, Release):

@@ -25,7 +25,7 @@ def get_automated_cli():
     return len(infodata)
 
 def get_total_gui():
-    infodata = TC_INFO_GUI.objects.using(rootRelease).all()
+    infodata = TC_INFO_GUI.objects.using(rootRelease).filter(Platform__contains = ["DMC"] )
     return len(infodata)
 
 def get_automated_gui():
@@ -33,19 +33,18 @@ def get_automated_gui():
     return len(infodata)
 
 def get_previous_monday_record():
-    previous_monday = get_previous_monday_date()
-    data = AUTOMATION_COUNT.objects.using(rootRelease).filter(DateRange = previous_monday)
+    #previous_monday = get_previous_monday_date()
+    #data = AUTOMATION_COUNT.objects.using(rootRelease).filter(DateRange = previous_monday)
+    #if len(data) == 0:
+    recordDict = {}
+    recordDict["TotalCli"] = get_total_cli()
+    recordDict["AutomatedCli"] = get_automated_cli()
+    recordDict["TotalGui"] = get_total_gui()
+    recordDict["AutomatedGui"] = get_automated_gui()
 
-    if len(data) == 0:
-        recordDict = {}
-        recordDict["TotalCli"] = get_total_cli()
-        recordDict["AutomatedCli"] = get_automated_cli()
-        recordDict["TotalGui"] = get_total_gui()
-        recordDict["AutomatedGui"] = get_automated_gui()
-
-        return recordDict
-    else:
-        print(len(data))
+    return recordDict
+    #else:
+    #    print(len(data))
 
 def get_current_monday_record():
     monday = get_current_monday_date()

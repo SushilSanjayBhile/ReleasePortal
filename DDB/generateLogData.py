@@ -3,8 +3,6 @@ from .forms import TcInfoForm, TcStatusForm, UserInfoForm, LogForm, ReleaseInfoF
 from DDB.serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, USER_SERIALIZER, LOG_SERIALIZER, \
     RELEASE_SERIALIZER, AGGREGATION_SERIALIZER, TC_STATUS_GUI_SERIALIZER
 
-from .createDB import createReleaseDB
-
 # Third party softwares / libraries
 import gzip
 import psycopg2

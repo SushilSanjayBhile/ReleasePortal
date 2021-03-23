@@ -14,8 +14,6 @@ from DDB.serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, USER_SERIA
     RELEASE_SERIALIZER, AGGREGATION_SERIALIZER, TC_STATUS_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER
 #from .generateLogData import GenerateLogData
 
-from .createDB import createReleaseDB
-
 # Third party softwares / libraries
 import gzip
 import psycopg2

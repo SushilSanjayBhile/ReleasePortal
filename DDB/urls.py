@@ -3,7 +3,7 @@ from .views import (TCSTATUSGETPOSTVIEW, USER_INFO_GET_POST_VIEW,
         USER_INFO_SPECIFIC_BY_ID, USER_INFO_SPECIFIC_BY_NAME, LOG,
         GETSETUPWISETCINFO, RELEASEINFO, GETPLATFORMWISETCINFO, RELEASEINFOPOST,
         GETPLATFORMANDSETUPWISETCINFO, TCAGGREGATE, DOMAINWISETCSTATUS, DOMAINWISETCINFO, USER_LOGIN_VIEW,DOMAINWISERELEASEINFO,
-        GUITCSTATUSGETPOSTVIEW, createDB, AddDomainSubDomain)
+        GUITCSTATUSGETPOSTVIEW, createDB, AddDomainSubDomain, RELEASEWISE_PLATFORM)
 from .sanityViews import SANITY_VIEW
 from .defaultViews import DEFAULT_DOMAIN_GET_POST_VIEW, DEFAULT_SUBDOMAIN_GET_POST_VIEW
 
@@ -14,13 +14,14 @@ from .tcinfo import TC_INFO_GET_POST_VIEW, GET_TC_INFO_BY_ID, WHOLE_TC_INFO, MUL
         UPDATE_TC_INFO_BY_ID, TcCountByFilter,MULTIPLE_TC_INFO_UPDATION, sync_tcs
 
 from .getStatistics import BUG_WISE_BLOCKED_TCS 
-from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO
+from .gui import MULTIPLE_TC_INFO_GUI_UPDATION,GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO
 from .releaseBuildInfo import RELEASEBUILDINFOGETPOSTVIEW,RELEASEBUILDINFODELETEVIEW
 from .createRelease import mergeDB
 from .removeReleaseResults import  removeOldReleaseData
 from .applicability import Applicable, AddPlatform,GetPlatformList, GetPlatformWiseTCList, update_rootRelease
 from .automationCount import *
 from .domain_subdomain import get_domain_subdomain_list
+from .createDB import *
 
 # my scripts
 from .cleanup import RemoveStatus
@@ -67,6 +68,7 @@ urlpatterns = [
     path('<str:Release>/tcinfo/domain/<str:Domain>', DOMAINWISETCINFO),
     path('tcupdate/<str:Release>', MULTIPLE_TC_UPDATION),
     path('multipletcinfoupdate/<str:Release>', MULTIPLE_TC_INFO_UPDATION),
+    path('multipletcinfoguiupdate/<str:Release>', MULTIPLE_TC_INFO_GUI_UPDATION),
 
     path('tcinfogui/<str:Release>', GUI_TC_INFO_GET_POST_VIEW),
     path('tcstatusgui/<str:Release>', GUI_TC_STATUS_GET_POST_VIEW),
@@ -97,10 +99,12 @@ urlpatterns = [
     path('release/<str:Release>', RELEASEINFO),
     path('release/<str:Release>/<str:Domain>', DOMAINWISERELEASEINFO),
     path('release', RELEASEINFOPOST),
+    path('cleanupdb', cleanupdb),
     path('updatee2eresult', e2eResultUpdate),
 
     path('<str:Release>/options/add', AddDomainSubDomain),
     path('<str:Release>/options/delete', AddDomainSubDomain),
     path('jenkinsBuild/',RELEASEBUILDINFOGETPOSTVIEW),
-    path('jenkinsBuildDelete/',RELEASEBUILDINFODELETEVIEW)
+    path('jenkinsBuildDelete/',RELEASEBUILDINFODELETEVIEW),
+    path('releasewiseplatform/<str:Release>', RELEASEWISE_PLATFORM)
 ]

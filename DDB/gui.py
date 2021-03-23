@@ -11,6 +11,120 @@ from .forms import GuiInfoForm, LogForm, GuiStatusForm, GuiLatestStatusForm, Gui
 import datetime
 from .new import rootRelease, update_automation_count
 
+@csrf_exempt
+def MULTIPLE_TC_INFO_GUI_UPDATION(request, Release):
+    if request.method == "PUT":
+        requests = json.loads(request.body.decode("utf-8"))
+        errRec = {}
+        print("printing reques",requests)
+        for req in requests:
+            card = req['CardType']
+            tcid = req['TcID']
+            
+            # update Data Master
+            try:
+                if Release != "TestDatabase":
+                    if "dmc" in Release.lower():
+                        master = "DMC Master"
+                    else:
+                        master = "master"
+                dataMaster = TC_INFO_GUI.objects.using(master).filter(TcID = tcid).get(CardType = card)
+                serializerMaster = TC_INFO_GUI_SERIALIZER(dataMaster)
+                updatedDataMaster = serializerMaster.data
+                print("updatedDataMaster",updatedDataMaster)
+                for key in req:
+                    if key in updatedDataMaster and (key != "CardType" and key != "TcID" and key != "Priority" and key != "applicable"):
+                        updatedDataMaster[key] = req[key]
+                updateData(updatedDataMaster, dataMaster, master)
+
+                if "Activity" in requests:
+                    AD = requests['Activity']
+                    GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], master)
+            
+            except:
+                pass
+            # update data in rootMa
+            try:
+                if Release != "TestDatabase":
+                    master = rootRelease
+                dataMaster = TC_INFO_GUI.objects.using(master).filter(TcID = tcid).get(CardType = card)
+                serializerMaster = TC_INFO_GUI_SERIALIZER(dataMaster)
+                updatedDataMaster = serializerMaster.data
+                print("updatedDataMaster",updatedDataMaster)
+                for key in req:
+                    if key in updatedDataMaster and (key != "CardType" and key != "TcID" and key != "Priority" and key != "applicable"):
+                        updatedDataMaster[key] = req[key]
+                
+                updateData(updatedDataMaster, dataMaster, master)
+                
+                if "Activity" in requests:
+                    AD = requests['Activity']
+                    GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], master)
+            
+            except:
+                pass
+            
+            try:
+                data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+                serializer = TC_INFO_SERIALIZER(data)
+                updatedData = serializer.data
+                print("updatedData",updatedData)
+                for key in req:
+                    if key in updatedData and (key != "CardType" and key != "TcID"):
+                        updatedData[key] = req[key]
+                updateData(updatedData, data, Release)
+            
+                if "Activity" in requests:
+                    AD = requests['Activity']
+                    GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+            
+            except:
+                if card not in errRec:
+                    errRec[card] = []
+                errRec[card].append(tcid)
+        if len(errRec) > 0:
+            return HttpResponse(json.dumps(errRec), status = 400)
+        return HttpResponse("Successfully Updated All Records", status = 200)
+
+def updateData(updatedData, data, Release):
+    if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"] and Release == rootRelease:
+        update_automation_count("increaseAutomated", "GUI")
+    if data.TcName != "TC NOT AUTOMATED" and updatedData["TcName"] == "TC NOT AUTOMATED" and Release == rootRelease:
+        print("2",updatedData['AutomationDate'])
+        update_automation_count("decreaseAutomated", "GUI")
+    if data.TcName != updatedData["TcName"] and data.TcName == "TC NOT AUTOMATED":
+        updatedData['AutomationDate'] = datetime.datetime.now()
+        
+    data.TcID = updatedData['TcID']
+    data.id = updatedData['id']
+    data.TcName = updatedData['TcName']
+    data.BrowserName = updatedData["BrowserName"]
+    data.Domain = updatedData['Domain']
+    data.SubDomain = updatedData['SubDomain']
+    data.Scenario = updatedData['Scenario']
+    data.Description = updatedData['Description']
+    data.Steps = updatedData['Steps']
+    data.ExpectedBehaviour = updatedData['ExpectedBehaviour']
+    data.Notes = updatedData['Notes']
+    data.CardType = updatedData['CardType']
+    data.ServerType = updatedData['ServerType']
+    data.WorkingStatus = updatedData['WorkingStatus']
+    data.Date = updatedData['Date']
+    data.Assignee = updatedData['Assignee']
+    data.Creator = updatedData['Creator']
+    data.Priority = updatedData['Priority']
+    data.Tag = updatedData['Tag']
+    data.stateUserMapping = updatedData['stateUserMapping']
+    data.applicable = updatedData['applicable']
+    data.OS = updatedData['OS']
+    data.UnapproveTCReason = updatedData['UnapproveTCReason']
+    data.Platform = updatedData['Platform']
+    data.AutomationDate = updatedData['AutomationDate']
+    print("data changing",data.AutomationDate)
+    data.save(using = Release)
+    print("Pirnting data",updatedData)
+    return 1
+
 def GenerateGUILogData(userName, requestType, url, logData, tcInfoNum, Release):
     Timestamp = datetime.datetime.now()
     data = {'UserName': userName, 'RequestType': requestType, 'LogData': logData, 'Timestamp': Timestamp, 'URL': url, 'tcInfoNum': tcInfoNum}
@@ -58,7 +172,7 @@ def updateGuiTcInfo(data, updatedData, Release):
     data.Platform = updatedData['Platform']
     data.AutomationDate = updatedData['AutomationDate']
     print(updatedData['Platform'])
-
+    print("printingUPdatedData",updatedData)
     data.save(using = Release)
 
 
@@ -158,10 +272,15 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
         requests = json.loads(request.body.decode("utf-8"))
 
         # put request for current release
+        
+        #print("Printing REquest",requests,"\n\n")
         for req in requests:
+            print("request",req,"\n\n\n\n\n\n")
             data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
+            print("serializer data",dataSer.data) 
             for data in dataSer.data:
+                print("data current",data["TcID"],"\n\n")
                 updatedData = data
                 oldworkingStatus = updatedData["stateUserMapping"]
                 oldworkingStatus = oldworkingStatus.replace("\'","\"")
@@ -206,9 +325,11 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 updatedData["stateUserMapping"] = workingState
 
                 for row in req:
+                    print("current row",row,"\n\n")
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
                 d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
+                print("Printing d",d)
                 updateGuiTcInfo(d, updatedData, Release)
 
             # UPDATE GUI TC INFO IN DCX-DMC-Master release
@@ -221,11 +342,14 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
 
             for data in dataSer.data:
+                print("data for master or dmc master",data)
                 updatedData = data
                 for row in req:
+                    print("row for master dmc master",row)
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
                 d = TC_INFO_GUI.objects.using(Release).get(TcID = req['TcID'], CardType = req["CardType"], BrowserName = data["BrowserName"])
+                print("updatedData for master dmc master",updateData)
                 updateGuiTcInfo(d, updatedData, master)
 
             # UPDATE ROOTRELEASE
@@ -233,8 +357,10 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
             for data in dataSer.data:
+                print("rootrelease data",data)
                 updatedData = data
                 for row in req:
+                    print("rootrelease row",row)
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
                 d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
@@ -354,6 +480,7 @@ def WHOLE_GUI_TC_INFO(request, Release):
         statusDict = {}
 
         index = int(request.GET.get('index', 0))
+        Platform = request.GET.getlist('Platform', [])
         Domain = str(request.GET.get('Domain', None))
         SubDomain = str(request.GET.get('SubDomain', None))
         Priority = str(request.GET.get('Priority', None))
@@ -362,6 +489,7 @@ def WHOLE_GUI_TC_INFO(request, Release):
         Applicable = str(request.GET.get('applicable',None))
 
         infodata = TC_INFO_GUI.objects.using(Release).all()
+        print("length", len(infodata))
 
         infodataUpdate = TC_INFO_GUI.objects.all().using(Release).filter(~Q(applicable = "Applicable"))
         infoserializerUpdate = TC_INFO_GUI_SERIALIZER(infodataUpdate, many = True)
@@ -414,6 +542,8 @@ def WHOLE_GUI_TC_INFO(request, Release):
                         infodataone = infod
 
                 infodata = infodataone
+        if Platform != 'None':
+            infodata = infodata.filter(Platform = Platform)
         if Domain != 'None':
             infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':
