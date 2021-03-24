@@ -91,7 +91,8 @@ def createReleaseDB(platforms, release):
 def cleanupdb(request):
     req = json.loads(request.body.decode("utf-8"))
 
-    platforms = req["Platforms"]
+    platformsCli = req["PlatformsCli"]
+    platformsGui = req["PlatformsGui"]
     release = req["ReleaseNumber"]
     print(req)
 
@@ -104,7 +105,7 @@ def cleanupdb(request):
     # Below code-patch fetches CLI TC, which are only applicable for given platforms
     cliList = []
     cliTcInfo = TC_INFO.objects.using(rootRelease).all()
-    for platform in platforms:
+    for platform in platformsCli:
         platform = [platform]
         clitcs = cliTcInfo.filter(Platform__contains = platform)
         ser = TC_INFO_SERIALIZER(clitcs, many = True).data
@@ -120,7 +121,7 @@ def cleanupdb(request):
     # Below code-patch fetches GUI TC, which are only applicable for given platforms
     guiList = []
     guiTcInfo = TC_INFO_GUI.objects.using(rootRelease).all()
-    for platform in platforms:
+    for platform in platformsGui:
         platform = [platform]
         guitcs = guiTcInfo.filter(Platform__contains = platform)
         ser = TC_INFO_GUI_SERIALIZER(guitcs, many = True).data

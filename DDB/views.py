@@ -1667,7 +1667,7 @@ def RELEASEINFOPOST(request):
                 GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
             # return JsonResponse({'Sucess': 'SUCCESSFULLY ADDED NEW RELEASE'}, status = 200)
             print("SUCCESSFULLY ADDED NEW RELEASE")
-            res = createReleaseDB(req['Platforms'], req["ReleaseNumber"])
+            res = createReleaseDB(req['PlatformsCli'], req["ReleaseNumber"])
             if res == 0:
                 print("Database already exists")
             else:
@@ -1679,7 +1679,7 @@ def RELEASEINFOPOST(request):
             # return JsonResponse({'Error': fd.errors}, status = 400)
             return HttpResponse(fd.errors)
 @csrf_exempt
-def RELEASEWISE_PLATFORM(request, Release):
+def RELEASEWISE_CLI_PLATFORM(request, Release):
     if request.method == "GET":
         print("COMING")
         platformList = []
@@ -1692,6 +1692,24 @@ def RELEASEWISE_PLATFORM(request, Release):
                 for p in platform:
                     if p not in platformList:
                         platformList.append(p)
+    print(platformList)
+    return HttpResponse(json.dumps(platformList))
+
+@csrf_exempt
+def RELEASEWISE_GUI_PLATFORM(request, Release):
+    if request.method == "GET":
+        print("COMING")
+        platformList = []
+        guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
+        platformsGui = guiTcInfo.values('Platform').distinct()
+        for p in platformsGui:
+            platform = p["Platform"]
+
+            if len(platform) > 0:
+                for p in platform:
+                    if p not in platformList:
+                        platformList.append(p)
+    print(platformList)
     return HttpResponse(json.dumps(platformList))
 
 @csrf_exempt

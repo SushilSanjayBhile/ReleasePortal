@@ -542,8 +542,8 @@ def WHOLE_GUI_TC_INFO(request, Release):
                         infodataone = infod
 
                 infodata = infodataone
-        if Platform != 'None':
-            infodata = infodata.filter(Platform = Platform)
+        if Platform != []:
+            infodata = infodata.filter(Platform__contains = Platform)
         if Domain != 'None':
             infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':

@@ -285,6 +285,8 @@ class RELEASES(models.Model):
     BuildNumberList = ArrayField(models.CharField(max_length = 50, blank = True), blank = True)
     Engineers = ArrayField(models.CharField(max_length = 50, blank = True, null = True), blank = True, null = True)
     CardType = ArrayField(models.CharField(max_length = 100, blank = True), blank = True)
+    PlatformsCli = ArrayField(models.CharField(max_length = 10, blank = True, default = "UNKNOWN"), blank = True, default = list)
+    PlatformsGui = ArrayField(models.CharField(max_length = 10, blank = True, default = "UNKNOWN"), blank = True, default = list)
     ServerType = ArrayField(models.CharField(max_length = 100, blank = True), blank = True)
     SetupsUsed = ArrayField(models.CharField(max_length = 100, blank = True), blank = True)
     QAStartDate = models.DateTimeField(auto_now = False, blank = True, null=True)
