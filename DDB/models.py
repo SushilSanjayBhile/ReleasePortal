@@ -125,6 +125,7 @@ class USER_INFO(models.Model):
     EmergencyContactNumber = models.CharField(max_length = 13, blank = True, null = True)
     EmenrgencyContactPersonName = models.CharField(max_length = 50, blank = True, null = True)
     EmergencyCOntactPersonRelation = models.CharField(max_length = 20, blank  = True, null = True)
+    AssignedReleases = ArrayField(models.CharField(max_length = 20, blank = True, default = "UNKNOWN"), blank = True, default = list)
 
     def __str__(self):
         return self.Name

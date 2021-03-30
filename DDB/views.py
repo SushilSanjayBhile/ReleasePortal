@@ -315,7 +315,8 @@ def platform_wise_domain_subdomain_cli_dict(cliTcInfo):
                     if domain not in pwddcli[p]:
                         pwddcli[p][domain] = []
 
-                    subDomainCliTcInfo = domainCliTcInfo.all().values("SubDomain").distinct()
+                    #subDomainCliTcInfo = domainCliTcInfo.all().values("SubDomain").distinct()
+                    subDomainCliTcInfo = domainCliTcInfo.filter(Domain__contains = domain).values("SubDomain").distinct()
                     for subdomain in subDomainCliTcInfo:
                         subdomain = subdomain["SubDomain"]
                         if subdomain not in pwddcli[p][domain]:
@@ -338,7 +339,8 @@ def platform_wise_domain_subdomain_gui_dict(guiTcInfo):
                     if domain not in pwddgui[p]:
                         pwddgui[p][domain] = []
 
-                    subDomainGuiTcInfo = domainGuiTcInfo.all().values("SubDomain").distinct()
+                    #subDomainGuiTcInfo = domainGuiTcInfo.all().values("SubDomain").distinct()
+                    subDomainGuiTcInfo = domainGuiTcInfo.filter(Domain__contains = domain).values("SubDomain").distinct()
                     for subdomain in subDomainGuiTcInfo:
                         subdomain = subdomain["SubDomain"]
                         if subdomain not in pwddgui[p][domain]:
@@ -1565,6 +1567,25 @@ def USER_INFO_GET_POST_VIEW(request):
         # GenerateLogData(1, 'POST', 'specificuserbyid/' + str(id) + " => " + json.dumps(req))
         # return JsonResponse({'Error': fd.errors}, status = 400)
         return HttpResponse(fd.errors)
+    elif request.method == "PUT":
+        req = json.loads(request.body.decode("utf-8"))
+        fd = UserInfoForm(req)
+        data = USER_INFO.objects.get(email = req['email'])
+        serializer = USER_SERIALIZER(data, data = req)
+        if serializer.is_valid():
+            serializer.save()
+            if "Activity" in req:
+                AD = req['Activity']
+                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+        else:
+            print(serializer.errors)
+            return HttpResponse(fd.errors)
+        return HttpResponse("UPDATED SUCCESSFULLY", status = 200)
+    elif request.method == "DELETE":
+        req = json.loads(request.body.decode("utf-8"))
+        data = USER_INFO.objects.get(email = req['email'])
+        data.delete()
+        return HttpResponse("DELETED SUCCESSFULLY", status = 200)
     else:
         # data = USER_INFO.objects.using(req['ReleaseNumber']).all()
         data = USER_INFO.objects.all()
@@ -1683,10 +1704,13 @@ def RELEASEWISE_CLI_PLATFORM(request, Release):
     if request.method == "GET":
         print("COMING")
         platformList = []
-        cliTcInfo = TC_INFO.objects.using(Release).all()
-        platformsCli = cliTcInfo.values('Platform').distinct()
+        #cliTcInfo = RELEASES.objects.using(Release).all()
+        cliTcInfo = RELEASES.objects.filter(ReleaseNumber = Release)
+        print("printingcliTCinfo",cliTcInfo)
+        platformsCli = cliTcInfo.values('PlatformsCli').distinct()
+        print("Printing",platformsCli)
         for p in platformsCli:
-            platform = p["Platform"]
+            platform = p["PlatformsCli"]
 
             if len(platform) > 0:
                 for p in platform:
@@ -1700,10 +1724,13 @@ def RELEASEWISE_GUI_PLATFORM(request, Release):
     if request.method == "GET":
         print("COMING")
         platformList = []
-        guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
-        platformsGui = guiTcInfo.values('Platform').distinct()
+        #guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
+        guiTcInfo = RELEASES.objects.filter(ReleaseNumber = Release)
+        print(guiTcInfo)
+        platformsGui = guiTcInfo.values('PlatformsGui').distinct()
+        print(platformsGui)
         for p in platformsGui:
-            platform = p["Platform"]
+            platform = p["PlatformsGui"]
 
             if len(platform) > 0:
                 for p in platform:
