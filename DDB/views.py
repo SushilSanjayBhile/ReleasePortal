@@ -1567,20 +1567,28 @@ def USER_INFO_GET_POST_VIEW(request):
         # GenerateLogData(1, 'POST', 'specificuserbyid/' + str(id) + " => " + json.dumps(req))
         # return JsonResponse({'Error': fd.errors}, status = 400)
         return HttpResponse(fd.errors)
+
     elif request.method == "PUT":
         req = json.loads(request.body.decode("utf-8"))
-        fd = UserInfoForm(req)
         data = USER_INFO.objects.get(email = req['email'])
-        serializer = USER_SERIALIZER(data, data = req)
-        if serializer.is_valid():
-            serializer.save()
-            if "Activity" in req:
-                AD = req['Activity']
-                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
-        else:
-            print(serializer.errors)
-            return HttpResponse(fd.errors)
+        for i in req['AssignedReleases']:
+            if i not in data.AssignedReleases:
+                data.AssignedReleases.append(i)
+        data.save()
+
+        for i in req['RemoveReleases']:
+            data.AssignedReleases.remove(i)
+        data.save()
+
+        if req['EngineerType'] != '':
+            data.EngineerType = req['EngineerType']
+            data.save()
+        if req['role'] != '':
+            data.role = req['role']
+            data.save()
+
         return HttpResponse("UPDATED SUCCESSFULLY", status = 200)
+
     elif request.method == "DELETE":
         req = json.loads(request.body.decode("utf-8"))
         data = USER_INFO.objects.get(email = req['email'])

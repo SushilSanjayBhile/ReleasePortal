@@ -6,7 +6,7 @@ import json, time, os
 from .serializers import TC_INFO_SERIALIZER, TC_STATUS_SERIALIZER, LOG_SERIALIZER, TC_STATUS_GUI_SERIALIZER, \
         LATEST_TC_STATUS_GUI_SERIALIZER, TC_INFO_GUI_SERIALIZER, LATEST_TC_STATUS_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, \
         APPLICABILITY_SERIALIZER
-from .models import TC_INFO, TC_STATUS, LOGS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LATEST_TC_STATUS, APPLICABILITY
+from .models import TC_INFO, TC_STATUS, LOGS, TC_INFO_GUI, GUI_LATEST_TC_STATUS, GUI_TC_STATUS, LATEST_TC_STATUS, APPLICABILITY, RELEASES
 from .forms import TcInfoForm, GuiInfoForm
 from django.db.models import Q
 
@@ -801,3 +801,54 @@ def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
         if len(errRecords) > 0:
             return JsonResponse({'Conflict': errRecords}, status = 409)
         return JsonResponse({'message': 'Success'}, status = 200)
+
+def sync_platform(request):
+    #return HttpResponse("UNCOMMENT CODE")
+
+    ignore_db = ["TestDatabase", "2.3.0", "Spektra 2.4"]
+    for release in settings.DATABASES:
+        print(release)
+        #if release in ignore_db:
+        #    continue
+        #if "DCX-DMC-Master" not in release:
+        #   continue
+
+        #if "dmc" in release.lower():
+        #    master = "DMC Master"
+        #else:
+        #    master = "master"
+        
+        #print("updating platforms in release" + release)
+        cinfodata = TC_INFO.objects.using(release).all()
+        platformsCli = cinfodata.values('Platform').distinct()
+        #print("distinct cli platform in release",release,platformsCli)
+        try:
+            data = RELEASES.objects.using('universal').get(ReleaseNumber = release)
+            """
+            data.PlatformsCli = []
+            data.PlatformsGui = []
+            data.save()
+            #print("distinct Cli platform in release",release,data.PlatformsCli)
+            #print("distinct Gui platform in release",release,data.PlatformsGui)
+            """
+            #"""
+            for platform in platformsCli:
+                for p in platform["Platform"]:
+                    if p not in data.PlatformsCli:
+                        data.PlatformsCli.append(p)
+                        data.save()
+            ginfodata = TC_INFO_GUI.objects.using(release).all()
+
+            platformsGui = ginfodata.values('Platform').distinct()
+            print("distinct Cli platform in release",release, platformsCli)
+            for platform in platformsGui:
+                for p in platform["Platform"]:
+                    if p not in data.PlatformsGui:
+                        data.PlatformsGui.append(p)
+                        data.save()
+            print("distinct Gui platform in release",release,platformsGui)
+            #"""i
+        except:
+            print("in except")
+
+    return HttpResponse("INSIDE SYNC PLATFORM")

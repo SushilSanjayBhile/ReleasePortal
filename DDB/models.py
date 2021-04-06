@@ -100,6 +100,7 @@ class DEFAULT_DOMAIN_SUBDOMAIN(models.Model):
 # Universal
 class USER_INFO(models.Model):
     genders = (("M", "MALE"), ("F", "FEMALE"))
+    engtypes = (("CLI", "CLI"), ("GUI", "GUI"), ("CLI+GUI", "CLI+GUI"))
     bloodgroups = (("O+ve", "O+ve"), ("O-ve", "O-ve"), ("A+ve", "A+ve"), ("A-ve", "A-ve"), ("AB+ve", "AB+ve"), ("AB-ve", "AB-ve"), ("B+ve", "B+ve"), ("B-ve", "B-ve"))
 
     name = models.CharField(max_length = 100, blank = True)
@@ -107,6 +108,7 @@ class USER_INFO(models.Model):
     role = models.CharField(max_length = 10, default = "ENGG") # user / admin
 
     Gender = models.CharField(max_length = 1, blank = True, null = True, choices = genders)
+    EngineerType = models.CharField(max_length = 7, blank = True, null = True, choices = engtypes)
     BloodGroup = models.CharField(max_length = 5, blank = True, null = True, choices = bloodgroups)
     Qualification = models.CharField(max_length = 20, blank = True, null = True)
     PreviousWorkExperienceInMonth = models.IntegerField(blank = True, null = True)

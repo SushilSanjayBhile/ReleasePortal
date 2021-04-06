@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 from .forms import APPLICABILITY_FORM
-from .models import TC_INFO, TC_INFO_GUI, APPLICABILITY
+from .models import TC_INFO, TC_INFO_GUI, APPLICABILITY, RELEASES
 from .serializers import APPLICABILITY_SERIALIZER, TC_INFO_SERIALIZER
 
 from .new import rootRelease
@@ -55,6 +55,32 @@ def GetPlatformWiseTCList(request, platform):
     return JsonResponse({'Data': finalData}, status = 200)
 
 @csrf_exempt
+def AddPlatform1(request, Platform, Release, Interface):
+    data = APPLICABILITY.objects.filter(Platform = Platform)
+    rel = RELEASES.objects.using('universal').get(ReleaseNumber = Release)
+    if Interface == "CLI" and Platform not in rel.PlatformsCli:
+        rel.PlatformsCli.append(Platform)
+        rel.save()
+    if Interface == "GUI" and Platform not in rel.PlatformsGui:
+        rel.PlatformsGui.append(Platform)
+        rel.save()
+
+    if len(data) == 0:
+        finalData = {}
+        finalData["Platform"] = Platform
+        finalData["ApplicableTCs"] = "{}"
+
+        fd = APPLICABILITY_FORM(finalData)
+        if fd.is_valid():
+            fd.save()
+            return JsonResponse({'Success': "Platform " + Platform + " Successfully added"}, status = 200)
+        else:
+            print('error', fd.errors)
+            return JsonResponse({'Error': fd.errors}, status = 400)
+    else:
+        return JsonResponse({'Error': "Platform " + Platform + " already exists"}, status = 400)
+
+@csrf_exempt
 def AddPlatform(request, Platform):
     data = APPLICABILITY.objects.filter(Platform = Platform)
     if len(data) == 0:
@@ -93,10 +119,20 @@ def Applicable(request, Release):
 
         tcwiseinterfacecli = {}
         tcwiseinterfacegui = {}
+
+        rel = RELEASES.objects.using('universal').get(ReleaseNumber = Release)
         for data in req:
             tcs = data["Tcs"]
             platform = data["Platform"]
             interface = data["Interface"]
+
+            if interface == "GUI" and platform not in rel.PlatformsGui:
+                rel.PlatformsGui.append(platform)
+                rel.save()
+
+            if interface == "CLI" and platform not in rel.PlatformsCli:
+                rel.PlatformsCli.append(platform)
+                rel.save()
 
             if interface == "GUI":
                 for tc in tcs:
