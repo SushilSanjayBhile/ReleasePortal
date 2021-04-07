@@ -27,7 +27,7 @@ class TC_INFO(models.Model):
     Notes = models.TextField(blank = True, default = "NO NOTES PROVIDED")
     CardType = models.CharField(max_length = 100, blank = True, default=None)
     ServerType = ArrayField(models.CharField(max_length = 10, blank = True, default=None), blank = True)
-    Platform = ArrayField(models.CharField(max_length = 10, blank = True, default = "UNKNOWN"), blank = True, default = list)
+    Platform = ArrayField(models.CharField(max_length = 100, blank = True, default = "UNKNOWN"), blank = True, default = list)
     WorkingStatus = models.CharField(max_length = 50, blank = True, default = "CREATED")
     Date = models.DateTimeField(auto_now = True, blank = True)
     AutomationDate = models.DateTimeField(auto_now = False, blank = True,null = True)
@@ -72,7 +72,7 @@ class TC_INFO_GUI(models.Model):
     applicable = models.TextField(blank = True, null = True, default = 'Applicable')
     OS = models.TextField(blank = True, null = True, default = 'NO OS')
     UnapproveTCReason = models.TextField(blank = True, default = "NO REASON PROVIDED")
-    Platform = ArrayField(models.CharField(max_length = 10, blank = True, default = "UNKNOWN"), blank = True, default = list)
+    Platform = ArrayField(models.CharField(max_length = 100, blank = True, default = "UNKNOWN"), blank = True, default = list)
 
     def __str__(self):
         return self.TcID
@@ -127,7 +127,7 @@ class USER_INFO(models.Model):
     EmergencyContactNumber = models.CharField(max_length = 13, blank = True, null = True)
     EmenrgencyContactPersonName = models.CharField(max_length = 50, blank = True, null = True)
     EmergencyCOntactPersonRelation = models.CharField(max_length = 20, blank  = True, null = True)
-    AssignedReleases = ArrayField(models.CharField(max_length = 20, blank = True, default = "UNKNOWN"), blank = True, default = list)
+    AssignedReleases = ArrayField(models.CharField(max_length = 100, blank = True, default = "UNKNOWN"), blank = True, default = list)
 
     def __str__(self):
         return self.Name
@@ -288,8 +288,8 @@ class RELEASES(models.Model):
     BuildNumberList = ArrayField(models.CharField(max_length = 50, blank = True), blank = True)
     Engineers = ArrayField(models.CharField(max_length = 50, blank = True, null = True), blank = True, null = True)
     CardType = ArrayField(models.CharField(max_length = 100, blank = True), blank = True)
-    PlatformsCli = ArrayField(models.CharField(max_length = 10, blank = True, default = "UNKNOWN"), blank = True, default = list)
-    PlatformsGui = ArrayField(models.CharField(max_length = 10, blank = True, default = "UNKNOWN"), blank = True, default = list)
+    PlatformsCli = ArrayField(models.CharField(max_length = 100, blank = True, default = "UNKNOWN"), blank = True, default = list)
+    PlatformsGui = ArrayField(models.CharField(max_length = 100, blank = True, default = "UNKNOWN"), blank = True, default = list)
     ServerType = ArrayField(models.CharField(max_length = 100, blank = True), blank = True)
     SetupsUsed = ArrayField(models.CharField(max_length = 100, blank = True), blank = True)
     QAStartDate = models.DateTimeField(auto_now = False, blank = True, null=True)

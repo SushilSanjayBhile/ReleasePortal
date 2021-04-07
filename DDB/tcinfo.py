@@ -847,7 +847,7 @@ def sync_platform(request):
                         data.PlatformsGui.append(p)
                         data.save()
             print("distinct Gui platform in release",release,platformsGui)
-            #"""i
+            #"""
         except:
             print("in except")
 

@@ -1765,10 +1765,42 @@ def RELEASEINFO(request, Release):
             t = time.time()
             
             data = RELEASES.objects.using('universal').get(ReleaseNumber = Release)
+            cliTcInfo = TC_INFO.objects.using(Release).all()
+            guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
+            platformsCli = cliTcInfo.values('Platform').distinct()
+            platformsGui = guiTcInfo.values('Platform').distinct()
             serializer = RELEASE_SERIALIZER(data)
 
             serData = json.dumps(serializer.data)
             serData = json.loads(serData)
+            pcli = []
+            pgui = []
+            for p in platformsCli:
+                for p1 in p["Platform"]:
+                    if p1 not in pcli:
+                        pcli.append(p1)
+            #print("printcli",pcli)
+            #print("printserdat",serData["PlatformsCli"])
+            for p3 in serData["PlatformsCli"]:
+                if p3 not in pcli:
+                    serData["PlatformsCli"].remove(p3)
+                    data.PlatformsCli.remove(p3)
+                    data.save()
+            #print("printserdat",serData["PlatformsCli"])
+            #print("data",data.PlatformsCli)
+            for p in platformsGui:
+                for p1 in p["Platform"]:
+                    if p1 not in pgui:
+                        pgui.append(p1)
+            #print("printgui",pgui)
+            #print("printserdatg",serData["PlatformsGui"])
+            for p3 in serData["PlatformsGui"]:
+                if p3 not in pgui:
+                    serData["PlatformsGui"].remove(p3)
+                    data.PlatformsGui.remove(p3)
+                    data.save()
+            #print("printserdatg",serData["PlatformsGui"])
+            #print("datag",data.PlatformsGui)
 
             aggregateData = TCAGGREGATE(Release)
             serData['TcAggregate'] = aggregateData
