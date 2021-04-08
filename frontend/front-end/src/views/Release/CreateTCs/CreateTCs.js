@@ -4,7 +4,7 @@
 import React, { Component } from 'react';
 import {Col,Row,Button, Input, Collapse,Modal, ModalHeader, ModalBody, ModalFooter,FormGroup, Label, TabContent, TabPane, Nav, NavItem, NavLink,} from 'reactstrap';
 import { connect } from 'react-redux';
-import { getCurrentRelease } from '../../../reducers/release.reducer';
+import { getCurrentRelease, getDomainStatus } from '../../../reducers/release.reducer';
 import axios from 'axios';
 import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../actions';
 import Multiselect from 'react-bootstrap-multiselect';
@@ -16,6 +16,9 @@ const loading = () => <div className="animated fadeIn pt-3 text-center">Loading.
 class CreateTCs extends Component {
     // [field] : {old,new}
     changeLog = {};
+    platformList = [];
+    //domainList = [];
+    //subdomainList = [];
     constructor(props) {
         super(props);
         this.state = {
@@ -26,6 +29,9 @@ class CreateTCs extends Component {
             errors: {},
             multipleErrors: { 'mesg': 'hi' },
             activeTab: '1',
+            platforms: [],
+            domainList: [],
+            subdomainList: [],
         }
     }
     toggle = () => this.setState({ modal: !this.state.modal });
@@ -39,7 +45,7 @@ class CreateTCs extends Component {
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'AutoAssignee', 'DevAssignee', 'Priority',
         'Description', 'Steps', 'ExpectedBehaviour', 'Notes','Creator',
     ];
-    arrayFields = ['CardType', 'ServerType']
+    arrayFields = ['Platform','CardType', 'ServerType']
     whichFieldsUpdated(old, latest) {
         let changes = {};
         this.textFields.forEach(item => {
@@ -117,7 +123,8 @@ class CreateTCs extends Component {
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 // this.getTcs();
-                this.setState({ addTC: { Master: true, Domain: this.state.Domain, SubDomain: this.state.SubDomain, CardType: this.state.CardType }, errors: {} });
+                //this.setState({ addTC: { Master: true, Domain: this.state.Domain, SubDomain: this.state.SubDomain, CardType: this.state.CardType }, errors: {} });
+                this.setState({ addTC: { Master: true, Domain: this.state.Domain, SubDomain: this.state.SubDomain, CardType: this.state.CardType, Platform: this.state.Platform }, errors: {} });
                 alert(`TC ${data.TcID} Added Successfully`)
             }, error => {
                 alert('failed to create TC');
@@ -126,7 +133,7 @@ class CreateTCs extends Component {
     confirmToggle() {
         let errors = null;
         this.changeLog = {};
-        ['Domain', 'SubDomain', 'TcID', 'CardType']
+        ['Domain', 'SubDomain', 'TcID', 'CardType','Platform']
             .forEach(item => {
                 if (!errors) {
                     let valid = (this.state.addTC[item] && this.state.addTC[item].length > 0);
@@ -150,6 +157,11 @@ class CreateTCs extends Component {
             this.setState({ errors: errors })
         }
     }
+    componentDidMount(){
+             this.setState({
+                 platforms : this.props.selectedRelease && this.props.selectedRelease.PlatformsCli ? this.props.selectedRelease.PlatformsCli : []
+             })
+     }
     selectMultiselect(field, event, checked, select) {
         let value = event.val();
         switch (field) {
@@ -168,7 +180,7 @@ class CreateTCs extends Component {
                 }
                 this.setState({ addTC: { ...this.state.addTC, CardType: cardType }, errors: { ...this.state.errors, CardType: null } });
                 break;
-            case 'OrchestrationPlatform':
+            /*case 'OrchestrationPlatform':
                 let op = null;
                 if (checked && this.state.addTC.OrchestrationPlatform) {
                     op = [...this.state.addTC.OrchestrationPlatform, value];
@@ -182,6 +194,30 @@ class CreateTCs extends Component {
                     op = array;
                 }
                 this.setState({ addTC: { ...this.state.addTC, OrchestrationPlatform: op }, errors: { ...this.state.errors, OrchestrationPlatform: null } });
+                break;
+            */
+            case 'Platform':
+                let op = null;
+                if (checked && this.state.addTC.Platform) {
+                    op = [...this.state.addTC.Platform, value];
+                    console.log("1st if",op)
+                }
+                if (checked && !this.state.addTC.Platform) {
+                    op = [value];
+                    console.log("2nd if",op)
+                }
+                if (!checked && this.state.addTC.Platform) {
+                    let array = this.state.addTC.Platform;
+                    array.splice(array.indexOf(value), 1);
+                    op = array;
+                    console.log("3rd if",op)
+                }
+                console.log("outof all if oparrya",op)
+                console.log("this.state.addTC.Platform",this.state.addTC.Platform)
+                this.setState({ addTC: { ...this.state.addTC, Platform: op, Domain: null, SubDomain: null }, errors: { ...this.state.errors, Platform: null }}, () => {
+                    this.getDomain()
+                });
+                console.log("this.state.addTC.Platform",this.state.addTC)
                 break;
             case 'ServerType':
                 let servers = null;
@@ -203,6 +239,31 @@ class CreateTCs extends Component {
         }
 
     }
+    getDomain() {
+        this.state.domainList = []
+        let list = []
+        console.log("this.state.addTC.Platform",this.state.addTC.Platform)
+        console.log("domainList1",this.state.domainList)
+        this.state.addTC.Platform && this.state.addTC.Platform.forEach(element => {
+                //this.state.domainList.push.apply(this.state.domainList,Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[element]))
+                list.push.apply(list,this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli ? Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element]) : [])
+            })
+            this.setState({domainList: list})
+        console.log("domainList2",this.state.domainList)
+    }
+    getsubDomain() {
+        this.state.subdomainList = []
+        let list = []
+        console.log("this.state.addTC.Platform",this.state.addTC.Platform)
+        console.log("this.state.addTC.Domain",this.state.addTC.Domain)
+        this.state.addTC.Platform && this.state.addTC.Platform.forEach(element => {
+            if(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element]).includes(this.state.addTC.Domain)) {
+                list.push.apply(list,this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element][this.state.addTC.Domain])
+            }    
+        })
+        this.setState({subdomainList: list})
+        console.log("this.subdomainList",this.state.subdomainList)
+    }
     getTcs() {
         this.props.saveTestCase({ data: [], id: this.props.selectedRelease.ReleaseNumber });
         this.props.saveSingleTestCase({});
@@ -216,11 +277,14 @@ class CreateTCs extends Component {
     render() {
 
         let users = this.props.users && this.props.users.filter(item => item.role !== 'EXECUTIVE').map(item => item.name);
-
+        let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsCli ? this.props.selectedRelease.PlatformsCli : []
         let cards = ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(item => ({ value: item, selected: this.state.addTC.CardType && this.state.addTC.CardType.includes(item) }));
         let servers = ['Intel', 'Dell', 'Lenovo'].map(item => ({ value: item, selected: this.state.addTC.ServerType && this.state.addTC.ServerType.includes(item) }));
-        let op = this.props.selectedRelease.OrchestrationPlatform ? this.props.selectedRelease.OrchestrationPlatform.map(item => ({ value: item, selected: this.state.addTC.OrchestrationPlatform && this.state.addTC.OrchestrationPlatform.includes(item) })) : [];
-        let multiselect = { 'CardType': cards, 'OrchestrationPlatform': op, 'ServerType': servers };
+        //let op = this.props.selectedRelease.OrchestrationPlatform ? this.props.selectedRelease.OrchestrationPlatform.map(item => ({ value: item, selected: this.state.addTC.OrchestrationPlatform && this.state.addTC.OrchestrationPlatform.includes(item) })) : [];
+        //let op = this.state.platforms ? this.state.platforms.map(item => ({ value: item, selected: this.state.addTC.Platform && this.state.addTC.Platform.includes(item) })) : [];
+        let op = platforms ? platforms.map(item => ({ value: item, selected: this.state.addTC.Platform && this.state.addTC.Platform.includes(item) })) : [];
+        //let op = this.props.selectedRelease.PlatformsCli ? this.props.selectedRelease.PlatformsCli.map(item => ({ value: item, selected: this.state.addTC.Platform && this.state.addTC.Platform.includes(item) })) : [];
+        let multiselect = { 'CardType': cards, 'Platform': op, 'ServerType': servers };
         return (
             <div>
                 {
@@ -295,6 +359,41 @@ class CreateTCs extends Component {
                                                 <i className="fa fa-save"></i>
                                             </Button>
                                             <Col xs="6" md="3" lg="3">
+                                            <FormGroup className='rp-app-table-value'>
+                                                    <Label className='rp-app-table-label' htmlFor="Platform">
+                                                        Platform
+                                                {
+                                                             this.state.errors['Platform'] &&
+                                                             <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors['Platform']}</i>
+                                                        }
+                                                    </Label>
+                                                    {
+                                                        [
+                                                            { field: 'Platform', header: 'Platform' },
+                                                        ].map(item => (
+                                                            <Col xs="6" md="3" lg="2">
+                                                                <FormGroup className='rp-app-table-value'>
+                                                                    <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}
+                                                                        {
+                                                                            this.state.errors[item.field] &&
+                                                                            <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
+                                                                        }</Label>
+                                                                    {
+                                                                        !this.props.isEditing ?
+                                                                            <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail[item.field]}</span>
+                                                                            :
+                                                                            <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(item.field, e, checked, select)}
+                                                                                data={multiselect[item.field]} multiple /></div>
+                                                                    }
+                                                                </FormGroup>
+                                                            </Col>
+                                                        ))
+                                                    }
+                                            </FormGroup>
+                                            </Col>
+                                            {
+                                            this.state.addTC.Platform && this.state.addTC.Platform.length > 0 &&
+                                            <Col xs="6" md="3" lg="3">
                                                 <FormGroup className='rp-app-table-value'>
                                                     <Label className='rp-app-table-label' htmlFor="Domain">
                                                         Domain
@@ -308,16 +407,18 @@ class CreateTCs extends Component {
                                                             <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail.Domain}</span>
                                                             :
                                                             <Input style={{ borderColor: this.state.errors['Domain'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="Domain" name="Domain" value={this.state.addTC && this.state.addTC.Domain}
-                                                                onChange={(e) => this.setState({ addTC: { ...this.state.addTC, Domain: e.target.value }, errors: { ...this.state.errors, Domain: null } })} >
+                                                                onChange={(e) => this.setState({ addTC: { ...this.state.addTC, Domain: e.target.value }, errors: { ...this.state.errors, Domain: null } },() => {this.getsubDomain()})} >
                                                                 <option value=''>Select Domain</option>
                                                                 {
-                                                                    this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions &&
-                                                                    Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions).map(item => <option value={item}>{item}</option>)
+                                                                    // this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions &&
+                                                                    // Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions).map(item => <option value={item}>{item}</option>)
+                                                                    this.state.domainList && this.state.domainList.map(item => <option value={item}>{item}</option>)
                                                                 }
                                                             </Input>
                                                     }
                                                 </FormGroup>
                                             </Col>
+                                            }
                                             {
                                                 this.state.addTC.Domain &&
                                                 <Col xs="6" md="3" lg="3">
@@ -336,8 +437,9 @@ class CreateTCs extends Component {
                                                                     onChange={(e) => this.setState({ addTC: { ...this.state.addTC, SubDomain: e.target.value }, errors: { ...this.state.errors, SubDomain: null } })} >
                                                                     <option value=''>Select Sub Domain</option>
                                                                     {
-                                                                        this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions &&
-                                                                        this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.addTC.Domain].map(item => <option value={item}>{item}</option>)
+                                                                        // this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions &&
+                                                                        // this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.addTC.Domain].map(item => <option value={item}>{item}</option>)
+                                                                        this.state.subdomainList && this.state.subdomainList.map(item => <option value={item}>{item}</option>)
                                                                     }
                                                                 </Input>
                                                         }
@@ -352,7 +454,6 @@ class CreateTCs extends Component {
                                                         [
                                                             { field: 'CardType', header: 'Card Type' },
                                                             { field: 'ServerType', header: 'Server Type' },
-                                                            // { field: 'OrchestrationPlatform', header: 'Orchestration Platform' },
                                                         ].map(item => (
                                                             <Col xs="6" md="3" lg="2">
                                                                 <FormGroup className='rp-app-table-value'>
@@ -377,6 +478,7 @@ class CreateTCs extends Component {
                                                         [
                                                             { field: 'Scenario', header: 'Scenario *', type: 'text' },
                                                             { field: 'TcID', header: 'Tc ID *', type: 'text', }
+                                                
                                                         ].map((item, index) => (
                                                             <Col xs="6" md="3" lg="3">
                                                                 <FormGroup className='rp-app-table-value'>
@@ -416,6 +518,29 @@ class CreateTCs extends Component {
                                                             }
                                                         </FormGroup>
                                                     </Col>
+
+                                                    {/* {
+                                                        [
+                                                            { field: 'Platform', header: 'Platform' },
+                                                        ].map(item => (
+                                                            <Col xs="6" md="3" lg="2">
+                                                                <FormGroup className='rp-app-table-value'>
+                                                                    <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}
+                                                                        {
+                                                                            this.state.errors[item.field] &&
+                                                                            <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
+                                                                        }</Label>
+                                                                    {
+                                                                        !this.props.isEditing ?
+                                                                            <span className='rp-app-table-value'>{this.props.testcaseDetail && this.props.testcaseDetail[item.field]}</span>
+                                                                            :
+                                                                            <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(item.field, e, checked, select)}
+                                                                                data={multiselect[item.field]} multiple /></div>
+                                                                    }
+                                                                </FormGroup>
+                                                            </Col>
+                                                        ))
+                                                    } */}
 
 
                                                     {
@@ -527,4 +652,4 @@ const mapStateToProps = (state, ownProps) => ({
     selectedTC: state.testcase.all[state.release.current.id],
     testcaseDetail: state.testcase.testcaseDetail
 })
-export default connect(mapStateToProps, { saveTestCase, saveTestCaseStatus, saveSingleTestCase })(CreateTCs);
+export default connect(mapStateToProps, { saveTestCase, getCurrentRelease, saveTestCaseStatus, saveSingleTestCase })(CreateTCs);

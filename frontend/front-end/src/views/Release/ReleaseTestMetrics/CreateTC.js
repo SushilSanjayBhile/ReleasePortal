@@ -87,7 +87,6 @@ class CreateTC extends Component {
         data.TcName = 'TC NOT AUTOMATED';
         // tc status fields
         data.CurrentStatus = 'NotTested';
-
         if (data.Role === 'ADMIN') {
             if (data.Assignee && data.Assignee !== 'ADMIN') {
                 data.WorkingStatus = 'MANUAL_ASSIGNED';

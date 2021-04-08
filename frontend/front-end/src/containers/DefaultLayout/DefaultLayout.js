@@ -2,7 +2,7 @@
 import React, { Component, Suspense } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
-import { Container } from 'reactstrap';
+import { Container, UncontrolledTooltip } from 'reactstrap';
 import axios from 'axios';
 import { gapi } from 'gapi-script';
 import {
@@ -20,9 +20,10 @@ import {
 
 import routes from '../../routes';
 import { connect } from 'react-redux';
-import { logOut, saveUsers, saveReleaseBasicInfo, releaseChange, saveTestCase, saveTestCaseStatus, logInSuccess, clearUserData, fetchUserNotifications } from '../../actions';
+import { logOut, saveUsers, saveReleaseBasicInfo, releaseChange, saveTestCase, saveTestCaseStatus, logInSuccess, clearUserData, fetchUserNotifications, updateSelectedPriority } from '../../actions';
 import { getCurrentRelease } from '../../reducers/release.reducer';
-import { timeout } from 'd3';
+import { thresholdFreedmanDiaconis, timeFormatLocale, timeMillisecond, timeout } from 'd3';
+import { element } from 'prop-types';
 
 const DefaultAside = React.lazy(() => import('./DefaultAside'));
 const DefaultFooter = React.lazy(() => import('./DefaultFooter'));
@@ -35,6 +36,7 @@ class DefaultLayout extends Component {
     super();
     this.state={
       releaseChange:true,
+      routePath:``,
     }
   }
   allReleases1 = []
@@ -93,22 +95,48 @@ class DefaultLayout extends Component {
       })
       
     }
+    // let releaseInfoURL = `/api/release/info`;
+    //   axios.get(releaseInfoURL)
+    //     .then(res => {
+    //       res.data.forEach(item => {
+    //         this.allReleases1.push(item.ReleaseNumber)
+    //         // this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
+    //       });
+    //       if (this.allReleases1[0]) {
+    //         this.getReleaseData(this.allReleases1[0] )
+    //         this.props.releaseChange({ id: this.allReleases1[0]  });
+    //       }
 
-    let releaseInfoURL = `/api/release/info`;
-      axios.get(releaseInfoURL)
+    //     }, error => {
+          
+    //     });
+  }
+  componentDidUpdate(prevProps, prevState){
+    let email = this.props.currentUser ? this.props.currentUser.email : null
+    if (prevProps.currentUser !== this.props.currentUser) {
+      if (email != null) {
+      axios.get(`/api/user1/name/${email}`)
         .then(res => {
           res.data.forEach(item => {
-            this.allReleases1.push(item.ReleaseNumber)
-            // this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
-          });
+            item.AssignedReleases.forEach(element =>{
+              //this.allReleases1.push(element)
+              this.allReleases1.push(element)
+              if(item.EngineerType == 'GUI'){
+                this.setState({routePath: `/release/guitestmetrics`})
+              }
+              else this.setState({routePath: `/release/testmetrics`});
+            })
+          })
           if (this.allReleases1[0]) {
             this.getReleaseData(this.allReleases1[0] )
             this.props.releaseChange({ id: this.allReleases1[0]  });
           }
-
         }, error => {
           
-        });
+        })
+      }
+      else alert("User does not have email address")
+    }
   }
 
   getReleaseData = (release) =>{
@@ -147,7 +175,21 @@ class DefaultLayout extends Component {
   }
 
   render() {
-   
+   if(this.state.routePath === null)
+   {
+     return(
+      <main className="main">
+                <div class="container" style={{ 'margin-top': '1rem' }}>
+                    <div class="modal fade" id="myModal" role="dialog">
+                        <div class="modal-body">
+                        <span>Loading...</span>
+                        </div>
+                    </div>
+                </div>
+      </main>
+     );
+   }
+   else {
     return (
       <div className="app">
         <AppHeader fixed>
@@ -212,7 +254,7 @@ class DefaultLayout extends Component {
                     ) : (null);
                   })}
                   <Redirect from="/"
-                    to={`/release/summary`} />
+                    to={this.state.routePath} />
                 </Switch>
               </Suspense>
             </Container>
@@ -226,6 +268,7 @@ class DefaultLayout extends Component {
       </div>
     );
   }
+}
 }
 
 const mapStateToProps = (state, ownProps) => ({

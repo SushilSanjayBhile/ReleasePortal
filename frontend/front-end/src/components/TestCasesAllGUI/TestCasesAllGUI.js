@@ -41,7 +41,9 @@ class TestCasesAllGUI extends Component {
     isApiUnderProgress = false;
     isAnyChanged = false;
     isBlockedOrFailed = false;
-    allTCsToShow = []
+    allTCsToShow = [];
+    ApplicableTcs = [];
+    platformList = [];
     constructor(props) {
         super(props);
         let columnDefDict = {
@@ -166,6 +168,12 @@ class TestCasesAllGUI extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+            'ExpectedBehaviour' : {
+                headerName: "ExpectedBehaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
         }
         this.state = {
             updateCounter: 1,
@@ -176,6 +184,7 @@ class TestCasesAllGUI extends Component {
             rowSelect: false,
             isEditing: false,
             delete: false,
+            displayPlatforms : [],
 
             tableColumnsTcs: [
                 {id: 1, value: "Show Skip", isChecked: false},
@@ -208,10 +217,12 @@ class TestCasesAllGUI extends Component {
                 {id: 15, value: "OS", isChecked: false},
                 {id: 16, value: "applicable", isChecked: false},
                 {id: 17, value: "Platform", isChecked: false},
+                {id: 18, value: "ExpectedBehaviour", isChecked: false},
 
               ],
               
             columnDefs: [
+                columnDefDict['Platform'],
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
                 columnDefDict['Description'],
@@ -223,6 +234,7 @@ class TestCasesAllGUI extends Component {
                 columnDefDict['Priority'],
                 columnDefDict['Assignee'],
                 columnDefDict['Notes'],
+                columnDefDict['ExpectedBehaviour'],
             ],
             
             defaultColDef: { resizable: true },
@@ -445,6 +457,12 @@ class TestCasesAllGUI extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+            'ExpectedBehaviour' : {
+                headerName: "ExpectedBehaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
         }
         
         let tableColumns = this.state.tableColumns;
@@ -564,7 +582,7 @@ class TestCasesAllGUI extends Component {
         if (this.pageNumber < 0) {
             this.pageNumber = 0;
         }
-        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, this.state.priority);
+        this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.priority);
     }
     onSelectionChanged = (event) => {
         this.setState({ selectedRows: event.api.getSelectedRows().length })
@@ -591,7 +609,7 @@ class TestCasesAllGUI extends Component {
         }
     }
     componentDidMount() {
-        setTimeout(() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain), 400);
+        setTimeout(() => this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain), 400);
         if (this.props.user &&
             (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
                 this.props.user.role === 'ENGG')) {
@@ -611,10 +629,10 @@ class TestCasesAllGUI extends Component {
             this.isAnyChanged = false;
             this.isBlockedOrFailed = false;
             this.setState({
-                rowSelect: false, CardType: '', domain: '', subDomain: '', Priority: '',
+                rowSelect: false, CardType: '', platform: '',  domain: '', subDomain: '', Priority: '',
                 isEditing: false
             })
-            setTimeout(() => this.getTcs(null, null, null, null, null, newProps.selectedRelease.ReleaseNumber), 400);
+            setTimeout(() => this.getTcs(null, null, null, null, null, null, newProps.selectedRelease.ReleaseNumber), 400);
         }
     }
 
@@ -623,6 +641,18 @@ class TestCasesAllGUI extends Component {
         this.setState({ rowSelect: false, filter: value });
         this.gridApi.setQuickFilter(value);
         this.resetRows();
+    }
+    onSelectPlatform(platform) {
+        if (platform === '') {
+            platform = null;
+        } else {
+            //this.getTcByPlatform(platform);
+        }
+        //this.getTcByPlatform(platform);
+
+        // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
+        this.setState({ platform: platform, domain: '', subDomain: ''});
+        this.getTcs(this.state.CardType, platform, '', '', this.state.Priority);
     }
 
     // SELECTION BOX
@@ -634,7 +664,7 @@ class TestCasesAllGUI extends Component {
         }
         // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
         this.setState({ domain: domain, subDomain: '' });
-        this.getTcs(this.state.CardType, domain, '', this.state.Priority);
+        this.getTcs(this.state.CardType, this.state.platform, domain, '', this.state.Priority);
     }
     onSelectSubDomain(subDomain) {
         if (subDomain === '') {
@@ -642,7 +672,7 @@ class TestCasesAllGUI extends Component {
         }
         // let data = this.filterData({ Domain: this.state.domain, SubDomain: subDomain, CardType: this.state.CardType })
         this.setState({ subDomain: subDomain });
-        this.getTcs(this.state.CardType, this.state.domain, subDomain, this.state.Priority);
+        this.getTcs(this.state.CardType, this.state.platform, this.state.domain, subDomain, this.state.Priority);
     }
     onSelectCardType(cardType) {
         if (cardType === '') {
@@ -650,7 +680,7 @@ class TestCasesAllGUI extends Component {
         }
         //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ CardType: cardType });
-        this.getTcs(cardType, this.state.domain, this.state.subDomain, this.state.Priority);
+        this.getTcs(cardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority);
     }
     onSelectPriority(priority) {
         if (priority === '') {
@@ -658,7 +688,7 @@ class TestCasesAllGUI extends Component {
         }
         //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ Priority: priority });
-        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, priority);
+        this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, priority);
     }
 
 
@@ -688,7 +718,7 @@ class TestCasesAllGUI extends Component {
         if (this.props.tcDetails.TcID) {
             axios.delete(`/api/${this.props.selectedRelease.ReleaseNumber}/wholeguitcinfo/id/${this.props.tcDetails.TcID}`)
                 .then(data => {
-                    this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain);
+                    this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain);
                 }, error => {
                     alert(`Error: ${error.message}`);
                 })
@@ -750,6 +780,18 @@ class TestCasesAllGUI extends Component {
     // }
 
     // VIEW TC
+    getTcByPlatform (platform) {
+        this.gridOperations(false);
+        axios.get('/api/applicable/platformwisetc/'+ platform)
+        .then(response=>{
+            console.log(response.data);
+            this.saveLocalMultipleTC({ data:response.data.Data, id: this.props.selectedRelease.ReleaseNumber }, false)
+            this.gridOperations(true);
+            
+        })
+        .catch(error=>{
+        })
+    }
     getTcByDomain(domain) {
         this.gridOperations(false);
         // axios.get('/api/' + this.props.selectedRelease.ReleaseNumber + '/wholeguitcinfo/domain/' + domain)
@@ -803,7 +845,7 @@ class TestCasesAllGUI extends Component {
                 this.gridOperations(true);
             })
     }
-    getTcs(CardType, domain, subDomain, priority, all, selectedRelease, updateRelease) {
+    getTcs(CardType, platform, domain, subDomain, priority, all, selectedRelease, updateRelease) {
         let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
         if (!release) {
             return;
@@ -814,8 +856,9 @@ class TestCasesAllGUI extends Component {
         if (all) {
             url = `/api/wholeguitcinfo/${release}?`;
         }
-        if (CardType || domain || subDomain || priority) {
+        if (platform || CardType || domain || subDomain || priority) {
             url = `/api/wholeguitcinfo/${release}?`;
+            if (platform) url += ('&Platform=' + platform);
             if (CardType) url += ('&CardType=' + CardType);
             if (domain) url += ('&Domain=' + domain);
             if (subDomain) url += ('&SubDomain=' + subDomain);
@@ -829,10 +872,10 @@ class TestCasesAllGUI extends Component {
                 str1 = str1 + item.value + ","
             } 
         })
-        if(!all){
+        //if(!all){
             url += ('&applicable=' + str1);
 
-        }
+        //}
         
         axios.get(url)
             .then(all => {
@@ -840,7 +883,6 @@ class TestCasesAllGUI extends Component {
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
                 this.allTCsToShow = all.data;
                 this.getTcsToShow(release,updateRelease)
-                
                 // this.saveLocalMultipleTC({ data: showTc, id: release }, false, updateRelease)
                 // this.gridOperations(true);
                 
@@ -850,9 +892,9 @@ class TestCasesAllGUI extends Component {
             })
     }
     getAlltcs() {
-        this.setState({ loading: true, domain: '', subDomain: '', CardType: '', Priority: '' })
+        this.setState({ loading: true, platform: '', domain: '', subDomain: '', CardType: '', Priority: '' })
         this.saveLocalMultipleTC({ data: [], id: this.props.selectedRelease.ReleaseNumber }, true);
-        this.getTcs(null, null, null, null, true);
+        this.getTcs(null,null, null, null, null, true);
     }
 
     getTcsToShow(release,updateRelease){
@@ -860,7 +902,8 @@ class TestCasesAllGUI extends Component {
         let showTc = []
         let skipTcs = []
         let NATcs = []
-        let ApplicableTcs = []
+        //let ApplicableTcs = []
+        this.ApplicableTcs = []
         let skipCount = 0;
         let NACount = 0;
         let applicableCount = 0;
@@ -876,7 +919,8 @@ class TestCasesAllGUI extends Component {
             }
             if(this.allTCsToShow[i].Priority != 'NA' && this.allTCsToShow[i].Priority != 'Skip'){
                 applicableCount+=1
-                ApplicableTcs.push(this.allTCsToShow[i])
+                //ApplicableTcs.push(this.allTCsToShow[i])
+                this.ApplicableTcs.push(this.allTCsToShow[i])
             }
         }
         
@@ -894,12 +938,12 @@ class TestCasesAllGUI extends Component {
                 })
             } 
             if(item.isChecked == true && item.value == 'Applicable' ){
-                ApplicableTcs.forEach(applicableTC=>{
+                //ApplicableTcs.forEach(applicableTC=>{
+                this.ApplicableTcs.forEach(applicableTC=>{
                     showTc.push(applicableTC)
                 })
             }
         })
-
         let showTc1 = []
         let statusFlag = 0
         this.state.statusColumn.forEach(item=>{
@@ -1012,6 +1056,7 @@ class TestCasesAllGUI extends Component {
                 status.Domain = item.Domain;
                 status.SubDomain = item.SubDomain;
                 status.Steps = item.Steps;
+                status.ExpectedBehaviour = item.ExpectedBehaviour;
                 status.Scenario = this.props.tcDetails.Scenario;
                 status.Notes = item.Notes;
                 status.TcName = this.getTcName(`${item.TcName}`);
@@ -1057,7 +1102,7 @@ class TestCasesAllGUI extends Component {
                 if (items.length > 0) {
                     this.saveMultipleTcInfo(items)
                 } else {
-                    this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);   
+                    this.getTcs(this.state.CardType,this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true);   
                 }
             }, error => {
                 this.gridOperations(true);
@@ -1081,7 +1126,7 @@ class TestCasesAllGUI extends Component {
         axios.put(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, items)
             .then(res => {
                 this.gridOperations(true);
-                this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
+                this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true)
                 alert('Tc Info Updated Successfully');
             }, error => {
                 this.gridOperations(true);
@@ -1156,7 +1201,6 @@ class TestCasesAllGUI extends Component {
             this.saveSingleTCInfo(data);
             
         }
-        // this.toggle();
     }
     saveSingleTCStatus(data) {
         this.gridOperations(false);
@@ -1164,6 +1208,7 @@ class TestCasesAllGUI extends Component {
         status.Domain = this.props.tcDetails.Domain;
         status.SubDomain = this.props.tcDetails.SubDomain;
         status.Steps = this.props.tcDetails.Steps;
+        status.ExpectedBehaviour = this.props.tcDetails.ExpectedBehaviour;
         status.Notes = this.props.tcDetails.Notes;
         status.Scenario = this.props.tcDetails.Scenario;
         status.TcName = this.getTcName(`${this.props.tcDetails.TcName}`);
@@ -1262,8 +1307,12 @@ class TestCasesAllGUI extends Component {
     }
 
     render() {
-        let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
-        let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
+        //let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate["domain-gui"] && Object.keys(this.props.selectedRelease.TcAggregate["domain-gui"]);
+        //let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
+        //let platforms = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui);
+        let platforms =this.props.selectedRelease && this.props.selectedRelease.PlatformsGui ? this.props.selectedRelease.PlatformsGui : []
+        let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[this.state.platform]);
+        let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[this.state.platform][this.state.domain];
         if (domains) {
             domains.sort();
         } else {
@@ -1288,7 +1337,7 @@ class TestCasesAllGUI extends Component {
         if (manualFilter && this.gridApi) {
             let rows = this.gridApi.getModel().rowsToDisplay;
             rows.forEach(row => {
-                if (row.data.TcName !== 'TC NOT AUTOMATED' && row.data.TcName !== 'NOT AUTOMATED' && row.data.TcName !== undefined) {
+                if (row.data.TcName !== 'TC NOT AUTOMATED' && row.data.TcName !== 'NOT AUTOMATED' && row.data.TcName !== 'undefined') {
                     automated += 1;
                 }
                 let tested = false;
@@ -1343,7 +1392,45 @@ class TestCasesAllGUI extends Component {
             //         }
             //     });
             // }
-        } else {
+        } 
+        let pass1 = 0, fail1 = 0, notTested1 = 0, automated1 = 0, total1 = 0;
+        if (this.gridApi && this.gridApi.getSelectedRows().length > 0) {
+            let rows = this.gridApi.getSelectedRows();
+            rows.forEach(row => {
+               if (row.TcName !== 'TC NOT AUTOMATED' && row.TcName !== 'NOT AUTOMATED' && row.TcName !== 'undefined') {
+                    automated1 += 1;
+                }
+                let tested = false;
+                if (row.CurrentStatus.Result === 'Pass') {
+                    pass1 += 1;
+                    tested = true;
+                } else if (row.CurrentStatus.Result === 'Fail') {
+                    fail1 += 1;
+                    tested = true;
+                } else {
+                    notTested1 += 1;
+                }
+            })
+            total1 = this.gridApi.getSelectedRows().length;
+        }
+         if (this.props.selectedRelease && !manualFilter) {
+            pass = 0; fail = 0; automated = 0;
+            for(let i = 0; i < this.ApplicableTcs.length; i++){
+                if(this.ApplicableTcs[i].CurrentStatus.Result ==='Pass'){
+                    pass+=1;
+                }
+                if(this.ApplicableTcs[i].CurrentStatus.Result === 'Fail'){
+                    fail+=1;
+                }
+                if(this.ApplicableTcs[i].TcName !== 'TC NOT AUTOMATED' && this.ApplicableTcs[i].TcName !== 'NOT AUTOMATED' && this.ApplicableTcs[i].TcName !== 'undefined'){
+                    automated+=1;
+                }
+            }
+            total = this.ApplicableTcs.length
+        
+        }
+        
+        /*else {
             if (this.props.selectedRelease && this.props.selectedRelease.TcAggregate) {
                 let tcAggr = this.props.selectedRelease.TcAggregate.all;
                 pass = tcAggr.Tested.manual.Pass + tcAggr.Tested.auto.Pass;
@@ -1351,7 +1438,7 @@ class TestCasesAllGUI extends Component {
                 fail = tcAggr.Tested.manual.Fail + tcAggr.Tested.auto.Fail;
                 total = pass + fail + tcAggr.Tested.manual.Skip + tcAggr.Tested.auto.Skip + tcAggr.NotTested + tcAggr.NotApplicable
             }
-        }
+        }*/
         return (
             <div>
                 <Row>
@@ -1401,7 +1488,8 @@ class TestCasesAllGUI extends Component {
                                         <div class="row">
                                             {
                                                 [
-                                                    { style: { width: '8rem', marginLeft: '1.5rem' }, field: 'domain', onChange: (e) => this.onSelectDomain(e), values: [{ value: '', text: 'Select Domain' }, ...(domains && domains.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '1.0rem' }, field: 'platform', onChange: (e) => this.onSelectPlatform(e), values: [{ value: '', text: 'Select Platform' }, ...(platforms && platforms.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'domain', onChange: (e) => this.onSelectDomain(e), values: [{ value: '', text: 'Select Domain' }, ...(domains && domains.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'subDomain', onChange: (e) => this.onSelectSubDomain(e), values: [{ value: '', text: 'Select SubDomain' }, ...(subdomains && subdomains.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'CardType', onChange: (e) => this.onSelectCardType(e), values: [{ value: '', text: 'Select CardType' }, ...(['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '7rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] }
@@ -1646,7 +1734,7 @@ class TestCasesAllGUI extends Component {
                                                                     <span>
                                                                         {
                                                                             this.isAnyChanged &&
-                                                                            <Button disabled={this.state.isApiUnderProgress} title="Undo" size="md" className="rp-rb-save-btn" onClick={() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain)} >
+                                                                            <Button disabled={this.state.isApiUnderProgress} title="Undo" size="md" className="rp-rb-save-btn" onClick={() => this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain)} >
                                                                                 Undo
                                                                             </Button>
                                                                         }
@@ -1719,21 +1807,28 @@ class TestCasesAllGUI extends Component {
                                         </div>
                                     </div>
                                     <div style={{ display: 'inline' }}>
-                                        <div style={{ display: 'inline' }}>
-                                            <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Pass: {pass}</span>
-                                            <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Fail: {fail}</span>
-                                            <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Automated: {automated}</span>
-
+                                        {
+                                        this.gridApi && this.gridApi.getSelectedRows().length > 0 ?
+                                            <div style={{ display: 'inline' }}>
+                                            <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Pass: {pass1}</span>
+                                            <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Fail: {fail1}</span>
+                                            <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Automated: {automated1}</span>
+                                            <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {total1}</span>
                                             {/* <span style={{marginLeft: '0.5rem'}} className='rp-app-table-value'>notTested: {notTested}</span>
                                             <span style={{marginLeft: '0.5rem'}} className='rp-app-table-value'>prioritySkip: {prioritySkip}</span>
                                             <span style={{marginLeft: '0.5rem'}} className='rp-app-table-value'>priorityNA: {priorityNA}</span>
                                             <span style={{marginLeft: '0.5rem'}} className='rp-app-table-value'>prioritySkipAndTested: {prioritySkipAndTested}</span> */}
                                             {/* notTested = 0, prioritySkip=0,priorityNA=0,prioritySkipAndTested=0, */}
-
-                                            <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {total}</span>
-                                        </div>
+                                            </div> :
+                                             <div style={{ display: 'inline' }}>
+                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Pass: {pass}</span>
+                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Fail: {fail}</span>
+                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Automated: {automated}</span>
+                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {total}</span>
+                                         </div>
+                                         }
                                         <div style={{
-                                            float: 'right', display: this.state.isApiUnderProgress || this.state.CardType || this.state.domain || this.state.subDomain ||
+                                            float: 'right', display: this.state.isApiUnderProgress || this.state.CardType || this.state.platform || this.state.domain || this.state.subDomain ||
                                                 (this.props.tcStrategy && this.gridApi && this.props.tcStrategy.totalTests === this.gridApi.getModel().rowsToDisplay.length)
                                                 ? 'none' : ''
                                         }}>

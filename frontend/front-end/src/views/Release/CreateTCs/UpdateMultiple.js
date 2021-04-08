@@ -35,6 +35,7 @@ class UpdateMultiple extends Component {
     // [field] : {old,new}
     changeLog = {};
     editedRows = {};
+    //platformList = [];
     constructor(props) {
         super(props);
         this.state = {
@@ -44,6 +45,7 @@ class UpdateMultiple extends Component {
             edited: {},
             errors: {},
             rowData: [],
+            //platforms: [],
             multipleModal: false,
 
             columnDefs: [
@@ -52,6 +54,17 @@ class UpdateMultiple extends Component {
                     headerName: "ID", field: "TABLEID", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                     width: 50,
                     hide: true
+                },
+                {
+                    headerName: "Platform", field: "Platform",
+                    editable: true,
+                    sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                    cellEditor: 'selectionEditor',
+                    cellEditorParams: {
+                        values: this.props.selectedRelease && this.props.selectedRelease.PlatformsCli,
+                        multiple: true
+                    }
+
                 },
                 {
                     cellStyle: { alignItems: 'top' },
@@ -154,7 +167,7 @@ class UpdateMultiple extends Component {
         this.globalErrors = null;
         this.currentID = 0;
         // this.save();
-        if(this.state.multiple.length > 1){
+        if(this.state.multiple.length > 0){
             this.saveMultipleTc();
         }
     }
@@ -163,7 +176,7 @@ class UpdateMultiple extends Component {
         'TcID', 'TcName', 'Scenario', 'Tag', 'Priority', 'CardType',
         'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'Assignee', 'WorkingStatus'
     ];
-    arrayFields = ['CardType']
+    arrayFields = ['Platform','CardType']
     getTcName(name) {
         let tcName = name;
         if (!tcName || tcName === 'NOT AUTOMATED' || tcName === undefined || tcName === "undefined" || tcName === null) {
@@ -183,7 +196,7 @@ class UpdateMultiple extends Component {
         // data.Role = 'QA';
         // tc info fields
         this.textFields.forEach(item => data[item] = `${row[item]}`);
-        // this.arrayFields.forEach(item => data[item] = this.joinArrays(row[item]));
+        this.arrayFields.forEach(item => data[item] = this.joinArrays(row[item]));
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
             "TcID": `${data.TcID}`,
@@ -197,6 +210,8 @@ class UpdateMultiple extends Component {
         for(this.currentID = 0 ; this.currentID < this.state.multiple.length ; this.currentID += 1 ){
             multipleTCArray.push(this.state.multiple[this.currentID])
         }
+        console.log("this.state.multiple",this.state.multiple)
+        console.log("multipleTCArray",multipleTCArray)
         axios.put(`/api/multipletcinfoupdate/${this.props.selectedRelease.ReleaseNumber}`, multipleTCArray)
         .then(res => {
             alert('All TCs Updated Successfully')
@@ -264,8 +279,37 @@ class UpdateMultiple extends Component {
                 }
             });
     }
+    // componentDidMount() {
+    //     axios.get('/api/applicable/platformList/')
+
+    //     .then(response=>{
+    //         if(response.data){
+    //             response.data.PlatformList.map((item)=>{
+    //                 this.platformList.push(item)
+    //             })
+    //         }
+    //         this.setState({
+    //             platforms : this.platformList
+    //         })   
+    //     })
+    //     .catch(err=>{
+    //         console.log("error")
+    //     })
+    //     //this.setState({platforms: this.props.selectedRelease && this.props.selectedRelease.PlatformsCli})
+    // }
     confirmMultipleToggle() {
-        let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
+        let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsCli
+        let domains = []
+        let subdomains = []
+        platforms && platforms.forEach(element => {
+            domains.push.apply(domains,Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element]))
+        })
+        platforms && platforms.forEach(element => {
+            domains.forEach(item => {
+                subdomains.push.apply(subdomains,this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element][item])
+            })
+        })
+        //let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
         if (domains) {
             domains.sort();
         }
@@ -275,19 +319,30 @@ class UpdateMultiple extends Component {
         let errors = null;
         this.multiChangeLog = {};
         this.state.multiple.forEach(row => {
-            ['Domain', 'SubDomain', 'TcID']
+            ['Platform', 'Domain', 'SubDomain', 'TcID']
                 .forEach(item => {
                     let valid = (row[item] && row[item].length > 0);
                     if (!valid) {
                         if (!errors) errors = {};
                         errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], [item]: 'Cannot be empty' } };
                     }
-                });
+                });            
+            if(!errors) {
+                let platformArray = row.Platform.split(",").map((item) => {return item.trim();});                
+                platformArray.forEach(item => {
+                    let valid = platforms.includes(item)
+                    if (!valid)  {
+                        if (!errors) errors = {};
+                            errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], Platform: 'Should be a value from given platforms' } };
+                    }
+                } );
+                row.Platform = platformArray
+            }
             if (!domains.includes(row.Domain)) {
                 if (!errors) errors = {};
                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], Domain: 'Should be a value from given domains' } };
             }
-            let subdomains = row.Domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[row.Domain];
+            //let subdomains = row.Domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[row.Domain];
             if (!subdomains || (subdomains && !subdomains.includes(row.SubDomain))) {
                 if (!errors) errors = {};
                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], SubDomain: 'Should be a value from given subdomains' } };
@@ -421,15 +476,15 @@ class UpdateMultiple extends Component {
     //     });
     //     return changes;
     // }
-    // joinArrays(array) {
-    //     if (!array) {
-    //         array = [];
-    //     }
-    //     if (array && !Array.isArray(array)) {
-    //         array = `${array}`.split(',');
-    //     }
-    //     return array;
-    // }
+        joinArrays(array) {
+            if (!array) {
+                array = [];
+            }
+            if (array && !Array.isArray(array)) {
+                array = `${array}`.split(',');
+            }
+            return array;
+        }
     onGridReady = params => {
         this.gridApi = params.api;
         this.gridColumnApi = params.columnApi;
@@ -464,8 +519,11 @@ class UpdateMultiple extends Component {
     }
 
     render() {
-        let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
-        let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
+        let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsCli
+        let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform]);
+        let subdomains =  this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform] && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform][this.state.domain];
+        //let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
+        //let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
         if (domains) {
             domains.sort();
         }
@@ -497,9 +555,20 @@ class UpdateMultiple extends Component {
                     <Col className='col-md-6' style={{ marginBottom: '1rem' }}>
                         <div className='rp-app-table-value' style={{ marginBottom: '0.3rem' }}>Allowed Domains and SubDomains</div>
                         <FormGroup row className="my-0" style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-
+                            
                             {
                                 <div style={{ width: '9rem', marginLeft: '1.5rem' }}>
+                                    <Input style={{ fontSize: '12px' }} value={this.state.platform} onChange={(e) => this.setState({ platform: e.target.value })} type="select" name="selectPlatform" id="selectPlatform">
+                                        <option value=''>Select Platform</option>
+                                        {
+                                            platforms && platforms.map(item => <option value={item}>{item}</option>)
+                                        }
+                                    </Input>
+                                </div>
+                            }
+                            
+                            {
+                                <div style={{ width: '9rem', marginLeft: '0.5rem' }}>
                                     <Input style={{ fontSize: '12px' }} value={this.state.domain} onChange={(e) => this.setState({ domain: e.target.value })} type="select" name="selectDomain" id="selectDomain">
                                         <option value=''>Select Domain</option>
                                         {
@@ -602,7 +671,7 @@ const mapStateToProps = (state, ownProps) => ({
     selectedTC: state.testcase.all[state.release.current.id],
     testcaseDetail: state.testcase.testcaseDetail
 })
-export default connect(mapStateToProps, { saveTestCase, saveTestCaseStatus, saveSingleTestCase })(UpdateMultiple);
+export default connect(mapStateToProps, { saveTestCase, getCurrentRelease, saveTestCaseStatus, saveSingleTestCase })(UpdateMultiple);
 
 
 

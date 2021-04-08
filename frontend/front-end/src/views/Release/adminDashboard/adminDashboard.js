@@ -31,6 +31,9 @@ import DatePickerEditor from '../../../components/TestCasesAll/datePickerEditor'
 import EditTC from '../../../views/Release/ReleaseTestMetrics/EditTC';
 import TcSummary from '../../../components/TestCasesAll/TcSummary';
 import  CheckBox  from '../../../components/TestCasesAll/CheckBox';
+import Multiselect from 'react-bootstrap-multiselect';
+import { timeHours } from 'd3-time';
+import { element } from 'prop-types';
 
 // import { data, domains, subDomains } from './constants';
 // "Description": "Enable helm", "ExpectedBehaviour": "dctl feature list should display helm as enabled", "Notes": "NOTES NOT PROVIDED"
@@ -48,6 +51,7 @@ class adminDashboard extends Component {
     allTCsToShow = []
     newPlatFormValue = ''
     platformList = []
+    ApplicableTcs = [];
 
     constructor(props) {
         super(props);
@@ -174,6 +178,12 @@ class adminDashboard extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+            'ExpectedBehaviour' : {
+                headerName: "ExpectedBehaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                width: '180',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
         }
         
         this.state = {
@@ -186,6 +196,7 @@ class adminDashboard extends Component {
             isEditing: false,
             delete: false,
             displayPlatforms : [],
+            //platformToAdd: [],
             newPlatforms:'',
     
             tableColumnsTcs: [
@@ -222,9 +233,11 @@ class adminDashboard extends Component {
                 {id: 15, value: "OS", isChecked: false},
                 {id: 16, value: "applicable", isChecked: false},
                 {id: 17, value: "Platform", isChecked: false},
+                {id: 18, value: "ExpectedBehaviour", isChecked: false},
               ],
               
             columnDefs: [
+                columnDefDict['Platform'],
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
                 columnDefDict['Description'],
@@ -234,6 +247,7 @@ class adminDashboard extends Component {
                 columnDefDict['OS'],
                 columnDefDict['Bug'],
                 columnDefDict['Priority'],
+                columnDefDict['ExpectedBehaviour'],
             ],
             
             defaultColDef: { resizable: true },
@@ -319,7 +333,7 @@ class adminDashboard extends Component {
     showSelectedTCs = () =>{
         
         this.getTcsToShow(this.props.selectedRelease.ReleaseNumber , true);
-        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, this.state.Priority);
+        this.getTcs(this.state.CardType, this.state.platform,  this.state.domain, this.state.subDomain, this.state.Priority);
         this.setState({ popoverOpen2: !this.state.popoverOpen2 });
     }
 
@@ -481,6 +495,12 @@ class adminDashboard extends Component {
             editable: false,
             cellClass: 'cell-wrap-text',
         },
+        'ExpectedBehaviour' : {
+            headerName: "ExpectedBehaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            width: '180',
+            editable: false,
+            cellClass: 'cell-wrap-text',
+        },
         }
         
         let tableColumns = this.state.tableColumns;
@@ -601,7 +621,7 @@ class adminDashboard extends Component {
         if (this.pageNumber < 0) {
             this.pageNumber = 0;
         }
-        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, this.state.priority);
+        this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.priority);
     }
     onSelectionChanged = (event) => {
         this.setState({ selectedRows: event.api.getSelectedRows().length })
@@ -628,7 +648,7 @@ class adminDashboard extends Component {
         }
     }
     componentDidMount() {
-        setTimeout(() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain), 400);
+        setTimeout(() => this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain), 400);
         if (this.props.user &&
             (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
                 this.props.user.role === 'ENGG')) {
@@ -654,6 +674,7 @@ class adminDashboard extends Component {
             this.setState({
                 displayPlatforms : this.platformList
             })   
+            console.log(this.state.displayPlatforms)
         })
         .catch(err=>{
             console.log("error")
@@ -665,10 +686,10 @@ class adminDashboard extends Component {
             this.isAnyChanged = false;
             this.isBlockedOrFailed = false;
             this.setState({
-                rowSelect: false, CardType: '', domain: '', subDomain: '', Priority: '',
+                rowSelect: false, CardType: '', platform: '', domain: '', subDomain: '', Priority: '',
                 isEditing: false
             })
-            setTimeout(() => this.getTcs(null, null, null, null, null, newProps.selectedRelease.ReleaseNumber), 400);
+            setTimeout(() => this.getTcs(null, null, null, null, null, null, newProps.selectedRelease.ReleaseNumber), 400);
         }
     }
 
@@ -685,13 +706,13 @@ class adminDashboard extends Component {
         if (platform === '') {
             platform = null;
         } else {
-            this.getTcByPlatform(platform);
+            //this.getTcByPlatform(platform);
         }
-        this.getTcByPlatform(platform);
+        //this.getTcByPlatform(platform);
 
         // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
-        // this.setState({ platform: platform});
-        // this.getTcs(this.state.CardType, domain, '', this.state.Priority);
+        this.setState({ platform: platform, domain: '', subDomain: ''});
+        this.getTcs(this.state.CardType, platform, '', '', this.state.Priority);
     }
 
     // SELECTION BOX
@@ -703,7 +724,7 @@ class adminDashboard extends Component {
         }
         // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
         this.setState({ domain: domain, subDomain: '' });
-        this.getTcs(this.state.CardType, domain, '', this.state.Priority);
+        this.getTcs(this.state.CardType, this.state.platform, domain, '', this.state.Priority);
     }
     onSelectSubDomain(subDomain) {
         if (subDomain === '') {
@@ -711,7 +732,7 @@ class adminDashboard extends Component {
         }
         // let data = this.filterData({ Domain: this.state.domain, SubDomain: subDomain, CardType: this.state.CardType })
         this.setState({ subDomain: subDomain });
-        this.getTcs(this.state.CardType, this.state.domain, subDomain, this.state.Priority);
+        this.getTcs(this.state.CardType, this.state.platform, this.state.domain, subDomain, this.state.Priority);
     }
     onSelectCardType(cardType) {
         if (cardType === '') {
@@ -719,7 +740,7 @@ class adminDashboard extends Component {
         }
         //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ CardType: cardType });
-        this.getTcs(cardType, this.state.domain, this.state.subDomain, this.state.Priority);
+        this.getTcs(cardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority);
     }
     onSelectPriority(priority) {
         if (priority === '') {
@@ -727,7 +748,7 @@ class adminDashboard extends Component {
         }
         //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ Priority: priority });
-        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, priority);
+        this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, priority);
     }
 
     // // RELEASE
@@ -744,7 +765,7 @@ class adminDashboard extends Component {
         if (this.props.tcDetails.TcID) {
             axios.delete(`/api/${this.props.selectedRelease.ReleaseNumber}/tcinfo/id/${this.props.tcDetails.TcID}`)
                 .then(data => {
-                    this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain);
+                    this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain);
                 }, error => {
                     alert(`Error: ${error.message}`);
                 })
@@ -829,7 +850,7 @@ class adminDashboard extends Component {
             })
     }
     
-    getTcs(CardType, domain, subDomain, priority, all, selectedRelease, updateRelease) {
+    getTcs(CardType, platform, domain, subDomain, priority, all, selectedRelease, updateRelease) {
         let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
         if (!release) {
             return;
@@ -842,8 +863,9 @@ class adminDashboard extends Component {
             url = `/api/wholetcinfo/${release}?`;
             // url = `/api/wholetcinfo/${release}`;
         }
-        if (CardType || domain || subDomain || priority) {
+        if (platform || CardType || domain || subDomain || priority) {
             url = `/api/wholetcinfo/${release}?`;
+            if (platform) url += ('Platform=' + platform);
             if (CardType) url += ('&CardType=' + CardType);
             if (domain) url += ('&Domain=' + domain);
             if (subDomain) url += ('&SubDomain=' + subDomain);
@@ -875,17 +897,17 @@ class adminDashboard extends Component {
             })
     }
     getAlltcs() {
-        this.setState({ loading: true, domain: '', subDomain: '', CardType: '', Priority: '' })
+        this.setState({ loading: true, platform: '', domain: '', subDomain: '', CardType: '', Priority: '' })
         this.saveLocalMultipleTC({ data: [], id: this.props.selectedRelease.ReleaseNumber }, true);
-        this.getTcs(null, null, null, null, true);
+        this.getTcs(null, null, null, null, null, true);
     }
-
     getTcsToShow(release,updateRelease){
 
         let showTc = []
         let skipTcs = []
         let NATcs = []
-        let ApplicableTcs = []
+        //let ApplicableTcs = []
+        this.ApplicableTcs = []
         
         for(let i = 0; i < this.allTCsToShow.length; i++){
             if(this.allTCsToShow[i].Priority == 'Skip' || this.allTCsToShow[i].Priority == 'Skp' ){
@@ -895,7 +917,8 @@ class adminDashboard extends Component {
                 NATcs.push(this.allTCsToShow[i])
             }
             if(this.allTCsToShow[i].Priority != 'NA' && this.allTCsToShow[i].Priority != 'Skip'){
-                ApplicableTcs.push(this.allTCsToShow[i])
+                this.ApplicableTcs.push(this.allTCsToShow[i])
+                //ApplicableTcs.push(this.allTCsToShow[i])
             }
         }
         showTc = []
@@ -911,7 +934,8 @@ class adminDashboard extends Component {
                 })
             } 
             if(item.isChecked == true && item.value == 'Applicable' ){
-                ApplicableTcs.forEach(applicableTC=>{
+                //ApplicableTcs.forEach(applicableTC=>{
+                this.ApplicableTcs.forEach(applicableTC=>{
                     showTc.push(applicableTC)
                 })
             }
@@ -945,6 +969,77 @@ class adminDashboard extends Component {
         })
         if(statusFlag == 0){
             showTc1 = showTc; 
+            
+        }
+        this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
+        this.gridOperations(true);
+    }
+
+    getTcsToShow1(release,updateRelease){
+
+        let showTc = []
+        let skipTcs = []
+        let NATcs = []
+        //let ApplicableTcs = []
+        
+        for(let i = 0; i < this.allTCsToShow.length; i++){
+            if(this.allTCsToShow[i].Priority == 'Skip' || this.allTCsToShow[i].Priority == 'Skp' ){
+                skipTcs.push(this.allTCsToShow[i])
+            }
+            if(this.allTCsToShow[i].Priority == 'NA'){
+                NATcs.push(this.allTCsToShow[i])
+            }
+            if(this.allTCsToShow[i].Priority != 'NA' && this.allTCsToShow[i].Priority != 'Skip'){
+                this.ApplicableTcs.push(this.allTCsToShow[i])
+            }
+        }
+        showTc = []
+        this.state.tableColumnsTcs.forEach(item=>{
+            if(item.isChecked == true  && item.value == 'Skip'){
+                skipTcs.forEach(skipTC=>{
+                    showTc.push(skipTC)
+                })
+            } 
+            if(item.isChecked == true && item.value == 'NA' ){
+                NATcs.forEach(NATC=>{
+                    showTc.push(NATC)
+                })
+            } 
+            if(item.isChecked == true && item.value == 'Applicable' ){
+                this.ApplicableTcs.forEach(applicableTC=>{
+                    showTc.push(applicableTC)
+                })
+            }
+        })
+        let showTc1 = []
+        let statusFlag = 0
+        this.state.statusColumn.forEach(item=>{
+
+            showTc.forEach(tcItem=>{
+               
+                if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Fail' && tcItem.CurrentStatus.Result == 'Fail'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Block' && tcItem.CurrentStatus.Result == 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Not Tested' && tcItem.CurrentStatus.Result != 'Pass' && tcItem.CurrentStatus.Result != 'Fail' && tcItem.CurrentStatus.Result != 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+            })
+        })
+        if(statusFlag == 0){
+            showTc1 = showTc;
         }
 
         this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
@@ -1021,6 +1116,7 @@ class adminDashboard extends Component {
                 status.Domain = item.Domain;
                 status.SubDomain = item.SubDomain;
                 status.Steps = item.Steps;
+                status.ExpectedBehaviour = item.ExpectedBehaviour;
                 status.Scenario = item.Scenario;
                 status.Notes = item.Notes;
                 status.TcName = this.getTcName(`${item.TcName}`);
@@ -1063,7 +1159,7 @@ class adminDashboard extends Component {
                 if (items.length > 0) {
                     this.saveMultipleTcInfo(items)
                 } else {
-                    this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);
+                    this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true);
                     alert('Tc Status updated Successfully');
                 }
             }, error => {
@@ -1076,7 +1172,7 @@ class adminDashboard extends Component {
         axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
         .then(res => {
             this.gridOperations(true);
-            this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
+            this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true)
             alert('Tc Info Updated Successfully');
         }, error => {
             this.gridOperations(true);
@@ -1164,14 +1260,15 @@ class adminDashboard extends Component {
             this.setState({
                 platforms : platformListTemp
             })   
-            console.log("platformalist",this.state.plaforms)
         })
     }
 
     addNewPlatform(){
-      
+        //let Interface = 'CLI'
         console.log("new added platform",this.newPlatFormValue)
         axios.post('/api/applicable/add/'+ this.newPlatFormValue)
+        //let url =  `/api/applicable/add/${this.newPlatFormValue}/Release/${this.props.selectedRelease.ReleaseNumber}/Interface/${Interface}`
+        //axios.post(url)
         .then(response=>{
             alert("Platform " + this.newPlatFormValue + " Added Successfully")
 
@@ -1208,7 +1305,7 @@ class adminDashboard extends Component {
             allSelectedTc.push(item.id)
         })
 
-
+        console.log(this.state.platformToAdd)
         if(this.state.platforms){
             this.state.platforms.forEach(each=>{
                 if(each.isChecked){
@@ -1216,6 +1313,11 @@ class adminDashboard extends Component {
                 }
             })
         }
+        // if(this.state.platformToAdd){
+        //     this.state.platformToAdd.forEach(each=>{
+        //             data.push(each)
+        //     })
+        // }
 
         console.log("selected platform and seleted row",data,allSelectedTc)
         let testList = []
@@ -1236,7 +1338,7 @@ class adminDashboard extends Component {
             axios.post('/api/applicable/' + this.props.selectedRelease.ReleaseNumber , testList)
             .then(response=>{
                 this.gridOperations(true);
-                this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
+                this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true)
                 alert("Platform Updated Successfully")
                 this.setState({popoverOpenPlatformGUI: !this.state.popoverOpenPlatformGUI })
             })
@@ -1276,6 +1378,7 @@ class adminDashboard extends Component {
         status.Domain = this.props.tcDetails.Domain;
         status.SubDomain = this.props.tcDetails.SubDomain;
         status.Steps = this.props.tcDetails.Steps;
+        status.ExpectedBehaviour = this.props.tcDetails.ExpectedBehaviour;
         status.Scenario = this.props.tcDetails.Scenario;
         status.Notes = this.props.tcDetails.Notes;
         status.TcName = this.getTcName(`${this.props.tcDetails.TcName}`);
@@ -1368,12 +1471,40 @@ class adminDashboard extends Component {
             this.getTC(this.currentSelectedRow, true, true);
         }, 400);
     }
+    // selectMultiselect(field, event, checked, select) {
+    //     let value = event.val();
+    //     switch (field) {
+    //         case 'Platforms':
+    //             let rel = null;
+    //             if (checked && this.state.platformToAdd) {
+    //                 rel = [...this.state.platformToAdd, value];
+    //             }
+    //             if (checked && !this.state.platformToAdd) {
+    //                 rel = [value];
+    //             }
+    //             if (!checked && this.state.platformToAdd) {
+    //                 let array = this.state.platformToAdd;
+    //                 array.splice(array.indexOf(value), 1);
+    //                 rel = array;
+    //             }
+    //             this.setState({ platformToAdd: rel});
+    //             break;
+    
+    //         default:
+    //             break;
+    //         }
+            
+    // }
 
     render() {
-        console.log("platformList",this.state.platforms,this.platformList)
-        let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
-        let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
-
+        //let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
+        //let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
+        //let platforms = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli);
+        let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsCli ? this.props.selectedRelease.PlatformsCli : []
+        let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform]) ? Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform]) : [];
+        let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform][this.state.domain];
+        //let rel = this.state.displayPlatforms ? this.state.displayPlatforms.map(item => ({ value: item, selected: this.state.platformToAdd && this.state.platformToAdd.includes(item) })) : [];
+        //let multiselect = {'Platforms':rel};
         if (domains) {
             domains.sort();
         } else {
@@ -1397,13 +1528,13 @@ class adminDashboard extends Component {
 
     
 
-        let manualFilter = this.state.domain || this.state.subdomain || this.state.CardType || this.state.Priority || this.state.filterValue
+        let manualFilter = this.state.platforms || this.state.domain || this.state.subdomain || this.state.CardType || this.state.Priority || this.state.filterValue
         let pass = 0, fail = 0, notTested = 0, prioritySkip = 0, priorityNA = 0, prioritySkipAndTested = 0, automated = 0, total = 0;
 
         if (manualFilter && this.gridApi) {
             let rows = this.gridApi.getModel().rowsToDisplay;
             rows.forEach(row => {
-                if (row.data.TcName !== 'TC NOT AUTOMATED' && row.data.TcName !== 'NOT AUTOMATED' && row.data.TcName !== undefined) {
+                if (row.data.TcName !== 'TC NOT AUTOMATED' && row.data.TcName !== 'NOT AUTOMATED' && row.data.TcName !== 'undefined') {
                     automated += 1;
                 }
                 let tested = false;
@@ -1429,7 +1560,43 @@ class adminDashboard extends Component {
             })
             total = this.gridApi.getModel().rowsToDisplay.length;
             
-        } else {
+        }
+        let pass1 = 0, fail1 = 0, notTested1 = 0, automated1 = 0, total1 = 0;
+        if (this.gridApi && this.gridApi.getSelectedRows().length > 0) {
+            let rows = this.gridApi.getSelectedRows();
+            rows.forEach(row => {
+               if (row.TcName !== 'TC NOT AUTOMATED' && row.TcName !== 'NOT AUTOMATED' && row.TcName !== 'undefined') {
+                    automated1 += 1;
+                }
+                let tested = false;
+                if (row.CurrentStatus.Result === 'Pass') {
+                    pass1 += 1;
+                    tested = true;
+                } else if (row.CurrentStatus.Result === 'Fail') {
+                    fail1 += 1;
+                    tested = true;
+                } else {
+                    notTested1 += 1;
+                }
+            })
+            total1 = this.gridApi.getSelectedRows().length;
+        
+        }
+        if (this.props.selectedRelease && !manualFilter) {
+            pass = 0; fail = 0; automated = 0;
+            for(let i = 0; i < this.ApplicableTcs.length; i++){
+                if(this.ApplicableTcs[i].CurrentStatus.Result ==='Pass'){
+                    pass+=1;
+                }
+                if(this.ApplicableTcs[i].CurrentStatus.Result === 'Fail'){
+                    fail+=1;
+                }
+                if(this.ApplicableTcs[i].TcName !== 'TC NOT AUTOMATED' && this.ApplicableTcs[i].TcName !== 'NOT AUTOMATED' && this.ApplicableTcs[i].TcName !== 'undefined'){
+                    automated+=1;
+                }
+            }
+        }
+        /*else {
             if (this.props.selectedRelease && this.props.selectedRelease.TcAggregate) {
                 let tcAggr = this.props.selectedRelease.TcAggregate.all;
                 pass = tcAggr.Tested.manual.Pass + tcAggr.Tested.auto.Pass;
@@ -1438,7 +1605,7 @@ class adminDashboard extends Component {
                 total = pass + fail + tcAggr.Tested.manual.Skip + tcAggr.Tested.auto.Skip + tcAggr.NotTested + tcAggr.NotApplicable
             }
         }
-
+        */
         return (
             <div>
                 <Row>
@@ -1481,7 +1648,7 @@ class adminDashboard extends Component {
                                         <div class="row">
                                             {
                                                 [
-                                                    { style: { width: '8rem', marginLeft: '1.5rem' }, field: 'platform', onChange: (e) => this.onSelectPlatform(e), values: [{ value: '', text: 'Select Platform' }, ...(this.state.displayPlatforms.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '1.5rem' }, field: 'platform', onChange: (e) => this.onSelectPlatform(e), values: [{ value: '', text: 'Select Platform' }, ...(platforms && platforms.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'domain', onChange: (e) => this.onSelectDomain(e), values: [{ value: '', text: 'Select Domain' }, ...(domains && domains.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'subDomain', onChange: (e) => this.onSelectSubDomain(e), values: [{ value: '', text: 'Select SubDomain' }, ...(subdomains && subdomains.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'CardType', onChange: (e) => this.onSelectCardType(e), values: [{ value: '', text: 'Select CardType' }, ...(['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(each => ({ value: each, text: each })))] },
@@ -1563,7 +1730,7 @@ class adminDashboard extends Component {
                                                                 <Row>
                                                                     <Col>
                                                                         <FormGroup className='rp-app-table-value'>
-                                                                            {/* <input type="checkbox" onClick={this.handleAllCheckedForplatforms}  value="checkedall" /> Check / Uncheck All */}
+                                                                            <input type="checkbox" onClick={this.handleAllCheckedForPlatforms}  value="checkedall" /> Check / Uncheck All
                                                                             <ul>
                                                                             {
                                                                             this.state.platforms.map((platformName) => {
@@ -1572,6 +1739,25 @@ class adminDashboard extends Component {
                                                                             }
                                                                             </ul>
                                                                         </FormGroup>
+                                                                        {/* {
+                                                                            [
+                                                                                { field: 'Platforms', header: 'Select Platform' }
+                                                                            ].map(item => (
+                                                                                <Col xs="8" md="8" lg="8">
+                                                                                    <FormGroup className='rp-app-table-value'>
+                                                                                        <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}
+                                                                                            {
+                                                                                                //this.state.errors[item.field] &&
+                                                                                                //<i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
+                                                                                            }</Label>
+                                                                                        {   
+                                                                                                <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(item.field, e, checked, select)}
+                                                                                                    data={multiselect[item.field]} multiple /></div>
+                                                                                        }
+                                                                                    </FormGroup>
+                                                                                </Col>
+                                                                            ))
+                                                                        } */}
 
                                                                         <span>
                                                                         
@@ -1656,14 +1842,25 @@ class adminDashboard extends Component {
                                         </div>
                                     </div>
                                     <div style={{ display: 'inline' }}>
+                                        {
+                                            this.gridApi && this.gridApi.getSelectedRows().length > 0 ?
+                                            <div style={{ display: 'inline' }}>
+                                                <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Pass: {pass1}</span>
+                                                <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Fail: {fail1}</span>
+                                                <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Automated: {automated1}</span>
+                                                <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {total1}</span>
+                                            </div>
+                                            :
                                         <div style={{ display: 'inline' }}>
+                                        
                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Pass: {pass}</span>
                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Fail: {fail}</span>
                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Automated: {automated}</span>
                                             <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {total}</span>
                                         </div>
+                                        }
                                         <div style={{
-                                            float: 'right', display: this.state.isApiUnderProgress || this.state.CardType || this.state.domain || this.state.subDomain ||
+                                            float: 'right', display: this.state.isApiUnderProgress || this.state.CardType || this.state.platform || this.state.domain || this.state.subDomain ||
                                                 (this.props.tcStrategy && this.gridApi && this.props.tcStrategy.totalTests === this.gridApi.getModel().rowsToDisplay.length)
                                                 ? 'none' : ''
                                         }}>

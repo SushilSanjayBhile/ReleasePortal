@@ -173,7 +173,7 @@ class DefaultHeader extends Component {
                   }
                   {
                     this.props.currentUser && this.props.currentUser.isAdmin &&
-                    <DropdownItem onClick={() => this.props.history.push('/release/settings')}><i className="fas fa-archive"></i>Create User</DropdownItem>
+                    <DropdownItem onClick={() => this.props.history.push('/release/settings')}><i className="fas fa-archive"></i>Manage User</DropdownItem>
                   }
                   {
                     this.props.currentUser && this.props.currentUser.isAdmin &&
