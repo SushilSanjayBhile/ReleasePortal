@@ -80,6 +80,9 @@ def AutomationCountByDomain(request, Platform):
                 if platform not in dict1:
                     dict1[platform] = {}
                 dom = tc["Domain"]
+                if dom == "Additional":
+                    if platform  == "DMC":
+                        print(tc)
                 if dom not in dict1[platform]:
                     dict1[platform][dom] = {}
                 if "Total_TCs" not in dict1[platform][dom]:

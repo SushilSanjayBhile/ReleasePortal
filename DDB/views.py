@@ -1761,6 +1761,11 @@ def RELEASEINFO(request, Release):
             data = RELEASES.objects.using("universal").values("ReleaseNumber").all()
             serializer = RELEASE_SERIALIZER(data, many = True)
             return HttpResponse(json.dumps(serializer.data))
+        elif(Release == 'cdate'):
+            data = RELEASES.objects.using("universal").all().order_by("-CreationDate")
+            serializer = RELEASE_SERIALIZER(data, many = True)
+            return HttpResponse(json.dumps(serializer.data))
+
         else:
             t = time.time()
             
@@ -1845,6 +1850,7 @@ def USER_LOGIN_VIEW(request):
 
         try:
             data = USER_INFO.objects.get(UserName = req['email'])
+            print(data)
             serializer = USER_SERIALIZER(data)
             #GenerateLogData(serializer.data['UserName'], 'POST', 'user/login', json.dumps(req))
             return JsonResponse({'role': serializer.data['Role']}, status = 200)

@@ -177,6 +177,80 @@ def updateGuiTcInfo(data, updatedData, Release):
 
 
 @csrf_exempt
+def MULTIPLE_TC_UPDATION_GUI(request, Release):
+    if request.method == "PUT":
+        requests = json.loads(request.body.decode("utf-8"))
+        errRecords = []
+        print("request",requests)
+        for req in requests:
+            print("tc for updation",req,"\n\n")
+            card = req['CardType']
+            tcid = req['TcID']
+
+            data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+            serializer = TC_INFO_GUI_SERIALIZER(data)
+            updatedData = serializer.data
+            oldworkingStatus = updatedData["stateUserMapping"]
+            oldworkingStatus = oldworkingStatus.replace("\'","\"")
+            try:
+                oldworkingStatus = json.loads(oldworkingStatus)
+            except:
+                workingStatusReplace = "{\"CREATED\":\"DEFAULT\"}"
+                updatedData["stateUserMapping"] = workingStatusReplace
+                updateData(updatedData, data, Release)
+
+                data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+                serializer = TC_INFO_GUI_SERIALIZER(data)
+                updatedData = serializer.data
+                oldworkingStatus = updatedData["stateUserMapping"]
+                oldworkingStatus = oldworkingStatus.replace("\'","\"")
+                oldworkingStatus = json.loads(oldworkingStatus)
+
+            workingState = "{"
+
+            if "Manual WorkingStatus" in req:
+                workingState += "\"Manual WorkingStatus\"" + ":\"" + req["Manual WorkingStatus"] + "\","
+            elif "Manual WorkingStatus" in oldworkingStatus:
+                workingState += "\"Manual WorkingStatus\"" + ":\"" + oldworkingStatus["Manual WorkingStatus"] + "\","
+            
+            if "Automation Assignee" in req:
+                workingState += "\"Automation Assignee\"" + ":\"" + req["Automation Assignee"] + "\","
+            elif "Automation Assignee" in oldworkingStatus:
+                workingState += "\"Automation Assignee\"" + ":\"" + oldworkingStatus["Automation Assignee"] + "\","
+            
+            if "Automation WorkingStatus" in req:
+                workingState += "\"Automation WorkingStatus\"" + ":\"" + req["Automation WorkingStatus"] + "\","
+            elif "Automation WorkingStatus" in oldworkingStatus:
+                workingState += "\"Automation WorkingStatus\"" + ":\"" + oldworkingStatus["Automation WorkingStatus"] + "\","
+            
+            if "Manual Assignee" in req:
+                workingState += "\"Manual Assignee\"" + ":\"" + req["Manual Assignee"] + "\""
+            elif "Manual Assignee" in oldworkingStatus:
+                workingState += "\"Manual Assignee\"" + ":\"" + oldworkingStatus["Manual Assignee"] + "\""
+
+            workingState += "}"
+
+            #print("after update working status",workingState)
+            print(oldworkingStatus, workingState)
+            updatedData["stateUserMapping"] = workingState
+
+            for key in req:
+                updatedData[key] = req[key]
+
+            res = updateGuiTcInfo(data, updatedData, Release)
+            if res == 0:
+                errRecords.append(req)
+            elif "Activity" in requests:
+                AD = requests['Activity']
+                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+        
+        if len(errRecords) > 0:
+            return HttpResponse(json.dumps(errRecords))
+
+        return HttpResponse({"SUCCESS": "Record Successfully updated"})
+
+
+@csrf_exempt
 def GUI_TC_INFO_GET_POST_VIEW(request, Release):
     master = "master"
     dmcMaster = "DMC Master"
@@ -273,14 +347,14 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
 
         # put request for current release
         
-        #print("Printing REquest",requests,"\n\n")
+        print("Printing REquest",requests,"\n\n")
         for req in requests:
-            print("request",req,"\n\n\n\n\n\n")
-            data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
-            dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
-            print("serializer data",dataSer.data) 
+            tcid = req['TcID']
+            card = req['CardType']
+            data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid, CardType = card)
+            dataSer = TC_INFO_GUI_SERIALIZER(data,many=True)
             for data in dataSer.data:
-                print("data current",data["TcID"],"\n\n")
+                #print("data current",data["TcID"],"\n\n")
                 updatedData = data
                 oldworkingStatus = updatedData["stateUserMapping"]
                 oldworkingStatus = oldworkingStatus.replace("\'","\"")
@@ -372,6 +446,7 @@ def updateGuiLatestStatusData(updatedData, data, Release):
     data.tcInfoNum = updatedData["tcInfoNum"]
     data.Build = updatedData["Build"]
     data.Result = updatedData["Result"]
+    data.TestedOn = updatedData["TestedOn"]
 
     if "Bugs" in updatedData:
         data.Bugs = updatedData["Bugs"]
@@ -441,6 +516,7 @@ def GUI_TC_STATUS_GET_POST_VIEW(request, Release):
 
             status["Result"] = req["Result"]
             status["Build"] = req["Build"]
+            status["TestedOn"] = req["TestedOn"]
             if "Bugs" in req:
                 status["Bugs"] = req["Bugs"]
             status["tcInfoNum"] = ser.data["id"]

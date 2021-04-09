@@ -127,7 +127,6 @@ def WHOLE_TC_INFO(request, Release):
         index = int(request.GET.get('index', 0))
 
         Platform = request.GET.getlist('Platform',[])
-        print("Printing platform", Platform)
         Domain = str(request.GET.get('Domain', None))
         SubDomain = str(request.GET.get('SubDomain', None))
         CardType = str(request.GET.get('CardType', None))
@@ -404,6 +403,7 @@ def updateStatusData(updatedData, data, Release):
      data.TcID = updatedData['TcID']
      data.TcName = updatedData['TcName']
      data.Build = updatedData['Build']
+     data.TestedOn = updatedData['TestedOn']
      data.Result = updatedData['Result']
      data.Bugs = updatedData['Bugs']
      data.Date = updatedData['Date']

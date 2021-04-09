@@ -14,7 +14,7 @@ from .tcinfo import TC_INFO_GET_POST_VIEW, GET_TC_INFO_BY_ID, WHOLE_TC_INFO, MUL
         UPDATE_TC_INFO_BY_ID, TcCountByFilter,MULTIPLE_TC_INFO_UPDATION, sync_tcs, sync_platform
 
 from .getStatistics import BUG_WISE_BLOCKED_TCS 
-from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO
+from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO,MULTIPLE_TC_UPDATION_GUI
 from .releaseBuildInfo import RELEASEBUILDINFOGETPOSTVIEW,RELEASEBUILDINFODELETEVIEW
 from .createRelease import mergeDB
 from .removeReleaseResults import  removeOldReleaseData
@@ -28,7 +28,11 @@ from .cleanup import RemoveStatus
 from .migrate import Migrate
 from .new import automation_count_get_post_view, custom_automation_count_get_view
 
+from .mergeCardType import MergingCardTypes
+
+
 urlpatterns = [
+    path('mergecardtype/', MergingCardTypes),
     path ('getdomainsubdomainlist/<str:release>/<str:interface>', get_domain_subdomain_list),
 
     #Automation Count
@@ -109,4 +113,5 @@ urlpatterns = [
     path('releasewiseplatformCli/<str:Release>', RELEASEWISE_CLI_PLATFORM),
     path('releasewiseplatformGui/<str:Release>', RELEASEWISE_GUI_PLATFORM),
     path('syncp', sync_platform),
+    path('tcupdategui/<str:Release>', MULTIPLE_TC_UPDATION_GUI),
 ]

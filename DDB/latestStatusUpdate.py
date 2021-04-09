@@ -54,6 +54,7 @@ def updateLatestStatus(Release, CardType, TcID, statusDict):
         
         updatedData = statusSerializer.data
         updatedData['Build'] = statusDict['Build']
+        updatedData['TestedOn'] = statusDict['TestedOn']
         updatedData['Result'] = statusDict['Result']
         try:
             updatedData['Bugs'] = statusDict['Bugs']
