@@ -1571,14 +1571,13 @@ def USER_INFO_GET_POST_VIEW(request):
     elif request.method == "PUT":
         req = json.loads(request.body.decode("utf-8"))
         data = USER_INFO.objects.get(email = req['email'])
-        for i in req['AssignedReleases']:
-            if i not in data.AssignedReleases:
-                data.AssignedReleases.append(i)
-        data.save()
-
-        for i in req['RemoveReleases']:
-            data.AssignedReleases.remove(i)
-        data.save()
+        for i in req['ReleasesEdit']:
+            if i['value'] in data.AssignedReleases and i['isChecked'] == False:
+                data.AssignedReleases.remove(i['value'])
+                data.save()
+            if i['value'] not in data.AssignedReleases and i['isChecked'] == True:
+                data.AssignedReleases.append(i['value'])
+                data.save()
 
         if req['EngineerType'] != '':
             data.EngineerType = req['EngineerType']
@@ -1761,6 +1760,11 @@ def RELEASEINFO(request, Release):
             data = RELEASES.objects.using("universal").values("ReleaseNumber").all()
             serializer = RELEASE_SERIALIZER(data, many = True)
             return HttpResponse(json.dumps(serializer.data))
+        elif(Release == 'infoAsc'):
+            data = RELEASES.objects.using("universal").all().order_by("ReleaseNumber")
+            serializer = RELEASE_SERIALIZER(data, many = True)
+            return HttpResponse(json.dumps(serializer.data))
+
         elif(Release == 'cdate'):
             data = RELEASES.objects.using("universal").all().order_by("-CreationDate")
             serializer = RELEASE_SERIALIZER(data, many = True)
