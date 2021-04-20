@@ -52,7 +52,7 @@ def AutomationCount(request, Release):
                         dict1[platform][key_automated] += 1
     dict2 = {}
     tempList = []
-
+    print(dict1,"\n\n")
     for platform in dict1:
             for data in dict1[platform]:
                 dict2["Platform"] = platform

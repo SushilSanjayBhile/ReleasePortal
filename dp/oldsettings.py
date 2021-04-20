@@ -76,14 +76,6 @@ WSGI_APPLICATION = 'dp.wsgi.application'
 
 
 DATABASES = {
-    '600': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': '600',
-        'USER': userName,
-        'PASSWORD': passwd,
-        'HOST': hostName,
-        'PORT': portNumber,
-        },
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'universal',
@@ -127,6 +119,14 @@ DATABASES = {
     'OCP-4.5': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'OCP-4.5',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'OCP-4.6': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'OCP-4.6',
         'USER': userName,
         'PASSWORD': passwd,
         'HOST': hostName,
