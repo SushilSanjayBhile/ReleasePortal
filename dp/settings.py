@@ -92,6 +92,22 @@ DATABASES = {
         'HOST': hostName,
         'PORT': portNumber,
         },
+    'Tanzu-3.2': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'Tanzu-3.2',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'DCX-DMC-3.3.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DCX-DMC-3.3.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'CentOS-DCX-2.4.1': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'CentOS-DCX-2.4.1',
