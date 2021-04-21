@@ -222,7 +222,6 @@ class TestCasesAllGUI extends Component {
               ],
               
             columnDefs: [
-                columnDefDict['Platform'],
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
                 columnDefDict['Description'],
@@ -234,6 +233,7 @@ class TestCasesAllGUI extends Component {
                 columnDefDict['Priority'],
                 columnDefDict['Assignee'],
                 columnDefDict['Notes'],
+                columnDefDict['Platform'],
                 columnDefDict['ExpectedBehaviour'],
             ],
             
@@ -246,6 +246,9 @@ class TestCasesAllGUI extends Component {
             },
             {
                 headerName: "Result", field: "Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+            },
+            {
+                headerName: "Tested On", field: "TestedOn", sortable: true, filter: true, cellClass: 'cell-wrap-text',
             },
             {
                 headerName: "Bugs", field: "Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
@@ -827,6 +830,7 @@ class TestCasesAllGUI extends Component {
                             let CurrentStatus = {
                                 Build: `${stats.Build}`,
                                 Result: `${stats.Result}`,
+                                TestedOn: `${stats.TestedOn}`,
                                 Bugs: `${stats.Bugs}`
                             };
                             res.data.CurrentStatus = CurrentStatus;
@@ -1061,6 +1065,7 @@ class TestCasesAllGUI extends Component {
                 status.Notes = item.Notes;
                 status.TcName = this.getTcName(`${item.TcName}`);
                 status.Build = this.state.multi.Build;
+                status.TestedOn = this.state.multi.TestedOn;
                 status.Result = this.state.multi.Result;
                 status.Bugs = this.state.multi.Bugs;
                 status.CardType = item.CardType;
@@ -1071,9 +1076,9 @@ class TestCasesAllGUI extends Component {
                     Release: this.props.selectedRelease.ReleaseNumber,
                     "tcInfoNum":item.id,
                     "TcID": item.TcID,
-                    "CardType": item.CardType,
+                    "CardType": item.CardType,  
                     "UserName": this.props.user.email,
-                    "LogData": `Status Added: Build: ${this.state.multi.Build}, Result: ${this.state.multi.Result}, CardType: ${item.CardType}`,
+                    "LogData": `Status Added: Build: ${this.state.multi.Build}, Result: ${this.state.multi.Result}, TestedOn: ${this.state.multi.TestedOn}, CardType: ${item.CardType}`,
                     "RequestType": 'POST',
                     "URL": `/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`
                 }
@@ -1313,6 +1318,11 @@ class TestCasesAllGUI extends Component {
         let platforms =this.props.selectedRelease && this.props.selectedRelease.PlatformsGui ? this.props.selectedRelease.PlatformsGui : []
         let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[this.state.platform]);
         let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[this.state.platform][this.state.domain];
+        if (platforms) {
+            platforms.sort();
+        } else {
+            platforms = [];
+        }
         if (domains) {
             domains.sort();
         } else {
@@ -1699,6 +1709,26 @@ class TestCasesAllGUI extends Component {
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="text" id={`select_Build`} placeholder = 'Build No'>
                                                                             </Input>
+                                                                        </FormGroup>
+                                                                    </Col>
+                                                                    <Col md="6">
+                                                                        <FormGroup className='rp-app-table-value'>
+                                                                            <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.TestedOn} onChange={(e) => {
+                                                                                this.isAnyChanged = true;
+                                                                                let selectedRows = this.gridApi.getSelectedRows();
+                                                                                if (e.target.value && e.target.value !== '') {
+                                                                                    selectedRows.forEach(item => {
+                                                                                        this.onCellEditing(item, 'CurrentStatus.TestedOn', e.target.value)
+                                                                                        item['CurrentStatus.TestedOn'] = e.target.value;
+                                                                                    })
+                                                                                }
+                                                                                this.setState({ multi: { ...this.state.multi, TestedOn: e.target.value } })
+                                                                                setTimeout(this.gridApi.redrawRows(), 0);
+                                                                            }} type="select" id={`select_TestedOn`} >
+                                                                                {
+                                                                                    ["Tested on","BOS","NYNJ","Software solution"].map(item => <option value={item}>{item}</option>)
+                                                                                }
+                                                                            </Input> 
                                                                         </FormGroup>
                                                                     </Col>
                                                                 </Row>

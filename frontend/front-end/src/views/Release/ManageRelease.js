@@ -407,14 +407,6 @@ class ManageRelease extends Component {
 
         let columnDefDict1 = {
             'TcID' : {
-              headerCheckboxSelection: (params) => {
-                  if (this.gridApi) {
-                      this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
-                  }
-                  return true;
-              },
-              headerCheckboxSelectionFilteredOnly: true,
-              checkboxSelection: true,
               headerName: "TcID", field: "TcID", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               editable: false,
               width: 180
@@ -521,6 +513,14 @@ class ManageRelease extends Component {
             cellClass: 'cell-wrap-text',
         },
         'Platform' : {
+            headerCheckboxSelection: (params) => {
+                if (this.gridApi) {
+                    this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
+                }
+                return true;
+            },
+            headerCheckboxSelectionFilteredOnly: true,
+            checkboxSelection: true,
             headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
             width: '180',
             editable: false,
@@ -889,7 +889,8 @@ class ManageRelease extends Component {
     }
     getPlatformList() {
         this.platformList = []
-        let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+        //let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+        let release = "DCX-DMC-Master"
         let url = `/api/releasewiseplatformCli/${release}?`;
         axios.get(url)
         .then(response=>{
@@ -909,7 +910,8 @@ class ManageRelease extends Component {
     }
     getPlatformListGui() {
         this.platformListGui = []
-        let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+        //let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+        let release = "DCX-DMC-Master"
         let url = `/api/releasewiseplatformGui/${release}?`;
         axios.get(url)
         .then(response=>{
@@ -929,7 +931,8 @@ class ManageRelease extends Component {
     }
     getTcs(platform, CardType, domain, subDomain, priority, all, updateRelease) {
         //let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
-        let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+       //let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+       let release = "DCX-DMC-Master"
         if (!release) {
             console.log("not release")
             return;
@@ -983,7 +986,8 @@ class ManageRelease extends Component {
     }
     getTcsGui(platform, CardType, domain, subDomain, priority, all, updateRelease) {
         //let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
-        let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+        //let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+        let release = "DCX-DMC-Master"
         if (!release) {
             console.log("not release")
             return;
@@ -1155,11 +1159,12 @@ class ManageRelease extends Component {
           this.setState({
             parentReleaseList : data
           })
-          console.log("release info",data)
         }, error => {
             console.log("Error Getting release Info")
           
         });
+        //this.setState({displayTc: [],displayTcGui:[], showTc: [], showTcGui: []});this.getTcs();this.getTcsGui();this.getPlatformList();this.getPlatformListGui();this.resetPlatforms();
+        this.getTcs();this.getTcsGui();this.getPlatformList();this.getPlatformListGui();this.resetPlatforms();
         // axios.get('/api/applicable/platformList/')
         // .then(response=>{
         //     if(response.data){
@@ -1234,7 +1239,8 @@ class ManageRelease extends Component {
             }
         })
 
-        data.ParentRelease = this.state.selectedParentRelease
+        // data.ParentRelease = this.state.selectedParentRelease
+        data.ParentRelease = "DCX-DMC-Master"
         data.PlatformsCli = []
         data.PlatformsGui = []
         this.state.platforms && this.state.platforms.forEach(element => {
@@ -1383,7 +1389,7 @@ class ManageRelease extends Component {
         //     console.log("mtotal 2 if",total1)
         // }
         //let pass3=0, fail3=0, automated3=0, total3=0;
-        if (this.state.selectedParentRelease && !manualFilter && this.state.displayTc.length > 0) {
+        if (/*this.state.selectedParentRelease &&*/ !manualFilter && this.state.displayTc.length > 0) {
             pass = 0; fail = 0; automated = 0;total = 0;
             for(let i = 0; this.state.displayTc && i < this.state.displayTc.length; i++){
                 if(this.state.displayTc[i].CurrentStatus.Result ==='Pass'){
@@ -1400,7 +1406,7 @@ class ManageRelease extends Component {
         
         }
         let pass2 = 0, fail2 = 0, notTested2 = 0, automated2 = 0, total2 = 0;
-        if (this.state.selectedParentRelease && !manualFilter && this.state.displayTcGui.length > 0) {
+        if (/*this.state.selectedParentRelease &&*/ !manualFilter && this.state.displayTcGui.length > 0) {
             pass2 = 0; fail2 = 0; automated2 = 0; total2 = 0;
             for(let i = 0; this.state.displayTcGui && i < this.state.displayTcGui.length; i++){
                 if(this.state.displayTcGui[i].CurrentStatus.Result ==='Pass'){
@@ -1442,13 +1448,13 @@ class ManageRelease extends Component {
                         <Col xs="12" sm="12" lg="10" className="rp-summary-tables" style={{ marginLeft: '1rem', marginTop: '1rem' }}>
                             <div className='rp-app-table-header'>
                                 <span className='rp-app-table-title'>Add Release</span>
-                                <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.confirmToggle()} >
+                                <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggle()} >
                                     <i className="fa fa-check-square-o"></i>
                                 </Button>
                             </div>
 
 
-                            <Row>
+                            {/* <Row>
                             <Col xs="12" sm="12" md="8" lg="8">
                                 <div className='rp-app-table-header'>
                                     <span className='rp-app-table-title' >Parent Release</span>
@@ -1472,10 +1478,10 @@ class ManageRelease extends Component {
                                     </Row>
                                 </div>
                             </Col>
-                        </Row>
+                        </Row> */}
                             
                             {
-                                this.state.selectedParentRelease ? 
+                                //this.state.selectedParentRelease ?
                                 <Row>
                                 <Col xs="12" sm="12" md="5" lg="5">
                                     <Table scroll responsive style={{ overflow: 'scroll', }}>
@@ -1628,7 +1634,7 @@ class ManageRelease extends Component {
                                             </Row>
                                             
                                 </Col>
-                            </Row> : null
+                            </Row>
                             }
                             
 

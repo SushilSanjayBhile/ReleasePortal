@@ -225,7 +225,6 @@ class adminDashboardGUI extends Component {
               ],
               
             columnDefs: [
-                columnDefDict['Platform'],
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
                 columnDefDict['Description'],
@@ -237,6 +236,7 @@ class adminDashboardGUI extends Component {
                 columnDefDict['Priority'],
                 columnDefDict['Assignee'],
                 columnDefDict['Notes'],
+                columnDefDict['Platform'],
                 columnDefDict['ExpectedBehaviour'],
             ],
             
@@ -1549,6 +1549,11 @@ class adminDashboardGUI extends Component {
         let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsGui ? this.props.selectedRelease.PlatformsGui : []
         let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[this.state.platform]);
         let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[this.state.platform][this.state.domain];
+        if (platforms) {
+            platforms.sort();
+        } else {
+            platforms = [];
+        }
         if (domains) {
             domains.sort();
         } else {

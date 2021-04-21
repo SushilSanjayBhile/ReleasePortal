@@ -237,7 +237,6 @@ class adminDashboard extends Component {
               ],
               
             columnDefs: [
-                columnDefDict['Platform'],
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
                 columnDefDict['Description'],
@@ -247,6 +246,7 @@ class adminDashboard extends Component {
                 columnDefDict['OS'],
                 columnDefDict['Bug'],
                 columnDefDict['Priority'],
+                columnDefDict['Platform'],
                 columnDefDict['ExpectedBehaviour'],
             ],
             
@@ -1505,6 +1505,11 @@ class adminDashboard extends Component {
         let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform][this.state.domain];
         //let rel = this.state.displayPlatforms ? this.state.displayPlatforms.map(item => ({ value: item, selected: this.state.platformToAdd && this.state.platformToAdd.includes(item) })) : [];
         //let multiselect = {'Platforms':rel};
+        if (platforms) {
+            platforms.sort();
+        } else {
+            platforms = [];
+        }
         if (domains) {
             domains.sort();
         } else {

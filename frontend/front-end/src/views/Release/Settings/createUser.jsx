@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { saveUsers } from '../../../actions';
 import Multiselect from 'react-bootstrap-multiselect';
 import { element } from 'prop-types';
+import  CheckBox  from '../../../components/TestCasesAll/CheckBox';
 
 let form = {}
 class createUser extends Component {
@@ -19,22 +20,48 @@ class createUser extends Component {
             OpenDelete:'',
             name : '',
             email : '',
-            gender : '',
+            //gender : '',
             role : '',
             engType: '',
             assignedengType: '',
             errors: {},
-            selectedReleases: [],
-            selectedReleasesEdit: [],
             selectedUserToDelete: '',
             selectedUserToEdit: '',
-            selectedReleasesRemove: [],
             allReleases1: [],
             assignedR: [],
             assignedRole: '',
-            save: false
+            save: false,
+            rel: []
         }
        
+    }
+    handleAllCheckedRelInsert = (event) => {
+        let rel = this.state.allReleases1
+        rel.forEach(columnName => columnName.isChecked = event.target.checked) 
+        this.setState({allReleases1: rel})
+    }
+   
+    handleCheckChieldRelInsert = (event) => {
+        let rel = this.state.allReleases1
+        rel.forEach(columnName => {
+            if (columnName.value === event.target.value)
+                columnName.isChecked =  event.target.checked
+        })
+        this.setState({allReleases1: rel})
+    }
+    handleAllCheckedRel = (event) => {
+        let rele = this.state.rel
+        rele.forEach(columnName => columnName.isChecked = event.target.checked) 
+        this.setState({rel: rele})
+    }
+   
+    handleCheckChieldRel = (event) => {
+        let rele = this.state.rel
+        rele.forEach(columnName => {
+            if (columnName.value === event.target.value)
+                columnName.isChecked =  event.target.checked
+        })
+        this.setState({rel: rele})
     }
     componentDidMount() {
         //if (this.props.allUsers.length === 0) {
@@ -43,12 +70,13 @@ class createUser extends Component {
           })
           
         //}
-    
-        let releaseInfoURL = `/api/release/info`;
+        this.setState({allReleases1:[], rel: []})
+        let releaseInfoURL = `/api/release/infoAsc`;
           axios.get(releaseInfoURL)
             .then(res => {
               res.data.forEach(item => {
-                this.state.allReleases1.push(item.ReleaseNumber)
+                this.state.allReleases1.push({value:item.ReleaseNumber, isChecked:false})
+                this.state.rel.push({value:item.ReleaseNumber, isChecked:false})
                 // this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
               });
     
@@ -57,6 +85,10 @@ class createUser extends Component {
             });
       }
       getUserDetail() {
+          this.state.rel.forEach(element => {
+              element.isChecked = false
+          })
+          let temp = this.state.rel
           let email
           this.props.allUsers && this.props.allUsers.some(element =>{
               if(element.name == this.state.selectedUserToEdit){email = element.email}
@@ -65,8 +97,14 @@ class createUser extends Component {
             .then(res => {
               res.data.forEach(item => {
                 this.setState({assignedR: item.AssignedReleases ? item.AssignedReleases : [],assignedengType: item.EngineerType ? item.EngineerType : '',assignedRole: item.role ? item.role : ''})
-              });
-    
+                
+            });
+            if(temp.map(element =>{
+                if(this.state.assignedR.includes(element.value)){
+                    element.isChecked = true
+                }
+                this.setState({rel: temp})
+        }));
             }, error => {
               
             });
@@ -83,21 +121,21 @@ class createUser extends Component {
                 email: e.target.value.trim()
             })
         }
-        if(e.target.name == 'role'){
-            this.setState({
-                role: e.target.value.trim()
-            })
-        }
-        if(e.target.name == 'gender'){
-            this.setState({
-                gender: e.target.id.trim()
-            })
-        }
-        if(e.target.name == 'type'){
-            this.setState({
-                engType: e.target.id.trim()
-            })
-        }
+        // if(e.target.name == 'role'){
+        //     this.setState({
+        //         role: e.target.value.trim()
+        //     })
+        // }
+        // if(e.target.name == 'gender'){
+        //     this.setState({
+        //         gender: e.target.id.trim()
+        //     })
+        // }
+        // if(e.target.name == 'type'){
+        //     this.setState({
+        //         engType: e.target.id.trim()
+        //     })
+        // }
     };
     
     handleSubmit = (e) => {
@@ -108,17 +146,20 @@ class createUser extends Component {
         })
         let name = this.state.name;
         let email = this.state.email;
-        let gender = this.state.gender;
+        //let gender = this.state.gender;
         let role = this.state.role;
         let engType = this.state.engType;
-        let selectedReleases = this.state.selectedReleases;
+        let rel = []
+        this.state.allReleases1.forEach(element => {
+            if(element.isChecked === true) rel.push(element.value)    
+        })
         let formData = {
             "name": name,
             "email": email,
             "role": role,
-            "Gender": gender,
+            //"Gender": gender,
             "EngineerType": engType,
-            "AssignedReleases": selectedReleases
+            "AssignedReleases": rel
         }
         this.reset()
         let url = `/api/userinfo/`;
@@ -144,34 +185,23 @@ class createUser extends Component {
              "email": email,
             "role": this.state.role,
             "EngineerType":this.state.engType,
-            "AssignedReleases":this.state.selectedReleasesEdit,
-            "RemoveReleases": this.state.selectedReleasesRemove
+            "ReleasesEdit": this.state.rel
         }
-        console.log(this.state.selectedReleasesEdit)
-        if (this.state.selectedReleasesEdit !== this.state.assignedR){
         let url = `/api/userinfo/`;
         axios.put(url,formData)
         .then(response=>{
             alert("Updated successfully");
-            console.log(this.state.selectedReleasesEdit)
-            if (email === this.props.currentUser.email && this.state.selectedReleasesEdit.length > 0) {
-                window.location.reload()
-            }
-            else {
                 this.reset();
                 this.componentDidMount()
-            }
         })
         .catch(err=>{
             console.log("err",err);
         })
-        }
     }
     handleDeleteSubmit = (e) => {
         this.setState({
             save : true
         })
-        console.log("this.state.selectedUsertodelete",this.state.selectedUserToDelete)
           let email
           let name
           this.props.allUsers && this.props.allUsers.some(element =>{
@@ -194,76 +224,31 @@ class createUser extends Component {
     reset = () =>{
         document.getElementById('name').value='';
         document.getElementById('email').value='';
-        document.getElementById('role').value='';
-        document.getElementById('F').value='';
-        document.getElementById('M').value='';
+        //document.getElementById('role').value='';
+       //document.getElementById('F').value='';
+        //document.getElementById('M').value='';
         document.getElementById('submit').value='';
-        this.setState({role:'', assignedRole: '', selectedReleasesRemove: [], engType: '', allReleases1: [], selectedReleases: [],selectedReleasesEdit: [],assignedR: [], selectedUserToEdit:'', selectedUserToDelete: ''})
-    }
-    selectMultiselect(field, event, checked, select) {
-        let value = event.val();
-        switch (field) {
-            case 'Releases':
-                let releases = null;
-                if (checked && this.state.selectedReleases) {
-                    releases = [...this.state.selectedReleases, value];
-                }
-                if (checked && !this.state.selectedReleases) {
-                    releases = [value];
-                }
-                if (!checked && this.state.selectedReleases) {
-                    let array = this.state.selectedReleases;
-                    array.splice(array.indexOf(value), 1);
-                    releases = array;
-                }
-                this.setState({ selectedReleases: releases});
-                break;
-            case 'SelectedReleases':
-                let sreleases = null;
-                if (checked && this.state.selectedReleasesEdit) {
-                    sreleases = [...this.state.selectedReleasesEdit, value];
-                }
-                if (checked && !this.state.selectedReleasesEdit) {
-                    sreleases = [value];
-                }
-                if (!checked && this.state.selectedReleasesEdit) {
-                    let array = this.state.selectedReleasesEdit;
-                    array.splice(array.indexOf(value), 1);
-                    sreleases = array;
-                }
-                this.setState({ selectedReleasesEdit: sreleases});
-                break;
-            case 'RemoveReleases':
-                let rreleases = null;
-                if (checked && this.state.selectedReleasesRemove) {
-                    rreleases = [...this.state.selectedReleasesRemove, value];
-                }
-                if (checked && !this.state.selectedReleasesRemove) {
-                    rreleases = [value];
-                }
-                if (!checked && this.state.selectedReleasesRemove) {
-                    let array = this.state.selectedReleasesRemove;
-                    array.splice(array.indexOf(value), 1);
-                    rreleases = array;
-                }
-                this.setState({ selectedReleasesRemove: rreleases});
-                break;
-    
-            default:
-                break;
-            }
-            
+        this.state.allReleases1.forEach(element => {
+            element.isChecked = false
+        })
+        this.state.rel.forEach(element => {
+            element.isChecked = false
+        })
+        this.setState({role:'', assignedRole: '', engType: '',assignedR: [], selectedUserToEdit:'', selectedUserToDelete: ''})
     }
 
     render() {
-        let rel = this.state.allReleases1 ? this.state.allReleases1.map(item => ({ value: item, selected: this.state.selectedReleases && this.state.selectedReleases.includes(item) })) : [];
-        let relEdit = this.state.allReleases1 ? this.state.allReleases1.map(item => ({ value: item, selected: this.state.selectedReleasesEdit && this.state.selectedReleasesEdit.includes(item) })) : [];
-        let relRemove = this.state.assignedR ? this.state.assignedR.map(item => ({ value: item, selected: this.state.selectedReleasesRemove && this.state.selectedReleasesRemove.includes(item) })) : [];
-        let multiselect = {'Releases': rel,'SelectedReleases': relEdit, "RemoveReleases": relRemove};
+        // this.state.allReleases1.sort()
+        //this.state.rel.sort()
+        //let rel = this.state.allReleases1 ? this.state.allReleases1.map(item => ({ value: item, selected: this.state.selectedReleases && this.state.selectedReleases.includes(item) })) : [];
+        //let relEdit = this.state.allReleases1 ? this.state.allReleases1.map(item => ({ value: item, selected: this.state.selectedReleasesEdit && this.state.selectedReleasesEdit.includes(item) })) : [];
+        // let relRemove = this.state.assignedR ? this.state.assignedR.map(item => ({ value: item, selected: this.state.selectedReleasesRemove && this.state.selectedReleasesRemove.includes(item) })) : [];
+        // let multiselect = {/*'Releases': rel, 'SelectedReleases': relEdit,*/ "RemoveReleases": relRemove};
         let userList = []
         this.props.allUsers.forEach(element => {
             userList.push(element.name)
         })
+        userList.sort()
         return(
             <div>
             {
@@ -305,72 +290,55 @@ class createUser extends Component {
                                         </Col>
                                     </FormGroup>
 
-                                    <FormGroup row>
-                                        <Col sm={6}>
-                                            <Input type="text" name="role" id = 'role' placeholder="Enter User Role" onChange={this.handleChange} />
-                                        </Col>
-                                    </FormGroup>
-                                   
-                                    <FormGroup tag="fieldset" row>
-                                        <legend className="col-form-label col-sm-2">Select Gender</legend>
-                                        <Col sm={10}>
-                                            <FormGroup check>
-                                                <Label check>
-                                                    <Input type="radio" name="gender" id="F" onChange={this.handleChange} />
-                                                        Female
-                                                </Label>
-                                            </FormGroup>
-                                            
-                                            <FormGroup check>
-                                                <Label >
-                                                    <Input type="radio" name="gender" id="M" onChange={this.handleChange} />
-                                                        Male
-                                                </Label>
-                                            </FormGroup>
-                                        </Col>
-                                    </FormGroup>
-                                    <FormGroup tag="fieldset" row>
-                                        <legend className="col-form-label col-sm-2">Select Engineer Type</legend>
-                                        <Col sm={10}>
-                                            <FormGroup check>
-                                                <Label check>
-                                                    <Input type="radio" name="type" id="CLI" onChange={this.handleChange} />
-                                                        CLI
-                                                </Label>
-                                            </FormGroup>
-                                            
-                                            <FormGroup check>
-                                                <Label >
-                                                    <Input type="radio" name="type" id="GUI" onChange={this.handleChange} />
-                                                        GUI
-                                                </Label>
-                                            </FormGroup>
-                                            <FormGroup check>
-                                                <Label >
-                                                    <Input type="radio" name="type" id="CLI+GUI" onChange={this.handleChange} />
-                                                        CLI+GUI
-                                                </Label>
-                                            </FormGroup>
-                                        </Col>
-                                    </FormGroup>
-                                    {
-                                        [
-                                            { field: 'Releases', header: 'Releases' }
-                                        ].map(item => (
-                                            <Col xs="6" md="3" lg="2">
-                                                <FormGroup className='rp-app-table-value'>
-                                                    <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}
-                                                        {
-                                                            this.state.errors[item.field] &&
-                                                            <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
-                                                        }</Label>
-                                                    {   
-                                                            <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(item.field, e, checked, select)}
-                                                                data={multiselect[item.field]} multiple /></div>
+                                    <Col xs="6" md="3" lg="3">
+                                        <FormGroup className='rp-app-table-value'>
+                                                {/* <Label className='rp-app-table-label' htmlFor="UserRole">
+                                                    User Role
+                                                </Label> */}
+                                                <Row xs="6" md="3" lg="3">
+                                                    {
+                                                            <Input style={{ borderColor: this.state.errors['UserRole'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="UserRole" name="UserRole" value={this.state.role}
+                                                                onChange={(e) => this.setState({ role: e.target.value , errors: { ...this.state.errors, role: null } },)} >
+                                                                <option value=''>Select Role</option>
+                                                                {
+                                                                    ["ADMIN", "QA", "Dev"].map(item => <option value={item}>{item}</option>)
+                                                                }
+                                                            </Input>
                                                     }
-                                                </FormGroup>
-                                            </Col>
-                                        ))
+                                                </Row>
+                                        </FormGroup>
+                                   </Col>
+                                    <Col xs="6" md="3" lg="3">
+                                    <FormGroup className='rp-app-table-value'>
+                                        <Row xs="10" md="10" lg="10">
+                                            {
+                                                    <Input style={{ borderColor: this.state.errors['User'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="Domain" name="User" value={this.state.engType}
+                                                        onChange={(e) => this.setState({ engType: e.target.value , errors: { ...this.state.errors, engType: null } })} >
+                                                        <option value=''>Select Engineer Type</option>
+                                                        {
+                                                            ["CLI", "GUI", "CLI+GUI"].map(item => <option value={item}>{item}</option>)
+                                                        }
+                                                    </Input>
+                                            }
+                                        </Row>
+                                        </FormGroup>
+                                    </Col>
+                                    {
+                                        this.state.allReleases1 &&
+                                        <Row>
+                                                <Col xs="12" sm="12" md="15" lg="15">
+                                                    <FormGroup className='rp-app-table-value'>
+                                                        <input type="checkbox" onClick={this.handleAllCheckedRelInsert}  value="checkedall" /> Releases-Check / Uncheck All
+                                                        <ul>
+                                                        {
+                                                        this.state.allReleases1.map((relName) => {
+                                                            return (<CheckBox handleCheckChieldElement={this.handleCheckChieldRelInsert}  {...relName} />)
+                                                        })
+                                                        }
+                                                        </ul>
+                                                    </FormGroup>
+                                                </Col>
+                                        </Row>
                                     }
                                     
                                     <Button outline color="success" id = 'submit' onClick={this.handleSubmit} > Save </Button>
@@ -410,9 +378,10 @@ class createUser extends Component {
                                 <Form>
                                     <Col xs="6" md="3" lg="3">    
                                         <FormGroup className='rp-app-table-value'>
-                                            <Label className='rp-app-table-label' htmlFor="User">
+                                            {/* <Label className='rp-app-table-label' htmlFor="User">
                                                 Users
-                                            </Label>
+                                            </Label> */}
+                                            <Row xs="10" md="10" lg="10">
                                                 {
                                                         <Input style={{ borderColor: this.state.errors['User'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="Domain" name="User" value={this.state.selectedUserToEdit}
                                                             onChange={(e) => this.setState({ selectedUserToEdit: e.target.value , errors: { ...this.state.errors, selectedUserToEdit: null } },() => {this.getUserDetail()})} >
@@ -422,112 +391,96 @@ class createUser extends Component {
                                                             }
                                                         </Input>
                                                 }
+                                            </Row>
                                         </FormGroup>
+                                            {
+                                                this.state.selectedUserToEdit &&
+                                                <Row xs="10" md="10" lg="10">
+                                                    <Label className='rp-app-table-label' htmlFor="User">
+                                                            Role:
+                                                        </Label>
+                                                        {
+                                                            this.state.assignedRole ?(<h6> {this.state.assignedRole} </h6>): ''
+                                                        }
+                                                </Row>
+                                            }
+                                            {
+                                                this.state.selectedUserToEdit &&
+                                                <Row xs="10" md="10" lg="10">
+                                                <Label className='rp-app-table-label' htmlFor="User">
+                                                            Engineer Type:
+                                                        </Label>
+                                                        {
+                                                                this.state.assignedengType ?(<h6> {this.state.assignedengType} </h6>): ''
+                                                        }
+                                                </Row>
+                                            }
+                                             {
+                                                this.state.selectedUserToEdit &&
+                                                <Row xs="auto" md="auto" lg="auto">
+                                                <Label className='rp-app-table-label' htmlFor="User">
+                                                            Releases:
+                                                        </Label>
+                                                        {
+                                                            this.state.assignedR ? this.state.assignedR.map(element => {
+                                                                    return(<h6> {element}, &nbsp;</h6>)
+                                                                })
+                                                                : '' 
+                                                        }
+                                                </Row>
+                                            }
+                                            {
+                                                this.state.selectedUserToEdit &&
+                                                    <FormGroup className='rp-app-table-value'>
+                                                        <Row xs="10" md="10" lg="10">
+                                                            {
+                                                                    <Input style={{ borderColor: this.state.errors['User'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="Domain" name="User" value={this.state.role}
+                                                                        onChange={(e) => this.setState({ role: e.target.value , errors: { ...this.state.errors, role: null } })} >
+                                                                        <option value=''>Select User Role</option>
+                                                                        {
+                                                                            ["ADMIN", "QA", "Dev"].map(item => <option value={item}>{item}</option>)
+                                                                        }
+                                                                    </Input>
+                                                            }
+                                                        </Row>
+                                                    </FormGroup>
+                                            }
+                                             {
+                                                this.state.selectedUserToEdit &&
+                                                    <FormGroup className='rp-app-table-value'>
+                                                        <Row xs="10" md="10" lg="10">
+                                                            {
+                                                                    <Input style={{ borderColor: this.state.errors['User'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="Domain" name="User" value={this.state.engType}
+                                                                        onChange={(e) => this.setState({ engType: e.target.value , errors: { ...this.state.errors, engType: null } })} >
+                                                                        <option value=''>Select Engineer Type</option>
+                                                                        {
+                                                                            ["CLI", "GUI", "CLI+GUI"].map(item => <option value={item}>{item}</option>)
+                                                                        }
+                                                                    </Input>
+                                                            }
+                                                        </Row>
+                                                    </FormGroup>
+                                            }
                                     </Col>
                                     {
-                                        this.state.selectedUserToEdit &&
-                                        <Col xs="10" md="10" lg="10">    
-                                            <FormGroup className='rp-app-table-value'>  
-                                                {
-                                                    [
-                                                        { field: 'SelectedReleases', header: 'Add Releases' }
-                                                    ].map(item => (
-                                                        <Col xs="6" md="3" lg="2">
-                                                            <FormGroup className='rp-app-table-value'>
-                                                                <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}
-                                                                    {
-                                                                        this.state.errors[item.field] &&
-                                                                        <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
-                                                                    }</Label>
-                                                                {   
-                                                                        <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(item.field, e, checked, select)}
-                                                                            data={multiselect[item.field]} multiple /></div>
-                                                                }
-                                                            </FormGroup>
-                                                        </Col>
-                                                    ))
-                                                }
-                                            </FormGroup>
-                                        </Col>
+                                        this.state.selectedUserToEdit && this.state.rel ?
+                                        <Row>
+                                                <Col xs="12" sm="12" md="15" lg="15">
+                                                    <FormGroup className='rp-app-table-value'>
+                                                        <input type="checkbox" onClick={this.handleAllCheckedRel}  value="checkedall" /> Releases-Check / Uncheck All
+                                                        <ul>
+                                                        {
+                                                        this.state.rel.map((relName) => {
+                                                            return (<CheckBox handleCheckChieldElement={this.handleCheckChieldRel}  {...relName} />)
+                                                        })
+                                                        }
+                                                        </ul>
+                                                    </FormGroup>
+                                                </Col>
+                                        </Row>: ''
                                     }
-                                     {
-                                        this.state.selectedUserToEdit &&
-                                        <Col xs="10" md="10" lg="10">    
-                                            <FormGroup className='rp-app-table-value'>  
-                                                {
-                                                    [
-                                                        { field: 'RemoveReleases', header: 'Remove Releases' }
-                                                    ].map(item => (
-                                                        <Col xs="6" md="3" lg="2">
-                                                            <FormGroup className='rp-app-table-value'>
-                                                                <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}
-                                                                    {
-                                                                        this.state.errors[item.field] &&
-                                                                        <i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
-                                                                    }</Label>
-                                                                {   
-                                                                        <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(item.field, e, checked, select)}
-                                                                            data={multiselect[item.field]} multiple /></div>
-                                                                }
-                                                            </FormGroup>
-                                                        </Col>
-                                                    ))
-                                                }
-                                            </FormGroup>
-                                        </Col>
-                                    }
-                                    {
-                                        this.state.selectedUserToEdit &&
-                                    <Col xs="10" md="10" lg="10">
-                                        <FormGroup row>
-                                            <Col sm={6}>
-                                                <Input type="text" name="role" id = 'role' placeholder="Edit User Role" onChange={this.handleChange} />
-                                            </Col>
-                                        </FormGroup>
-                                        <Row xs="10" md="10" lg="10">
-                                        <Label className='rp-app-table-label' htmlFor="User">
-                                                    Role:
-                                                </Label>
-                                                {
-                                                        this.state.assignedRole ?(<h6> {this.state.assignedRole} </h6>): ''
-                                                }
-                                        </Row>
-                                        <FormGroup tag="fieldset" row>
-                                            <legend className="rp-app-table-label">Select Engineer Type</legend>
-                                            <Col sm={10}>
-                                                <FormGroup check>
-                                                    <Label check>
-                                                        <Input type="radio" name="type" id="CLI" onChange={this.handleChange} />
-                                                            CLI
-                                                    </Label>
-                                                </FormGroup>
-                                                
-                                                <FormGroup check>
-                                                    <Label >
-                                                        <Input type="radio" name="type" id="GUI" onChange={this.handleChange} />
-                                                            GUI
-                                                    </Label>
-                                                </FormGroup>
-                                                <FormGroup check>
-                                                    <Label >
-                                                        <Input type="radio" name="type" id="CLI+GUI" onChange={this.handleChange} />
-                                                            CLI+GUI
-                                                    </Label>
-                                                </FormGroup>
-                                            </Col>
-                                        </FormGroup>
-                                        <Row xs="10" md="10" lg="10">
-                                        <Label className='rp-app-table-label' htmlFor="User">
-                                                    Engineer Type:
-                                                </Label>
-                                                {
-                                                        this.state.assignedengType ?(<h6> {this.state.assignedengType} </h6>): ''
-                                                }
-                                        </Row>
-                                    </Col>
-                                }
                                     { this.state.selectedUserToEdit ?
-                                    <Button outline color="success" id = 'submit' onClick={this.handleEditSubmit} > Edit </Button>:[]
+                                    <Button outline color="success" id = 'submit' onClick={this.handleEditSubmit} > Save </Button>:[]
                                     }
                                
                                 </Form>

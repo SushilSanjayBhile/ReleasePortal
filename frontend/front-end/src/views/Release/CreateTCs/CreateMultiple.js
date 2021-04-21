@@ -177,11 +177,11 @@ class CreateMultiple extends Component {
         this.save();
     }
     textFields = [
-        'Platform', 'Domain', 'SubDomain',
+        'Domain', 'SubDomain',
         'TcID', 'TcName', 'Scenario', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'Assignee','Creator', 'Platform'
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'Assignee','Creator'
     ];
-    arrayFields = ['CardType']
+    arrayFields = ['Platform', 'CardType']
     getTcName(name) {
         let tcName = name;
         if (!tcName || tcName === 'NOT AUTOMATED' || tcName === "undefined" || tcName === null) {
@@ -275,20 +275,20 @@ class CreateMultiple extends Component {
 
     confirmMultipleToggle() {
         let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsCli
-        let domains = []
-        let subdomains = []
-        platforms && platforms.forEach(element => {
-            domains.push.apply(domains,Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element]))
-        })
-        platforms && platforms.forEach(element => {
-            domains.forEach(item => {
-                subdomains.push.apply(subdomains,this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element][item])
-            })
-        })
-        console.log("platforms",platforms)
-        console.log("domains",domains)
-        console.log("subdomains",subdomains)
-        //let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
+        // let domains = []
+        // let subdomains = []
+        // platforms && platforms.forEach(element => {
+        //     domains.push.apply(domains,Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element]))
+        // })
+        // platforms && platforms.forEach(element => {
+        //     domains.forEach(item => {
+        //         subdomains.push.apply(subdomains,this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element][item])
+        //     })
+        // })
+        // console.log("platforms",platforms)
+        // console.log("domains",domains)
+        // console.log("subdomains",subdomains)
+        let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
         if (domains) {
             domains.sort();
         }
@@ -320,7 +320,7 @@ class CreateMultiple extends Component {
                 if (!errors) errors = {};
                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], Domain: 'Should be a value from given domains' } };
             }
-            //let subdomains = row.Domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[row.Domain];
+                let subdomains = row.Domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[row.Domain];
             if (!subdomains || (subdomains && !subdomains.includes(row.SubDomain))) {
                 if (!errors) errors = {};
                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], SubDomain: 'Should be a value from given subdomains' } };
@@ -471,7 +471,6 @@ class CreateMultiple extends Component {
     parseData(data, format) {
         switch (format) {
             case 'XLS':
-
                 data = data.map((item, index) => ({ TABLEID: `id${index}`, ...item }));
                 this.editedRows = {};
                 this.setState({ rowData: data, multipleErrors: {} })
@@ -489,6 +488,9 @@ class CreateMultiple extends Component {
         let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform]);
         //let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
         let subdomains =  this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform] && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform][this.state.domain];    
+        if (platforms) {
+            platforms.sort();
+        }
         if (domains) {
             domains.sort();
         }

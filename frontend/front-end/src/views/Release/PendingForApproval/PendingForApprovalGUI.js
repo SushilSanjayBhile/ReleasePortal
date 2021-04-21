@@ -509,7 +509,7 @@ class PendingForApprovalGUI extends Component {
                     "UserName": this.props.user.email,
                     LogData: ``,
                     "RequestType": 'PUT',
-                    "URL": `/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`
+                    "URL": `/api/tcupdategui/${this.props.selectedRelease.ReleaseNumber}`
                 }
             };
             ['WorkingStatus'].map(each => {
@@ -555,7 +555,7 @@ class PendingForApprovalGUI extends Component {
             items.push(pushable);
         })
         console.log("before post request data",items)
-        axios.put(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`, items)
+        axios.put(`/api/tcupdategui/${this.props.selectedRelease.ReleaseNumber}`, items)
         .then(res => {
             this.gridOperations(true);
             this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)

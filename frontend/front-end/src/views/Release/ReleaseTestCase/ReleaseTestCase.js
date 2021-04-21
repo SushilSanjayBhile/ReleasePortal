@@ -11,6 +11,7 @@ import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../a
 import './ReleaseTestCase.scss'
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
 import Sunburst from '../components/Sunburst';
+import { element } from 'prop-types';
 const Status = {
     Fail: 'Fail',
     Pass: 'Pass',
@@ -524,7 +525,20 @@ class ReleaseTestCase extends Component {
         let automation_perc = 0
         axios.get('/api/automationCountForGUI/' + this.props.selectedRelease.ReleaseNumber)
         .then(response=>{
-            response.data.Data.map((item)=>{
+            let data = []
+            response.data.Data.forEach(element => {
+                data.push(element.Platform)
+            })
+            data.sort()
+            let dataObj = []
+            data.forEach(element => {
+                response.data.Data.forEach(item => {
+                    if(element === item.Platform) dataObj.push(item)
+
+                })
+            })
+            dataObj.map((item)=>{     
+            //response.data.Data.map((item)=>{
                 automation_perc = 0
                 if(item.Total_TCs > 0){
                     automation_perc = (item.Automated_TCs / item.Total_TCs) * 100
@@ -588,7 +602,21 @@ class ReleaseTestCase extends Component {
         let automation_perc = 0
         axios.get('/api/automationCount/' + this.props.selectedRelease.ReleaseNumber)
         .then(response=>{
-            response.data.Data.map((item)=>{
+            let data = []
+            response.data.Data.forEach(element => {
+                data.push(element.Platform)
+            })
+            data.sort()
+            let dataObj = []
+            data.forEach(element => {
+                response.data.Data.forEach(item => {
+                    if(element === item.Platform) dataObj.push(item)
+
+                })
+            })
+            console.log(dataObj)
+            dataObj.map((item)=>{            
+            //response.data.Data.map((item)=>{
                     automation_perc = 0
                     if(item.Total_TCs > 0){
                         automation_perc = (item.Automated_TCs / item.Total_TCs) * 100
@@ -1260,7 +1288,7 @@ class ReleaseTestCase extends Component {
                                     </Table>
 
                                     {
-                                            this.state.platformWiseDomain.length && 
+                                            this.state.platformWiseDomain.length >= 1 ?
                                             <Table scroll responsive style={{ overflow: 'scroll'}} >
                                                 <thead>
                                                     <tr>
@@ -1279,7 +1307,7 @@ class ReleaseTestCase extends Component {
                                                         this.state.platformWiseDomain.length > 1 ? this.renderTableDataForPlatforWiseDomain() : <span class="ag-overlay-loading-center">Loading ...</span>
                                                     }
                                                 </tbody>
-                                            </Table>
+                                            </Table> : null
                                         }
                                 </div>
                             </Row>
@@ -1336,7 +1364,7 @@ class ReleaseTestCase extends Component {
                                     </Table>
 
                                     {
-                                            this.state.platformWiseDomainGUI.length && 
+                                            this.state.platformWiseDomainGUI.length >= 1 ? 
                                             <Table scroll responsive style={{ overflow: 'scroll'}} >
                                                 <thead>
                                                     <tr>
@@ -1355,7 +1383,7 @@ class ReleaseTestCase extends Component {
                                                         this.state.platformWiseDomainGUI.length > 0 ? this.renderTableDataForPlatforWiseDomainGUI() : <span class="ag-overlay-loading-center">Loading ...</span>
                                                     }
                                                 </tbody>
-                                            </Table>
+                                            </Table> : null
                                         }
                                 </div>
                             </Row>

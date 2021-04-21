@@ -308,17 +308,18 @@ class UpdateMultiple extends Component {
     // }
     confirmMultipleToggle() {
         let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsGui
-        let domains = []
-        let subdomains = []
-        platforms && platforms.forEach(element => {
-            domains.push.apply(domains,Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[element]))
-        })
-        platforms && platforms.forEach(element => {
-            domains.forEach(item => {
-                subdomains.push.apply(subdomains,this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[element][item])
-            })
-        })
+        // let domains = []
+        // let subdomains = []
+        // platforms && platforms.forEach(element => {
+        //     domains.push.apply(domains,Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[element]))
+        // })
+        // platforms && platforms.forEach(element => {
+        //     domains.forEach(item => {
+        //         subdomains.push.apply(subdomains,this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[element][item])
+        //     })
+        // })
         //let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate["domain-gui"] && Object.keys(this.props.selectedRelease.TcAggregate["domain-gui"]);
+        let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
         if (domains) {
             domains.sort();
         }
@@ -351,7 +352,7 @@ class UpdateMultiple extends Component {
                 if (!errors) errors = {};
                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], Domain: 'Should be a value from given domains' } };
             }
-            //let subdomains = row.Domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[row.Domain];
+            let subdomains = row.Domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[row.Domain];
             if (!subdomains || (subdomains && !subdomains.includes(row.SubDomain))) {
                 if (!errors) errors = {};
                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], SubDomain: 'Should be a value from given subdomains' } };
@@ -533,6 +534,9 @@ class UpdateMultiple extends Component {
         let subdomains =  this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[this.state.platform] && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[this.state.platform][this.state.domain];
         //let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate["domain-gui"] && Object.keys(this.props.selectedRelease.TcAggregate["domain-gui"]);
         //let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
+        if (platforms) {
+            platforms.sort();
+        }
         if (domains) {
             domains.sort();
         }

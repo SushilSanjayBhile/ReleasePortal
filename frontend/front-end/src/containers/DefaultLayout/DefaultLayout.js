@@ -113,6 +113,7 @@ class DefaultLayout extends Component {
   }
   componentDidUpdate(prevProps, prevState){
     let email = this.props.currentUser ? this.props.currentUser.email : null
+    let tempList = []
     if (prevProps.currentUser !== this.props.currentUser) {
       if (email != null) {
       axios.get(`/api/user1/name/${email}`)
@@ -127,10 +128,25 @@ class DefaultLayout extends Component {
               else this.setState({routePath: `/release/testmetrics`});
             })
           })
-          if (this.allReleases1[0]) {
-            this.getReleaseData(this.allReleases1[0] )
-            this.props.releaseChange({ id: this.allReleases1[0]  });
-          }
+          let releaseInfoURL = `/api/release/cdate`;
+            axios.get(releaseInfoURL)
+              .then(res => {
+                res.data.forEach(item => {
+                  this.allReleases1.forEach(rel => {
+                    if (item.ReleaseNumber === rel){
+                      tempList.push(rel)
+                    }
+                  })
+                });
+                this.allReleases1 = tempList
+                if (this.allReleases1[0]) {
+                  this.getReleaseData(this.allReleases1[0] )
+                  this.props.releaseChange({ id: this.allReleases1[0]  });
+                }
+
+              }, error => {
+                
+              });
         }, error => {
           
         })
