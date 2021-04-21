@@ -671,7 +671,7 @@ def TCAGGREGATE(Release):
 
     ############################################
     # cli total numbers calculation for dashboard
-    applicableCliInfo = cliTcInfo.filter(~Q(Priority = "Skip")).filter(~Q(Priority = "NA"))
+    applicableCliInfo = cliTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "NA"))
 
     # default dictionary for CLI
     dictionary["all"] = {}
@@ -709,7 +709,7 @@ def TCAGGREGATE(Release):
 
     #############################################
     # GUI total numbers calculation for dashboard
-    applicableGuiInfo = guiTcInfo.filter(~Q(Priority = "Skip")).filter(~Q(Priority = "NA"))
+    applicableGuiInfo = guiTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "NA"))
 
     # default dictionary for CLI
     dictionary["allGUI"] = {}
