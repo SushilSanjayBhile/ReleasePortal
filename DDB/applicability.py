@@ -2,11 +2,12 @@ import json
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from .forms import APPLICABILITY_FORM
+from .forms import APPLICABILITY_FORM, TcInfoForm, GuiInfoForm
 from .models import TC_INFO, TC_INFO_GUI, APPLICABILITY, RELEASES
-from .serializers import APPLICABILITY_SERIALIZER, TC_INFO_SERIALIZER
+from .serializers import APPLICABILITY_SERIALIZER, TC_INFO_SERIALIZER, TC_INFO_GUI_SERIALIZER
 
 from .new import rootRelease
+from .tcinfo import duplicate_tcs
 
 @csrf_exempt
 def GetPlatformList(request):
@@ -152,12 +153,61 @@ def Applicable(request, Release):
             singletc = TC_INFO_GUI.objects.using(rootRelease).get(id = tc)
             singletc.Platform = tcwiseinterfacegui[tc]
             singletc.save(using = rootRelease)
+            
+            d = TC_INFO_GUI.objects.using(rootRelease).values().get(id = tc)
+            #print("printing d",d)
+            for p in tcwiseinterfacegui[tc]:
+                print("d and p", d["TcID"], p)
+                try:
+                    #check = TC_INFO.objects.using(rootRelease).get(TcID = d["TcID"], CardType = p)
+                    check = TC_INFO_GUI.objects.using(rootRelease).get(TcID = d["TcID"],CardType = p)
+                    print("Print check after",check)
+                except:
+                    #check = TC_INFO_GUI.objects.using(rootRelease).get(TcID = d["TcID"],CardType = p)
+                    #print("check",check)
+                    ser = TC_INFO_GUI_SERIALIZER(d).data
+                    ser["CardType"] = p
+                    fd = GuiInfoForm(ser)
+                    if fd.is_valid():
+                        print("valid")
+                        data = fd.save(commit = False)
+                        data.save(using = rootRelease)
+                        if p not in rel.PlatformsGui:
+                            rel.PlatformsGui.append(p)
+                            rel.save()
+
+                    else:
+                        print("INVALID", fd.errors)
 
         # save list of applicable platforms in tc_info itself code
         for tc in tcwiseinterfacecli:
             singletc = TC_INFO.objects.using(rootRelease).get(id = tc)
             singletc.Platform = tcwiseinterfacecli[tc]
             singletc.save(using = rootRelease)
+            #print("printingtcw",tcwiseinterfacecli)
+            d = TC_INFO.objects.using(rootRelease).values().get(id = tc)
+            #print("printing d",d)
+            for p in tcwiseinterfacecli[tc]:
+                print("printing dpp", d["TcID"],p)
+                try:
+                    #check = TC_INFO.objects.using(rootRelease).get(TcID = d["TcID"], CardType = p)
+                    check = TC_INFO.objects.using(rootRelease).get(TcID = d["TcID"],CardType = p)
+                    #print("Print check after",check)
+                except:
+                    #check = TC_INFO.objects.using(rootRelease).get(TcID = d["TcID"]).filter(CardType = p)
+                    ser = TC_INFO_SERIALIZER(d).data
+                    ser["CardType"] = p
+                    fd = TcInfoForm(ser)
+                    if fd.is_valid():
+                        print("valid")
+                        data = fd.save(commit = False)
+                        data.save(using = rootRelease)
+                        if p not in rel.PlatformsCli:
+                            rel.PlatformsCli.append(p)
+                            rel.save()
+                    else:
+                        print("INVALID", fd.errors)
+
 
         for data in req:
             flag = 0

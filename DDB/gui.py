@@ -1,5 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from django.http import JsonResponse
 import json, time
 
 from .serializers import TC_INFO_GUI_SERIALIZER, LOG_SERIALIZER, LATEST_TC_STATUS_GUI_SERIALIZER, GUI_LOGS_SERIALIZER, \
@@ -88,10 +89,34 @@ def MULTIPLE_TC_INFO_GUI_UPDATION(request, Release):
 
 def updateData(updatedData, data, Release):
     if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"] and Release == rootRelease:
-        update_automation_count("increaseAutomated", "GUI")
+        #update_automation_count("increaseAutomated", "GUI")
+        if len(data.Platform) <= len(updatedData['Platform']) :
+            update_automation_count("increaseAutomated", "GUI",len(updatedData['Platform']))
+        
+        if len(updatedData['Platform']) == 0:
+            update_automation_count("increaseAutomated", "GUI",len(data.Platform))
+        
+        if len(data.Platform) > len(updatedData['Platform']) :
+            update_automation_count("increaseAutomated", "GUI",len(updatedData['Platform']))
+    
     if data.TcName != "TC NOT AUTOMATED" and updatedData["TcName"] == "TC NOT AUTOMATED" and Release == rootRelease:
         print("2",updatedData['AutomationDate'])
-        update_automation_count("decreaseAutomated", "GUI")
+        #update_automation_count("decreaseAutomated", "GUI")
+        if len(data.Platform) >= len(updatedData['Platform']) :
+            update_automation_count("decreaseAutomated", "GUI",len(updatedData['Platform']))
+        
+        if len(updatedData['Platform']) == 0:
+            update_automation_count("decreaseAutomated", "GUI",len(data.Platform))
+        
+        if len(data.Platform) < len(updatedData['Platform']) :
+            update_automation_count("decreaseAutomated", "GUI",len(updatedData['Platform']))
+    
+    if data.TcName == updatedData["TcName"] and data.TcName != "TC NOT AUTOMATED":
+        if len(data.Platform) <= len(updatedData['Platform']):
+            update_automation_count("increaseAutomated", "GUI",len(updatedData['Platform']))
+        
+        if len(data.Platform) > len(updatedData['Platform']):
+            update_automation_count("decreaseAutomated", "GUI",len(updatedData['Platform']))
     if data.TcName != updatedData["TcName"] and data.TcName == "TC NOT AUTOMATED":
         updatedData['AutomationDate'] = datetime.datetime.now()
         
@@ -136,14 +161,52 @@ def GenerateGUILogData(userName, requestType, url, logData, tcInfoNum, Release):
     else:
         print("INVALID", fd.errors)
 
+
 def updateGuiTcInfo(data, updatedData, Release):
+    print(data.TcName, data.Platform, updatedData['Platform'])
+    print(Release,rootRelease,updateFlag)
     if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"] and Release == rootRelease:
         updatedData['AutomationDate'] = datetime.datetime.now()
-        update_automation_count("increaseAutomated", "GUI")
+        #update_automation_count("increaseAutomated", "GUI")
+        print("IN first If")
+        if len(data.Platform) <= len(updatedData['Platform']) :
+            print("In 1-1 if")
+            update_automation_count("increaseAutomated", "GUI",len(updatedData['Platform']))
+        
+        elif len(updatedData['Platform']) == 0:
+            print("IN 1-2 elif")
+            update_automation_count("increaseAutomated", "GUI",len(data.Platform))
+        
+        elif len(data.Platform) > len(updatedData['Platform']) :
+            print("In 1-2 elif")
+            update_automation_count("increaseAutomated", "GUI",len(updatedData['Platform']))
+    
     if data.TcName != "TC NOT AUTOMATED" and updatedData["TcName"] == "TC NOT AUTOMATED" and Release == rootRelease:
-        update_automation_count("decreaseAutomated", "GUI")
-
-    if data.TcName != updatedData["TcName"] and data.TcName == "TC NOT AUTOMATED": 
+        #update_automation_count("decreaseAutomated", "GUI")
+        print("IN second if")
+        if len(data.Platform) >= len(updatedData['Platform']) :
+            print("2-1 if")
+            update_automation_count("decreaseAutomated", "GUI",len(updatedData['Platform']))
+        
+        elif len(updatedData['Platform']) == 0:
+            print("In 2-2 elif")
+            update_automation_count("decreaseAutomated", "GUI",len(data.Platform))
+        
+        elif len(data.Platform) < len(updatedData['Platform']) :
+            print("In 2-3 elif")
+            update_automation_count("decreaseAutomated", "GUI",len(updatedData['Platform']))
+    
+    """if data.TcName == updatedData["TcName"] and data.TcName != "TC NOT AUTOMATED" and Release == rootRelease:
+        print("In third if")
+        if len(data.Platform) <= len(updatedData['Platform']):
+            print("In 3-1 if")
+            update_automation_count("increaseAutomated", "GUI",len(updatedData['Platform']))
+        
+        if len(data.Platform) > len(updatedData['Platform']):
+            print("In 3-2 if")
+            update_automation_count("decreaseAutomated", "GUI",len(updatedData['Platform']))
+            """
+    if data.TcName != updatedData["TcName"] and data.TcName == "TC NOT AUTOMATED":
         updatedData['AutomationDate'] = datetime.datetime.now()
 
     data.TcID = updatedData["TcID"] 
@@ -336,9 +399,9 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     print(fd.errors)
 
         if flag == 1:
-            update_automation_count("increaseTotal", "GUI")
+            update_automation_count("increaseTotal", "GUI",len(req["Platform"]))
             if req["TcName"] != "TC NOT AUTOMATED":
-                update_automation_count("increaseAutomated", "GUI")
+                update_automation_count("increaseAutomated", "GUI",len(req["Platform"]))
             
         return HttpResponse("SUCCESSFULLY UPDATED")
 
@@ -458,7 +521,7 @@ def updateGuiLatestStatusData(updatedData, data, Release):
     return 1
 
 @csrf_exempt
-def GET_TC_INFO_GUI_ID(request, Release, id, browserName):
+def GET_TC_INFO_GUI_ID(request, Release, id, browserName, cardType):
     if request.method == "GET":
         atd = {}
 
@@ -475,7 +538,7 @@ def GET_TC_INFO_GUI_ID(request, Release, id, browserName):
                     atd[tc].append(pf)
 
         try:
-            infoData = TC_INFO_GUI.objects.using(Release).filter(TcID = id).get(BrowserName = browserName)
+            infoData = TC_INFO_GUI.objects.using(Release).filter(TcID = id).get(CardType = cardType, BrowserName = browserName)
         except:
             return JsonResponse({'Not Found': "Record Not Found"}, status = 404)
 
@@ -516,7 +579,8 @@ def GUI_TC_STATUS_GET_POST_VIEW(request, Release):
 
             status["Result"] = req["Result"]
             status["Build"] = req["Build"]
-            status["TestedOn"] = req["TestedOn"]
+            if "TestedOn" in req:
+                status["TestedOn"] = req["TestedOn"]
             if "Bugs" in req:
                 status["Bugs"] = req["Bugs"]
             status["tcInfoNum"] = ser.data["id"]
@@ -556,7 +620,8 @@ def WHOLE_GUI_TC_INFO(request, Release):
         statusDict = {}
 
         index = int(request.GET.get('index', 0))
-        Platform = request.GET.getlist('Platform', [])
+        #Platform = request.GET.getlist('Platform', [])
+        CardType = str(request.GET.get('CardType', None))
         Domain = str(request.GET.get('Domain', None))
         SubDomain = str(request.GET.get('SubDomain', None))
         Priority = str(request.GET.get('Priority', None))
@@ -618,8 +683,10 @@ def WHOLE_GUI_TC_INFO(request, Release):
                         infodataone = infod
 
                 infodata = infodataone
-        if Platform != []:
-            infodata = infodata.filter(Platform__contains = Platform)
+        #if Platform != []:
+        #   infodata = infodata.filter(Platform__contains = Platform)
+        if CardType != 'None':
+            infodata = infodata.filter(CardType = CardType)
         if Domain != 'None':
             infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':

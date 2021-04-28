@@ -64,7 +64,7 @@ def GUI_TC_STATUS_UPDATE_VIEW(request, Release):
                 print(req, fd.errors)
                 errRecords.append(req)
 
-        latestResultUpdateFunction(Release)
+        #latestResultUpdateFunction(Release)
 
         if len(errRecords) > 0:
             return HttpResponse("Error occured", status = 500)
@@ -94,7 +94,7 @@ def TC_STATUS_UPDATE_VIEW(request, Release):
                 print(req, fd.errors)
                 errRecords.append(req)
 
-        latestResultUpdateFunction(Release)
+        #latestResultUpdateFunction(Release)
 
         if len(errRecords) > 0:
             return HttpResponse(fd.errors, status = 500)

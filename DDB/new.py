@@ -17,20 +17,44 @@ def get_previous_monday_date():
     return previous_monday
 
 def get_total_cli():
+    total = 0
     infodata = TC_INFO.objects.using(rootRelease).all()
-    return len(infodata)
+    #priority =  infodata.values('Priority').distinct()
+    for i in infodata:
+        #if i.Priority == "P0" or i.Priority == "P1":
+        if len(i.Platform) != 0:
+            print(i.Platform)
+        total = total + len(i.Platform)
+    #return len(infodata)
+    return total
 
 def get_automated_cli():
+    total = 0
     infodata = TC_INFO.objects.using(rootRelease).filter(~Q(TcName = "TC NOT AUTOMATED"))
-    return len(infodata)
+    for i in infodata:
+        #print(i.Platform)
+        total = total + len(i.Platform)
+    #return len(infodata)
+    return total
 
 def get_total_gui():
+    total = 0
     infodata = TC_INFO_GUI.objects.using(rootRelease).filter(Platform__contains = ["DMC"] )
-    return len(infodata)
+    #priority =  infodata.values('Priority').distinct()
+    for i in infodata:
+        #if i.Priority == "P0" or i.Priority == "P1":
+        total = total + len(i.Platform)
+    #return len(infodata)
+    return total
+    #return len(infodata)
 
 def get_automated_gui():
+    total = 0
     infodata = TC_INFO_GUI.objects.using(rootRelease).filter(~Q(TcName = "TC NOT AUTOMATED"))
-    return len(infodata)
+    #return len(infodata)
+    for i in infodata:
+        total = total + len(i.Platform)
+    return total
 
 def get_previous_monday_record():
     #previous_monday = get_previous_monday_date()
@@ -171,7 +195,7 @@ def custom_automation_count_get_view(request):
         print(start_date, end_date)
     return HttpResponse("CUSTOM AUTOMATION COUNT")
 
-def update_automation_count(operation, interface):
+def update_automation_count(operation, interface, platformCount):
     # These are some sample function calls
     # update_automation_count("increaseTotal", "GUI")
     # update_automation_count("increaseAutomated", "GUI")
@@ -188,20 +212,28 @@ def update_automation_count(operation, interface):
 
         if interface == "CLI":
             if operation == "increaseTotal":
-                oldRecord.TotalCli += 1
+                #oldRecord.TotalCli += 1
+                oldRecord.AutomatedCli += platformCount
             if operation == "increaseAutomated":
-                oldRecord.AutomatedCli += 1
+                #oldRecord.AutomatedCli += 1
+                oldRecord.AutomatedCli += platformCount
             if operation == "decreaseTotal":
-                oldRecord.TotalCli -= 1
+                #oldRecord.TotalCli -= 1
+                oldRecord.AutomatedCli -= platformCount
             if operation == "decreaseAutomated":
-                oldRecord.AutomatedCli -= 1
+                #oldRecord.AutomatedCli -= 1
+                oldRecord.AutomatedCli -= platformCount
         if interface == "GUI":
             if operation == "increaseTotal":
-                oldRecord.TotalGui += 1
+                #oldRecord.TotalGui += 1
+                oldRecord.AutomatedGui += platformCount
             if operation == "increaseAutomated":
-                oldRecord.AutomatedGui += 1
+                #oldRecord.AutomatedGui += 1
+                oldRecord.AutomatedGui += platformCount
             if operation == "decreaseTotal":
-                oldRecord.TotalGui -= 1
+                #oldRecord.TotalGui -= 1
+                oldRecord.AutomatedGui -= platformCount
             if operation == "decreaseAutomated":
-                oldRecord.AutomatedGui -= 1
+                #oldRecord.AutomatedGui -= 1
+                oldRecord.AutomatedGui -= platformCount
         oldRecord.save(using = rootRelease)

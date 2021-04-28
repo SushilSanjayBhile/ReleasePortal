@@ -296,11 +296,63 @@ def get_cli_dataDict(cliTcInfo, cliStatus):
         except:
             pass
     return (cid,csd)
+def platform_wise_domain_subdomain_cli_dict1(cliTcInfo):
+    pwddcli = {}
+    #platformsCli = cliTcInfo.values('Platform').distinct()
+    platformsCli = cliTcInfo.values('CardType').distinct()
+    #print(platformsCli)
+    for p in platformsCli:
+        platform = p["CardType"]
+
+        if len(platform) > 0:
+            #for p in platform:
+            if platform not in pwddcli:
+                pwddcli[platform] = {}
+
+            domainCliTcInfo = cliTcInfo.filter(CardType__contains = platform).values("Domain").distinct()
+            for domain in domainCliTcInfo:
+                domain = domain["Domain"]
+                if domain not in pwddcli[platform]:
+                    pwddcli[platform][domain] = []
+
+                #subDomainCliTcInfo = domainCliTcInfo.all().values("SubDomain").distinct()
+                subDomainCliTcInfo = domainCliTcInfo.filter(Domain__contains = domain).values("SubDomain").distinct()
+                for subdomain in subDomainCliTcInfo:
+                    subdomain = subdomain["SubDomain"]
+                    if subdomain not in pwddcli[platform][domain]:
+                        pwddcli[platform][domain].append(subdomain)
+    return pwddcli
+def platform_wise_domain_subdomain_gui_dict1(guiTcInfo):
+    pwddgui = {}
+    #platformsCli = cliTcInfo.values('Platform').distinct()
+    platformsGui = guiTcInfo.values('CardType').distinct()
+    #print(platformsCli)
+    for p in platformsGui:
+        platform = p["CardType"]
+
+        if len(platform) > 0:
+            #for p in platform:
+            if platform not in pwddgui:
+                pwddgui[platform] = {}
+
+            domainGuiTcInfo = guiTcInfo.filter(CardType__contains = platform).values("Domain").distinct()
+            for domain in domainGuiTcInfo:
+                domain = domain["Domain"]
+                if domain not in pwddgui[platform]:
+                    pwddgui[platform][domain] = []
+
+                #subDomainCliTcInfo = domainCliTcInfo.all().values("SubDomain").distinct()
+                subDomainGuiTcInfo = domainGuiTcInfo.filter(Domain__contains = domain).values("SubDomain").distinct()
+                for subdomain in subDomainGuiTcInfo:
+                    subdomain = subdomain["SubDomain"]
+                    if subdomain not in pwddgui[platform][domain]:
+                        pwddgui[platform][domain].append(subdomain)
+    return pwddgui
+
 
 def platform_wise_domain_subdomain_cli_dict(cliTcInfo):
     pwddcli = {}
     platformsCli = cliTcInfo.values('Platform').distinct()
-   
     for p in platformsCli:
         platform = p["Platform"]
 
@@ -729,8 +781,8 @@ def TCAGGREGATE(Release):
     dictionary["allGUI"]["All"] = guiTcInfo.count()
     dictionary["allGUI"]["Skip"] = guiTcInfo.filter(Priority = "Skip").count()
     dictionary["allGUI"]["NotApplicable"] = guiTcInfo.filter(Priority = "NA").count()
-    dictionary["allGUI"]["NonAutomated"] = applicableGuiInfo.filter(AutomatedTcName = "TC NOT AUTOMATED").count()
-    dictionary["allGUI"]["Automated"] = applicableGuiInfo.filter(~Q(AutomatedTcName = "TC NOT AUTOMATED")).count()
+    dictionary["allGUI"]["NonAutomated"] = applicableGuiInfo.filter(TcName = "TC NOT AUTOMATED").count()
+    dictionary["allGUI"]["Automated"] = applicableGuiInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
 
     for domain in dictionary["domain-gui"]:
         # nottested
@@ -751,8 +803,8 @@ def TCAGGREGATE(Release):
                 elif res == "Fail":
                     dictionary["allGUI"]["Fail"] += testedData[res]
 
-    dictionary["PlatformWiseDomainSubdomainCli"]= platform_wise_domain_subdomain_cli_dict(cliTcInfo)
-    dictionary["PlatformWiseDomainSubdomainGui"]= platform_wise_domain_subdomain_gui_dict(guiTcInfo)
+    dictionary["PlatformWiseDomainSubdomainCli"]= platform_wise_domain_subdomain_cli_dict1(cliTcInfo)
+    dictionary["PlatformWiseDomainSubdomainGui"]= platform_wise_domain_subdomain_gui_dict1(guiTcInfo)
     return dictionary
 
 
@@ -1776,40 +1828,45 @@ def RELEASEINFO(request, Release):
             data = RELEASES.objects.using('universal').get(ReleaseNumber = Release)
             cliTcInfo = TC_INFO.objects.using(Release).all()
             guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
-            platformsCli = cliTcInfo.values('Platform').distinct()
-            platformsGui = guiTcInfo.values('Platform').distinct()
+            #platformsCli = cliTcInfo.values('Platform').distinct()
+            platformsCli = cliTcInfo.values('CardType').distinct()
+            #print(platformsCli)
+            platformsGui = guiTcInfo.values('CardType').distinct()
+            #platformsGui = guiTcInfo.values('Platform').distinct()
             serializer = RELEASE_SERIALIZER(data)
 
             serData = json.dumps(serializer.data)
             serData = json.loads(serData)
+#            for p in platformsGui:
+#                if p["CardType"] not in serData["PlatformsGui"]:
+#                    data.PlatformsGui.append(p["CardType"])
+#                    data.save()
+#
             pcli = []
             pgui = []
             for p in platformsCli:
-                for p1 in p["Platform"]:
-                    if p1 not in pcli:
-                        pcli.append(p1)
-            #print("printcli",pcli)
-            #print("printserdat",serData["PlatformsCli"])
+                #for p1 in p["Platform"]:
+                    #if p1 not in pcli:
+                    #   pcli.append(p1)
+                if p["CardType"] not in pcli:
+                    pcli.append(p["CardType"])
+
             for p3 in serData["PlatformsCli"]:
                 if p3 not in pcli:
                     serData["PlatformsCli"].remove(p3)
                     data.PlatformsCli.remove(p3)
                     data.save()
-            #print("printserdat",serData["PlatformsCli"])
-            #print("data",data.PlatformsCli)
             for p in platformsGui:
-                for p1 in p["Platform"]:
-                    if p1 not in pgui:
-                        pgui.append(p1)
-            #print("printgui",pgui)
-            #print("printserdatg",serData["PlatformsGui"])
+                #for p1 in p["Platform"]:
+                    #if p1 not in pgui:
+                    #   pgui.append(p1)
+                if p["CardType"] not in pgui:
+                    pgui.append(p["CardType"])
             for p3 in serData["PlatformsGui"]:
                 if p3 not in pgui:
                     serData["PlatformsGui"].remove(p3)
                     data.PlatformsGui.remove(p3)
                     data.save()
-            #print("printserdatg",serData["PlatformsGui"])
-            #print("datag",data.PlatformsGui)
 
             aggregateData = TCAGGREGATE(Release)
             serData['TcAggregate'] = aggregateData

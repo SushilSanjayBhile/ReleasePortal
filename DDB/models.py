@@ -84,7 +84,7 @@ class GUI_TC_STATUS(models.Model):
     Result = models.CharField(max_length = 14, blank = True)
     Bugs = models.CharField(max_length = 500, blank = True) # we can make this as list field also
     Date = models.DateTimeField(auto_now = True, blank = True)
-    TestedOn = models.CharField(max_length = 50, blank = True) # BOS, NYNJ, Software solution
+    TestedOn = models.CharField(max_length = 50, blank = True, null = True) # BOS, NYNJ, Software solution
 
 # table to store GUI test case result
 class GUI_LATEST_TC_STATUS(models.Model):
@@ -93,7 +93,7 @@ class GUI_LATEST_TC_STATUS(models.Model):
     Result = models.CharField(max_length = 14, blank = True)
     Bugs = models.CharField(max_length = 500, blank = True) # we can make this as list field also
     Date = models.DateTimeField(auto_now = True, blank = True)
-    TestedOn = models.CharField(max_length = 50, blank = True) # BOS, NYNJ, Software solution
+    TestedOn = models.CharField(max_length = 50, blank = True, null = True) # BOS, NYNJ, Software solution
 
 class DEFAULT_DOMAIN_SUBDOMAIN(models.Model):
     Domain = models.CharField(max_length = 200, blank = False, default = "NOT PROVIDED")
@@ -159,8 +159,8 @@ class LATEST_TC_STATUS(models.Model):
     Date = models.DateTimeField(auto_now = True, blank = True)
     Domain = models.CharField(max_length=50, blank = True)  #storage, nw
     SubDomain = models.CharField(max_length=50, blank = True)  #remote, local, mirroring
-    CardType = models.CharField(max_length = 10, default="NOT ENTERED")
-    TestedOn = models.CharField(max_length = 50, blank = True) # BOS, NYNJ, Software solution
+    CardType = models.CharField(max_length = 100, default="NOT ENTERED")
+    TestedOn = models.CharField(max_length = 50, blank = True, null = True) # BOS, NYNJ, Software solution
     # Logs = models.TextField()
 
     def __str__(self):
@@ -176,8 +176,8 @@ class TC_STATUS(models.Model):
     Date = models.DateTimeField(auto_now = True, blank = True)
     Domain = models.CharField(max_length=50, blank = True)  #storage, nw
     SubDomain = models.CharField(max_length=50, blank = True)  #remote, local, mirroring
-    CardType = models.CharField(max_length = 10, default="BOS/NYNJ")
-    TestedOn = models.CharField(max_length = 50, blank = True) # BOS, NYNJ, Software solution
+    CardType = models.CharField(max_length = 100, default="BOS/NYNJ")
+    TestedOn = models.CharField(max_length = 50, blank = True, null = True) # BOS, NYNJ, Software solution
     # Logs = models.TextField()
 
     def __str__(self):
@@ -206,7 +206,7 @@ class TC_STATUS_GUI(models.Model):
     Date = models.DateTimeField(auto_now = False, blank = True)
     Domain = models.CharField(max_length=50, blank = True, default="UNKNOWN")  #storage, nw
     SubDomain = models.CharField(max_length=50, blank = True, default="UNKNOWN")  #remote, local, mirroring
-    CardType = models.CharField(max_length = 10, blank = True, default="BLANK")
+    CardType = models.CharField(max_length = 100, blank = True, default="BLANK")
     # Logs = models.TextField()
 
     def __str__(self):

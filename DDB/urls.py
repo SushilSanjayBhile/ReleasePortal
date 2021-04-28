@@ -11,7 +11,7 @@ from .e2eResultViews import e2eResultUpdate
 from .statusViews import TC_STATUS_UPDATE_VIEW, GUI_TC_STATUS_UPDATE_VIEW
 from .latestStatusUpdate import LATEST_STATUS_VIEW_UPDATE_ALL
 from .tcinfo import TC_INFO_GET_POST_VIEW, GET_TC_INFO_BY_ID, WHOLE_TC_INFO, MULTIPLE_TC_UPDATION, \
-        UPDATE_TC_INFO_BY_ID, TcCountByFilter,MULTIPLE_TC_INFO_UPDATION, sync_tcs, sync_platform
+        UPDATE_TC_INFO_BY_ID, TcCountByFilter,MULTIPLE_TC_INFO_UPDATION, sync_tcs, sync_platform, duplicate_tcs, duplicate_tcs_gui
 
 from .getStatistics import BUG_WISE_BLOCKED_TCS 
 from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO,MULTIPLE_TC_UPDATION_GUI
@@ -86,7 +86,7 @@ urlpatterns = [
     path('wholetcinfo/<str:Release>', WHOLE_TC_INFO),
     path('sync', sync_tcs),
     path('wholeguitcinfo/<str:Release>', WHOLE_GUI_TC_INFO),
-    path('tcinfogui/<str:Release>/id/<str:id>/browsername/<str:browserName>', GET_TC_INFO_GUI_ID),
+    path('tcinfogui/<str:Release>/id/<str:id>/browsername/<str:browserName>/cardType/<str:cardType>', GET_TC_INFO_GUI_ID),
     path('sanity/<str:SanityType>/<str:Release>', SANITY_VIEW),
 
     path('user/login', USER_LOGIN_VIEW),
@@ -113,5 +113,7 @@ urlpatterns = [
     path('releasewiseplatformCli/<str:Release>', RELEASEWISE_CLI_PLATFORM),
     path('releasewiseplatformGui/<str:Release>', RELEASEWISE_GUI_PLATFORM),
     path('syncp', sync_platform),
+    path('duptc', duplicate_tcs),
+    path('duptcgui', duplicate_tcs_gui),
     path('tcupdategui/<str:Release>', MULTIPLE_TC_UPDATION_GUI),
 ]
