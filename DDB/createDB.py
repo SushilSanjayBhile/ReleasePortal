@@ -88,7 +88,7 @@ def createReleaseDB(platforms, release):
     return 1
 
 @csrf_exempt
-def cleanupdb(request):
+def cleanupdb1(request):
     req = json.loads(request.body.decode("utf-8"))
 
     platformsCli = req["PlatformsCli"]
@@ -124,6 +124,51 @@ def cleanupdb(request):
     for platform in platformsGui:
         platform = [platform]
         guitcs = guiTcInfo.filter(Platform__contains = platform)
+        ser = TC_INFO_GUI_SERIALIZER(guitcs, many = True).data
+        for tc in ser:
+            if tc["id"] not in guiList:
+                guiList.append(tc["id"])
+                fd = GuiInfoForm(tc)
+
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    data.save(using = release)
+    return HttpResponse("Updated Data", 200)
+@csrf_exempt
+def cleanupdb(request):
+    req = json.loads(request.body.decode("utf-8"))
+
+    platformsCli = req["PlatformsCli"]
+    platformsGui = req["PlatformsGui"]
+    release = req["ReleaseNumber"]
+    print(req)
+
+    # This statement cleans new created database's CLI info table, comment when not needed
+    TC_INFO.objects.using(release).all().delete()
+
+    # This statement cleans new created database's GUI info table, comment when not needed
+    TC_INFO_GUI.objects.using(release).all().delete()
+
+    # Below code-patch fetches CLI TC, which are only applicable for given platforms
+    cliList = []
+    cliTcInfo = TC_INFO.objects.using(rootRelease).all()
+    for platform in platformsCli:
+        clitcs = cliTcInfo.filter(CardType = platform)
+        ser = TC_INFO_SERIALIZER(clitcs, many = True).data
+        for tc in ser:
+            if tc["id"] not in cliList:
+                cliList.append(tc["id"])
+                fd = TcInfoForm(tc)
+
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    data.save(using = release)
+
+    # Below code-patch fetches GUI TC, which are only applicable for given platforms
+    guiList = []
+    guiTcInfo = TC_INFO_GUI.objects.using(rootRelease).all()
+    for platform in platformsGui:
+        guitcs = guiTcInfo.filter(CardType = platform)
         ser = TC_INFO_GUI_SERIALIZER(guitcs, many = True).data
         for tc in ser:
             if tc["id"] not in guiList:

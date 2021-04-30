@@ -1837,11 +1837,16 @@ def RELEASEINFO(request, Release):
 
             serData = json.dumps(serializer.data)
             serData = json.loads(serData)
-#            for p in platformsGui:
-#                if p["CardType"] not in serData["PlatformsGui"]:
-#                    data.PlatformsGui.append(p["CardType"])
-#                    data.save()
-#
+            for p in platformsGui:
+                if p["CardType"] not in serData["PlatformsGui"]:
+                    data.PlatformsGui.append(p["CardType"])
+                    data.save()
+            for p in platformsCli:
+                if p["CardType"] not in serData["PlatformsCli"]:
+                    data.PlatformsCli.append(p["CardType"])
+                    data.save()
+
+
             pcli = []
             pgui = []
             for p in platformsCli:

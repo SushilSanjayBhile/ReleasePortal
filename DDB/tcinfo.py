@@ -212,9 +212,9 @@ def WHOLE_TC_INFO(request, Release):
         index = int(request.GET.get('index', 0))
 
         #Platform = request.GET.getlist('Platform',[])
+        CardType = str(request.GET.get('CardType', None))
         Domain = str(request.GET.get('Domain', None))
         SubDomain = str(request.GET.get('SubDomain', None))
-        CardType = str(request.GET.get('CardType', None))
         Priority = str(request.GET.get('Priority', None))
         WorkingStatus = str(request.GET.get('WorkingStatus',None))
         Assignee = str(request.GET.get('Assignee',None))
@@ -233,27 +233,33 @@ def WHOLE_TC_INFO(request, Release):
                 for a in appl:
                     infod = infodata.filter(applicable = a)
                     try:
+                        print("in try",len(infod))
                         infodataone = infodataone | infod
                     except:
                         infodataone = infod
 
                 infodata = infodataone
+                print("len of infodata",len(infodata))
 
         for i in infodata:
                 serializer = TC_INFO_SERIALIZER(i)
         
         #if Platform != []:
         #    infodata = infodata.filter(Platform__contains = Platform)
+        if CardType != 'None':
+            infodata = infodata.filter(CardType = CardType)
+            print("len of infodata after cd", len(infodata))
         if Domain != 'None':
             infodata = infodata.filter(Domain = Domain)
         if SubDomain != 'None':
             infodata = infodata.filter(SubDomain = SubDomain)
-        if CardType != 'None':
-            infodata = infodata.filter(CardType = CardType)
+        #if CardType != 'None':
+        #    infodata = infodata.filter(CardType = CardType)
         if Priority != 'None':
             infodata = infodata.filter(Priority = Priority)
         if WorkingStatus != 'None':
             infodata = infodata.filter(stateUserMapping__icontains = WorkingStatus)
+            print("len of infodata after ws", len(infodata), Assignee)
         if  Assignee != 'None':
             infodata = infodata.filter(Assignee = Assignee)
 
@@ -402,10 +408,10 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                         GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, master)
 
             if flag == 1:
-                update_automation_count("increaseTotal", "CLI",len(newData["Platform"]))
+                update_automation_count("increaseTotal", "CLI")
 
                 if newData["TcName"] != "TC NOT AUTOMATED":
-                    update_automation_count("increaseAutomated", "CLI",len(newData["Platform"]))
+                    update_automation_count("increaseAutomated", "CLI")
 
         return HttpResponse("SUCCESSFULLY UPDATED")
 
@@ -446,37 +452,14 @@ def TC_INFO_GET_POST_VIEW(request, Release):
 
 # Function to update TC INFO data
 def updateData(updatedData, data, Release):
-
+    #print("ud",updatedData,data)
     if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"] and Release == rootRelease:
-        
-        if len(data.Platform) <= len(updatedData['Platform']) :
-            update_automation_count("increaseAutomated", "CLI",len(updatedData['Platform']))
-        
-        elif len(updatedData['Platform']) == 0:
-            update_automation_count("increaseAutomated", "CLI",len(data.Platform))
-        
-        elif len(data.Platform) > len(updatedData['Platform']) :
-                    update_automation_count("increaseAutomated", "CLI",len(updatedData['Platform']))
+        update_automation_count("increaseAutomated", "CLI")
     
     if data.TcName != "TC NOT AUTOMATED" and updatedData["TcName"] == "TC NOT AUTOMATED" and Release == rootRelease:
         print("2",updatedData['AutomationDate'])
-        
-        if len(data.Platform) >= len(updatedData['Platform']) :
-            update_automation_count("decreaseAutomated", "CLI",len(updatedData['Platform']))
-        
-        elif len(updatedData['Platform']) == 0:
-            update_automation_count("decreaseAutomated", "CLI",len(data.Platform))
-        
-        elif len(data.Platform) < len(updatedData['Platform']) :
-            update_automation_count("decreaseAutomated", "CLI",len(updatedData['Platform']))
+        update_automation_count("decreaseAutomated", "CLI")
 
-    """if data.TcName == updatedData["TcName"] and data.TcName != "TC NOT AUTOMATED" and Release == rootRelease:
-        if len(data.Platform) <= len(updatedData['Platform']):
-            update_automation_count("increaseAutomated", "CLI",len(updatedData['Platform']))
-        
-        if len(data.Platform) > len(updatedData['Platform']):
-            update_automation_count("decreaseAutomated", "CLI",len(updatedData['Platform']))
-        """
     if data.TcName != updatedData["TcName"] and data.TcName == "TC NOT AUTOMATED":
         updatedData['AutomationDate'] = datetime.datetime.now()
 

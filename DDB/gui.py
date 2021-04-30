@@ -163,49 +163,15 @@ def GenerateGUILogData(userName, requestType, url, logData, tcInfoNum, Release):
 
 
 def updateGuiTcInfo(data, updatedData, Release):
-    print(data.TcName, data.Platform, updatedData['Platform'])
-    print(Release,rootRelease,updateFlag)
     if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"] and Release == rootRelease:
         updatedData['AutomationDate'] = datetime.datetime.now()
         #update_automation_count("increaseAutomated", "GUI")
-        print("IN first If")
-        if len(data.Platform) <= len(updatedData['Platform']) :
-            print("In 1-1 if")
-            update_automation_count("increaseAutomated", "GUI",len(updatedData['Platform']))
-        
-        elif len(updatedData['Platform']) == 0:
-            print("IN 1-2 elif")
-            update_automation_count("increaseAutomated", "GUI",len(data.Platform))
-        
-        elif len(data.Platform) > len(updatedData['Platform']) :
-            print("In 1-2 elif")
-            update_automation_count("increaseAutomated", "GUI",len(updatedData['Platform']))
+        update_automation_count("increaseAutomated", "GUI") 
     
     if data.TcName != "TC NOT AUTOMATED" and updatedData["TcName"] == "TC NOT AUTOMATED" and Release == rootRelease:
         #update_automation_count("decreaseAutomated", "GUI")
-        print("IN second if")
-        if len(data.Platform) >= len(updatedData['Platform']) :
-            print("2-1 if")
-            update_automation_count("decreaseAutomated", "GUI",len(updatedData['Platform']))
-        
-        elif len(updatedData['Platform']) == 0:
-            print("In 2-2 elif")
-            update_automation_count("decreaseAutomated", "GUI",len(data.Platform))
-        
-        elif len(data.Platform) < len(updatedData['Platform']) :
-            print("In 2-3 elif")
-            update_automation_count("decreaseAutomated", "GUI",len(updatedData['Platform']))
+        update_automation_count("decreaseAutomated", "GUI")
     
-    """if data.TcName == updatedData["TcName"] and data.TcName != "TC NOT AUTOMATED" and Release == rootRelease:
-        print("In third if")
-        if len(data.Platform) <= len(updatedData['Platform']):
-            print("In 3-1 if")
-            update_automation_count("increaseAutomated", "GUI",len(updatedData['Platform']))
-        
-        if len(data.Platform) > len(updatedData['Platform']):
-            print("In 3-2 if")
-            update_automation_count("decreaseAutomated", "GUI",len(updatedData['Platform']))
-            """
     if data.TcName != updatedData["TcName"] and data.TcName == "TC NOT AUTOMATED":
         updatedData['AutomationDate'] = datetime.datetime.now()
 
@@ -399,9 +365,9 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     print(fd.errors)
 
         if flag == 1:
-            update_automation_count("increaseTotal", "GUI",len(req["Platform"]))
+            update_automation_count("increaseTotal", "GUI")
             if req["TcName"] != "TC NOT AUTOMATED":
-                update_automation_count("increaseAutomated", "GUI",len(req["Platform"]))
+                update_automation_count("increaseAutomated", "GUI")
             
         return HttpResponse("SUCCESSFULLY UPDATED")
 
@@ -410,11 +376,13 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
 
         # put request for current release
         
-        print("Printing REquest",requests,"\n\n")
+        #print("Printing REquest",requests,"\n\n")
         for req in requests:
             tcid = req['TcID']
             card = req['CardType']
-            data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid, CardType = card)
+            #data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid, CardType = card)
+            data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid)
+            print("data in first", len(data))
             dataSer = TC_INFO_GUI_SERIALIZER(data,many=True)
             for data in dataSer.data:
                 #print("data current",data["TcID"],"\n\n")
@@ -462,11 +430,12 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 updatedData["stateUserMapping"] = workingState
 
                 for row in req:
-                    print("current row",row,"\n\n")
+                    #print("current row",row,"\n\n")
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
                 d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
                 print("Printing d",d)
+                #print("len of data 3rd last", len(d))
                 updateGuiTcInfo(d, updatedData, Release)
 
             # UPDATE GUI TC INFO IN DCX-DMC-Master release
@@ -475,29 +444,33 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     master = "DMC Master"
                 else:
                     master = "master"
-            data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'], CardType = req["CardType"])
+            #data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'], CardType = req["CardType"])
+            data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'])
+            print("len of data in second last", len(data))
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
 
             for data in dataSer.data:
-                print("data for master or dmc master",data)
+                #print("data for master or dmc master",data)
                 updatedData = data
                 for row in req:
-                    print("row for master dmc master",row)
+                    #print("row for master dmc master",row)
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
                 d = TC_INFO_GUI.objects.using(Release).get(TcID = req['TcID'], CardType = req["CardType"], BrowserName = data["BrowserName"])
-                print("updatedData for master dmc master",updateData)
+                #print("updatedData for master dmc master",updateData)
                 updateGuiTcInfo(d, updatedData, master)
 
             # UPDATE ROOTRELEASE
             Release = rootRelease
-            data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
+            #data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
+            data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'])
+            print("len of data in root", len(data))
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
             for data in dataSer.data:
-                print("rootrelease data",data)
+                #print("rootrelease data",data)
                 updatedData = data
                 for row in req:
-                    print("rootrelease row",row)
+                    #print("rootrelease row",row)
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
                 d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
