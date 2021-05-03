@@ -579,12 +579,13 @@ def TcCountByFilter2(request, Release):
         return HttpResponse(json.dumps(countDict))
 
 @csrf_exempt
-def MULTIPLE_TC_INFO_UPDATION(request, Release):
+def MULTIPLE_TC_INFO_UPDATION1(request, Release):
     if request.method == "PUT":
         requests = json.loads(request.body.decode("utf-8"))
         errRec = {}
-
+        print("requests",requests)
         for req in requests:
+            print("req",req)
             card = req['CardType']
             tcid = req['TcID']
             
@@ -638,12 +639,11 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
                 serializer = TC_INFO_SERIALIZER(data)
                 updatedData = serializer.data
                 
+                
                 for key in req:
                     if key in updatedData and (key != "CardType" and key != "TcID"):
                         updatedData[key] = req[key]
-                
                 updateData(updatedData, data, Release)
-                
                 if "Activity" in requests:
                     AD = requests['Activity']
                     GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
@@ -656,6 +656,114 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
         if len(errRec) > 0:
             return HttpResponse(json.dumps(errRec), status = 400)
         return HttpResponse("Successfully Updated All Records", status = 200)
+@csrf_exempt
+def MULTIPLE_TC_INFO_UPDATION(request, Release):
+    if request.method == "PUT":
+        requests = json.loads(request.body.decode("utf-8"))
+        errRec = {}
+        print("requests",requests)
+        for req in requests:
+            print("req",req)
+            card = req['CardType']
+            tcid = req['TcID']
+            
+            # update Data Master
+            try:
+                if Release != "TestDatabase":
+                    if "dmc" in Release.lower():
+                        master = "DMC Master"
+                    else:
+                        master = "master"
+                    dataMaster = TC_INFO.objects.using(master).filter(TcID = tcid)
+                    serializerMaster = TC_INFO_SERIALIZER(dataMaster, many = True)
+                    for d in serializerMaster.data:
+                        singleData = TC_INFO.objects.using(master).get(id= d['id'])
+                        singleSerializer = TC_INFO_SERIALIZER(singleData)
+                        updatedDataMaster = singleSerializer.data
+                        for key in req:
+                            if key in updatedDataMaster and (key != "CardType" and key != "TcID" and key != "Priority" and key != "applicable"):
+                                updatedDataMaster[key] = req[key]
+                        updateData(updatedDataMaster, singleData, master)
+                        if "Activity" in requests:
+                            AD = requests['Activity']
+                            GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], master)
+
+            except:
+                pass
+
+            # update data in rootMaster
+            try:
+               if Release != "TestDatabase":
+                   master = rootRelease
+                   dataMaster = TC_INFO.objects.using(master).filter(TcID = tcid)
+                   serializerMaster = TC_INFO_SERIALIZER(dataMaster, many = True)
+                   for d in serializerMaster.data:
+                       singleData = TC_INFO.objects.using(master).get(id= d['id'])
+                       singleSerializer = TC_INFO_SERIALIZER(singleData)
+                       updatedDataMaster = singleSerializer.data
+                       for key in req:
+                           if key in updatedDataMaster and (key != "CardType" and key != "TcID" and key != "Priority" and key != "applicable"):
+                               updatedDataMaster[key] = req[key]
+                       updateData(updatedDataMaster, singleData, master)
+                       if "Activity" in requests:
+                           AD = requests['Activity']
+                           GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], master)
+            except:
+                pass
+
+            try:
+                #data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+               # data = TC_INFO.objects.using(Release).filter(TcID = tcid, CardType = card).values()
+               # serializer = TC_INFO_SERIALIZER(data)
+               # updatedData = serializer.data
+               # 
+               # 
+               # for key in req:
+               #     if key in updatedData and (key != "CardType" and key != "TcID"):
+               #         updatedData[key] = req[key]
+               # print("updatedData.[tcname]",updatedData["TcName"],serializer.data["TcName"])
+               # print("updatedData.tcname",updatedData.TcName,serializer.data.TcName)
+               # updateData(updatedData, serializer.data, Release)
+               # print("after updateData")
+               # if "Activity" in requests:
+               #     AD = requests['Activity']
+               #     GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+                data = TC_INFO.objects.using(Release).filter(TcID = tcid)
+                serializer = TC_INFO_SERIALIZER(data, many = True)
+                for d in serializer.data:
+                    singleData = TC_INFO.objects.using(Release).get(id= d['id'])
+                    singleSerializer = TC_INFO_SERIALIZER(singleData)
+                    updatedData = singleSerializer.data
+                    for key in req:
+                        if key in updatedData and (key != "CardType" and key != "TcID"):
+                            updatedData[key] = req[key]
+                    print("updatedData",updatedData)
+                    updateData(updatedData, singleData, Release)
+                    if "Activity" in requests:
+                        AD = requests['Activity']
+                        GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+            except:
+                data = TC_INFO.objects.using(Release).filter(TcID = tcid)
+                serializer = TC_INFO_SERIALIZER(data, many = True)
+                for d in serializer.data:
+                    singleData = TC_INFO.objects.using(Release).get(id= d['id'])
+                    singleSerializer = TC_INFO_SERIALIZER(singleData)
+                    updatedData = singleSerializer.data
+                    for key in req:
+                        if key in updatedData and (key != "CardType" and key != "TcID"):
+                            updatedData[key] = req[key]
+                    print("updatedData in except",updatedData)
+                    updateData(updatedData, singleData, Release)
+
+                if card not in errRec:
+                    errRec[card] = []
+                errRec[card].append(tcid)
+
+
+        if len(errRec) > 0:
+            return HttpResponse(json.dumps(errRec), status = 400)
+        return HttpResponse("Successfully Updated All Records", status = 200)
+
 
 @csrf_exempt
 def MULTIPLE_TC_UPDATION(request, Release):
@@ -663,12 +771,15 @@ def MULTIPLE_TC_UPDATION(request, Release):
         requests = json.loads(request.body.decode("utf-8"))
         errRecords = []
 
+        print("request for approved",requests)
         for req in requests:
             print("tc for updation",req,"\n\n")
             card = req['CardType']
             tcid = req['TcID']
 
             data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+            #print("len of data",len(data))
+            print("data",data)
             serializer = TC_INFO_SERIALIZER(data)
             updatedData = serializer.data
             oldworkingStatus = updatedData["stateUserMapping"]

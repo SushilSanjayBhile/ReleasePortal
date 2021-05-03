@@ -280,7 +280,7 @@ def MULTIPLE_TC_UPDATION_GUI(request, Release):
 
 
 @csrf_exempt
-def GUI_TC_INFO_GET_POST_VIEW(request, Release):
+def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
     master = "master"
     dmcMaster = "DMC Master"
 
@@ -476,6 +476,229 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
                 updateGuiTcInfo(d, updatedData, Release)
         return HttpResponse("SUCCESSFULLY UPDATED")
+
+@csrf_exempt
+def GUI_TC_INFO_GET_POST_VIEW(request, Release):
+    master = "master"
+    dmcMaster = "DMC Master"
+
+    if "dmc" in Release.lower():
+        master = dmcMaster
+
+    if request.method == "POST":
+
+        flag = 0
+        req = json.loads(request.body.decode("utf-8"))
+        conflictFlag = False
+        print("request",req)
+        # post request for current release
+        cards = req['CardType']
+        for card in cards:
+            flag = 0
+            conflictFlag = False
+            data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = card)
+            if len(data) != 0:
+                conflictFlag = True
+                return HttpResponse("Tcid: " + req['TcID'] + " with (browser: " + req["BrowserName"] + " + card: " + card + ") already exists")
+            else:
+                serializer = TC_INFO_GUI_SERIALIZER(data, many = True)
+                newData  = req
+                newData = json.dumps(newData)
+                newData = json.loads(newData)
+                newData['CardType'] = card
+                fd = GuiInfoForm(newData)
+
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    if "master" not in Release:
+                        flag = 1
+                        data.save(using = Release)
+
+                        #d = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = req["CardType"])
+                        #dSer = TC_INFO_GUI_SERIALIZER(d)
+
+                        if "Activity" in req:
+                            AD = req['Activity']
+                            GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], card, AD['Release'])
+                else:
+                    print(fd.errors)
+
+            # post request for master release
+            if "dmc" in Release.lower():
+                master = dmcMaster
+            if Release != master and Release != "TestDatabase":
+                Release = master
+                conflictFlag = False
+
+                # post request for current release
+                data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = card)
+                if len(data) != 0:
+                    conflictFlag = True
+                else:
+                    serializer = TC_INFO_GUI_SERIALIZER(data, many = True)
+                    newData  = req
+                    newData = json.dumps(newData)
+                    newData = json.loads(newData)
+                    newData['CardType'] = card
+
+                    fd = GuiInfoForm(req)
+
+                    if fd.is_valid():
+                        data = fd.save(commit = False)
+                        flag = 1
+                        data.save(using = Release)
+
+                        if "Activity" in req:
+                            AD = req['Activity']
+                        #GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
+                    else:
+                        print(fd.errors)
+
+
+            #post data in dmc-dmc-master release
+            master = rootRelease
+            if Release != master and Release != "TestDatabase":
+                Release = master
+                conflictFlag = False
+
+                data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = card)
+                if len(data) != 0:
+                    conflictFlag = True
+                else:
+                    serializer = TC_INFO_GUI_SERIALIZER(data, many = True)
+                    newData  = req
+                    newData = json.dumps(newData)
+                    newData = json.loads(newData)
+                    newData['CardType'] = card
+
+                    fd = GuiInfoForm(req)
+
+                    if fd.is_valid():
+                        data = fd.save(commit = False)
+                        data.save(using = Release)
+                        flag = 1
+                    
+                        if "Activity" in req:
+                            AD = req['Activity']
+                            #GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
+                    else:
+                        print(fd.errors)
+
+            if flag == 1:
+                update_automation_count("increaseTotal", "GUI")
+                if req["TcName"] != "TC NOT AUTOMATED":
+                    update_automation_count("increaseAutomated", "GUI")
+            
+        return HttpResponse("SUCCESSFULLY UPDATED")
+
+    if request.method == "PUT":
+        requests = json.loads(request.body.decode("utf-8"))
+
+        # put request for current release
+        
+        #print("Printing REquest",requests,"\n\n")
+        for req in requests:
+            tcid = req['TcID']
+            card = req['CardType']
+            #data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid, CardType = card)
+            data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid)
+            print("data in first", len(data))
+            dataSer = TC_INFO_GUI_SERIALIZER(data,many=True)
+            for data in dataSer.data:
+                #print("data current",data["TcID"],"\n\n")
+                updatedData = data
+                oldworkingStatus = updatedData["stateUserMapping"]
+                oldworkingStatus = oldworkingStatus.replace("\'","\"")
+                try:
+                    oldworkingStatus = json.loads(oldworkingStatus)
+                except:
+                    workingStatusReplace = "{\"CREATED\":\"DEFAULT\"}"
+                    updatedData["stateUserMapping"] = workingStatusReplace
+                    print("going to update GuiTCInfo")
+                    updateGuiTcInfo(updatedData, data, Release)
+
+                    data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+                    serializer = TC_INFO_GUI_SERIALIZER(data)
+                    updatedData = serializer.data
+                    oldworkingStatus = updatedData["stateUserMapping"]
+                    oldworkingStatus = oldworkingStatus.replace("\'","\"")
+                    oldworkingStatus = json.loads(oldworkingStatus)
+
+                workingState = "{"
+
+                if "Manual WorkingStatus" in req:
+                    workingState += "\"Manual WorkingStatus\"" + ":\"" + req["Manual WorkingStatus"] + "\","
+                elif "Manual WorkingStatus" in oldworkingStatus:
+                    workingState += "\"Manual WorkingStatus\"" + ":\"" + oldworkingStatus["Manual WorkingStatus"] + "\","
+
+                if "Automation Assignee" in req:
+                    workingState += "\"Automation Assignee\"" + ":\"" + req["Automation Assignee"] + "\","
+                elif "Automation Assignee" in oldworkingStatus:
+                    workingState += "\"Automation Assignee\"" + ":\"" + oldworkingStatus["Automation Assignee"] + "\","
+
+                if "Automation WorkingStatus" in req:
+                    workingState += "\"Automation WorkingStatus\"" + ":\"" + req["Automation WorkingStatus"] + "\","
+                elif "Automation WorkingStatus" in oldworkingStatus:
+                    workingState += "\"Automation WorkingStatus\"" + ":\"" + oldworkingStatus["Automation WorkingStatus"] + "\","
+
+                if "Manual Assignee" in req:
+                    workingState += "\"Manual Assignee\"" + ":\"" + req["Manual Assignee"] + "\""
+                elif "Manual Assignee" in oldworkingStatus:
+                    workingState += "\"Manual Assignee\"" + ":\"" + oldworkingStatus["Manual Assignee"] + "\""
+
+                workingState += "}"
+
+                updatedData["stateUserMapping"] = workingState
+
+                for row in req:
+                    #print("current row",row,"\n\n")
+                    if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
+                        updatedData[row] = req[row]
+                d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
+                print("Printing d",d)
+                #print("len of data 3rd last", len(d))
+                updateGuiTcInfo(d, updatedData, Release)
+
+            # UPDATE GUI TC INFO IN DCX-DMC-Master release
+            if Release != "TestDatabase":
+                if "dmc" in Release.lower():
+                    master = "DMC Master"
+                else:
+                    master = "master"
+            #data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'], CardType = req["CardType"])
+            data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'])
+            print("len of data in second last", len(data))
+            dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
+
+            for data in dataSer.data:
+                #print("data for master or dmc master",data)
+                updatedData = data
+                for row in req:
+                    #print("row for master dmc master",row)
+                    if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
+                        updatedData[row] = req[row]
+                d = TC_INFO_GUI.objects.using(Release).get(TcID = req['TcID'], CardType = req["CardType"], BrowserName = data["BrowserName"])
+                #print("updatedData for master dmc master",updateData)
+                updateGuiTcInfo(d, updatedData, master)
+
+            # UPDATE ROOTRELEASE
+            Release = rootRelease
+            #data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
+            data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'])
+            print("len of data in root", len(data))
+            dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
+            for data in dataSer.data:
+                #print("rootrelease data",data)
+                updatedData = data
+                for row in req:
+                    #print("rootrelease row",row)
+                    if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
+                        updatedData[row] = req[row]
+                d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
+                updateGuiTcInfo(d, updatedData, Release)
+        return HttpResponse("SUCCESSFULLY UPDATED")
+
+
 
 # Function to update TC STATUS data
 def updateGuiLatestStatusData(updatedData, data, Release):
