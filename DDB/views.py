@@ -724,7 +724,6 @@ def TCAGGREGATE(Release):
     ############################################
     # cli total numbers calculation for dashboard
     applicableCliInfo = cliTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "NA"))
-
     # default dictionary for CLI
     dictionary["all"] = {}
     dictionary["all"]["Blocked"] = 0 # default values
@@ -1761,7 +1760,6 @@ def RELEASEINFOPOST(request):
 @csrf_exempt
 def RELEASEWISE_CLI_PLATFORM(request, Release):
     if request.method == "GET":
-        print("COMING")
         platformList = []
         #cliTcInfo = RELEASES.objects.using(Release).all()
         cliTcInfo = RELEASES.objects.filter(ReleaseNumber = Release)
@@ -1781,7 +1779,6 @@ def RELEASEWISE_CLI_PLATFORM(request, Release):
 @csrf_exempt
 def RELEASEWISE_GUI_PLATFORM(request, Release):
     if request.method == "GET":
-        print("COMING")
         platformList = []
         #guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
         guiTcInfo = RELEASES.objects.filter(ReleaseNumber = Release)
@@ -1801,7 +1798,6 @@ def RELEASEWISE_GUI_PLATFORM(request, Release):
 @csrf_exempt
 def RELEASEINFO(request, Release):
     if request.method == "GET":
-        print("COMING")
         list = []
 
         if(Release == "info"):
@@ -1837,14 +1833,14 @@ def RELEASEINFO(request, Release):
 
             serData = json.dumps(serializer.data)
             serData = json.loads(serData)
-            for p in platformsGui:
-                if p["CardType"] not in serData["PlatformsGui"]:
-                    data.PlatformsGui.append(p["CardType"])
-                    data.save()
-            for p in platformsCli:
-                if p["CardType"] not in serData["PlatformsCli"]:
-                    data.PlatformsCli.append(p["CardType"])
-                    data.save()
+            #for p in platformsGui:
+            #    if p["CardType"] not in serData["PlatformsGui"]:
+            #        data.PlatformsGui.append(p["CardType"])
+            #        data.save()
+            #for p in platformsCli:
+            #    if p["CardType"] not in serData["PlatformsCli"]:
+            #        data.PlatformsCli.append(p["CardType"])
+            #        data.save()
 
 
             pcli = []

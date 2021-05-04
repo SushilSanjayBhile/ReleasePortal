@@ -77,7 +77,7 @@ def AutomationCount(request, Release):
                 dict1[tc["CardType"]] = {}
 
             if "Total_TCs" not in dict1[tc["CardType"]]:
-                dict1[tc["CardType"]]["Total_TCs"] = 0
+                dict1[tc["CardType"]]["Total_TCs"] = 1
             else:
                 dict1[tc["CardType"]]["Total_TCs"] += 1
 
@@ -404,7 +404,7 @@ def AutomationCountForGUI(request, Release):
                 dict1[tc["CardType"]] = {}
 
             if "Total_TCs" not in dict1[tc["CardType"]]:
-                dict1[tc["CardType"]]["Total_TCs"] = 0
+                dict1[tc["CardType"]]["Total_TCs"] = 1
             else:
                 dict1[tc["CardType"]]["Total_TCs"] += 1
 

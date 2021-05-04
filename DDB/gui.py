@@ -210,12 +210,9 @@ def MULTIPLE_TC_UPDATION_GUI(request, Release):
     if request.method == "PUT":
         requests = json.loads(request.body.decode("utf-8"))
         errRecords = []
-        print("request",requests)
         for req in requests:
-            print("tc for updation",req,"\n\n")
             card = req['CardType']
             tcid = req['TcID']
-
             data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).get(CardType = card)
             serializer = TC_INFO_GUI_SERIALIZER(data)
             updatedData = serializer.data
@@ -382,7 +379,6 @@ def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
             card = req['CardType']
             #data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid, CardType = card)
             data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid)
-            print("data in first", len(data))
             dataSer = TC_INFO_GUI_SERIALIZER(data,many=True)
             for data in dataSer.data:
                 #print("data current",data["TcID"],"\n\n")
@@ -434,7 +430,6 @@ def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
                 d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
-                print("Printing d",d)
                 #print("len of data 3rd last", len(d))
                 updateGuiTcInfo(d, updatedData, Release)
 
@@ -446,7 +441,6 @@ def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
                     master = "master"
             #data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'], CardType = req["CardType"])
             data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'])
-            print("len of data in second last", len(data))
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
 
             for data in dataSer.data:
@@ -464,7 +458,6 @@ def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
             Release = rootRelease
             #data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
             data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'])
-            print("len of data in root", len(data))
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
             for data in dataSer.data:
                 #print("rootrelease data",data)
@@ -826,7 +819,6 @@ def WHOLE_GUI_TC_INFO(request, Release):
         Applicable = str(request.GET.get('applicable',None))
 
         infodata = TC_INFO_GUI.objects.using(Release).all()
-        print("length", len(infodata))
 
         infodataUpdate = TC_INFO_GUI.objects.all().using(Release).filter(~Q(applicable = "Applicable"))
         infoserializerUpdate = TC_INFO_GUI_SERIALIZER(infodataUpdate, many = True)

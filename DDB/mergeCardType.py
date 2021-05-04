@@ -9,7 +9,6 @@ from .models import TC_INFO, TC_INFO_GUI
 from .serializers import  TC_INFO_SERIALIZER, TC_INFO_GUI_SERIALIZER
 
 rootRelease = "DCX-DMC-Master"
-
 @csrf_exempt
 def MergingCardTypes(request):
     

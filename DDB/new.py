@@ -9,8 +9,7 @@ from django.db.models import Q
 import json, time, os, pytz
 import datetime
 
-#rootRelease = "DCX-DMC-Master"
-rootRelease = "TestDatabase"
+rootRelease = "DCX-DMC-Master"
 
 def get_previous_monday_date():
     now = datetime.datetime.now()
