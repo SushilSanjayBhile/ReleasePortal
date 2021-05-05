@@ -702,7 +702,8 @@ def TCAGGREGATE(Release):
 
     # CLI TC INFO AND STATUS
     myDict = {}
-    cliTcInfo = TC_INFO.objects.using(Release).all()
+    #cliTcInfo = TC_INFO.objects.using(Release).all()
+    cliTcInfo = TC_INFO.objects.using(Release).filter(stateUserMapping__icontains = "Manual Assignee")
     #cliStatus = LATEST_TC_STATUS.objects.using(Release).all().order_by('-Date')
     cliStatus = TC_STATUS.objects.using(Release).all().order_by('-Date')
 
@@ -711,7 +712,8 @@ def TCAGGREGATE(Release):
     dictionary["Priority"] = get_cli_priorityDict(cliTcInfo,cliStatus) # priority wise aggregation
 
     # GUI TC INFO AND STATUS
-    guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
+    #guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
+    guiTcInfo = TC_INFO_GUI.objects.using(Release).filter(stateUserMapping__icontains = "Manual Assignee")
     guiStatus = GUI_TC_STATUS.objects.using(Release).all().order_by('-Date')
 
     #domain-gui function call

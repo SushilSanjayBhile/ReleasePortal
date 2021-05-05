@@ -864,7 +864,7 @@ def WHOLE_GUI_TC_INFO(request, Release):
                 appl = Applicable.split(",")
 
                 for a in appl:
-                    infod = infodata.filter(applicable = a)
+                    infod = infodata.filter(applicable__icontains = a)
                     try:
                         infodataone = infodataone | infod
                     except:

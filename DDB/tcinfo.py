@@ -238,7 +238,7 @@ def WHOLE_TC_INFO(request, Release):
                 appl = Applicable.split(",")
 
                 for a in appl:
-                    infod = infodata.filter(applicable = a)
+                    infod = infodata.filter(applicable__icontains = a)
                     try:
                         infodataone = infodataone | infod
                     except:
@@ -248,7 +248,6 @@ def WHOLE_TC_INFO(request, Release):
 
         for i in infodata:
                 serializer = TC_INFO_SERIALIZER(i)
-        
         #if Platform != []:
         #    infodata = infodata.filter(Platform__contains = Platform)
         if CardType != 'None':

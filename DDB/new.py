@@ -25,6 +25,7 @@ def get_automated_cli():
     return len(infodata)
 def get_total_gui():
     infodata = TC_INFO_GUI.objects.using(rootRelease).filter(Platform__contains = ["DMC"] )
+    #infodata = TC_INFO_GUI.objects.using(rootRelease).all()
     return len(infodata)
 
 def get_automated_gui():
