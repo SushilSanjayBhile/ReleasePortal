@@ -86,6 +86,7 @@ def TC_STATUS_UPDATE_VIEW(request, Release):
             fd = TcStatusForm(req)
             if fd.is_valid():
                 data = fd.save(commit = False)
+                print(data)
                 data.save(using = Release)
                 if "Activity" in req:
                     AD = req['Activity']

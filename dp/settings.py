@@ -76,14 +76,6 @@ WSGI_APPLICATION = 'dp.wsgi.application'
 
 
 DATABASES = {
-    'swapnil_demo_release_wp1': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'swapnil_demo_release_wp1',
-        'USER': userName,
-        'PASSWORD': passwd,
-        'HOST': hostName,
-        'PORT': portNumber,
-        },
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'universal',

@@ -65,6 +65,85 @@ def add_gui_tcs_in_given_release(serializer, master, release):
             except:
                 pass
 
+def duplicate_tcs_by_rel(request):
+    release = "DCX-DMC-Master"
+    tcdata = TC_INFO.objects.using(release).values().all()
+    print("before length", len(tcdata))
+
+    for i in tcdata:
+        d = TC_INFO.objects.using(release).get(id= i["id"])
+        if i["CardType"] != "COMMON":
+            if len(i["Platform"]):
+                for p in i["Platform"]:
+                    ser = TC_INFO_SERIALIZER(i).data
+                    ser["CardType"] = p
+
+                    #try:
+                    #    check = TC_INFO.objects.using(release).filter(TcID = ser["TcID"], CardType = ser["CardType"])
+                    #    print("Total",len(check))
+                    #    if len(check) > 1:
+                    #        for index in range(len(check) - 1):
+                    #            TC_INFO.objects.using(release).get(id = check[index].id).delete()
+                    #    check = TC_INFO.objects.using(release).filter(TcID = ser["TcID"], CardType = ser["CardType"])
+                    #    print("Total after",len(check))
+                    #except:
+                    #    pass
+
+                    try:
+                        #print(ser["TcID"], ser["CardType"])
+                        check = TC_INFO.objects.using(release).get(TcID = ser["TcID"], CardType = ser["CardType"])
+                    except:
+                        fd = TcInfoForm(ser)
+                        if fd.is_valid():
+                            print("valid")
+                            data = fd.save(commit = False)
+                            data.save(using = release)
+                        else:
+                            print("INVALID", fd.errors)
+
+    tcdata = TC_INFO.objects.using(release).values().all()
+    print("after length", len(tcdata))
+
+def duplicate_tcs_by_rel_gui(request):
+    release = "DCX-DMC-Master"
+    tcdata = TC_INFO_GUI.objects.using(release).values().all()
+    print("before length", len(tcdata))
+
+    for i in tcdata:
+        d = TC_INFO_GUI.objects.using(release).get(id= i["id"])
+        if i["CardType"] == "COMMON":
+            if len(i["Platform"]):
+                for p in i["Platform"]:
+                    ser = TC_INFO_GUI_SERIALIZER(i).data
+                    ser["CardType"] = p
+
+                    #try:
+                    #    check = TC_INFO.objects.using(release).filter(TcID = ser["TcID"], CardType = ser["CardType"])
+                    #    print("Total",len(check))
+                    #    if len(check) > 1:
+                    #        for index in range(len(check) - 1):
+                    #            TC_INFO.objects.using(release).get(id = check[index].id).delete()
+                    #    check = TC_INFO.objects.using(release).filter(TcID = ser["TcID"], CardType = ser["CardType"])
+                    #    print("Total after",len(check))
+                    #except:
+                    #    pass
+
+                    try:
+                        #print(ser["TcID"], ser["CardType"])
+                        check = TC_INFO_GUI.objects.using(release).get(TcID = ser["TcID"], CardType = ser["CardType"], BrowserName = ser["BrowserName"])
+                    except:
+                        fd = GuiInfoForm(ser)
+                        if fd.is_valid():
+                            print("valid")
+                            data = fd.save(commit = False)
+                            data.save(using = release)
+                        else:
+                            print("INVALID", fd.errors)
+
+    tcdata = TC_INFO_GUI.objects.using(release).values().all()
+    print("after length", len(tcdata))
+
+
 
 def duplicate_tcs(request):
 #    return HttpResponse("UNCOMMENT CODE")
@@ -111,6 +190,40 @@ def duplicate_tcs(request):
         except:
             pass
     return HttpResponse("UNCOMMENt CODE")
+def del_duplicate_tcs(request):
+#    return HttpResponse("UNCOMMENT CODE")
+    for release in settings.DATABASES:
+        print(release)
+        release = "Tanzu-3.2"
+        try:
+            tcdata = TC_INFO.objects.using(release).values().all()
+            print("before length", len(tcdata))
+
+            for i in tcdata:
+                d = TC_INFO.objects.using(release).get(id= i["id"])
+                if len(i["Platform"]):
+                    for p in i["Platform"]:
+                        ser = TC_INFO_SERIALIZER(i).data
+                        ser["CardType"] = p
+
+                        try:
+                            check = TC_INFO.objects.using(release).filter(TcID = ser["TcID"], CardType = ser["CardType"])
+                            print("Total",len(check))
+                            if len(check) > 1:
+                                for index in range(len(check) - 1):
+                                    TC_INFO.objects.using(release).get(id = check[index].id).delete()
+                            check = TC_INFO.objects.using(release).filter(TcID = ser["TcID"], CardType = ser["CardType"])
+                            print("Total after",len(check))
+                        except:
+                            pass
+
+            tcdata = TC_INFO.objects.using(release).values().all()
+            print("after length", len(tcdata))
+
+        except:
+            pass
+    return HttpResponse("UNCOMMENt CODE")
+
 
 def duplicate_tcs_gui(request):
 #    return HttpResponse("UNCOMMENT CODE")
