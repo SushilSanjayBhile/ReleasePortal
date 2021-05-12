@@ -483,7 +483,6 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
         flag = 0
         req = json.loads(request.body.decode("utf-8"))
         conflictFlag = False
-        print("request",req)
         # post request for current release
         cards = req['CardType']
         for card in cards:
