@@ -296,10 +296,10 @@ def get_cli_dataDict(cliTcInfo, cliStatus):
         except:
             pass
     return (cid,csd)
-def platform_wise_domain_subdomain_cli_dict1(cliTcInfo):
+def platform_wise_domain_subdomain_cli_dict1(cliTcInfo, platformsCli):
     pwddcli = {}
     #platformsCli = cliTcInfo.values('Platform').distinct()
-    platformsCli = cliTcInfo.values('CardType').distinct()
+    #platformsCli = cliTcInfo.values('CardType').distinct()
     #print(platformsCli)
     for p in platformsCli:
         platform = p["CardType"]
@@ -322,10 +322,10 @@ def platform_wise_domain_subdomain_cli_dict1(cliTcInfo):
                     if subdomain not in pwddcli[platform][domain]:
                         pwddcli[platform][domain].append(subdomain)
     return pwddcli
-def platform_wise_domain_subdomain_gui_dict1(guiTcInfo):
+def platform_wise_domain_subdomain_gui_dict1(guiTcInfo, platformsGui):
     pwddgui = {}
     #platformsCli = cliTcInfo.values('Platform').distinct()
-    platformsGui = guiTcInfo.values('CardType').distinct()
+    #platformsGui = guiTcInfo.values('CardType').distinct()
     #print(platformsCli)
     for p in platformsGui:
         platform = p["CardType"]
@@ -1872,7 +1872,11 @@ def RELEASEINFO(request, Release):
                     data.PlatformsGui.remove(p3)
                     data.save()
 
-            aggregateData = TCAGGREGATE(Release)
+            #print(aggregateData)
+            #data = json.load(open("/portal/app/DDB/dummy_response.json", "r"))
+            #data = json.dumps(data["TcAggregate"])
+            #data = data.replace("'","\"")
+            aggregateData = TCAGGREGATE_MOD(Release,platformsCli, platformsGui)
             serData['TcAggregate'] = aggregateData
             return HttpResponse(json.dumps(serData))
 
@@ -1891,6 +1895,19 @@ def RELEASEINFO(request, Release):
             return HttpResponse("RELEASE " + Release + " UPDATED SUCCESSFULLY", status = 200)
         except:
             return HttpResponse("SOME ERROR OCCURED", status = 400)
+
+def TCAGGREGATE_MOD(Release, pcli, pgui):
+    dictionary = {}
+    dictionary["AvailableDomainOptions"] = {}
+    domains = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(Release).all()
+    domSer = DOMAIN_SUBDOMAIN_SERIALIZER(domains, many = True)
+    for dom in domSer.data:
+        dictionary["AvailableDomainOptions"][dom["Domain"]] = dom["SubDomain"]
+    cliTcInfo = TC_INFO.objects.using(Release).all()
+    guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
+    dictionary["PlatformWiseDomainSubdomainCli"]= platform_wise_domain_subdomain_cli_dict1(cliTcInfo, pcli)
+    dictionary["PlatformWiseDomainSubdomainGui"]= platform_wise_domain_subdomain_gui_dict1(guiTcInfo, pgui)
+    return dictionary
 
 def GETPLATFORMWISETCINFO(request, OrchestrationPlatform):
     data = TC_INFO.objects.filter(OrchestrationPlatform__icontains = OrchestrationPlatform)
