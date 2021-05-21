@@ -830,8 +830,8 @@ def TCAGGREGATE_DASHBOARD(request, Release):
 
         # CLI TC INFO AND STATUS
         myDict = {}
-        #cliTcInfo = TC_INFO.objects.using(Release).all()
-        cliTcInfo = TC_INFO.objects.using(Release).filter(stateUserMapping__icontains = "Manual Assignee")
+        cliTcInfo = TC_INFO.objects.using(Release).all()
+        #cliTcInfo = TC_INFO.objects.using(Release).filter(~Q(Priority = "NA"))
         #cliStatus = LATEST_TC_STATUS.objects.using(Release).all().order_by('-Date')
         cliStatus = TC_STATUS.objects.using(Release).all().order_by('-Date')
 
@@ -840,8 +840,8 @@ def TCAGGREGATE_DASHBOARD(request, Release):
         dictionary["Priority"] = get_cli_priorityDict(cliTcInfo,cliStatus) # priority wise aggregation
 
         # GUI TC INFO AND STATUS
-        #guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
-        guiTcInfo = TC_INFO_GUI.objects.using(Release).filter(stateUserMapping__icontains = "Manual Assignee")
+        guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
+        #guiTcInfo = TC_INFO_GUI.objects.using(Release).filter(~Q(Priority = "NA"))
         guiStatus = GUI_TC_STATUS.objects.using(Release).all().order_by('-Date')
 
         #domain-gui function call
@@ -853,7 +853,7 @@ def TCAGGREGATE_DASHBOARD(request, Release):
 
         ############################################
         # cli total numbers calculation for dashboard
-        applicableCliInfo = cliTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "NA"))
+        applicableCliInfo = cliTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "Skp")).filter(~Q(Priority = "NA"))
         # default dictionary for CLI
         dictionary["all"] = {}
         dictionary["all"]["Blocked"] = 0 # default values
@@ -868,11 +868,12 @@ def TCAGGREGATE_DASHBOARD(request, Release):
 
         # actual values calculation for CLI
         dictionary["all"]["All"] = cliTcInfo.count()
-        dictionary["all"]["Skip"] = cliTcInfo.filter(Priority = "Skip").count()
+        dictionary["all"]["Skip"] = cliTcInfo.filter(Priority = "Skip").count() + cliTcInfo.filter(Priority = "Skp").count()
         dictionary["all"]["NotApplicable"] = cliTcInfo.filter(Priority = "NA").count()
         dictionary["all"]["NonAutomated"] = applicableCliInfo.filter(TcName = "TC NOT AUTOMATED").count()
-        dictionary["all"]["Automated"] = applicableCliInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
-
+        temp = applicableCliInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).filter(~Q(TcName = "NOT AUTOMATED")).filter(~Q(TcName = "undefined"))
+        #dictionary["all"]["Automated"] = applicableCliInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
+        dictionary["all"]["Automated"] = temp.count()
         for domain in dictionary["domain-cli"]:
             # nottested
             dictionary["all"]["NotTested"] += dictionary["domain-cli"][domain]["NotTested"]
@@ -890,7 +891,7 @@ def TCAGGREGATE_DASHBOARD(request, Release):
 
         #############################################
         # GUI total numbers calculation for dashboard
-        applicableGuiInfo = guiTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "NA"))
+        applicableGuiInfo = guiTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "Skp")).filter(~Q(Priority = "NA"))
 
         # default dictionary for CLI
         dictionary["allGUI"] = {}
@@ -908,10 +909,12 @@ def TCAGGREGATE_DASHBOARD(request, Release):
 
         # actual values calculation for CLI
         dictionary["allGUI"]["All"] = guiTcInfo.count()
-        dictionary["allGUI"]["Skip"] = guiTcInfo.filter(Priority = "Skip").count()
+        dictionary["allGUI"]["Skip"] = guiTcInfo.filter(Priority = "Skip").filter(Priority = "Skp").count()
         dictionary["allGUI"]["NotApplicable"] = guiTcInfo.filter(Priority = "NA").count()
         dictionary["allGUI"]["NonAutomated"] = applicableGuiInfo.filter(TcName = "TC NOT AUTOMATED").count()
-        dictionary["allGUI"]["Automated"] = applicableGuiInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
+        #dictionary["allGUI"]["Automated"] = applicableGuiInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
+        tempg = applicableGuiInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).filter(~Q(TcName = "NOT AUTOMATED")).filter(~Q(TcName = "undefined"))
+        dictionary["allGUI"]["Automated"] = tempg.count()
 
         for domain in dictionary["domain-gui"]:
             # nottested

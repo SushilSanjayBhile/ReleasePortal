@@ -66,7 +66,8 @@ def AutomationCount(request, Release):
     platformList = []
     release = Release
 
-    infodata = TC_INFO.objects.all().using(rootRelease)
+    #infodata = TC_INFO.objects.all().using(rootRelease)
+    infodata = TC_INFO.objects.using(rootRelease).filter(~Q(Priority = "NA"))
     priority =  infodata.values('Priority').distinct()
     dict1 = {}
 
@@ -183,7 +184,8 @@ def AutomationCountByDomain1(request, Platform):
 def AutomationCountByDomain(request, Platform):
     domains = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(rootRelease).all()
     
-    infodata = TC_INFO.objects.all().using(rootRelease).filter(~Q(Domain = "GUI"))
+    #infodata = TC_INFO.objects.all().using(rootRelease).filter(~Q(Domain = "GUI"))
+    infodata = TC_INFO.objects.using(rootRelease).filter(~Q(Domain = "GUI")).filter(~Q(Priority = "NA"))
     infoserializer = TC_INFO_SERIALIZER(infodata, many = True)
     
     domains = infodata.values('Domain').distinct()
@@ -392,7 +394,8 @@ def AutomationCountForGUI(request, Release):
         except:
             pass
 
-    infodata = TC_INFO_GUI.objects.all().using(rootRelease)
+    #infodata = TC_INFO_GUI.objects.all().using(rootRelease)
+    infodata = TC_INFO_GUI.objects.using(rootRelease).filter(~Q(Priority = "NA"))
     priority =  infodata.values('Priority').distinct()
     dict1 = {}
 
@@ -496,7 +499,8 @@ def AutomationCountByDomainForGUI1(request,Release,Platform):
     return JsonResponse({'Data': tempList}, status = 200)
 @csrf_exempt
 def AutomationCountByDomainForGUI(request,Release,Platform):
-    infodata = TC_INFO_GUI.objects.all().using(rootRelease)
+    #infodata = TC_INFO_GUI.objects.all().using(rootRelease)
+    infodata = TC_INFO_GUI.objects.using(rootRelease).filter(~Q(Priority = "NA"))
     infoserializer = TC_INFO_GUI_SERIALIZER(infodata, many = True)
 
     priority = infodata.values('Priority').distinct()
