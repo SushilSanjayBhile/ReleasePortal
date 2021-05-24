@@ -808,6 +808,137 @@ def TCAGGREGATE(Release):
     dictionary["PlatformWiseDomainSubdomainGui"]= platform_wise_domain_subdomain_gui_dict1(guiTcInfo)
     return dictionary
 
+@csrf_exempt
+def TCAGGREGATE_DASHBOARD(request, Release):
+    if request.method == "GET":
+        dictionary = {}
+        global statusList
+
+        dictionary['domain'] = {}
+        dictionary['AvailableScenarios'] = []
+        dictionary["AvailableDomainOptions"] = {}
+
+        domains = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(Release).all()
+        domSer = DOMAIN_SUBDOMAIN_SERIALIZER(domains, many = True)
+
+        for dom in domSer.data:
+            dictionary["AvailableDomainOptions"][dom["Domain"]] = dom["SubDomain"]
+
+        scenario = TC_INFO.objects.using(Release).values('Scenario').distinct()
+        for tc in scenario:
+            dictionary['AvailableScenarios'].append(tc['Scenario'])
+
+        # CLI TC INFO AND STATUS
+        myDict = {}
+        #cliTcInfo = TC_INFO.objects.using(Release).all()
+        cliTcInfo = TC_INFO.objects.using(Release).filter(stateUserMapping__icontains = "Manual Assignee")
+        #cliStatus = LATEST_TC_STATUS.objects.using(Release).all().order_by('-Date')
+        cliStatus = TC_STATUS.objects.using(Release).all().order_by('-Date')
+
+        # cli function call
+        dictionary['domain-cli'] = domain_cli_aggreggation(cliTcInfo, cliStatus) # domain wise aggregation
+        dictionary["Priority"] = get_cli_priorityDict(cliTcInfo,cliStatus) # priority wise aggregation
+
+        # GUI TC INFO AND STATUS
+        #guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
+        guiTcInfo = TC_INFO_GUI.objects.using(Release).filter(stateUserMapping__icontains = "Manual Assignee")
+        guiStatus = GUI_TC_STATUS.objects.using(Release).all().order_by('-Date')
+
+        #domain-gui function call
+        dictionary['domain-gui'] = domain_gui_aggreggation(guiTcInfo, guiStatus) #domain wise aggregation
+        dictionary["PriorityGui"] = get_gui_priorityDict(guiTcInfo,guiStatus) #priority wise aggregation
+
+        #cli gui combined output
+        dictionary["domain"] = cli_gui_combined_aggregation(dictionary['domain-cli'],dictionary['domain-gui'])
+
+        ############################################
+        # cli total numbers calculation for dashboard
+        applicableCliInfo = cliTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "NA"))
+        # default dictionary for CLI
+        dictionary["all"] = {}
+        dictionary["all"]["Blocked"] = 0 # default values
+        dictionary["all"]["NotTested"] = 0 # default values
+
+        dictionary["all"]["Tested"] = {}
+        dictionary["all"]["Tested"]["auto"] = {}
+        dictionary["all"]["Tested"]["manual"] = {}
+        for status in statusList:
+            dictionary["all"]["Tested"]["auto"][status] = 0
+            dictionary["all"]["Tested"]["manual"][status] = 0
+
+        # actual values calculation for CLI
+        dictionary["all"]["All"] = cliTcInfo.count()
+        dictionary["all"]["Skip"] = cliTcInfo.filter(Priority = "Skip").count()
+        dictionary["all"]["NotApplicable"] = cliTcInfo.filter(Priority = "NA").count()
+        dictionary["all"]["NonAutomated"] = applicableCliInfo.filter(TcName = "TC NOT AUTOMATED").count()
+        dictionary["all"]["Automated"] = applicableCliInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
+
+        for domain in dictionary["domain-cli"]:
+            # nottested
+            dictionary["all"]["NotTested"] += dictionary["domain-cli"][domain]["NotTested"]
+
+            # blocked
+            dictionary["all"]["Blocked"] += dictionary["domain-cli"][domain]["Tested"]["manual"]["Blocked"]
+            dictionary["all"]["Blocked"] += dictionary["domain-cli"][domain]["Tested"]["auto"]["Blocked"]
+
+            #tested
+            for testedType in dictionary["domain-cli"][domain]["Tested"]:
+                testedData = dictionary["domain-cli"][domain]["Tested"][testedType]
+
+                for res in testedData:
+                    dictionary["all"]["Tested"][testedType][res] += testedData[res]
+
+        #############################################
+        # GUI total numbers calculation for dashboard
+        applicableGuiInfo = guiTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "NA"))
+
+        # default dictionary for CLI
+        dictionary["allGUI"] = {}
+        dictionary["allGUI"]["Pass"] = 0 # default values
+        dictionary["allGUI"]["Fail"] = 0 # default values
+        dictionary["allGUI"]["Blocked"] = 0 # default values
+        dictionary["allGUI"]["NotTested"] = 0 # default values
+
+        dictionary["allGUI"]["Tested"] = {}
+        dictionary["allGUI"]["Tested"]["auto"] = {}
+        dictionary["allGUI"]["Tested"]["manual"] = {}
+        for status in statusList:
+            dictionary["allGUI"]["Tested"]["auto"][status] = 0
+            dictionary["allGUI"]["Tested"]["manual"][status] = 0
+
+        # actual values calculation for CLI
+        dictionary["allGUI"]["All"] = guiTcInfo.count()
+        dictionary["allGUI"]["Skip"] = guiTcInfo.filter(Priority = "Skip").count()
+        dictionary["allGUI"]["NotApplicable"] = guiTcInfo.filter(Priority = "NA").count()
+        dictionary["allGUI"]["NonAutomated"] = applicableGuiInfo.filter(TcName = "TC NOT AUTOMATED").count()
+        dictionary["allGUI"]["Automated"] = applicableGuiInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
+
+        for domain in dictionary["domain-gui"]:
+            # nottested
+            dictionary["allGUI"]["NotTested"] += dictionary["domain-gui"][domain]["NotTested"]
+
+            # blocked
+            dictionary["allGUI"]["Blocked"] += dictionary["domain-gui"][domain]["Tested"]["manual"]["Blocked"]
+            dictionary["allGUI"]["Blocked"] += dictionary["domain-gui"][domain]["Tested"]["auto"]["Blocked"]
+
+            #tested
+            for testedType in dictionary["domain-gui"][domain]["Tested"]:
+                testedData = dictionary["domain-gui"][domain]["Tested"][testedType]
+
+                for res in testedData:
+                    dictionary["allGUI"]["Tested"][testedType][res] += testedData[res]
+                    if res == "Pass":
+                        dictionary["allGUI"]["Pass"] += testedData[res]
+                    elif res == "Fail":
+                        dictionary["allGUI"]["Fail"] += testedData[res]
+
+        #dictionary["PlatformWiseDomainSubdomainCli"]= platform_wise_domain_subdomain_cli_dict1(cliTcInfo)
+        #dictionary["PlatformWiseDomainSubdomainGui"]= platform_wise_domain_subdomain_gui_dict1(guiTcInfo)
+        serData = {}
+        serData['TcAggregate'] = dictionary
+        return HttpResponse(json.dumps(serData))
+
+
 
 def subDomain_cli_aggreggation(cliTcInfo,cliStatus):
     cid = {} #cid stands for cli info dict
@@ -1899,15 +2030,22 @@ def RELEASEINFO(request, Release):
 def TCAGGREGATE_MOD(Release, pcli, pgui):
     dictionary = {}
     dictionary["AvailableDomainOptions"] = {}
+
     domains = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(Release).all()
     domSer = DOMAIN_SUBDOMAIN_SERIALIZER(domains, many = True)
+
     for dom in domSer.data:
         dictionary["AvailableDomainOptions"][dom["Domain"]] = dom["SubDomain"]
+
+    # CLI TC INFO AND STATUS
     cliTcInfo = TC_INFO.objects.using(Release).all()
+
     guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
+
     dictionary["PlatformWiseDomainSubdomainCli"]= platform_wise_domain_subdomain_cli_dict1(cliTcInfo, pcli)
     dictionary["PlatformWiseDomainSubdomainGui"]= platform_wise_domain_subdomain_gui_dict1(guiTcInfo, pgui)
     return dictionary
+
 
 def GETPLATFORMWISETCINFO(request, OrchestrationPlatform):
     data = TC_INFO.objects.filter(OrchestrationPlatform__icontains = OrchestrationPlatform)
