@@ -62,15 +62,21 @@ class ManageRelease extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            'CardType' : {
-                headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+            // 'CardType' : {
+            //     headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
             
-                cellEditor: 'selectionEditor',
+            //     cellEditor: 'selectionEditor',
+            //     cellClass: 'cell-wrap-text',
+            //     cellEditorParams: {
+            //         values: ['BOS', 'NYNJ', 'COMMON'],
+            //         multiple: true
+            //     }
+            // },
+            'CardType' : {
+                headerName: "Platforms", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+    
                 cellClass: 'cell-wrap-text',
-                cellEditorParams: {
-                    values: ['BOS', 'NYNJ', 'COMMON'],
-                    multiple: true
-                }
+                editable: false,
             },
             'Build' :  {
                 headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
@@ -152,12 +158,12 @@ class ManageRelease extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            'Platform' : {
-                headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                width: '180',
-                editable: false,
-                cellClass: 'cell-wrap-text',
-            },
+            // 'Platform' : {
+            //     headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            //     width: '180',
+            //     editable: false,
+            //     cellClass: 'cell-wrap-text',
+            // },
             'ExpectedBehaviour' : {
                 headerName: "ExpectedBehaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
@@ -225,11 +231,11 @@ class ManageRelease extends Component {
                 {id: 14, value: "Steps", isChecked: false},
                 {id: 15, value: "OS", isChecked: false},
                 {id: 16, value: "applicable", isChecked: false},
-                {id: 17, value: "Platform", isChecked: false},
+                //{id: 17, value: "Platform", isChecked: false},
                 {id: 18, value: "ExpectedBehaviour", isChecked: false},
               ],
               columnDefs: [
-                columnDefDict['Platform'],
+                columnDefDict['CardType'],
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
                 columnDefDict['Description'],
@@ -425,14 +431,10 @@ class ManageRelease extends Component {
               cellClass: 'cell-wrap-text',
           },
           'CardType' : {
-              headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+              headerName: "Platforms", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
         
-              cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
-              cellEditorParams: {
-                  values: ['BOS', 'NYNJ', 'COMMON'],
-                  multiple: true
-              }
+              editable: false
           },
           'Build' :  {
               headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
@@ -937,7 +939,6 @@ class ManageRelease extends Component {
             console.log("not release")
             return;
         }
-        
         this.gridOperations(false);
         console.log(this.state.isApiUnderProgress)
         let startingIndex = this.pageNumber * this.rows;
@@ -992,7 +993,6 @@ class ManageRelease extends Component {
             console.log("not release")
             return;
         }
-        
         this.gridOperations(false);
         console.log(this.state.isApiUnderProgress)
         let startingIndex = this.pageNumber * this.rows;
@@ -1059,9 +1059,15 @@ class ManageRelease extends Component {
             }
         });
         if(platform.length !== 0) {
+        // for(let i = 0; i < this.ApplicableTcs.length; i++){
+        //     platform.some(element => {
+        //         if(this.ApplicableTcs[i].Platform.includes(element)) {
+        //              this.state.showTc.push(this.ApplicableTcs[i])
+        //             }
+        //     })
         for(let i = 0; i < this.ApplicableTcs.length; i++){
             platform.some(element => {
-                if(this.ApplicableTcs[i].Platform.includes(element)) {
+                if(this.ApplicableTcs[i].CardType && this.ApplicableTcs[i].CardType === element) {
                      this.state.showTc.push(this.ApplicableTcs[i])
                     }
             })
@@ -1092,9 +1098,15 @@ class ManageRelease extends Component {
             }
         });
         if(platform.length !== 0) {
+        // for(let i = 0; i < this.ApplicableTcsGui.length; i++){
+        //     platform.some(element => {
+        //         if(this.ApplicableTcsGui[i].Platform.includes(element)) {
+        //              this.state.showTcGui.push(this.ApplicableTcsGui[i])
+        //             }
+        //     })
         for(let i = 0; i < this.ApplicableTcsGui.length; i++){
             platform.some(element => {
-                if(this.ApplicableTcsGui[i].Platform.includes(element)) {
+                if(this.ApplicableTcsGui[i].CardType && this.ApplicableTcsGui[i].CardType === element) {
                      this.state.showTcGui.push(this.ApplicableTcsGui[i])
                     }
             })
@@ -1258,7 +1270,6 @@ class ManageRelease extends Component {
         if (!data.QARateOfProgress) {
             data.QARateOfProgress = 0;
         }
-       console.log("data before request",data)
        axios.post(`/api/release`, { ...data })
             .then(single => {
                 if(single.data){
@@ -1280,7 +1291,7 @@ class ManageRelease extends Component {
             this.toggle();
         }
 
-    }
+    }   
     resetPlatforms() {
         this.platformList.forEach(element => {
                 element.isChecked = false;

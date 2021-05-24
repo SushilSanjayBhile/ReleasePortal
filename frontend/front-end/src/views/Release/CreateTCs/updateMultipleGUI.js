@@ -56,7 +56,7 @@ class UpdateMultiple extends Component {
                     hide: true
                 },
                 {
-                    headerName: "Platform", field: "Platform",
+                    headerName: "Platform", field: "Platforms",
                     editable: true,
                     sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
                     cellEditor: 'selectionEditor',
@@ -76,17 +76,17 @@ class UpdateMultiple extends Component {
                     headerName: "Tc Name", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
                     editable: true,
                 },
-                {
-                    headerName: "Card Type", field: "CardType",
-                    editable: true,
-                    sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                    cellEditor: 'selectionEditor',
-                    cellEditorParams: {
-                        values: ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'],
-                        // multiple: true,
-                    }
+                // {
+                //     headerName: "Card Type", field: "CardType",
+                //     editable: true,
+                //     sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                //     cellEditor: 'selectionEditor',
+                //     cellEditorParams: {
+                //         values: ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'],
+                //         // multiple: true,
+                //     }
 
-                },
+                // },
                 {
                     headerName: "Domain", field: "Domain",
                     editable: true,
@@ -182,7 +182,8 @@ class UpdateMultiple extends Component {
         'TcID', 'TcName', 'Scenario', 'Tag', 'Priority', 'CardType',
         'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'Assignee', 'WorkingStatus'
     ];
-    arrayFields = ['Platform','CardType']
+    //arrayFields = ['Platform','CardType']
+    arrayFields = ['Platform']
     getTcName(name) {
         let tcName = name;
         if (!tcName || tcName === 'NOT AUTOMATED' || tcName === undefined || tcName === "undefined" || tcName === null) {
@@ -213,10 +214,10 @@ class UpdateMultiple extends Component {
             //"URL": `/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${data.CardType}`
             "URL": `/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}`
         };
-        console.log("this.state.data",data)
-        console.log("this.state.multiple",this.state.multiple)
         data.TcName = this.getTcName(`${data.TcName}`);
         for(this.currentID = 0 ; this.currentID < this.state.multiple.length ; this.currentID += 1 ){
+            this.state.multiple[this.currentID]['CardType'] = this.state.multiple[this.currentID]['Platforms']
+            delete this.state.multiple[this.currentID]['Platforms']
             multipleTCArray.push(this.state.multiple[this.currentID])
         }
         //axios.put(`/api/multipletcinfoguiupdate/${this.props.selectedRelease.ReleaseNumber}`, multipleTCArray)
@@ -337,17 +338,17 @@ class UpdateMultiple extends Component {
                         errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], [item]: 'Cannot be empty' } };
                     }
                 });
-            if (!errors) {
-                let platformArray = row.Platform.split(",").map((item) => {return item.trim();});
-                platformArray.forEach(item => {
-                    let valid = platforms.includes(item)
-                    if (!valid)  {
-                        if (!errors) errors = {};
-                            errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], Platform: 'Should be a value from given platforms' } };
-                    }
-                } );
-                row.Platform = platformArray
-            }   
+            // if (!errors) {
+            //     let platformArray = row.Platform.split(",").map((item) => {return item.trim();});
+            //     platformArray.forEach(item => {
+            //         let valid = platforms.includes(item)
+            //         if (!valid)  {
+            //             if (!errors) errors = {};
+            //                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], Platform: 'Should be a value from given platforms' } };
+            //         }
+            //     } );
+            //     row.Platform = platformArray
+            // }   
             if (!domains.includes(row.Domain)) {
                 if (!errors) errors = {};
                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], Domain: 'Should be a value from given domains' } };
@@ -358,12 +359,20 @@ class UpdateMultiple extends Component {
                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], SubDomain: 'Should be a value from given subdomains' } };
             }
 
-            let card = row.CardType;
-            if (!['NYNJ', 'BOS', 'COMMON', 'SOFTWARE'].includes(card)) {
-                if (!errors) errors = {};
-                errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], CardType: 'Invalid Cardtype' } };
-            }
-
+            // let card = row.CardType;
+            // if (!['NYNJ', 'BOS', 'COMMON', 'SOFTWARE'].includes(card)) {
+            //     if (!errors) errors = {};
+            //     errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], CardType: 'Invalid Cardtype' } };
+            // }
+            let platformArray = row.Platform.split(",").map((item) => {return item.trim();});
+            //let cards = this.joinArrays(row.CardType);
+            platformArray.forEach(card => {
+                if (!platforms.includes(card)) {
+                    if (!errors) errors = {};
+                    errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], CardType: 'Invalid Platform' } };
+                }
+            });
+            row.Platform = platformArray
             // if (!['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].includes(row.Priority)) {
             //     if (!errors) errors = {};
             //     errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], Priority: 'Invalid Priority' } };
@@ -553,7 +562,7 @@ class UpdateMultiple extends Component {
         let rowData = [];
         return (
             <div>
-                <div style={{ textAlign: 'center' }} className='rp-app-table-value'>Don't edit the TcID and CardType of rows</div>
+                <div style={{ textAlign: 'center' }} className='rp-app-table-value'>Don't edit the TcID and Platform of rows</div>
                 <Row>
                     {/* <Col className='col-md-5'>
                         <span>Upload CSV file</span>
@@ -599,7 +608,7 @@ class UpdateMultiple extends Component {
                                     </Input>
                                 </div>
                             }
-                            {
+                            {/* {
                                 <div style={{ width: '9rem', marginLeft: '0.5rem' }}>
                                     <Input style={{ fontSize: '12px' }} type="select" name="cardTypes" id="cardTypes">
                                         <option value=''>Select CardType</option>
@@ -608,7 +617,7 @@ class UpdateMultiple extends Component {
                                         }
                                     </Input>
                                 </div>
-                            }
+                            } */}
                         </FormGroup>
                     </Col>
                     <Col className='col-md-5'>

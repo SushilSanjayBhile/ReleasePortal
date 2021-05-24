@@ -48,6 +48,7 @@ class TestCasesAll extends Component {
     isAnyChanged = false;
     isBlockedOrFailed = false;
     allTCsToShow = [];
+    tcHolder = [];
     ApplicableTcs = [];
     platformList = [];
     constructor(props) {
@@ -79,15 +80,26 @@ class TestCasesAll extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            'CardType' : {
-                headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+            // 'CardType' : {
+            //     headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
             
-                cellEditor: 'selectionEditor',
+            //     cellEditor: 'selectionEditor',
+            //     cellClass: 'cell-wrap-text',
+            //     cellEditorParams: {
+            //         values: ['BOS', 'NYNJ', 'COMMON'],
+            //         multiple: true
+            //     }
+            'CardType' : {
+                headerName: "Platforms", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+            
+                //cellEditor: 'selectionEditor',
                 cellClass: 'cell-wrap-text',
-                cellEditorParams: {
-                    values: ['BOS', 'NYNJ', 'COMMON'],
-                    multiple: true
-                }
+                editable: false,
+                //cellEditorParams: {
+                //    values: ['BOS', 'NYNJ', 'COMMON'],
+                //    multiple: true
+                //}
+
             },
             'Build' :  {
                 headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
@@ -169,12 +181,12 @@ class TestCasesAll extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            'Platform' : {
-                headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-                width: '180',
-                editable: false,
-                cellClass: 'cell-wrap-text',
-            },
+            // 'Platform' : {
+            //     headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+            //     width: '180',
+            //     editable: false,
+            //     cellClass: 'cell-wrap-text',
+            // },
             'ExpectedBehaviour' : {
                 headerName: "ExpectedBehaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
@@ -187,8 +199,8 @@ class TestCasesAll extends Component {
             updateCounter: 1,
             selectedRows: 0,
             totalRows: 0,
-            overlayLoadingTemplate: '<span class="ag-overlay-loading-center">Please wait while table or Tc is loading</span>',
-            overlayNoRowsTemplate: '<span class="ag-overlay-loading-center">No rows to show</span>',
+            overlayLoadingTemplate: '<span class="ag-overlay-loading-center"><font color = "red">Please wait while table or Tc is loading</font></span>',
+            overlayNoRowsTemplate: '<span class="ag-overlay-loading-center"><font color = "red">No rows to show</font></span>',
             rowSelect: false,
             isEditing: false,
             delete: false,
@@ -225,12 +237,13 @@ class TestCasesAll extends Component {
                 {id: 14, value: "Steps", isChecked: false},
                 {id: 15, value: "OS", isChecked: false},
                 {id: 16, value: "applicable", isChecked: false},
-                {id: 17, value: "Platform", isChecked: false},
+                //{id: 17, value: "Platform", isChecked: false},
                 {id: 18, value: "ExpectedBehaviour", isChecked: false},
               ],
               
             columnDefs: [
                 columnDefDict['TcID'],
+                columnDefDict['CardType'],
                 columnDefDict['Scenario'],
                 columnDefDict['Description'],
                 columnDefDict['Steps'],
@@ -239,7 +252,7 @@ class TestCasesAll extends Component {
                 columnDefDict['OS'],
                 columnDefDict['Bug'],
                 columnDefDict['Priority'],
-                columnDefDict['Platform'],
+                //columnDefDict['Platform'],
                 columnDefDict['ExpectedBehaviour'],
             ],
             
@@ -308,9 +321,15 @@ class TestCasesAll extends Component {
     }
    
     showSelectedTCs = () =>{
-        
-        this.getTcsToShow(this.props.selectedRelease.ReleaseNumber , true);
-        this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority);
+        if (!this.state.platform){
+            this.getTcsToShow(this.props.selectedRelease.ReleaseNumber , true);
+            this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority);
+        }
+        else{
+            this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber,true);
+            this.getTcs(false, this.state.CardType, this.state.platform, null, null, null);
+        }
+        //this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority);
         this.setState({ popoverOpen2: !this.state.popoverOpen2 });
     }
 
@@ -377,15 +396,25 @@ class TestCasesAll extends Component {
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-          'CardType' : {
-              headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+        //   'CardType' : {
+        //       headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
         
-              cellEditor: 'selectionEditor',
-              cellClass: 'cell-wrap-text',
-              cellEditorParams: {
-                  values: ['BOS', 'NYNJ', 'COMMON'],
-                  multiple: true
-              }
+        //       cellEditor: 'selectionEditor',
+        //       cellClass: 'cell-wrap-text',
+        //       cellEditorParams: {
+        //           values: ['BOS', 'NYNJ', 'COMMON'],
+        //           multiple: true
+        //       }
+            'CardType' : {
+            headerName: "Platforms", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+        
+            //cellEditor: 'selectionEditor',
+            cellClass: 'cell-wrap-text',
+            editable: false
+            // cellEditorParams: {
+            //     values: ['BOS', 'NYNJ', 'COMMON'],
+            //     multiple: true
+            // }
           },
           'Build' :  {
               headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
@@ -465,12 +494,12 @@ class TestCasesAll extends Component {
             editable: false,
             cellClass: 'cell-wrap-text',
         },
-        'Platform' : {
-            headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
-            width: '180',
-            editable: false,
-            cellClass: 'cell-wrap-text',
-        },
+        // 'Platform' : {
+        //     headerName: "Platform", field: "Platform", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+        //     width: '180',
+        //     editable: false,
+        //     cellClass: 'cell-wrap-text',
+        // },
         'ExpectedBehaviour' : {
             headerName: "ExpectedBehaviour", field: "ExpectedBehaviour", sortable: true, filter: true, cellStyle: this.renderEditedCell,
             width: '180',
@@ -596,7 +625,7 @@ class TestCasesAll extends Component {
         if (this.pageNumber < 0) {
             this.pageNumber = 0;
         }
-        this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.priority);
+        this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.priority);
     }
     onSelectionChanged = (event) => {
         this.setState({ selectedRows: event.api.getSelectedRows().length })
@@ -623,7 +652,7 @@ class TestCasesAll extends Component {
         }
     }
     componentDidMount() {
-        setTimeout(() => this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain), 400);
+        setTimeout(() => this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain), 400);
         if (this.props.user &&
             (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
                 this.props.user.role === 'ENGG')) {
@@ -645,7 +674,7 @@ class TestCasesAll extends Component {
                 rowSelect: false, CardType: '', platform: '', domain: '', subDomain: '', Priority: '',
                 isEditing: false
             })
-            setTimeout(() => this.getTcs(null,null, null, null, null, null, newProps.selectedRelease.ReleaseNumber), 400);
+            setTimeout(() => this.getTcs(true, null,null, null, null, null, null, newProps.selectedRelease.ReleaseNumber), 400);
         }
     }
 
@@ -666,7 +695,7 @@ class TestCasesAll extends Component {
 
         // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
         this.setState({ platform: platform, domain: '', subDomain: ''});
-        this.getTcs(this.state.CardType, platform, '', '', this.state.Priority);
+        this.getTcs(false, this.state.CardType, platform, '', '', this.state.Priority);
     }
 
     // SELECTION BOX
@@ -674,11 +703,12 @@ class TestCasesAll extends Component {
         if (domain === '') {
             domain = null;
         } else {
-            this.getTcByDomain(domain);
+            //this.getTcByDomain(domain);
         }
         // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
         this.setState({ domain: domain, subDomain: '' });
-        this.getTcs(this.state.CardType, this.state.platform, domain, '', this.state.Priority);
+        //this.getTcs(this.state.CardType, this.state.platform, domain, '', this.state.Priority);
+        this.getTcsToShowMod(this.state.platform, domain, '', this.state.Priority, this.props.selectedRelease.ReleaseNumber);
     }
     onSelectSubDomain(subDomain) {
         if (subDomain === '') {
@@ -686,7 +716,8 @@ class TestCasesAll extends Component {
         }
         // let data = this.filterData({ Domain: this.state.domain, SubDomain: subDomain, CardType: this.state.CardType })
         this.setState({ subDomain: subDomain });
-        this.getTcs(this.state.CardType, this.state.platform, this.state.domain, subDomain, this.state.Priority);
+        //this.getTcs(this.state.CardType, this.state.platform, this.state.domain, subDomain, this.state.Priority);
+        this.getTcsToShowMod(this.state.platform, this.state.domain, subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
     }
     onSelectCardType(cardType) {
         if (cardType === '') {
@@ -694,7 +725,7 @@ class TestCasesAll extends Component {
         }
         //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ CardType: cardType });
-        this.getTcs(cardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority);
+        this.getTcs(cardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
     }
     onSelectPriority(priority) {
         if (priority === '') {
@@ -702,7 +733,8 @@ class TestCasesAll extends Component {
         }
         //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ Priority: priority });
-        this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, priority);
+        //this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, priority);
+        this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, priority, this.props.selectedRelease.ReleaseNumber);
     }
 
     // // RELEASE
@@ -847,11 +879,12 @@ class TestCasesAll extends Component {
             })
     }
     
-    getTcs(CardType, platform, domain, subDomain, priority, all, selectedRelease, updateRelease) {
+    getTcs(flag, CardType, platform, domain, subDomain, priority, all, selectedRelease, updateRelease) {
         let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
         if (!release) {
             return;
         }
+        CardType = platform
         this.gridOperations(false);
         let startingIndex = this.pageNumber * this.rows;
         let url = `/api/wholetcinfo/${release}?index=${startingIndex}&count=${this.rows}`;
@@ -862,13 +895,13 @@ class TestCasesAll extends Component {
         }
         if (platform || CardType || domain || subDomain || priority) {
             url = `/api/wholetcinfo/${release}?`;
-            if (platform) url += ('&Platform=' + platform);
+            //if (platform) url += ('&Platform=' + platform);
             if (CardType) url += ('&CardType=' + CardType);
             if (domain) url += ('&Domain=' + domain);
             if (subDomain) url += ('&SubDomain=' + subDomain);
             if (priority) url += ('&Priority=' + priority);
         }
-        url += ('&WorkingStatus=' + 'Manual Assignee')
+        //url += ('&WorkingStatus=' + 'Manual Assignee')
         
         let str1 = ''
         this.state.tableColumnsTcs.forEach(item=>{
@@ -885,7 +918,12 @@ class TestCasesAll extends Component {
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
                 this.allTCsToShow = all.data;
-                this.getTcsToShow(release,updateRelease)
+                if(flag || !this.state.platform){
+                    this.getTcsToShow(release,updateRelease)
+                }
+                if (this.state.platform){
+                    this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
+                }
 
             }).catch(err => {
                 this.saveLocalMultipleTC({ data: [], id: release }, true, updateRelease);
@@ -895,7 +933,7 @@ class TestCasesAll extends Component {
     getAlltcs() {
         this.setState({ loading: true, platform:'', domain: '', subDomain: '', CardType: '', Priority: '' })
         this.saveLocalMultipleTC({ data: [], id: this.props.selectedRelease.ReleaseNumber }, true);
-        this.getTcs(null,null, null, null, null, true);
+        this.getTcs(true, null,null, null, null, null, true);
     }
 
     getTcsToShow(release,updateRelease){
@@ -913,7 +951,7 @@ class TestCasesAll extends Component {
             if(this.allTCsToShow[i].Priority == 'NA'){
                 NATcs.push(this.allTCsToShow[i])
             }
-            if(this.allTCsToShow[i].Priority != 'NA' && this.allTCsToShow[i].Priority != 'Skip'){
+            if(this.allTCsToShow[i].Priority != 'NA' && this.allTCsToShow[i].Priority != 'Skip' && this.allTCsToShow[i].Priority != 'Skp'){
                 this.ApplicableTcs.push(this.allTCsToShow[i])
                 //ApplicableTcs.push(this.allTCsToShow[i])
             }
@@ -924,7 +962,7 @@ class TestCasesAll extends Component {
                 skipTcs.forEach(skipTC=>{
                     showTc.push(skipTC)
                 })
-            } 
+            }
             if(item.isChecked == true && item.value == 'NA' ){
                 NATcs.forEach(NATC=>{
                     showTc.push(NATC)
@@ -969,6 +1007,115 @@ class TestCasesAll extends Component {
             
         }
         this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
+        this.gridOperations(true);
+    }
+
+    getTcsToShowMod(platform, domain, subdomain, priority, release, updateRelease){
+        //console.log("release,updateRelease in cli",release,updateRelease)
+        //this.gridOperations(false);
+        this.tcHolder = []
+            if(platform) {
+              this.tcHolder = [...this.allTCsToShow]
+            }
+            if(domain){
+                let TcByDomain = []
+                for (let i = 0 ; i < this.tcHolder.length; i++) {
+                    if(this.tcHolder[i].Domain === domain ){
+                        TcByDomain.push(this.tcHolder[i])
+                    }
+                }
+                this.tcHolder = [...TcByDomain]
+            }
+            if(subdomain){
+                let TcBySubdomain = []
+                for (let i = 0 ; i < this.tcHolder.length; i++) {
+                    if(this.tcHolder[i].SubDomain === subdomain ){
+                        TcBySubdomain.push(this.tcHolder[i])
+                    }
+                }
+                this.tcHolder = [...TcBySubdomain]
+            }
+            if(priority){
+                let tem = []
+                for (let i = 0 ; i < this.tcHolder.length; i++) {
+                    if(this.tcHolder[i].Priority === priority ){
+                        tem.push(this.tcHolder[i])
+                    }
+                }
+                this.tcHolder = [...tem]
+            }
+        let showTc = []
+        let skipTcs = []
+        let NATcs = []
+        //let ApplicableTcs = []
+        this.ApplicableTcs = []
+        for(let i = 0; i < this.tcHolder.length; i++){
+            if(this.tcHolder[i].Priority == 'Skip' || this.tcHolder[i].Priority == 'Skp' ){
+                skipTcs.push(this.tcHolder[i])
+            }
+            if(this.tcHolder[i].Priority == 'NA'){
+                NATcs.push(this.tcHolder[i])
+            }
+            if(this.tcHolder[i].Priority != 'NA' && this.tcHolder[i].Priority != 'Skip' && this.tcHolder[i].Priority != 'Skp'){
+                this.ApplicableTcs.push(this.tcHolder[i])
+                //ApplicableTcs.push(this.allTCsToShow[i])
+            }
+        }
+        showTc = []
+        this.state.tableColumnsTcs.forEach(item=>{
+            if(item.isChecked == true  && item.value == 'Skip'){
+                skipTcs.forEach(skipTC=>{
+                    showTc.push(skipTC)
+                })
+            }
+            if(item.isChecked == true && item.value == 'NA' ){
+                NATcs.forEach(NATC=>{
+                    showTc.push(NATC)
+                })
+            } 
+            if(item.isChecked == true && item.value == 'Applicable' ){
+                //ApplicableTcs.forEach(applicableTC=>{
+                this.ApplicableTcs.forEach(applicableTC=>{
+                    showTc.push(applicableTC)
+                })
+            }
+        })
+        let showTc1 = []
+        let statusFlag = 0
+        this.state.statusColumn.forEach(item=>{
+
+            showTc.forEach(tcItem=>{
+               
+                if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Fail' && tcItem.CurrentStatus.Result == 'Fail'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Block' && tcItem.CurrentStatus.Result == 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Not Tested' && tcItem.CurrentStatus.Result != 'Pass' && tcItem.CurrentStatus.Result != 'Fail' && tcItem.CurrentStatus.Result != 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+            })
+        })
+        if(statusFlag == 0){
+            showTc1 = showTc; 
+            
+        }
+        //console.log("showtc1",showTc1)
+        this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
+        // if (this.state.isApiUnderProgress) {
+        //     this.setState({ isApiUnderProgress: false, loading: false });
+        // }
         this.gridOperations(true);
     }
 
@@ -1046,6 +1193,8 @@ class TestCasesAll extends Component {
             })
             if (this.state.multi && this.state.multi.Build ) {
                 let status = {};
+                //console.log(this.state.multi,item)
+                if(!this.state.multi.TestedOn) this.state.multi.TestedOn = "";
                 status.Domain = item.Domain;
                 status.SubDomain = item.SubDomain;
                 status.Steps = item.Steps;
@@ -1093,7 +1242,9 @@ class TestCasesAll extends Component {
                 if (items.length > 0) {
                     this.saveMultipleTcInfo(items)
                 } else {
-                    this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true);
+                    //this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true);
+                    this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
+                    //this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
                     alert('Tc Status updated Successfully');
                 }
             }, error => {
@@ -1106,7 +1257,10 @@ class TestCasesAll extends Component {
         axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
         .then(res => {
             this.gridOperations(true);
-            this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true)
+            //this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true)
+            this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
+            console.log("pdsp2", this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority)
+            //this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
             alert('Tc Info Updated Successfully');
         }, error => {
             this.gridOperations(true);
@@ -1192,8 +1346,6 @@ class TestCasesAll extends Component {
             this.setState({
                 platforms : platformListTemp
             })   
-
-            console.log("platformalist",this.state.plaforms)
 
         })
     }
@@ -1304,6 +1456,7 @@ class TestCasesAll extends Component {
         let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && (Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform])).length > 0 ? Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform]) : [];
         //let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
         let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform][this.state.domain];
+        let priority = this.state.platform ? ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'] : []
         if (platforms) {
             platforms.sort();
         } else {
@@ -1461,8 +1614,10 @@ class TestCasesAll extends Component {
                                                     { style: { width: '8rem', marginLeft: '1.0rem' }, field: 'platform', onChange: (e) => this.onSelectPlatform(e), values: [{ value: '', text: 'Select Platform' }, ...(platforms && platforms.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'domain', onChange: (e) => this.onSelectDomain(e), values: [{ value: '', text: 'Select Domain' }, ...(domains && domains.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'subDomain', onChange: (e) => this.onSelectSubDomain(e), values: [{ value: '', text: 'Select SubDomain' }, ...(subdomains && subdomains.map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'CardType', onChange: (e) => this.onSelectCardType(e), values: [{ value: '', text: 'Select CardType' }, ...(['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '7rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] }
+                                                    //{ style: { width: '8rem', marginLeft: '0.5rem' }, field: 'CardType', onChange: (e) => this.onSelectCardType(e), values: [{ value: '', text: 'Select CardType' }, ...(['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(each => ({ value: each, text: each })))] },
+                                                    //{ style: { width: '8rem', marginLeft: '0.5rem' }, field: 'CardType', onChange: (e) => this.onSelectCardType(e), values: [{ value: '', text: 'Select CardType' }, ...(platforms && platforms.map(each => ({ value: each, text: each })))] },
+                                                    //{ style: { width: '7rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] }
+                                                    { style: { width: '7rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(priority && priority.map(each => ({ value: each, text: each })))] }
                                                 ].map(item => (
                                                     this.props.data &&
                                                     <div style={item.style}>
@@ -1642,7 +1797,8 @@ class TestCasesAll extends Component {
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="select" id={`select_TestedOn`} >
                                                                                 {
-                                                                                    ["Tested on","BOS","NYNJ","Software solution"].map(item => <option value={item}>{item}</option>)
+                                                                                    //["Tested on","BOS","NYNJ","Software solution"].map(item => <option value={item}>{item}</option>)
+                                                                                    [{ value: '', text: 'Tested On' }, { value: 'BOS', text: 'BOS' }, { value: 'NYNJ', text: 'NYNJ' }, { value: 'Software solution', text: 'Software solution' }].map(item => <option value={item.value}>{item.text}</option>)
                                                                                 }
                                                                             </Input> 
                                                                         </FormGroup>
@@ -1722,7 +1878,7 @@ class TestCasesAll extends Component {
                                                                     <span>
                                                                         {
                                                                             this.isAnyChanged &&
-                                                                            <Button disabled={this.state.isApiUnderProgress} title="Undo" size="md" className="rp-rb-save-btn" onClick={() => this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain)} >
+                                                                            <Button disabled={this.state.isApiUnderProgress} title="Undo" size="md" className="rp-rb-save-btn" onClick={() => /*this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain)*/this.getTcs(true, this.state.CardType, this.state.platform, null, null)} >
                                                                                 Undo
                                                                             </Button>
                                                                         }

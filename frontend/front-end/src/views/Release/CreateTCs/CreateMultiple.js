@@ -65,17 +65,17 @@ class CreateMultiple extends Component {
                     headerName: "Tc Name", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
                     editable: true,
                 },
-                {
-                    headerName: "Card Type", field: "CardType",
-                    editable: true,
-                    sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
-                    cellEditor: 'selectionEditor',
-                    cellEditorParams: {
-                        values: ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'],
-                        multiple: true,
-                    }
+                // {
+                //     headerName: "Card Type", field: "CardType",
+                //     editable: true,
+                //     sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+                //     cellEditor: 'selectionEditor',
+                //     cellEditorParams: {
+                //         values: ['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'],
+                //         multiple: true,
+                //     }
 
-                },
+                // },
                 {
                     headerName: "Domain", field: "Domain",
                     editable: true,
@@ -181,7 +181,8 @@ class CreateMultiple extends Component {
         'TcID', 'TcName', 'Scenario', 'Tag', 'Priority',
         'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'Assignee','Creator'
     ];
-    arrayFields = ['Platform', 'CardType']
+        arrayFields = ['Platform', 'CardType']
+        //arrayFields = ['CardType']
     getTcName(name) {
         let tcName = name;
         if (!tcName || tcName === 'NOT AUTOMATED' || tcName === "undefined" || tcName === null) {
@@ -197,8 +198,11 @@ class CreateMultiple extends Component {
         // tc info meta fields
         // data.Role = 'QA';
         // tc info fields
+        let platformArray = row.Platform.split(",").map((item) => {return item.trim();});
+        row.Platform = platformArray
         this.textFields.map(item => data[item] = row[item]);
         this.arrayFields.forEach(item => data[item] = this.joinArrays(row[item]));
+        data.CardType = data.Platform
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
             "tcInfoNum":this.props.id,
@@ -216,7 +220,6 @@ class CreateMultiple extends Component {
         data.Creator = data.Creator;
         data.Assignee = currentUser
         data['ExpectedBehaviour'] = data['ExpectedBehaviour']
-        console.log("data before post request",data,this.props.currentUser.name);
         axios.post(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
 
@@ -306,16 +309,16 @@ class CreateMultiple extends Component {
                         errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], [item]: 'Cannot be empty' } };
                     }
                 });
-            if(!errors) {
-                let platformArray = row.Platform.split(",").map((item) => {return item.trim();});
-                platformArray.forEach(item => {
-                    let valid = platforms.includes(item)
-                    if (!valid)  {
-                        if (!errors) errors = {};
-                            errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], Platform: 'Should be a value from given platforms' } };
-                    }
-                });
-            }
+            // if(!errors) {
+            //     let platformArray = row.Platform.split(",").map((item) => {return item.trim();});
+            //     platformArray.forEach(item => {
+            //         let valid = platforms.includes(item)
+            //         if (!valid)  {
+            //             if (!errors) errors = {};
+            //                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], Platform: 'Should be a value from given platforms' } };
+            //         }
+            //     });
+            // }
             if (!domains.includes(row.Domain)) {
                 if (!errors) errors = {};
                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], Domain: 'Should be a value from given domains' } };
@@ -325,11 +328,20 @@ class CreateMultiple extends Component {
                 if (!errors) errors = {};
                 errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], SubDomain: 'Should be a value from given subdomains' } };
             }
-            let cards = this.joinArrays(row.CardType);
-            cards.forEach(card => {
-                if (!['NYNJ', 'BOS', 'COMMON', 'SOFTWARE'].includes(card)) {
+            // let platformArray = row.Platform.split(",").map((item) => {return item.trim();});
+            // let cards = this.joinArrays(row.CardType);
+            // cards.forEach(card => {
+            //     if (!['NYNJ', 'BOS', 'COMMON', 'SOFTWARE'].includes(card)) {
+            //         if (!errors) errors = {};
+            //         errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], CardType: 'Invalid Cardtype' } };
+            //     }
+            // });
+            let platformArray = row.Platform.split(",").map((item) => {return item.trim();});
+            //let cards = this.joinArrays(row.CardType);
+            platformArray.forEach(card => {
+                if (!platforms.includes(card)) {
                     if (!errors) errors = {};
-                    errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], CardType: 'Invalid Cardtype' } };
+                    errors = { ...errors, [row.TABLEID]: { ...errors[row.TABLEID], CardType: 'Invalid Platform' } };
                 }
             });
             if (!['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].includes(row.Priority)) {
@@ -418,7 +430,7 @@ class CreateMultiple extends Component {
     textFields = [
         'Domain', 'SubDomain',
         'TcID', 'TcName', 'Scenario', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes','Creator','Platform'
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes','Creator'
     ];
     arrayFields = ['Platform', 'CardType', 'ServerType']
     whichFieldsUpdated(old, latest) {
@@ -550,7 +562,7 @@ class CreateMultiple extends Component {
                                     </Input>
                                 </div>
                             }
-                            {
+                            {/* {
                                 <div style={{ width: '9rem', marginLeft: '0.5rem' }}>
                                     <Input style={{ fontSize: '12px' }} type="select" name="cardTypes" id="cardTypes">
                                         <option value=''>Select CardType</option>
@@ -559,7 +571,7 @@ class CreateMultiple extends Component {
                                         }
                                     </Input>
                                 </div>
-                            }
+                            } */}
                         </FormGroup>
                     </Col>
                     <Col className='col-md-5'>

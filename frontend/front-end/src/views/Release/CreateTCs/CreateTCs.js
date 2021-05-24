@@ -45,7 +45,7 @@ class CreateTCs extends Component {
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'AutoAssignee', 'DevAssignee', 'Priority',
         'Description', 'Steps', 'ExpectedBehaviour', 'Notes','Creator',
     ];
-    arrayFields = ['Platform','CardType', 'ServerType']
+    arrayFields = ['Platform', 'ServerType']
     whichFieldsUpdated(old, latest) {
         let changes = {};
         this.textFields.forEach(item => {
@@ -91,6 +91,7 @@ class CreateTCs extends Component {
         // tc info fields
         this.textFields.map(item => data[item] = this.state.addTC[item]);
         this.arrayFields.forEach(item => data[item] = this.state.addTC[item]);
+        data.CardType = data.Platform
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
             "tcInfoNum":this.props.id,
@@ -133,7 +134,8 @@ class CreateTCs extends Component {
     confirmToggle() {
         let errors = null;
         this.changeLog = {};
-        ['Domain', 'SubDomain', 'TcID', 'CardType','Platform']
+        //['Domain', 'SubDomain', 'TcID', 'CardType','Platform']
+        ['Domain', 'SubDomain', 'TcID','Platform']
             .forEach(item => {
                 if (!errors) {
                     let valid = (this.state.addTC[item] && this.state.addTC[item].length > 0);
@@ -150,6 +152,7 @@ class CreateTCs extends Component {
                 errors = { ...this.state.errors, Assignee: 'Cannot be ADMIN or empty' };
             }
         }
+        console.log(errors)
         if (!errors) {
             this.changeLog = this.whichFieldsUpdated({}, this.state.addTC);
             this.toggle();
@@ -200,24 +203,18 @@ class CreateTCs extends Component {
                 let op = null;
                 if (checked && this.state.addTC.Platform) {
                     op = [...this.state.addTC.Platform, value];
-                    console.log("1st if",op)
                 }
                 if (checked && !this.state.addTC.Platform) {
                     op = [value];
-                    console.log("2nd if",op)
                 }
                 if (!checked && this.state.addTC.Platform) {
                     let array = this.state.addTC.Platform;
                     array.splice(array.indexOf(value), 1);
                     op = array;
-                    console.log("3rd if",op)
                 }
-                console.log("outof all if oparrya",op)
-                console.log("this.state.addTC.Platform",this.state.addTC.Platform)
                 this.setState({ addTC: { ...this.state.addTC, Platform: op, Domain: null, SubDomain: null }, errors: { ...this.state.errors, Platform: null }}, () => {
                     this.getDomain()
                 });
-                console.log("this.state.addTC.Platform",this.state.addTC)
                 break;
             case 'ServerType':
                 let servers = null;
@@ -242,27 +239,21 @@ class CreateTCs extends Component {
     getDomain() {
         this.state.domainList = []
         let list = []
-        console.log("this.state.addTC.Platform",this.state.addTC.Platform)
-        console.log("domainList1",this.state.domainList)
         this.state.addTC.Platform && this.state.addTC.Platform.forEach(element => {
                 //this.state.domainList.push.apply(this.state.domainList,Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[element]))
                 list.push.apply(list,this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli ? Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element]) : [])
             })
             this.setState({domainList: list})
-        console.log("domainList2",this.state.domainList)
     }
     getsubDomain() {
         this.state.subdomainList = []
         let list = []
-        console.log("this.state.addTC.Platform",this.state.addTC.Platform)
-        console.log("this.state.addTC.Domain",this.state.addTC.Domain)
         this.state.addTC.Platform && this.state.addTC.Platform.forEach(element => {
             if(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element]).includes(this.state.addTC.Domain)) {
                 list.push.apply(list,this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[element][this.state.addTC.Domain])
             }    
         })
         this.setState({subdomainList: list})
-        console.log("this.subdomainList",this.state.subdomainList)
     }
     getTcs() {
         this.props.saveTestCase({ data: [], id: this.props.selectedRelease.ReleaseNumber });
@@ -452,7 +443,7 @@ class CreateTCs extends Component {
                                                 <React.Fragment>
                                                     {
                                                         [
-                                                            { field: 'CardType', header: 'Card Type' },
+                                                            //{ field: 'CardType', header: 'Card Type' },
                                                             { field: 'ServerType', header: 'Server Type' },
                                                         ].map(item => (
                                                             <Col xs="6" md="3" lg="2">

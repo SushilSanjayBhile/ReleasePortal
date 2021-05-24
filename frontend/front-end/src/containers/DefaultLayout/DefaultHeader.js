@@ -166,22 +166,22 @@ class DefaultHeader extends Component {
                 this.props.user &&
                 <React.Fragment>
 
-                  <DropdownItem onClick={() => this.props.history.push('/release/user')}><i className="fa fa-user"></i>{this.props.currentUser && this.props.currentUser.email}</DropdownItem>
+                  <DropdownItem onClick={() => this.props.history.push('/release/user')}><i className="fa fa-user"  aria-hidden="true"></i>{this.props.currentUser && this.props.currentUser.email}</DropdownItem>
                   {
                     this.props.currentUser && this.props.currentUser.isAdmin &&
-                    <DropdownItem onClick={() => this.props.history.push('/release/manage')}><i className="fas fa-archive"></i>Release Settings</DropdownItem>
+                    <DropdownItem onClick={() => this.props.history.push('/release/manage')}><i className="fa fa-cog"  aria-hidden="true"></i>Release Settings</DropdownItem>
                   }
                   {
                     this.props.currentUser && this.props.currentUser.isAdmin &&
-                    <DropdownItem onClick={() => this.props.history.push('/release/settings')}><i className="fas fa-archive"></i>Manage User</DropdownItem>
+                    <DropdownItem onClick={() => this.props.history.push('/release/settings')}><i className="fa fa-pencil-square-o"  aria-hidden="true"></i>Manage User</DropdownItem>
                   }
                   {
                     this.props.currentUser && this.props.currentUser.isAdmin &&
-                    <DropdownItem onClick={() => this.props.history.push('/release/adminDashboard')}><i className="fas fa-archive"></i>Admin Dashboard For CLI</DropdownItem>
+                    <DropdownItem onClick={() => this.props.history.push('/release/adminDashboard')}><i className="fa fa-user-secret"  aria-hidden="true"></i>Admin Dashboard For CLI</DropdownItem>
                   }
                   {
                     this.props.currentUser && this.props.currentUser.isAdmin &&
-                    <DropdownItem onClick={() => this.props.history.push('/release/adminDashboardGUI')}><i className="fas fa-archive"></i>Admin Dashboard For GUI</DropdownItem>
+                    <DropdownItem onClick={() => this.props.history.push('/release/adminDashboardGUI')}><i className="fa fa-user-secret"  aria-hidden="true"></i>Admin Dashboard For GUI</DropdownItem>
                   }
                   <DropdownItem onClick={() => this.props.onLogout()}><i className="fa fa-lock"></i>Logout</DropdownItem>
                 </React.Fragment>
