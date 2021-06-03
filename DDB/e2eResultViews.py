@@ -21,6 +21,7 @@ from psycopg2 import sql
 import json, datetime, os, time
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from .latestStatusUpdate import latestResultUpdateFunction        
+from dp import settings
 
 errorTCs = []
 sucessTCs = []
@@ -41,7 +42,6 @@ def updateStatusFunc(domain, subdomain, tcid, tcname, build, result, cardtype, R
     statusDict['Build'] = build
     statusDict['Result'] = result
     statusDict['CardType'] = cardtype
-
     if "pass" in result.lower():
         passCount += 1
     elif "fail" in result.lower():
@@ -71,15 +71,8 @@ def e2eResultUpdate(request):
     if request.method == "POST":
         req = json.loads(request.body.decode("utf-8"))
 
-        if "master" in req["drive_dir_name"].lower():
-            Release = "master"
-        elif "ga-" in req["drive_dir_name"].lower():
-            Release = req["drive_dir_name"].split("-")[-1]
-        elif "dcx-" in req["drive_dir_name"].lower():
-            Release = req["drive_dir_name"]
-        else:
-            return HttpResponse(json.dumps({"ERROR":"UNABLE TO IDENTIFY RELEASE NUMBER. PROVIDE LIKE: GA-2.3.0/GA-<number>/Master"}))
-        print(req, "=============================================")
+        Release = req["drive_dir_name"]
+        print(Release)
 
         if 'drive_sub_directory' in req:
             CardType = req['drive_sub_directory']
@@ -156,14 +149,11 @@ def e2eResultUpdate(request):
                     try:
                         singleTc = TC_INFO.objects.using(Release).get(TcID = tc)
                         serializer = TC_INFO_SERIALIZER(singleTc)
-                
                         updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Pass", CardType, Release)
 
                     except:
                         updateStatusFunc("NOT FOUND", "NOT FOUND", tc, "NOT FOUND", build, "Pass", "NOT FOUND", Release)
                         #errorTCs.append(tc)
-
-            print(passcount)
 
             for tc in req['fail_id_list']:
                 try:
