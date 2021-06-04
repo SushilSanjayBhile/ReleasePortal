@@ -618,7 +618,6 @@ def updateStatusData(updatedData, data, Release):
      data.Domain = updatedData['Domain']
      data.SubDomain = updatedData['SubDomain']
      data.CardType = updatedData['CardType']
-
      data.save(using = Release)
      return 1
 
@@ -775,9 +774,7 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
     if request.method == "PUT":
         requests = json.loads(request.body.decode("utf-8"))
         errRec = {}
-        print("requests",requests)
         for req in requests:
-            print("req",req)
             card = req['CardType']
             tcid = req['TcID']
             
@@ -851,7 +848,6 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
                     for key in req:
                         if key in updatedData and (key != "CardType" and key != "TcID"):
                             updatedData[key] = req[key]
-                    print("updatedData",updatedData)
                     updateData(updatedData, singleData, Release)
                     if "Activity" in requests:
                         AD = requests['Activity']
@@ -866,7 +862,6 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
                     for key in req:
                         if key in updatedData and (key != "CardType" and key != "TcID"):
                             updatedData[key] = req[key]
-                    print("updatedData in except",updatedData)
                     updateData(updatedData, singleData, Release)
 
                 if card not in errRec:
@@ -881,6 +876,106 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
 
 @csrf_exempt
 def MULTIPLE_TC_UPDATION(request, Release):
+    if request.method == "PUT":
+        requests = json.loads(request.body.decode("utf-8"))
+        errRecords = []
+
+        for req in requests:
+            card = req['CardType']
+            tcid = req['TcID']
+
+            data = TC_INFO.objects.using(Release).filter(TcID = tcid)
+            #print("len of data",len(data))
+            serializer = TC_INFO_SERIALIZER(data, many = True)
+            for d in serializer.data:
+                singleData = TC_INFO.objects.using(Release).get(id= d['id'])
+                singleSerializer = TC_INFO_SERIALIZER(singleData)
+                updatedData = singleSerializer.data
+                oldworkingStatus = updatedData["stateUserMapping"]
+                oldworkingStatus = oldworkingStatus.replace("\'","\"")
+                try:
+                    oldworkingStatus = json.loads(oldworkingStatus)
+                except:
+                    workingStatusReplace = "{\"CREATED\":\"DEFAULT\"}"
+                    updatedData["stateUserMapping"] = workingStatusReplace
+                    updateData(updatedData, singleData, Release)
+
+                    data = TC_INFO.objects.using(Release).get(id= d['id'])
+                    serializer = TC_INFO_SERIALIZER(data)
+                    updatedData = serializer.data
+                    oldworkingStatus = updatedData["stateUserMapping"]
+                    oldworkingStatus = oldworkingStatus.replace("\'","\"")
+                    oldworkingStatus = json.loads(oldworkingStatus)
+
+                workingState = "{"
+
+                if "Manual WorkingStatus" in req:
+                    workingState += "\"Manual WorkingStatus\"" + ":\"" + req["Manual WorkingStatus"] + "\","
+                elif "Manual WorkingStatus" in oldworkingStatus:
+                    workingState += "\"Manual WorkingStatus\"" + ":\"" + oldworkingStatus["Manual WorkingStatus"] + "\","
+            
+                if "Automation Assignee" in req:
+                    workingState += "\"Automation Assignee\"" + ":\"" + req["Automation Assignee"] + "\","
+                elif "Automation Assignee" in oldworkingStatus:
+                    workingState += "\"Automation Assignee\"" + ":\"" + oldworkingStatus["Automation Assignee"] + "\","
+            
+                if "Automation WorkingStatus" in req:
+                    workingState += "\"Automation WorkingStatus\"" + ":\"" + req["Automation WorkingStatus"] + "\","
+                elif "Automation WorkingStatus" in oldworkingStatus:
+                    workingState += "\"Automation WorkingStatus\"" + ":\"" + oldworkingStatus["Automation WorkingStatus"] + "\","
+            
+                if "Manual Assignee" in req:
+                    workingState += "\"Manual Assignee\"" + ":\"" + req["Manual Assignee"] + "\""
+                elif "Manual Assignee" in oldworkingStatus:
+                    workingState += "\"Manual Assignee\"" + ":\"" + oldworkingStatus["Manual Assignee"] + "\""
+
+                workingState += "}"
+
+                #print("after update working status",workingState)
+                updatedData["stateUserMapping"] = workingState
+
+                for key in req:
+                    if key in updatedData and (key != "CardType" and key != "TcID"):
+                        updatedData[key] = req[key]
+
+                res = updateData(updatedData, singleData, Release)
+                if res == 0:
+                    errRecords.append(req)
+                elif "Activity" in requests:
+                    AD = requests['Activity']
+                    GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
+        
+            if len(errRecords) > 0:
+                return HttpResponse(json.dumps(errRecords))
+
+            return HttpResponse({"SUCCESS": "Record Successfully updated"})
+
+    #elif request.method == "DELETE":
+    #    requests = json.loads(request.body.decode("utf-8"))
+    #    errRecords = []
+
+    #    for req in requests:
+    #        card = req['CardType']
+    #        tcid = req['TcID']
+
+    #        data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
+    #        serializer = TC_INFO_SERIALIZER(data)
+    #        updatedData = serializer.data
+    #        updatedData['WorkingStatus'] = "SKIP"
+
+    #        res = updateData(updatedData, data, Release)
+    #        if res == 0:
+    #            errRecords.append(req)
+    #        elif "Activity" in req:
+    #            AD = requests['Activity']
+    #            GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+    #    
+    #    if len(errRecords) > 0:
+    #        return HttpResponse(json.dumps(errRecords))
+    #    return HttpResponse({"SUCCESS": "SOFT DELETED ALL RECORDS"})
+
+@csrf_exempt
+def MULTIPLE_TC_UPDATION_OLD(request, Release):
     if request.method == "PUT":
         requests = json.loads(request.body.decode("utf-8"))
         errRecords = []
@@ -978,6 +1073,7 @@ def MULTIPLE_TC_UPDATION(request, Release):
         if len(errRecords) > 0:
             return HttpResponse(json.dumps(errRecords))
         return HttpResponse({"SUCCESS": "SOFT DELETED ALL RECORDS"})
+
 
 @csrf_exempt
 def GET_TC_INFO_BY_ID(request, Release, id, card):

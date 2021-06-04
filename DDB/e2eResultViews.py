@@ -21,7 +21,6 @@ from psycopg2 import sql
 import json, datetime, os, time
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from .latestStatusUpdate import latestResultUpdateFunction        
-from dp import settings
 
 errorTCs = []
 sucessTCs = []
