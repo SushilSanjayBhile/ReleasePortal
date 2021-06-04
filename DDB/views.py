@@ -2006,7 +2006,11 @@ def RELEASEINFO(request, Release):
                     data.PlatformsGui.remove(p3)
                     data.save()
 
-            aggregateData = TCAGGREGATE_MOD(Release, platformsCli, platformsGui)
+            #print(aggregateData)
+            #data = json.load(open("/portal/app/DDB/dummy_response.json", "r"))
+            #data = json.dumps(data["TcAggregate"])
+            #data = data.replace("'","\"")
+            aggregateData = TCAGGREGATE_MOD(Release,platformsCli, platformsGui)
             serData['TcAggregate'] = aggregateData
             return HttpResponse(json.dumps(serData))
 
