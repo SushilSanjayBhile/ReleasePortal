@@ -29,7 +29,7 @@ from .migrate import Migrate
 from .new import automation_count_get_post_view, custom_automation_count_get_view
 
 from .mergeCardType import MergingCardTypes
-
+from .commandExec import update_data
 
 urlpatterns = [
     path('mergecardtype/', MergingCardTypes),
@@ -89,7 +89,7 @@ urlpatterns = [
     path('tcinfogui/<str:Release>/id/<str:id>/browsername/<str:browserName>/cardType/<str:cardType>', GET_TC_INFO_GUI_ID),
     path('sanity/<str:SanityType>/<str:Release>', SANITY_VIEW),
 
-    path('user/login', USER_LOGIN_VIEW),
+    path('user/login/', USER_LOGIN_VIEW),
     path('userinfo/', USER_INFO_GET_POST_VIEW),
     path('user/id/<int:id>/', USER_INFO_SPECIFIC_BY_ID),
     path('user1/name/<str:email>/', USER_INFO_SPECIFIC_BY_NAME),
@@ -118,5 +118,6 @@ urlpatterns = [
     path('dupbyrelgui',duplicate_tcs_by_rel_gui),
     path('duptcgui', duplicate_tcs_gui),
     path('tcupdategui/<str:Release>', MULTIPLE_TC_UPDATION_GUI),
-    path('release_all_info/releaseName/<str:Release>', TCAGGREGATE_DASHBOARD)
+    path('release_all_info/releaseName/<str:Release>', TCAGGREGATE_DASHBOARD),
+    path('execute/<str:release>/<str:platform>',update_data)
 ]

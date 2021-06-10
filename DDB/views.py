@@ -31,7 +31,7 @@ import json, datetime, os, time
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from .latestStatusUpdate import updateLatestStatus, latestResultUpdateFunction
 from .tcinfo import updateStatusData
-
+from dp import settings
 # GLOBAL VARIABLES
 statusList = ['Pass', 'Fail', 'Skip', 'Blocked']
 
@@ -2072,30 +2072,33 @@ def USER_LOGIN_VIEW(request):
         print(req)
 
         try:
-            data = USER_INFO.objects.get(UserName = req['email'])
+            data = USER_INFO.objects.get(email = req['email'])
             print(data)
             serializer = USER_SERIALIZER(data)
             #GenerateLogData(serializer.data['UserName'], 'POST', 'user/login', json.dumps(req))
-            return JsonResponse({'role': serializer.data['Role']}, status = 200)
+            return JsonResponse({'role': serializer.data['role']}, status = 200)
         except:
             print("except")
             data ={}
-            data['Designation'] = "UNKNOWN"
-            data['UserName'] = req['email']
+            data['name'] = req['name']
+            data['email'] = req['email']
             if 'Role' not in req:
-                data['Role'] = "ADMIN"
+                data['role'] = "Dev"
             else:
-                data['Role'] = req['Role']
-
+                data['role'] = req['role']
+            temp = []
+            for rel in settings.DATABASES:
+                temp.append(rel)
+            data["AssignedReleases"] = temp
             fd = UserInfoForm(data)
             if fd.is_valid():
                 fd.save()
                 if "Activity" in req:
                     AD = req['Activity']
                     GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
-                return JsonResponse({'role': data['Role']}, status = 200)
+                return JsonResponse({'role': data['role']}, status = 200)
             else:
                 return JsonResponse({'error': fd.errors}, status = 400)
             #GenerateLogData(data['UserName'], 'POST', 'user/login', json.dumps(req))
 
-        return JsonResponse({'role': data['Role']}, status = 200)
+        return JsonResponse({'role': data['role']}, status = 200)

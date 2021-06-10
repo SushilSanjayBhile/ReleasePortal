@@ -132,7 +132,7 @@ class USER_INFO(models.Model):
     AssignedReleases = ArrayField(models.CharField(max_length = 100, blank = True, default = "UNKNOWN"), blank = True, default = list)
 
     def __str__(self):
-        return self.Name
+        return self.name
 
 # Table per release [Reason for maintaining into every release is, setups can be broken or nodes can be combined]
 class SETUP_INFO(models.Model):
