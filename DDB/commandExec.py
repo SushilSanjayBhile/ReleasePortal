@@ -12,10 +12,11 @@ def update_data(request, release, platform):
             f = request.FILES['file']
             filepath = handle_uploaded_file(f)
 
-            com = subprocess.Popen(["../finalapp/non_jenkins_user_update_sheets.sh", "-f", filepath, "-d", release, "-s", platform],stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            com = subprocess.Popen(["/portal/app/finalapp/non_jenkins_user_update_sheets.sh", "-f", filepath, "-d", release, "-s", platform],stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             
             output, errors = com.communicate()
             com.wait()
+            print(filepath)
             os.remove(filepath)
             
             return JsonResponse({"output":json.dumps(output.decode("utf-8")),"console":json.dumps(errors.decode("utf-8")),"returncode":com.returncode}, status = 200)
