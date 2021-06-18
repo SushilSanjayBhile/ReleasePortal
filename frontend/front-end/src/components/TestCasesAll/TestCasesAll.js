@@ -1259,7 +1259,6 @@ class TestCasesAll extends Component {
             this.gridOperations(true);
             //this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true)
             this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
-            console.log("pdsp2", this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority)
             //this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
             alert('Tc Info Updated Successfully');
         }, error => {

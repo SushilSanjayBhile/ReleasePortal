@@ -54,7 +54,7 @@ class PendingForApproval extends Component {
                     headerName: "Tc Name", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 },
                 {
-                    headerName: "Card Type", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                    headerName: "Platform", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell,
 
                 },
                 {
@@ -106,7 +106,10 @@ class PendingForApproval extends Component {
                     headerName: "Tc Name", field: "TcName", sortable: true, filter: true, cellStyle: this.renderEditedCell
                 },
                 {
-                    headerName: "Card Type", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, 
+                    headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
+                },
+                {
+                    headerName: "Platform", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, 
                 },
                 {
                     headerName: "Domain", field: "Domain", sortable: true, filter: true, cellStyle: this.renderEditedCell, 

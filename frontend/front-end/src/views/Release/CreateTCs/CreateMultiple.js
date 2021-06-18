@@ -357,6 +357,7 @@ class CreateMultiple extends Component {
             }
 
         })
+        console.log(errors)
         if (!errors) {
             // this.multiChangeLog = this.whichFieldsUpdated({}, row);
             // this.multipleToggle();

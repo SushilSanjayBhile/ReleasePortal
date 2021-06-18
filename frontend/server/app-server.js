@@ -5,7 +5,11 @@
  */
 // while passing information send only those TCS which are not CREATED,UPDATED,DELETED OR NON-APPROVED
 const express = require('express');
-const jsonfile = require('jsonfile')
+const jsonfile = require('jsonfile');
+const fileUpload = require('express-fileupload');
+const cors = require('cors');
+const fs = require('fs');
+const { spawnSync} = require('child_process');
 let releases = jsonfile.readFileSync('./releases.json');
 let assignedTCs = jsonfile.readFileSync('./currentAssigned.json');
 let users = jsonfile.readFileSync('./users.json');
@@ -31,6 +35,7 @@ function assignPriority(priority, release) {
 
 
 var Client = require('node-rest-client').Client;
+//const { resolve } = require('node:path');
 client = new Client();
 
 var searchArgs = {
@@ -48,6 +53,10 @@ const responseDelayModerate = 100;
 const responseDelaySlow = 300;
 var featureArray = []
 app.use(express.json());
+app.use(express.static('public')); //to access the files in public folder
+app.use(cors()); // it enables all cors requests
+app.use(fileUpload());
+app.options('/executee',cors());
 app.use('/rest/features/:id', (req, res) => {
     var str = `?jql=type%20in%20("New%20Feature")%20AND%20fixVersion%20in%20(${req.params.id})&fields=key,summary,status&maxResults=2000`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + str, searchArgs, function (searchResult, response) {
@@ -298,6 +307,60 @@ app.use('/rest/bldservBuildData/:id', (req, res) => {
 app.get('/users', (req, res) => {
     res.send(users);
 })
+app.post('/executee',cors(), (req, res) => {
+    const {release, platform} = req.query;
+    let stdout, consol, statusCode, error;
+    if (!req.files) {
+        return res.status(500).send({ msg: "file is not found" });
+    }
+        // accessing the file
+    const myFile = req.files.file;
+
+    //  mv() method places the file inside public directory
+    myFile.name = String(Date.now()).concat(myFile.name);
+    move = () => {
+        return new Promise(resolv => {
+            myFile.mv(`${__dirname}/public/${myFile.name}`, function (err) {
+            if (err) {
+                console.log(err);
+                return res.status(500).send({ msg: "Error occured" });
+            }
+            resolv();
+            // returing the response with file path and name
+            
+            });
+        });
+    };
+    move().then( () => {
+    const child = spawnSync('/home/diamanti/finalapp/non_jenkins_user_update_sheets.sh', ['-f', `${__dirname}/public/${myFile.name}`, '-d', `${release}`, '-s', `${platform}`]);
+    child.stdout ? stdout = child.stdout.toString() : stdout = '';
+    child.stderr ? consol = child.stderr.toString() : consol = '';
+    statusCode = `${ child.status }`
+    child.error ? error = child.error.toString() : error = '';
+    
+
+    // delete a file
+    fs.unlink(`${__dirname}/public/${myFile.name}`, (err) => {
+        if (err) {
+            console.error('Something bad happened:', err.toString());
+        }
+        console.log('File is deleted');
+    });
+    return res.send({output:{stdout, consol, statusCode, error, length:4}});
+    }).catch((error) => {
+        console.error('Something bad happened:', error.toString());
+        fs.unlink(`${__dirname}/public/${myFile.name}`, (err) => {
+            if (err) {
+                console.error('Something bad happened:', err.toString());
+            }
+            console.log('File is Deleted');
+
+        });
+        return res.send({output:{stdout, consol, statusCode, error, length:4}});
+      });
+})
+
+
 
 // // GET ALL TCs of this release
 // app.get('/api/tcinfo/:release', (req, res) => {

@@ -42,8 +42,11 @@ class DefaultHeader extends Component {
     if(user && user.profileObj){
     let email = user.profileObj.email;
     let name = user.profileObj.name;
-   
-    axios.post('/user/login', { email: email, name: name })
+    //axios.post('/user/login', { email: email, name: name })
+    let items = {}
+    items.email = email
+    items.name = name
+    axios.post('/api/user/login/',items)
       .then(res => {
         localStorage.setItem('isAuthorized', true);
         if (res.data && res.data.role === 'ADMIN') {

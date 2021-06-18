@@ -68,7 +68,11 @@ export default {
       url: '/release/mytestmatrics',
       icon: 'fa fa-table',
     },
-
+    {
+      name: 'E2E Result Update',
+      url: '/release/E2EResultUpdate',
+      icon: 'fa fa-pencil-square-o',
+    },
 
     // {
     //   name: 'ADMIN Dashboard',
