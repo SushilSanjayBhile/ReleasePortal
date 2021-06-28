@@ -38,9 +38,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'DDB',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -79,6 +81,22 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'universal',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'Tanzu-3.2': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'Tanzu-3.2',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'DCX-DMC-3.3.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DCX-DMC-3.3.0',
         'USER': userName,
         'PASSWORD': passwd,
         'HOST': hostName,
@@ -270,7 +288,13 @@ USE_L10N = True
 
 USE_TZ = True
 
+CORS_ORIGIN_ALLOW_ALL = True
 
+#uncomment below to CORS for intended url and change url
+#CORS_ORIGIN_ALLOW_ALL = False
+#CORS_ORIGIN_WHITELIST = (
+#               'http://localhost:4200',
+#               )
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 # STATIC_ROOT = '/home/sushil/pythonDB/temp/dp/static'

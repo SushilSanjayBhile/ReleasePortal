@@ -78,6 +78,14 @@ WSGI_APPLICATION = 'dp.wsgi.application'
 
 
 DATABASES = {
+    'DMC-3.3': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DMC-3.3',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'universal',
