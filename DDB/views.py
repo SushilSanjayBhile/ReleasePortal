@@ -1868,6 +1868,50 @@ def RESULT_LOGS(request, Release):
                 #Entry.objects.filter(created_at__gte=monday_of_last_week, created_at__lt=monday_of_this_week)
 
         return JsonResponse({"Weekly User Report": result}, status = 200)
+
+@csrf_exempt
+def RESULT_LOGS_GUI(request, Release):
+    if request.method == "GET":
+        result = {}
+        if Release not in result:
+            result[Release] = {}
+
+        data = LOGSGUI.objects.using(Release).all()
+        serializer = GUI_LOGS_SERIALIZER(data, many = True)
+
+        for log in serializer.data:
+            try:
+                if "status" in log["LogData"].lower():
+                    print(log["UserName"])
+            except:
+                pass
+            if "status" in log["LogData"].lower():
+                user = log["UserName"]
+                if user == "":
+                    continue
+
+                if user not in result[Release]:
+                    result[Release][user] = {}
+
+                logData = log["LogData"]
+
+                date_time_str = log["Timestamp"]
+                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+                date_time_obj = date_time_obj.date()
+
+                some_day_last_week = date_time_obj - timedelta(days=7)
+                monday_of_last_week = some_day_last_week - timedelta(days=(some_day_last_week.isocalendar()[2] - 1))
+                monday_of_this_week = monday_of_last_week + timedelta(days=7)
+                key = str(monday_of_last_week) + " : " + str(monday_of_this_week)
+
+                if key not in result[Release][user]:
+                    print(Release, user, key)
+                    result[Release][user][key] = 0
+                result[Release][user][key] += 1
+                #Entry.objects.filter(created_at__gte=monday_of_last_week, created_at__lt=monday_of_this_week)
+
+        return JsonResponse({"Weekly User Report": result}, status = 200)
+
 @csrf_exempt
 def RESULT_LOGS_GUI(request, Release):
     if request.method == "GET":
