@@ -69,6 +69,7 @@ def e2eResultUpdate(request):
 
     if request.method == "POST":
         req = json.loads(request.body.decode("utf-8"))
+        print(req)
 
         Release = req["drive_dir_name"]
         print(Release)

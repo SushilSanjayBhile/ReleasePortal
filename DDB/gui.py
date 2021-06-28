@@ -666,7 +666,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
                 #d = TC_INFO_GUI.objects.using(Release).get(TcID = req['TcID'], CardType = req["CardType"], BrowserName = data["BrowserName"])
-                d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
+                d = TC_INFO_GUI.objects.using(master).get(id = updatedData["id"])
                 #print("updatedData for master dmc master",updateData)
                 updateGuiTcInfo(d, updatedData, master)
 
@@ -723,7 +723,11 @@ def GET_TC_INFO_GUI_ID(request, Release, id, browserName, cardType):
                     atd[tc].append(pf)
 
         try:
+            print("INSIDE TRY")
+            browserName = "NB"
+            print(browserName)
             infoData = TC_INFO_GUI.objects.using(Release).filter(TcID = id).get(CardType = cardType, BrowserName = browserName)
+            print("AFTER TRY")
         except:
             return JsonResponse({'Not Found': "Record Not Found"}, status = 404)
 

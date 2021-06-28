@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (TCSTATUSGETPOSTVIEW, USER_INFO_GET_POST_VIEW,
-        USER_INFO_SPECIFIC_BY_ID, USER_INFO_SPECIFIC_BY_NAME, LOG, RESULT_LOGS,
+        USER_INFO_SPECIFIC_BY_ID, USER_INFO_SPECIFIC_BY_NAME, LOG, RESULT_LOGS, RESULT_LOGS_GUI,
         GETSETUPWISETCINFO, RELEASEINFO, GETPLATFORMWISETCINFO, RELEASEINFOPOST,
         GETPLATFORMANDSETUPWISETCINFO, TCAGGREGATE, DOMAINWISETCSTATUS, DOMAINWISETCINFO, USER_LOGIN_VIEW,DOMAINWISERELEASEINFO,
         GUITCSTATUSGETPOSTVIEW, createDB, AddDomainSubDomain, RELEASEWISE_CLI_PLATFORM,RELEASEWISE_GUI_PLATFORM, TCAGGREGATE_DASHBOARD)
@@ -97,6 +97,7 @@ urlpatterns = [
     path('logs/<str:Release>', LOG),
     path('result-logs/<str:Release>', RESULT_LOGS),
 
+    path('result-logs-gui/<str:Release>', RESULT_LOGS_GUI),
     path('tcinfosetupwise/<str:SetupName>/', GETSETUPWISETCINFO),
     path('tcinfoplatformwise/<str:OrchestrationPlatform>/', GETPLATFORMWISETCINFO),
     path('platformandsetupwise/<str:OrchestrationPlatform>/<str:SetupName>/', GETPLATFORMANDSETUPWISETCINFO),
