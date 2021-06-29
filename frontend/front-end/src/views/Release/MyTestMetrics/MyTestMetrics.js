@@ -51,7 +51,7 @@ class MyTestMetrics extends Component {
                 if(response.data){
                     console.log("data for cli tc",response.data.length)
                     if(response.data.length >= 1){
-                        alert("Newly Added TC For CLI")
+                        //alert("Newly Added TC For CLI")
                         this.setState({PendingForApprovalDataListCLI : true })
                     }
                     else{
@@ -72,7 +72,7 @@ class MyTestMetrics extends Component {
                 if(response.data){
                     console.log("data for gui tc",response.data.length)
                     if(response.data.length >= 1){
-                        alert("Newly Added TC For GUI")
+                        //alert("Newly Added TC For GUI")
                         this.setState({PendingForApprovalDataListGUI : true })
                     }
                     else{

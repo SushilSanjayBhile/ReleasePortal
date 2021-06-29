@@ -34,6 +34,7 @@ class PendingForApprovalGUI extends Component {
             rowSelect: false,
             isEditing: false,
             delete: false,
+            selectedRows: 0,
             editColumnDefs: [
                 {
                     headerName: "Date", field: "Date", sortable: true, filter: true, cellStyle: this.renderEditedCell,
@@ -296,6 +297,9 @@ class PendingForApprovalGUI extends Component {
     // renderEditedCell = (params) => {
     //     return { backgroundColor: '' };
     // }
+    onSelectionChanged = (event) => {
+        this.setState({ selectedRows: event.api.getSelectedRows().length })
+    }
     onGridReady = params => {
         this.gridApi = params.api;
         this.gridColumnApi = params.columnApi;
@@ -436,7 +440,7 @@ class PendingForApprovalGUI extends Component {
     toggle = () => this.setState({ modal: !this.state.modal,rowSelect:false  });
     toggleMultiple = () => this.setState({ modalMultiple: !this.state.modalMultiple });
     toggleAllSAVE = () => {
-        this.setState({ multipleChanges: !this.state.multipleChanges })
+        this.setState({ multipleChanges: !this.state.multipleChanges})
     };
     popoverToggleSAVE = () => this.setState({ popoverOpenSAVE: !this.state.popoverOpenSAVE });
     popoverToggleCREATED = () => this.setState({ popoverOpenCREATED: !this.state.popoverOpenCREATED });
@@ -567,6 +571,7 @@ class PendingForApprovalGUI extends Component {
             this.gridOperations(true);
             alert('Failed To Add TC ',error);
         });
+        this.setState({ selectedRows:0 });
     }
 
     // Save Single Tc
@@ -710,7 +715,9 @@ class PendingForApprovalGUI extends Component {
                                             {
                                                 this.state.PendingForApprovalDataList ? <i class="fa fa-bell" aria-hidden="true"> New Tc's Are Added. Needs to be approve/unapprove </i> : null
                                             }
-                                            
+                                            <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
+                                                    <span className='rp-app-table-value'>Selected: {this.state.selectedRows}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -825,6 +832,7 @@ class PendingForApprovalGUI extends Component {
                                             className="ag-theme-balham"
                                         >
                                             <AgGridReact
+                                                onSelectionChanged={(e) => this.onSelectionChanged(e)}
                                                 onRowClicked={(e) => this.rowSelect(e)}
                                                 modules={this.state.modules}
                                                 columnDefs={this.state.columnDefs}
