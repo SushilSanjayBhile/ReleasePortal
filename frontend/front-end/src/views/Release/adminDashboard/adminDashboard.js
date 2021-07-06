@@ -94,7 +94,7 @@ class adminDashboard extends Component {
             //     }
             // },
             'CardType' : {
-                headerName: "Platforms", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+                headerName: "Platform", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '180',
             
                 //cellEditor: 'selectionEditor',
                 cellClass: 'cell-wrap-text',
@@ -231,7 +231,7 @@ class adminDashboard extends Component {
                 {id: 1, value: "TcID", isChecked: false},
                 {id: 2, value: "Scenario", isChecked: false},
                 {id: 3, value: "Description", isChecked: false},
-                {id: 4, value: "CardType", isChecked: false},
+                {id: 4, value: "Platform", isChecked: false},
                 {id: 5, value: "Build", isChecked: false},
                 {id: 6, value: "Status", isChecked: false},
                 {id: 7, value: "Bug", isChecked: false},
@@ -432,7 +432,7 @@ class adminDashboard extends Component {
         //       }
         //   },
         'CardType' : {
-            headerName: "Platforms", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+            headerName: "Platform", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '180',
         
             //cellEditor: 'selectionEditor',
             cellClass: 'cell-wrap-text',
@@ -536,6 +536,11 @@ class adminDashboard extends Component {
         
         let tableColumns = this.state.tableColumns;
         let selectedColumns = []
+        tableColumns.map(columnName => {
+            if (columnName.value == "Platform"){
+                columnName.value = "CardType"
+            }
+        })
         tableColumns.forEach(columnName => {
             if (columnName.isChecked == true){
                 selectedColumns.push(columnDefDict1[columnName.value])
@@ -544,6 +549,11 @@ class adminDashboard extends Component {
 
         this.setState({columnDefs:selectedColumns});
         this.setState({ popoverOpen1: !this.state.popoverOpen1 });
+        tableColumns.map(columnName => {
+            if (columnName.value == "CardType"){
+                columnName.value = "Platform"
+            }
+        })
     }
 
     getRowHeight = (params) => {

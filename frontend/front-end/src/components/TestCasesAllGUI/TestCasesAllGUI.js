@@ -85,7 +85,7 @@ class TestCasesAllGUI extends Component {
         //       }
         //   },
         'CardType' : {
-            headerName: "Platforms", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+            headerName: "Platform", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '200',
       
             //cellEditor: 'selectionEditor',
             cellClass: 'cell-wrap-text',
@@ -215,7 +215,7 @@ class TestCasesAllGUI extends Component {
                 {id: 1, value: "TcID", isChecked: false},
                 {id: 2, value: "Scenario", isChecked: false},
                 {id: 3, value: "Description", isChecked: false},
-                {id: 4, value: "CardType", isChecked: false},
+                {id: 4, value: "Platform", isChecked: false},
                 {id: 5, value: "Build", isChecked: false},
                 {id: 6, value: "Status", isChecked: false},
                 {id: 7, value: "Bug", isChecked: false},
@@ -393,7 +393,7 @@ class TestCasesAllGUI extends Component {
         //           multiple: true
         //       }
           'CardType' : {
-            headerName: "Platforms", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+            headerName: "Platform", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '180',
       
             //cellEditor: 'selectionEditor',
             cellClass: 'cell-wrap-text',
@@ -498,6 +498,11 @@ class TestCasesAllGUI extends Component {
         
         let tableColumns = this.state.tableColumns;
         let selectedColumns = []
+        tableColumns.map(columnName => {
+            if (columnName.value == "Platform"){
+                columnName.value = "CardType"
+            }
+        })
         tableColumns.forEach(columnName => {
             if (columnName.isChecked == true){
                 selectedColumns.push(columnDefDict1[columnName.value])
@@ -506,6 +511,11 @@ class TestCasesAllGUI extends Component {
 
         this.setState({columnDefs:selectedColumns})
         this.setState({ popoverOpen1: !this.state.popoverOpen1 });
+        tableColumns.map(columnName => {
+            if (columnName.value == "CardType"){
+                columnName.value = "Platform"
+            }
+        })
 
     }
     getRowHeight = (params) => {
@@ -1949,7 +1959,7 @@ class TestCasesAllGUI extends Component {
                                                                             }} type="select" id={`select_TestedOn`} >
                                                                                 {
                                                                                     //["Tested on","BOS","NYNJ","Software solution"].map(item => <option value={item}>{item}</option>)
-                                                                                    [{ value: '', text: 'Tested On' }, { value: 'BOS', text: 'BOS' }, { value: 'NYNJ', text: 'NYNJ' }, { value: 'Software solution', text: 'Software solution' }].map(item => <option value={item.value}>{item.text}</option>)
+                                                                                    [{ value: '', text: 'Tested On' }, { value: 'Linux-Chrome', text: 'Linux-Chrome' }, { value: 'Linux-Firefox', text: 'Linux-Firefox' }, { value: 'Windows-IE11', text: 'Windows-IE11' }, { value: 'Windows-Chrome', text: 'Windows-Chrome' }, { value: 'Windows-Firefox', text: 'Windows-Firefox' }, { value: 'Mac-Safari', text: 'Mac-Safari' }].map(item => <option value={item.value}>{item.text}</option>)
                                                                                 }
                                                                             </Input> 
                                                                         </FormGroup>
