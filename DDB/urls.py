@@ -43,7 +43,7 @@ urlpatterns = [
     path('automationCountByDomain/<str:Platform>', AutomationCountByDomain),
     path('automationCountByDomainForGUI/<str:Platform>', GUIAutomationCountByDomain),
     path('automation/', automation_count_get_post_view),
-    path('tcReport/<str:interface>', getTcReport),
+    path('tcReport/', getTcReport),
     path('customautomation/', custom_automation_count_get_view),
 
     #applicability api's
