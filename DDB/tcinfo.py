@@ -143,6 +143,31 @@ def duplicate_tcs_by_rel_gui(request):
     tcdata = TC_INFO_GUI.objects.using(release).values().all()
     print("after length", len(tcdata))
 
+def duplicate_guitc_ddmtodd330(request):
+    release = "DCX-DMC-Master"
+    torelease = "TestDatabase"
+    tcdata = TC_INFO_GUI.objects.using(release).values().all()
+    print("before length", len(tcdata))
+
+    for i in tcdata:
+        d = TC_INFO_GUI.objects.using(release).get(id= i["id"])
+        if i["CardType"] == "DCX_CentOS_CRIO" or i["CardType"] == "DCX_CentOS_Docker" or i["CardType"] == "DCX_RHEL_CRIO" or i["CardType"] == "DCX_RHEL_Docker":
+            try:
+                ser = TC_INFO_GUI_SERIALIZER(i).data
+                fd = GuiInfoForm(ser)
+                if fd.is_valid():
+                    print("valid")
+                    data = fd.save(commit = False)
+                    data.save(using = torelease)
+                else:
+                    print("INVALID", fd.errors)
+            except:
+                print("pass")
+                pass
+    tcdata = TC_INFO_GUI.objects.using(torelease).values().all()
+    print("after length torelease", len(tcdata))
+    return HttpResponse("UNCOMMENt CODE")
+
 
 
 def duplicate_tcs(request):
@@ -975,20 +1000,16 @@ def MULTIPLE_TC_UPDATION(request, Release):
     #    return HttpResponse({"SUCCESS": "SOFT DELETED ALL RECORDS"})
 
 @csrf_exempt
-def MULTIPLE_TC_UPDATION_OLD(request, Release):
+def MULTIPLE_TC_UPDATION_APPROVAL_UNAPPROVAL(request, Release):
     if request.method == "PUT":
         requests = json.loads(request.body.decode("utf-8"))
         errRecords = []
 
-        print("request for approved",requests)
         for req in requests:
-            print("tc for updation",req,"\n\n")
             card = req['CardType']
             tcid = req['TcID']
 
             data = TC_INFO.objects.using(Release).filter(TcID = tcid).get(CardType = card)
-            #print("len of data",len(data))
-            print("data",data)
             serializer = TC_INFO_SERIALIZER(data)
             updatedData = serializer.data
             oldworkingStatus = updatedData["stateUserMapping"]
