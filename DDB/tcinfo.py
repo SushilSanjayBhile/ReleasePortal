@@ -145,7 +145,7 @@ def duplicate_tcs_by_rel_gui(request):
 
 def duplicate_guitc_ddmtodd330(request):
     release = "DCX-DMC-Master"
-    torelease = "TestDatabase"
+    torelease = "DCX-DMC-3.3.0"
     tcdata = TC_INFO_GUI.objects.using(release).values().all()
     print("before length", len(tcdata))
 
