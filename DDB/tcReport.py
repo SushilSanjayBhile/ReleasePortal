@@ -31,7 +31,7 @@ def getTcReport(request):
                     continue
                 #print("Collecting data of: ", release_name)
                 #print("CLI data : ", release_name)
-                weeklyUserReportURL = "http://172.16.187.83:8000/api/result-logs/" + release_name    # log data release wise
+                weeklyUserReportURL = "http://release:8000/api/result-logs/" + release_name    # log data release wise
                 userReport = requests.get(weeklyUserReportURL)
                 userReport = userReport.json()
                 #print(userReport)
@@ -66,7 +66,7 @@ def getTcReport(request):
                     continue
                 print("Collecting data of: ", release_name)
                 print("gui data : ", release_name)
-                weeklyUserReportURL = "http://172.16.187.83:8000/api/result-logs-gui/" + release_name    # log data release wise
+                weeklyUserReportURL = "http://release:8000/api/result-logs-gui/" + release_name    # log data release wise
                 userReport = requests.get(weeklyUserReportURL)
                 userReport = userReport.json()
                 flag = 0
@@ -81,7 +81,7 @@ def getTcReport(request):
                             date_dt2 = date_dt2.date()
                             date_dt1 = date_dt1.date()
                             #if current log data newer than last 4 week date, add result in dictionary
-                            if date_dt2 > end_date and date_dt1 < start_date:
+                            if date_dt2 > start_date and date_dt1 < end_date:
                                 if k not in d:
                                     d[k] = 0
                                 d[k] += userReport["Weekly User Report"][i][j][k]
