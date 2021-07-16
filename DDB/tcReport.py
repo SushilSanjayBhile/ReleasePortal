@@ -5,11 +5,10 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .views import RELEASEINFO
-from .serializers import RELEASE_SERIALIZER
-from .models import RELEASES
-
+from .serializers import RELEASE_SERIALIZER, LOG_SERIALIZER, GUI_LOGS_SERIALIZER
+from .models import RELEASES, LOGS, LOGSGUI
 @csrf_exempt
-def getTcReport(request):
+def getTcReport1(request):
     if request.method == "GET":
         start_date = datetime.datetime.strptime(request.GET.get("startdate"), '%Y-%m-%d').date()
         end_date = datetime.datetime.strptime(request.GET.get("enddate"), '%Y-%m-%d').date()
@@ -89,3 +88,64 @@ def getTcReport(request):
             return HttpResponse(json.dumps(guiData))
         #except:
             #return HttpResponse(status=500)
+@csrf_exempt
+def getTcReport(request):
+    if request.method == "GET":
+        start_date = datetime.datetime.strptime(request.GET.get("startdate"), '%Y-%m-%d').date()
+        end_date = datetime.datetime.strptime(request.GET.get("enddate"), '%Y-%m-%d').date()
+        interface = request.GET.get("interface")
+        data = RELEASES.objects.using("universal").all().order_by("-CreationDate")
+        serializer = RELEASE_SERIALIZER(data, many = True)
+        releases = serializer.data
+        #for cli data
+        if interface == "CLI":
+            dictionary = {}
+            for release in releases:
+                release_name = release["ReleaseNumber"]
+                if release_name == "TestDatabase":
+                    continue
+                else :
+                    dictionary[release_name] = RESULT_LOGS(release_name, start_date, end_date)
+            return HttpResponse(json.dumps(dictionary))
+        #for gui data
+        elif interface == "GUI":
+            guiData = {}
+            for release in releases:
+                release_name = release["ReleaseNumber"]
+                if release_name == "TestDatabase":
+                    continue
+                else:
+                    guiData[release_name] = RESULT_LOGS_GUI(release_name, start_date, end_date)
+            return HttpResponse(json.dumps(guiData))
+
+def RESULT_LOGS(Release, sdate, edate):
+    data = LOGS.objects.using(Release).all()
+    serializer = LOG_SERIALIZER(data, many = True)
+    count = 0
+    for log in serializer.data:
+        if "status" in log["LogData"].lower():
+            user = log["UserName"]
+            if user == "":
+                continue
+            date_time_str = log["Timestamp"]
+            date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+            
+            if date_time_obj >= sdate and date_time_obj < edate:
+                count += 1
+    return count
+
+def RESULT_LOGS_GUI(Release, sdate, edate):
+    data = LOGSGUI.objects.using(Release).all()
+    serializer = GUI_LOGS_SERIALIZER(data, many = True)
+    count = 0
+    for log in serializer.data:
+        if "status" in log["LogData"].lower():
+            user = log["UserName"]
+            if user == "":
+                continue
+            date_time_str = log["Timestamp"]
+            date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+            
+            if date_time_obj >= sdate and date_time_obj < edate:
+                count += 1
+    return count

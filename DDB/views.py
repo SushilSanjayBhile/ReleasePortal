@@ -1759,23 +1759,31 @@ def USER_INFO_GET_POST_VIEW(request):
 
     elif request.method == "PUT":
         req = json.loads(request.body.decode("utf-8"))
-        data = USER_INFO.objects.get(email = req['email'])
-        for i in req['ReleasesEdit']:
-            if i['value'] in data.AssignedReleases and i['isChecked'] == False:
-                data.AssignedReleases.remove(i['value'])
+        if "emails" in req:
+            for i in req['emails']:
+                data = USER_INFO.objects.get(email = i)
+                if req['ReleasesEdit'] not in data.AssignedReleases:
+                    data.AssignedReleases.append(req['ReleasesEdit'])
+                    data.save()
+            return HttpResponse("UPDATED SUCCESSFULLY", status = 200)
+        else:
+            data = USER_INFO.objects.get(email = req['email'])
+            for i in req['ReleasesEdit']:
+                if i['value'] in data.AssignedReleases and i['isChecked'] == False:
+                    data.AssignedReleases.remove(i['value'])
+                    data.save()
+                if i['value'] not in data.AssignedReleases and i['isChecked'] == True:
+                    data.AssignedReleases.append(i['value'])
+                    data.save()
+
+            if req['EngineerType'] != '':
+                data.EngineerType = req['EngineerType']
                 data.save()
-            if i['value'] not in data.AssignedReleases and i['isChecked'] == True:
-                data.AssignedReleases.append(i['value'])
+            if req['role'] != '':
+                data.role = req['role']
                 data.save()
 
-        if req['EngineerType'] != '':
-            data.EngineerType = req['EngineerType']
-            data.save()
-        if req['role'] != '':
-            data.role = req['role']
-            data.save()
-
-        return HttpResponse("UPDATED SUCCESSFULLY", status = 200)
+            return HttpResponse("UPDATED SUCCESSFULLY", status = 200)
 
     elif request.method == "DELETE":
         req = json.loads(request.body.decode("utf-8"))
