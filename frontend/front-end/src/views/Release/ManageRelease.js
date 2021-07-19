@@ -21,6 +21,7 @@ import DatePickerEditor from '../../components/TestCasesAll/datePickerEditor';
 import EditTC from '../Release/ReleaseTestMetrics/EditTC';
 import TcSummary from '../../components/TestCasesAll/TcSummary';
 import { AllCommunityModules } from "@ag-grid-community/all-modules";
+import Multiselect from 'react-bootstrap-multiselect';
 class ManageRelease extends Component {
     cntr = 0
     platformList = [];
@@ -33,6 +34,7 @@ class ManageRelease extends Component {
     editedRows = {};
     ApplicableTcs = [];
     ApplicableTcsGui = [];
+    userList = [];
     constructor(props) {
         super(props);
         let columnDefDict = {
@@ -199,6 +201,7 @@ class ManageRelease extends Component {
             showTc: [],
             allTCsToShow: [],
             allTCsToShowGui: [],
+            addUsers: [],
 
             tableColumnsTcs: [
                 {id: 1, value: "Skip", isChecked: false},
@@ -891,8 +894,8 @@ class ManageRelease extends Component {
     }
     getPlatformList() {
         this.platformList = []
-        //let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
-        let release = "DCX-DMC-Master"
+        let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+        //let release = "DCX-DMC-Master"
         let url = `/api/releasewiseplatformCli/${release}?`;
         axios.get(url)
         .then(response=>{
@@ -912,8 +915,8 @@ class ManageRelease extends Component {
     }
     getPlatformListGui() {
         this.platformListGui = []
-        //let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
-        let release = "DCX-DMC-Master"
+        let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+        //let release = "DCX-DMC-Master"
         let url = `/api/releasewiseplatformGui/${release}?`;
         axios.get(url)
         .then(response=>{
@@ -931,10 +934,16 @@ class ManageRelease extends Component {
         })
 
     }
+    getUserList() {
+        this.userList = []
+        this.props.Users.forEach(element => {
+            this.userList.push(element.name)})
+        this.userList.sort()
+        }
     getTcs(platform, CardType, domain, subDomain, priority, all, updateRelease) {
         //let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
-       //let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
-       let release = "DCX-DMC-Master"
+       let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+       //let release = "DCX-DMC-Master"
         if (!release) {
             console.log("not release")
             return;
@@ -987,8 +996,8 @@ class ManageRelease extends Component {
     }
     getTcsGui(platform, CardType, domain, subDomain, priority, all, updateRelease) {
         //let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
-        //let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
-        let release = "DCX-DMC-Master"
+        let release = this.state.selectedParentRelease ? this.state.selectedParentRelease : null
+        //let release = "DCX-DMC-Master"
         if (!release) {
             console.log("not release")
             return;
@@ -1176,7 +1185,7 @@ class ManageRelease extends Component {
           
         });
         //this.setState({displayTc: [],displayTcGui:[], showTc: [], showTcGui: []});this.getTcs();this.getTcsGui();this.getPlatformList();this.getPlatformListGui();this.resetPlatforms();
-        this.getTcs();this.getTcsGui();this.getPlatformList();this.getPlatformListGui();this.resetPlatforms();
+        //this.getTcs();this.getTcsGui();this.getPlatformList();this.getPlatformListGui();this.resetPlatforms();
         // axios.get('/api/applicable/platformList/')
         // .then(response=>{
         //     if(response.data){
@@ -1251,8 +1260,8 @@ class ManageRelease extends Component {
             }
         })
 
-        // data.ParentRelease = this.state.selectedParentRelease
-        data.ParentRelease = "DCX-DMC-Master"
+        data.ParentRelease = this.state.selectedParentRelease
+        //data.ParentRelease = "DCX-DMC-Master"
         data.PlatformsCli = []
         data.PlatformsGui = []
         this.state.platforms && this.state.platforms.forEach(element => {
@@ -1261,6 +1270,15 @@ class ManageRelease extends Component {
         this.state.platformsGui && this.state.platformsGui.forEach(element => {
             if(element.isChecked === true)data.PlatformsGui.push(element.value);
         });
+        let emails = []
+          this.state.addUsers && this.state.addUsers.forEach(item =>{
+            this.props.Users && this.props.Users.some(element =>{
+                if(element.name == item){
+                    emails.push(element.email)
+                }
+          })
+        })
+        if(this.props.currentUser){emails.push(this.props.currentUser.email)}
         data = { ...data, ...formattedArrays };
         if (isNaN(data.QARateOfProgress)) {
             data.QARateOfProgress = 0;
@@ -1270,26 +1288,39 @@ class ManageRelease extends Component {
         if (!data.QARateOfProgress) {
             data.QARateOfProgress = 0;
         }
-       axios.post(`/api/release`, { ...data })
-            .then(single => {
-                if(single.data){
-                    setTimeout(() => {  
-                        axios.post(`/api/cleanupdb`, { ...data })
-                        .then(response=>{
-                            alert('successfully added the release');
-                            window.location.reload()
-                        })
-                        .catch(error=>{
-                            console.log("error creating release")
-                        })
-                    }, 5000);
-                }
-            }, error => {
-                alert('error in updating');
-            });
-            if (this.state.modal) {
-            this.toggle();
-        }
+        let formData = {
+            "emails": emails,
+           "ReleasesEdit": data.ReleaseNumber
+       }
+       let url = `/api/userinfo/`;
+       console.log("data",data)
+    //    axios.post(`/api/release`, { ...data })
+    //         .then(single => {
+    //             if(single.data){
+    //                 setTimeout(() => {  
+    //                     axios.post(`/api/cleanupdb`, { ...data })
+    //                     .then(response=>{
+    //                             axios.put(url,formData)
+    //                             .then(response=>{
+    //                                 alert('successfully added the release');
+    //                                 window.location.reload()
+    //                                 })
+    //                             .catch(err=>{
+    //                                 console.log("err",err);
+    //                             })
+                            
+    //                     })
+    //                     .catch(error=>{
+    //                         console.log("error creating release")
+    //                     })
+    //                 }, 5000);
+    //             }
+    //         }, error => {
+    //             alert('error in updating');
+    //         });
+    //         if (this.state.modal) {
+    //         this.toggle();
+    //     }
 
     }   
     resetPlatforms() {
@@ -1303,6 +1334,23 @@ class ManageRelease extends Component {
     }
     toggle = () => this.setState({ modal: !this.state.modal });
     delToggle = () => this.setState({ delModal: !this.state.delModal });
+    
+    selectMultiselect(event, checked) {
+        let value = event.val();
+        let users = null;
+        if (checked && this.state.addUsers) {
+            users = [...this.state.addUsers, value];
+        }
+        if (checked && !this.state.addUsers) {
+            users = [value];
+        }
+        if (!checked && this.state.addUsers) {
+            let array = this.state.addUsers;
+            array.splice(array.indexOf(value), 1);
+            users = array;
+        }
+        this.setState({ addUsers: users });
+    }
     render() {
         //let platforms = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli);
         //console.log("**tcdetail",this.props.tcDetails)
@@ -1313,6 +1361,8 @@ class ManageRelease extends Component {
         //let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
         //console.log(subdomains)
         //alert("checking")
+        let users = this.userList ? this.userList.map(item => ({ value: item, selected: this.state.addUsers && this.state.addUsers.includes(item) })) : [];
+        let multiselect = { 'Users': users};
         /*if (domains) {
             domains.sort();
         } else {
@@ -1456,7 +1506,7 @@ class ManageRelease extends Component {
                     
                     <Row>
                         
-                        <Col xs="12" sm="12" lg="10" className="rp-summary-tables" style={{ marginLeft: '1rem', marginTop: '1rem' }}>
+                        <Col xs="12" sm="12" lg="10" className="rp-summary-tables" style={{overflow:"auto", marginLeft: '1rem', marginTop: '1rem' }}>
                             <div className='rp-app-table-header'>
                                 <span className='rp-app-table-title'>Add Release</span>
                                 <Button title="Save" size="md" color="transparent" className="float-right rp-rb-save-btn" onClick={() => this.toggle()} >
@@ -1465,7 +1515,7 @@ class ManageRelease extends Component {
                             </div>
 
 
-                            {/* <Row>
+                            <Row>
                             <Col xs="12" sm="12" md="8" lg="8">
                                 <div className='rp-app-table-header'>
                                     <span className='rp-app-table-title' >Parent Release</span>
@@ -1477,7 +1527,7 @@ class ManageRelease extends Component {
                                             ].map(each => <FormGroup className='rp-app-table-value'>
                                                 <Input onChange={(e) => {
                                                     this.setState({selectedParentRelease: e.target.value},()=>{
-                                                        this.setState({displayTc: [],displayTcGui:[], showTc: [], showTcGui: []});this.getTcs();this.getTcsGui();this.getPlatformList();this.getPlatformListGui();this.resetPlatforms();});
+                                                        this.setState({displayTc: [],displayTcGui:[], showTc: [], showTcGui: []});this.getTcs();this.getTcsGui();this.getPlatformList();this.getPlatformListGui();this.getUserList();this.resetPlatforms();});
                                                 }} type="select" id={`select_${each.labels}`}>
                                                     {
                                                         each.values.map(item => <option value={item.value}>{item.text}</option>)
@@ -1489,10 +1539,10 @@ class ManageRelease extends Component {
                                     </Row>
                                 </div>
                             </Col>
-                        </Row> */}
+                        </Row>
                             
                             {
-                                //this.state.selectedParentRelease ?
+                                this.state.selectedParentRelease ?
                                 <Row>
                                 <Col xs="12" sm="12" md="5" lg="5">
                                     <Table scroll responsive style={{ overflow: 'scroll', }}>
@@ -1557,7 +1607,23 @@ class ManageRelease extends Component {
                                                 })
                                             }
                                         </tbody>
+                                       
                                     </Table>
+                                        {
+                                                [
+                                                    { field: 'Users', header: 'Users' }
+                                                ].map(item => (
+                                                    <Col xs="10" md="10" lg="10">
+                                                        <FormGroup className='rp-app-table-value'>
+                                                            <Label  className='rp-app-table-label' htmlFor={item.field}>{item.header}</Label>
+                                                                {
+                                                                    <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(e, checked)}
+                                                                    data={multiselect[item.field]} multiple /></div>
+                                                                }
+                                                        </FormGroup>
+                                                    </Col>
+                                                ))
+                                        }
                                 </Col>
                                 <Col xs="12" sm="12" md="5" lg="5">
                                     <Table scroll responsive style={{ overflow: 'scroll', }}>
@@ -1615,7 +1681,7 @@ class ManageRelease extends Component {
                                         </tbody>
                                     </Table>
                                     
-                                            <Row>
+                                            {/* <Row> */}
                                                 <Col xs="12" sm="12" md="15" lg="15">
                                                     <FormGroup className='rp-app-table-value'>
                                                         <input type="checkbox" onClick={this.handleAllCheckedForPlatforms}  value="checkedall" /> CLI-Check / Uncheck All
@@ -1628,8 +1694,8 @@ class ManageRelease extends Component {
                                                         </ul>
                                                     </FormGroup>
                                                 </Col>
-                                            </Row>
-                                            <Row>
+                                            {/* </Row> */}
+                                            {/* <Row> */}
                                                 <Col xs="12" sm="12" md="15" lg="15">
                                                     <FormGroup className='rp-app-table-value'>
                                                         <input type="checkbox" onClick={this.handleAllCheckedForPlatformsGui}  value="checkedall" /> GUI-Check / Uncheck All
@@ -1642,10 +1708,10 @@ class ManageRelease extends Component {
                                                         </ul>
                                                     </FormGroup>
                                                 </Col>
-                                            </Row>
+                                            {/* </Row> */}
                                             
                                 </Col>
-                            </Row>
+                            </Row> : null
                             }
                             
 
@@ -2748,6 +2814,7 @@ class ManageRelease extends Component {
 }
 const mapStateToProps = (state, ownProps) => ({
     currentUser: state.auth.currentUser,
+    Users: state.user.users,
     users: state.currentUser && state.currentUser.users ? state.currentUser.users.map(item => item.name) : [],
     allReleases: state.release.all,
     //selectedRelease: getCurrentRelease(state, state.release.current.id),

@@ -512,7 +512,7 @@ class PendingForApproval extends Component {
             items.push(pushable);
         })
         console.log("before put request data",items)
-        axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
+        axios.put(`/api/tcapprovUnapprove/${this.props.selectedRelease.ReleaseNumber}`, items)
         .then(res => {
             this.gridOperations(true);
             this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)

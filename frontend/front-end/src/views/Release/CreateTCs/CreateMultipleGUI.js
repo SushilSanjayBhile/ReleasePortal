@@ -358,7 +358,7 @@ class CreateMultiple extends Component {
             this.multipleToggle();
         } else {
             this.setState({ multipleErrors: errors })
-            console.log("mulerro",this.state.multipleErrors)
+            alert(this.state.multipleErrors)
             setTimeout(() => this.gridApi.redrawRows(), 1000)
         }
     }

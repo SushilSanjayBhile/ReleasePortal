@@ -357,13 +357,13 @@ class CreateMultiple extends Component {
             }
 
         })
-        console.log(errors)
         if (!errors) {
             // this.multiChangeLog = this.whichFieldsUpdated({}, row);
             // this.multipleToggle();
             this.multipleToggle();
         } else {
             this.setState({ multipleErrors: errors })
+            alert(this.state.multipleErrors)
             setTimeout(() => this.gridApi.redrawRows(), 1000)
         }
     }

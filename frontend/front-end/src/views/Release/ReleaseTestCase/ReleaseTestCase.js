@@ -11,7 +11,7 @@ import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../a
 import './ReleaseTestCase.scss'
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
 import Sunburst from '../components/Sunburst';
-import { element } from 'prop-types';
+import { element, object } from 'prop-types';
 const Status = {
     Fail: 'Fail',
     Pass: 'Pass',
@@ -49,6 +49,10 @@ let tempDateStartAPI = ''
 let tempDateEndAPI = ''
 let tempDateStartAPIGUI = ''
 let tempDateEndAPIGUI = ''
+let ttempDateStart = ''
+let ttempDateEnd = ''
+let ttempDateStartGUI = ''
+let ttempDateEndGUI = ''
 let globalDate = 0
 if(month >= '10'){
 
@@ -63,6 +67,12 @@ if(month >= '10'){
 
     tempDateStartAPIGUI = year +"-"+ month +"-"+ "01"
     tempDateEndAPIGUI = year +"-"+ month +"-"+ dayInCurrentMonth
+
+    ttempDateStart = year +"-"+ month +"-"+ "01"
+    ttempDateEnd = year +"-"+ month +"-"+ dayInCurrentMonth
+
+    ttempDateStartGUI = year +"-"+ month +"-"+ "01"
+    ttempDateEndGUI = year +"-"+ month +"-"+ dayInCurrentMonth
 }
 else{
 
@@ -77,6 +87,12 @@ else{
    
     tempDateStartAPIGUI = year +"-"+ month +"-"+ "01"
     tempDateEndAPIGUI = year +"-"+ month +"-"+ dayInCurrentMonth
+
+    ttempDateStart = year +"-"+ "0" + month +"-"+ "01"
+    ttempDateEnd = year +"-"+ "0" + month +"-"+ dayInCurrentMonth
+
+    ttempDateStartGUI = year +"-"+ "0" + month +"-"+ "01"
+    ttempDateEndGUI = year +"-"+ "0" +  month +"-"+ dayInCurrentMonth
 }
 
 
@@ -123,6 +139,8 @@ class ReleaseTestCase extends Component {
             automationCountDataGUI : [],
             automationCountDataWithRange : [],
             automationCountDataWithRangeForGUI : [],
+            testCountDataWithRange : [],
+            testCountDataWithRangeForGUI : [],
             automationCountDataByDomain : [],
 
 
@@ -518,6 +536,100 @@ class ReleaseTestCase extends Component {
         })
     }
 
+    getTestCountDataWithRange = (startDate, endDate, intf) =>{
+        
+        let tempList = []
+        let tempListGUI = []
+        if(intf === "CLI") {
+            axios.get('/api/tcReport/',{
+                params: {
+                    interface:intf,
+                    startdate:startDate,
+                    enddate :endDate
+                },
+            })
+            .then(response=>{
+                let data = response.data
+                
+                let keys = Object.keys(data)
+                // keys.forEach(key =>{
+                //     let keysofkeys = Object.keys(data[key])
+                //     keysofkeys.forEach(kok => {
+                //         tempList.push({
+                //             "Release":key,
+                //             "DateRange":kok,
+                //             "Total":data[key][kok]
+                //         })
+                //     })
+
+                // })
+                keys.forEach(key =>{
+                    tempList.push({
+                            "Release":key,
+                            "Total":data[key]
+                    })
+                })
+                if(tempList.length == 0){
+                    tempList.push({
+                        "Release":"NA",
+                        "Total":"NA"
+                    })
+                }
+                this.setState({
+                    testCountDataWithRange : tempList
+                  })
+            })
+            .catch(error=>{
+                console.log("Error",error)
+            })
+        }
+        if(intf === "GUI") {
+            axios.get('/api/tcReport/',{
+                params: {
+                    interface:intf,
+                    startdate:startDate,
+                    enddate :endDate
+                },
+            })
+            .then(response=>{
+                let data = response.data
+                
+                let keys = Object.keys(data)
+                // keys.forEach(key =>{
+                //     let keysofkeys = Object.keys(data[key])
+                //     keysofkeys.forEach(kok => {
+                //         tempListGUI.push({
+                //             "Release":key,
+                //             "DateRange":kok,
+                //             "Total":data[key][kok]
+                //         })
+                //     })
+
+                // })
+                keys.forEach(key =>{
+                    tempListGUI.push({
+                            "Release":key,
+                            "Total":data[key]
+                    })
+                })
+                if(tempListGUI.length == 0){
+                    tempListGUI.push({
+                        "Release":"NA",
+                        "Total":"NA"
+                    })
+                }
+                this.setState({
+                    testCountDataWithRangeForGUI : tempListGUI
+                  })
+                
+            })
+            .catch(error=>{
+                console.log("Error",error)
+            })
+        }
+         
+    }
+
 
     getAutomationCountDataGUI = () => {
         let tempList = []
@@ -811,6 +923,41 @@ class ReleaseTestCase extends Component {
             })
         )
     }
+
+    renderTableDataForTestCountWithRange = () =>{
+        return this.state.testCountDataWithRange.length == 0 ? (
+            <tr> 
+                Lodaing...
+            </tr>    
+        ) : (
+            this.state.testCountDataWithRange.map((e, i) => {
+            return (
+                    <tr key={i}> 
+                        <td width="140px" height="50px">{e.Release}</td>
+                        <td width="140px" height="50px">{e.Total}</td>
+                    </tr>    
+                ); 
+            })
+        )
+    }
+
+    renderTableDataForTestCountWithRangeForGUI = () =>{
+        return this.state.testCountDataWithRangeForGUI.length == 0 ? (
+            <tr> 
+                Lodaing...
+            </tr> 
+        ) : (
+            this.state.testCountDataWithRangeForGUI.map((e, i) => {
+            return (
+                    <tr key={i}> 
+                        <td width="140px" height="50px">{e.Release}</td>
+                        <td width="140px" height="50px">{e.Total}</td>
+                    </tr>    
+                ); 
+            })
+        )
+    }
+
     selectedStartDate = (startDate) =>{
         tempDateStart = startDate['StartDate']
         this.setState({
@@ -845,11 +992,54 @@ class ReleaseTestCase extends Component {
         })
     }
 
+    testSelectedStartDateCLI = (startDate) =>{
+        ttempDateStart = startDate['tStartDate']
+        this.setState({
+            tstartDate : ttempDateStart,
+        },()=>{
+            this.globalDate = 1
+        })
+    }
+    
+    testSelectedEndDateCLI = (endDate) =>{
+        ttempDateEnd = endDate['tEndDate']
+        this.setState({
+            tendDate : ttempDateEnd,
+            testCountDataWithRange : []
+        },()=>{
+            //this.getTestCountDataWithRange(this.state.tstartDate,this.state.tendDate,'CLI');
+            this.getTestCountDataWithRange(this.state.tstartDate, this.state.tendDate, 'CLI');
+        })
+    }
+
+    testSelectedStartDateGUI = (startDate) =>{
+        ttempDateStartGUI = startDate['tStartDate1']
+        this.setState({
+            tstartDateGUI : ttempDateStartGUI,
+        })
+    }
+    
+    testSelectedEndDateGUI = (endDate) =>{
+        ttempDateEndGUI = endDate['tEndDate1']
+        this.setState({
+            tendDateGUI : ttempDateEndGUI,
+            testCountDataWithRangeForGUI : []
+            
+        },()=>{
+            //this.getTestCountDataWithRange(this.state.tstartDateGUI,this.state.tendDateGUI,'GUI');
+            this.getTestCountDataWithRange(this.state.tstartDateGUI, this.state.tendDateGUI, 'GUI');
+        })
+    }
+
     render() {
         let DATE1 = tempDateStart     
         let DATE2 = tempDateEnd 
         let DATE3 = tempDateStartGUI     
-        let DATE4 = tempDateEndGUI 
+        let DATE4 = tempDateEndGUI
+        let DATE5 = ttempDateStart     
+        let DATE6 = ttempDateEnd
+        let DATE7 = ttempDateStartGUI     
+        let DATE8 = ttempDateEndGUI
         
         return (
             <div>
@@ -1496,6 +1686,112 @@ class ReleaseTestCase extends Component {
                                         <th width="130px" height="70px" ><b>Automated Percentage</b></th>
                                             {
                                                 this.state.automationCountDataWithRangeForGUI ? this.renderTableDataForAutomationCountWithRangeForGUI() : null
+                                            }
+                                    </tbody>
+                                </Table>
+                            </div>
+                        </Row>
+                    </Collapse>
+                </Col>
+            </Row>
+            <Row>
+                <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                    <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                        <div class="row">
+                            <div class='col-lg-12'>
+                                <div style={{ display: 'flex' }}>
+                                    <div onClick={() => this.setState({ testCountWithRangeView: !this.state.testCountWithRangeView },()=>{this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');})} style={{ display: 'inlineBlock' }}>
+                                    
+                                    {
+                                        !this.state.testCountWithRangeView &&
+                                        <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                    }
+                                    {
+                                        this.state.testCountWithRangeView &&
+                                        <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                    }
+                                    <div className='rp-icon-button'></div>
+                                    <span className='rp-app-table-title'>CLI Test case report</span>
+                                
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <Collapse isOpen={this.state.testCountWithRangeView}>
+                        <Row>
+                            <div style={{ marginRight: '8rem' ,marginLeft: '4rem', width:'650px', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
+                                <div class="row"  style={{marginTop:'1rem'}}>
+                                    <div class="col-md-3">
+                                        From Date<Input  type="date" id="tStartDate" value={DATE5} onChange={(e) => this.testSelectedStartDateCLI({ tStartDate: e.target.value })} ></Input>
+                                    </div> 
+
+                                    <div class="col-md-3">
+                                        To Date<Input  type="date" id="tEndDate" value={DATE6} onChange={(e) => this.testSelectedEndDateCLI({ tEndDate: e.target.value })} />
+                                    </div>         
+                                    
+                                </div>
+                                <Table>
+                                    <tbody>
+                                        <th width="140px" height="50px" ><b>Release</b></th>
+                                        {/* <th width="250px" height="50px" ><b>Date Range</b></th> */}
+                                        <th width="140px" height="50px" ><b>Total Tested</b></th>
+                                            {
+                                                this.state.testCountDataWithRange ? this.renderTableDataForTestCountWithRange() : null
+                                            }
+                                    </tbody>
+                                </Table>
+                            </div>
+                        </Row>
+                    </Collapse>
+                </Col>
+            </Row>
+            <Row>
+                <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                    <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                        <div class="row">
+                            <div class='col-lg-12'>
+                                <div style={{ display: 'flex' }}>
+                                    <div onClick={() => this.setState({ testCountWithRangeViewForGUI: !this.state.testCountWithRangeViewForGUI },()=>{this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');})} style={{ display: 'inlineBlock' }}>
+                                    
+                                    {
+                                        !this.state.testCountWithRangeViewForGUI &&
+                                        <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                    }
+                                    {
+                                        this.state.testCountWithRangeViewForGUI &&
+                                        <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                    }
+                                    <div className='rp-icon-button'></div>
+                                    <span className='rp-app-table-title'>GUI Test Case Report</span>
+                                
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <Collapse isOpen={this.state.testCountWithRangeViewForGUI}>
+                        <Row>
+                            <div style={{ marginRight: '4rem' ,marginLeft: '4rem', width:'650px', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
+                                <div class="row"  style={{marginTop:'1rem'}}>
+                                    <div class="col-md-3">
+                                        From Date<Input  type="date" id="tStartDate1" value={DATE7} onChange={(e) => this.testSelectedStartDateGUI({ tStartDate1: e.target.value })} ></Input>
+                                    </div> 
+
+                                    <div class="col-md-3">
+                                        To Date<Input  type="date" id="tEndDate1" value={DATE8} onChange={(e) => this.testSelectedEndDateGUI({ tEndDate1: e.target.value })} />
+                                    </div>         
+                                    
+                                </div>
+                                <Table>
+                                    <tbody>
+                                        <th width="140px" height="50px" ><b>Release </b></th>
+                                        {/* <th width="250px" height="50px" ><b>Date Range</b></th> */}
+                                        <th width="140px" height="50px" ><b>Total Tested</b></th>
+                                            {
+                                                this.state.testCountDataWithRangeForGUI ? this.renderTableDataForTestCountWithRangeForGUI() : null
                                             }
                                     </tbody>
                                 </Table>
