@@ -143,35 +143,40 @@ def duplicate_tcs_by_rel_gui(request):
     tcdata = TC_INFO_GUI.objects.using(release).values().all()
     print("after length", len(tcdata))
 
-def duplicate_guitc_ddmtodd330(request):
-    release = "DCX-DMC-Master"
-    torelease = "DCX-DMC-3.3.0"
-    tcdata = TC_INFO_GUI.objects.using(release).values().all()
-    print("before length", len(tcdata))
+def duplicate_clitc_ddmtodd330(platform, domain, toRelease, froRelease):
+    tcdata = TC_INFO.objects.using(froRelease).values().filter(CardType = platform)
+    todata = TC_INFO.objects.using(toRelease).values().all()
+    print("before length torelease", len(todata))
 
     for i in tcdata:
-        d = TC_INFO_GUI.objects.using(release).get(id= i["id"])
-        if i["CardType"] == "DCX_CentOS_CRIO" or i["CardType"] == "DCX_CentOS_Docker" or i["CardType"] == "DCX_RHEL_CRIO" or i["CardType"] == "DCX_RHEL_Docker":
+        ser = TC_INFO_SERIALIZER(i).data
+        if len(domain) != 0:
+            if i["Domain"] in domain:
+                try:
+                    check = TC_INFO.objects.using(toRelease).get(TcID = ser["TcID"], CardType = ser["CardType"])
+                except:
+                    fd = TcInfoForm(ser)
+                    if fd.is_valid():
+                        data = fd.save(commit = False)
+                        data.save(using = toRelease)
+                    else:
+                        print("INVALID", fd.errors)
+        else:
             try:
-                ser = TC_INFO_GUI_SERIALIZER(i).data
-                fd = GuiInfoForm(ser)
+                check = TC_INFO.objects.using(toRelease).get(TcID = ser["TcID"], CardType = ser["CardType"])
+            except:
+                fd = TcInfoForm(ser)
                 if fd.is_valid():
-                    print("valid")
                     data = fd.save(commit = False)
-                    data.save(using = torelease)
+                    data.save(using = toRelease)
                 else:
                     print("INVALID", fd.errors)
-            except:
-                print("pass")
-                pass
-    tcdata = TC_INFO_GUI.objects.using(torelease).values().all()
-    print("after length torelease", len(tcdata))
-    return HttpResponse("UNCOMMENt CODE")
 
-
+    todata = TC_INFO.objects.using(toRelease).values().all()
+    print("after length torelease", len(todata))
 
 def duplicate_tcs(request):
-#    return HttpResponse("UNCOMMENT CODE")
+    #return HttpResponse("UNCOMMENT CODE")
     for release in settings.DATABASES:
         print(release)
         #release = "DCX-DMC-Master"

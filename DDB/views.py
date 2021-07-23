@@ -32,7 +32,8 @@ from psycopg2 import sql
 import json, datetime, os, time
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from .latestStatusUpdate import updateLatestStatus, latestResultUpdateFunction
-from .tcinfo import updateStatusData
+from .tcinfo import updateStatusData, duplicate_clitc_ddmtodd330
+from .gui import duplicate_guitc_ddmtodd330
 from dp import settings
 # GLOBAL VARIABLES
 statusList = ['Pass', 'Fail', 'Skip', 'Blocked']
@@ -2014,7 +2015,8 @@ def RELEASEINFOPOST(request):
                 GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
             # return JsonResponse({'Sucess': 'SUCCESSFULLY ADDED NEW RELEASE'}, status = 200)
             print("SUCCESSFULLY ADDED NEW RELEASE")
-            res = createReleaseDB(req['PlatformsCli'], req["ReleaseNumber"])
+            res = createReleaseDB(req['ReleaseNumber'], req["ParentRelease"])
+            #res = createReleaseDB(req['PlatformsCli'], req["ReleaseNumber"])
             if res == 0:
                 print("Database already exists")
             else:
@@ -2062,6 +2064,21 @@ def RELEASEWISE_GUI_PLATFORM(request, Release):
                         platformList.append(p)
     print(platformList)
     return HttpResponse(json.dumps(platformList))
+
+@csrf_exempt
+def getPlatformWiseDomainSubdomain(request, Release, interface):
+    if request.method == "GET":
+        if interface == "CLI":
+            dictionary = {}
+            cliTcInfo = TC_INFO.objects.using(Release).all()
+            dictionary = platform_wise_domain_subdomain_cli_dict(cliTcInfo)
+            return HttpResponse(json.dumps(dictionary))
+        elif interface == "GUI":
+            dictionary = {}
+            guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
+            dictionary = platform_wise_domain_subdomain_gui_dict(guiTcInfo)
+            return HttpResponse(json.dumps(dictionary))
+
 
 @csrf_exempt
 def RELEASEINFO(request, Release):
@@ -2234,3 +2251,42 @@ def USER_LOGIN_VIEW(request):
             #GenerateLogData(data['UserName'], 'POST', 'user/login', json.dumps(req))
 
         return JsonResponse({'role': data['role']}, status = 200)
+
+@csrf_exempt
+def IMPORT_TCs(request):
+    if request.method == "GET":
+        
+        interface = request.GET.get("interface")
+        froRelease = request.GET.get("froRelease")
+        toRelease = request.GET.get("toRelease")
+        platform = request.GET.get("platform")
+        domains = request.GET.get("domains")
+        domains = json.loads(domains)
+        dom = []
+        #check if domains subdomains are in toRelease if not adding it
+        for d in domains:
+            dom.append(d)
+            print("d",d)
+            domainGet = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(toRelease).filter(Domain = d)
+            if len(domainGet) < 1:
+                print("<1")
+                addDomain(d, toRelease)
+                for subd in domains[d]:
+                    print("subd in if",subd)
+                    addSubDomain(d, subd, toRelease)
+            else:
+                subdomainGet = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(toRelease).get(Domain = d)
+                ser = DOMAIN_SUBDOMAIN_SERIALIZER(subdomainGet)
+                print("serdata",ser.data)
+                for subd in domains[d]:
+                    print("subd in else",subd)
+                    if subd not in ser.data['SubDomain']:
+                        print(subd)
+                        addSubDomain(d, subd, toRelease)
+        #Adding given platform and domain tcs to intended release
+        if interface == "CLI":
+            duplicate_clitc_ddmtodd330(platform, dom, toRelease, froRelease)
+            return HttpResponse("UNCOMMENT CODE")
+        elif interface == "GUI":
+            duplicate_guitc_ddmtodd330(platform, dom, toRelease, froRelease)
+            return HttpResponse("UNCOMMENT CODE")

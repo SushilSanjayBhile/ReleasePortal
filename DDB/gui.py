@@ -949,3 +949,34 @@ def WHOLE_GUI_TC_INFO(request, Release):
 
         requiredData = AllInfoData[index:count]
         return HttpResponse(json.dumps(requiredData))
+
+def duplicate_guitc_ddmtodd330(platform, domain, toRelease, froRelease):
+    tcdata = TC_INFO_GUI.objects.using(froRelease).values().filter(CardType = platform)
+    todata = TC_INFO_GUI.objects.using(toRelease).values().all()
+    print("before length torelease", len(todata))
+    
+    for i in tcdata:
+        ser = TC_INFO_GUI_SERIALIZER(i).data
+        if len(domain) != 0:
+            if i["Domain"] in domain:
+                try:
+                    check = TC_INFO_GUI.objects.using(toRelease).get(TcID = ser["TcID"], CardType = ser["CardType"], BrowserName = ser["BrowserName"])
+                except:
+                    fd = GuiInfoForm(ser)
+                    if fd.is_valid():
+                        data = fd.save(commit = False)
+                        data.save(using = toRelease)
+                    else:
+                        print("INVALID", fd.errors)
+        else:
+            try:
+                check = TC_INFO_GUI.objects.using(toRelease).get(TcID = ser["TcID"], CardType = ser["CardType"], BrowserName = ser["BrowserName"])
+            except:
+                fd = GuiInfoForm(ser)
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    data.save(using = toRelease)
+                else:
+                    print("INVALID", fd.errors)
+    todata = TC_INFO_GUI.objects.using(toRelease).values().all()
+    print("after length torelease", len(todata))

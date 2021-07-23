@@ -6,12 +6,12 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT # <-- ADD THIS LINE
 from psycopg2 import sql
 import os, requests
 from .new import rootRelease
-from .models import TC_INFO, TC_INFO_GUI
+from .models import TC_INFO, TC_INFO_GUI, LOGS, LOGSGUI, TC_STATUS, TC_STATUS_GUI, GUI_LATEST_TC_STATUS, LATEST_TC_STATUS
 from .serializers import TC_INFO_SERIALIZER, TC_INFO_GUI_SERIALIZER
 from .forms import TcInfoForm, GuiInfoForm
 
-def createReleaseDB(platforms, release):
-    parentRelease = rootRelease
+def createReleaseDB(release, parentRelease):
+    #parentRelease = release
     con = psycopg2.connect(dbname='postgres',
         user=userName, host=hostName,
         password=passwd, port=portNumber)
@@ -141,7 +141,16 @@ def cleanupdb(request):
     platformsCli = req["PlatformsCli"]
     platformsGui = req["PlatformsGui"]
     release = req["ReleaseNumber"]
+    pRelease = req["ParentRelease"]
     print(req)
+    
+    # statements to delete all the logs and status of newly created releases
+    TC_STATUS.objects.using(release).all().delete()
+    TC_STATUS_GUI.objects.using(release).all().delete()
+    LOGS.objects.using(release).all().delete()
+    LOGSGUI.objects.using(release).all().delete()
+    GUI_LATEST_TC_STATUS.objects.using(release).all().delete()
+    LATEST_TC_STATUS.objects.using(release).all().delete()
 
     # This statement cleans new created database's CLI info table, comment when not needed
     TC_INFO.objects.using(release).all().delete()
@@ -151,7 +160,7 @@ def cleanupdb(request):
 
     # Below code-patch fetches CLI TC, which are only applicable for given platforms
     cliList = []
-    cliTcInfo = TC_INFO.objects.using(rootRelease).all()
+    cliTcInfo = TC_INFO.objects.using(pRelease).all()
     for platform in platformsCli:
         clitcs = cliTcInfo.filter(CardType = platform)
         ser = TC_INFO_SERIALIZER(clitcs, many = True).data
@@ -166,7 +175,7 @@ def cleanupdb(request):
 
     # Below code-patch fetches GUI TC, which are only applicable for given platforms
     guiList = []
-    guiTcInfo = TC_INFO_GUI.objects.using(rootRelease).all()
+    guiTcInfo = TC_INFO_GUI.objects.using(pRelease).all()
     for platform in platformsGui:
         guitcs = guiTcInfo.filter(CardType = platform)
         ser = TC_INFO_GUI_SERIALIZER(guitcs, many = True).data

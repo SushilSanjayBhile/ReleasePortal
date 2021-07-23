@@ -119,33 +119,39 @@ def getTcReport(request):
             return HttpResponse(json.dumps(guiData))
 
 def RESULT_LOGS(Release, sdate, edate):
-    data = LOGS.objects.using(Release).all()
-    serializer = LOG_SERIALIZER(data, many = True)
-    count = 0
-    for log in serializer.data:
-        if "status" in log["LogData"].lower():
-            user = log["UserName"]
-            if user == "":
-                continue
-            date_time_str = log["Timestamp"]
-            date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
-            
-            if date_time_obj >= sdate and date_time_obj < edate:
-                count += 1
-    return count
+    try:
+        data = LOGS.objects.using(Release).all()
+        serializer = LOG_SERIALIZER(data, many = True)
+        count = 0
+        for log in serializer.data:
+            if "status" in log["LogData"].lower():
+                user = log["UserName"]
+                if user == "":
+                    continue
+                date_time_str = log["Timestamp"]
+                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+                
+                if date_time_obj >= sdate and date_time_obj < edate:
+                    count += 1
+        return count
+    except:
+        return "NA"
 
 def RESULT_LOGS_GUI(Release, sdate, edate):
-    data = LOGSGUI.objects.using(Release).all()
-    serializer = GUI_LOGS_SERIALIZER(data, many = True)
-    count = 0
-    for log in serializer.data:
-        if "status" in log["LogData"].lower():
-            user = log["UserName"]
-            if user == "":
-                continue
-            date_time_str = log["Timestamp"]
-            date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
-            
-            if date_time_obj >= sdate and date_time_obj < edate:
-                count += 1
-    return count
+    try:
+        data = LOGSGUI.objects.using(Release).all()
+        serializer = GUI_LOGS_SERIALIZER(data, many = True)
+        count = 0
+        for log in serializer.data:
+            if "status" in log["LogData"].lower():
+                user = log["UserName"]
+                if user == "":
+                    continue
+                date_time_str = log["Timestamp"]
+                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+                
+                if date_time_obj >= sdate and date_time_obj < edate:
+                    count += 1
+        return count
+    except:
+        return "NA"

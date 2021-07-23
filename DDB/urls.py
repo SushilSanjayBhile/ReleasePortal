@@ -3,7 +3,7 @@ from .views import (TCSTATUSGETPOSTVIEW, USER_INFO_GET_POST_VIEW,
         USER_INFO_SPECIFIC_BY_ID, USER_INFO_SPECIFIC_BY_NAME, LOG, RESULT_LOGS, RESULT_LOGS_GUI,
         GETSETUPWISETCINFO, RELEASEINFO, GETPLATFORMWISETCINFO, RELEASEINFOPOST,
         GETPLATFORMANDSETUPWISETCINFO, TCAGGREGATE, DOMAINWISETCSTATUS, DOMAINWISETCINFO, USER_LOGIN_VIEW,DOMAINWISERELEASEINFO,
-        GUITCSTATUSGETPOSTVIEW, createDB, AddDomainSubDomain, RELEASEWISE_CLI_PLATFORM,RELEASEWISE_GUI_PLATFORM, TCAGGREGATE_DASHBOARD)
+        GUITCSTATUSGETPOSTVIEW, createDB, AddDomainSubDomain, RELEASEWISE_CLI_PLATFORM,RELEASEWISE_GUI_PLATFORM, TCAGGREGATE_DASHBOARD,getPlatformWiseDomainSubdomain, IMPORT_TCs)
 from .sanityViews import SANITY_VIEW
 from .defaultViews import DEFAULT_DOMAIN_GET_POST_VIEW, DEFAULT_SUBDOMAIN_GET_POST_VIEW
 
@@ -11,7 +11,7 @@ from .e2eResultViews import e2eResultUpdate
 from .statusViews import TC_STATUS_UPDATE_VIEW, GUI_TC_STATUS_UPDATE_VIEW
 from .latestStatusUpdate import LATEST_STATUS_VIEW_UPDATE_ALL
 from .tcinfo import TC_INFO_GET_POST_VIEW, GET_TC_INFO_BY_ID, WHOLE_TC_INFO, MULTIPLE_TC_UPDATION, \
-        UPDATE_TC_INFO_BY_ID, TcCountByFilter,MULTIPLE_TC_INFO_UPDATION, sync_tcs, sync_platform, duplicate_tcs, duplicate_tcs_gui, duplicate_tcs_by_rel,duplicate_tcs_by_rel_gui, MULTIPLE_TC_UPDATION_APPROVAL_UNAPPROVAL, duplicate_guitc_ddmtodd330
+        UPDATE_TC_INFO_BY_ID, TcCountByFilter,MULTIPLE_TC_INFO_UPDATION, sync_tcs, sync_platform, duplicate_tcs, duplicate_tcs_gui, duplicate_tcs_by_rel,duplicate_tcs_by_rel_gui, MULTIPLE_TC_UPDATION_APPROVAL_UNAPPROVAL
 
 from .getStatistics import BUG_WISE_BLOCKED_TCS 
 from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO,MULTIPLE_TC_UPDATION_GUI
@@ -104,6 +104,8 @@ urlpatterns = [
     path('tcinfosetupwise/<str:SetupName>/', GETSETUPWISETCINFO),
     path('tcinfoplatformwise/<str:OrchestrationPlatform>/', GETPLATFORMWISETCINFO),
     path('platformandsetupwise/<str:OrchestrationPlatform>/<str:SetupName>/', GETPLATFORMANDSETUPWISETCINFO),
+    path('getPlatformWiseDomainSubdomain/<str:Release>/<str:interface>/',getPlatformWiseDomainSubdomain),
+    path('importTCs/',IMPORT_TCs),
 
     path('release/<str:Release>', RELEASEINFO),
     path('release/<str:Release>/<str:Domain>', DOMAINWISERELEASEINFO),
@@ -122,7 +124,6 @@ urlpatterns = [
     path('dupbyrel',duplicate_tcs_by_rel),
     path('dupbyrelgui',duplicate_tcs_by_rel_gui),
     path('duptcgui', duplicate_tcs_gui),
-    path('movetc',duplicate_guitc_ddmtodd330),
     path('tcupdategui/<str:Release>', MULTIPLE_TC_UPDATION_GUI),
     path('release_all_info/releaseName/<str:Release>', TCAGGREGATE_DASHBOARD),
     path('execute/<str:release>/<str:platform>',update_data)
