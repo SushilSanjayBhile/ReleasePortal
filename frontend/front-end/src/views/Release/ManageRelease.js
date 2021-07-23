@@ -1293,34 +1293,33 @@ class ManageRelease extends Component {
            "ReleasesEdit": data.ReleaseNumber
        }
        let url = `/api/userinfo/`;
-       console.log("data",data)
-    //    axios.post(`/api/release`, { ...data })
-    //         .then(single => {
-    //             if(single.data){
-    //                 setTimeout(() => {  
-    //                     axios.post(`/api/cleanupdb`, { ...data })
-    //                     .then(response=>{
-    //                             axios.put(url,formData)
-    //                             .then(response=>{
-    //                                 alert('successfully added the release');
-    //                                 window.location.reload()
-    //                                 })
-    //                             .catch(err=>{
-    //                                 console.log("err",err);
-    //                             })
+       axios.post(`/api/release`, { ...data })
+            .then(single => {
+                if(single.data){
+                    setTimeout(() => {  
+                        axios.post(`/api/cleanupdb`, { ...data })
+                        .then(response=>{
+                                axios.put(url,formData)
+                                .then(response=>{
+                                    alert('successfully added the release');
+                                    window.location.reload()
+                                    })
+                                .catch(err=>{
+                                    console.log("err",err);
+                                })
                             
-    //                     })
-    //                     .catch(error=>{
-    //                         console.log("error creating release")
-    //                     })
-    //                 }, 5000);
-    //             }
-    //         }, error => {
-    //             alert('error in updating');
-    //         });
-    //         if (this.state.modal) {
-    //         this.toggle();
-    //     }
+                        })
+                        .catch(error=>{
+                            console.log("error creating release")
+                        })
+                    }, 5000);
+                }
+            }, error => {
+                alert('error in updating');
+            });
+            if (this.state.modal) {
+            this.toggle();
+        }
 
     }   
     resetPlatforms() {

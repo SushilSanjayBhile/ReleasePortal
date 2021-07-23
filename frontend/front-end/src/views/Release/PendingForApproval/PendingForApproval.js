@@ -369,7 +369,7 @@ class PendingForApproval extends Component {
         }
         url += ('&WorkingStatus=' + 'CREATED');
 
-        console.clear();
+        //console.clear();
         console.log("props for user",this.props.user,this.props.users)
         this.getNotificationToAdmin();
 

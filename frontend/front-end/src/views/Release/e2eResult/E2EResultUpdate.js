@@ -11,7 +11,7 @@ import { element } from 'prop-types';
 import  CheckBox  from '../../../components/TestCasesAll/CheckBox';
 
 let form = {}
-class createUser extends Component {
+class UpdateE2EResult extends Component {
     
     constructor(){
         super();
@@ -258,4 +258,4 @@ const mapStateToProps = (state, ownProps) => ({
 }
 )
 
-export default connect(mapStateToProps, { saveUsers, getCurrentRelease })(createUser);
+export default connect(mapStateToProps, { saveUsers, getCurrentRelease })(UpdateE2EResult);
