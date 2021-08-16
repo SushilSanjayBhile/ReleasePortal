@@ -916,7 +916,7 @@ class adminDashboard extends Component {
             if (subDomain) url += ('&SubDomain=' + subDomain);
             if (priority) url += ('&Priority=' + priority);
         }
-        //url += ('&WorkingStatus=' + 'Manual Assignee')
+        url += ('&WorkingStatus=' + 'Manual Assignee')
         
         let str1 = ''
         this.state.tableColumnsTcs.forEach(item=>{

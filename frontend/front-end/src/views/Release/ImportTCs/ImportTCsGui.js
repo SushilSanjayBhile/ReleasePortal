@@ -16,7 +16,7 @@ class ImportTCsGui extends Component {
     constructor(){
         super();
         this.state = {
-            Open:'',
+            Open:false,
             errors: {},
             release: '',
             froRelease: '',
@@ -193,7 +193,7 @@ class ImportTCsGui extends Component {
                                             {
                                                 
                                                     <Input style={{ borderColor: this.state.errors['platform'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="platform" name="platform" value={this.state.platform}
-                                                        onChange={(e) => this.setState({ platform: e.target.value ,importTc:[], disable:false, errors: { ...this.state.errors, platform: null } })} >
+                                                        onChange={(e) => this.setState({ platform: e.target.value ,importTc:[],disable:false, errors: { ...this.state.errors, platform: null } },() => {if(this.state.platform === '')this.setState({disable:true});})} >
                                                         <option value=''>Select Platform</option>
                                                         {
                                                             Object.keys(this.state.platforms).map(item => <option value={item}>{item}</option>)

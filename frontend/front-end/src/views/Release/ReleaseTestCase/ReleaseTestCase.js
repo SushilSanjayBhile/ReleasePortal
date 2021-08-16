@@ -142,6 +142,8 @@ class ReleaseTestCase extends Component {
             testCountDataWithRange : [],
             testCountDataWithRangeForGUI : [],
             automationCountDataByDomain : [],
+            jiraBugData: [],
+            cusbugdata: [],
 
 
             startDate : tempDateStartAPI,
@@ -564,10 +566,12 @@ class ReleaseTestCase extends Component {
 
                 // })
                 keys.forEach(key =>{
-                    tempList.push({
-                            "Release":key,
-                            "Total":data[key]
-                    })
+                    if(data[key] != 0){
+                        tempList.push({
+                                "Release":key,
+                                "Total":data[key]
+                        })
+                    }
                 })
                 if(tempList.length == 0){
                     tempList.push({
@@ -607,10 +611,12 @@ class ReleaseTestCase extends Component {
 
                 // })
                 keys.forEach(key =>{
-                    tempListGUI.push({
-                            "Release":key,
-                            "Total":data[key]
-                    })
+                    if(data[key] != 0){
+                        tempListGUI.push({
+                                "Release":key,
+                                "Total":data[key]
+                        })
+                    }
                 })
                 if(tempListGUI.length == 0){
                     tempListGUI.push({
@@ -958,6 +964,26 @@ class ReleaseTestCase extends Component {
         )
     }
 
+    renderTableDataForJiraBugData = () =>{
+        return this.state.jiraBugData.length == 0 ? (
+            <tr> 
+                Lodaing...
+            </tr> 
+        ) : (
+            this.state.jiraBugData.map((e, i) => {
+            return (
+                    <tr key={i}> 
+                        <td width="140px" height="50px">{e.Release}</td>
+                        <td width="140px" height="50px">{e.Total}</td>
+                        <td width="140px" height="50px">{e.Close}</td>
+                        <td width="140px" height="50px">{e.CustomerBug}</td>
+                        <td width="140px" height="50px">{e.Open}</td>
+                    </tr>    
+                ); 
+            })
+        )
+    }
+
     selectedStartDate = (startDate) =>{
         tempDateStart = startDate['StartDate']
         this.setState({
@@ -1031,6 +1057,90 @@ class ReleaseTestCase extends Component {
         })
     }
 
+    getdata(){
+        let output = []
+        axios.get(`/rest/jira/bugdata`)
+        .then(res => {
+            let data = res.data.rows
+            data.forEach(element => {
+                let keyofelement = Object.keys(element)
+                if(keyofelement.length > 0){
+                    let key = keyofelement[0]
+                    let filter = element[key][0]["markup"].split(".")
+                        if(element[key][0]["markup"] !== 'Unscheduled' && element[key][0]["markup"] !== "Total Unique Issues:" && filter[0] !== "2" && filter[0] !== "1" && filter[0] !== "0"){
+                            let openurl = element[key][1]["markup"]
+                            let openBugCount = parseInt(openurl.split(">")[1].split("<")[0],10)
+
+                            let todourl = element[key][5]["markup"]
+                            let todoBugCount = parseInt(todourl.split(">")[1].split("<")[0],10)
+
+                            let inpgurl = element[key][2]["markup"]
+                            let inpgBugCount = parseInt(inpgurl.split(">")[1].split("<")[0],10)
+
+                            let closeurl = element[key][4]["markup"]
+                            let closeBugCount = parseInt(closeurl.split(">")[1].split("<")[0],10)
+
+                            let resurl = element[key][3]["markup"]
+                            let resBugCount = parseInt(resurl.split(">")[1].split("<")[0],10)
+
+                            let inqaurl = element[key][11]["markup"]
+                            let inqaBugCount = parseInt(inqaurl.split(">")[1].split("<")[0],10)
+
+                            let totalurl = element[key][12]["markup"]
+                            let totalBugCount = parseInt(totalurl.split(">")[1].split("<")[0],10)
+                                                     
+                            output.push({
+                                    "Release": element[key][0]["markup"],
+                                    "Open": openBugCount + todoBugCount + inpgBugCount,
+                                    "Close": closeBugCount + resBugCount + inqaBugCount,
+                                    "Total": totalBugCount,
+                                    "CustomerBug": 0
+                                    })
+
+                        }
+                }
+            })
+                axios.get(`/rest/cbug`)
+                .then(res => {
+                    let data = res.data.searchResultTotal.rows
+                    
+                    let out = []
+                    data.forEach(element => {   
+                        let keyofelement = Object.keys(element)
+                        if(keyofelement.length > 0){
+                            let key = keyofelement[0]
+                            let filter = element[key][0]["markup"].split(".")
+                                if(filter.length != 1 && element[key][0]["markup"] !== 'No version' && element[key][0]["markup"] !== 'Unscheduled' && element[key][0]["markup"] !== "Total Unique Issues:" && filter[0] !== "2" && filter[0] !== "1" && filter[0] !== "0"){
+                                    
+                                    let totalurl = element[key][13]["markup"]
+                                    let totalBugCount = parseInt(totalurl.split(">")[1].split("<")[0],10)
+        
+                                    out.push({
+                                            "Release": element[key][0]["markup"],
+                                            "CustomerBug": totalBugCount,
+                                            })
+                                   
+                                }
+                        }
+                    })
+                    out.forEach(element => {
+                        output.some(item => {
+                            if(item["Release"] === element["Release"]){
+                                item["CustomerBug"] = element["CustomerBug"]
+                            }
+                        })
+                    })
+                    this.setState({jiraBugData : output})
+                }).catch(error=>{
+                    console.log("Error",error)
+                    })
+           
+        }).catch(error=>{
+            console.log("Error",error)
+            })
+    }
+
+
     render() {
         let DATE1 = tempDateStart     
         let DATE2 = tempDateEnd 
@@ -1040,8 +1150,8 @@ class ReleaseTestCase extends Component {
         let DATE6 = ttempDateEnd
         let DATE7 = ttempDateStartGUI     
         let DATE8 = ttempDateEndGUI
-        
         return (
+            this.props.currentUser && this.props.currentUser.isAdmin &&
             <div>
                 <div>
                 <Row>
@@ -1686,6 +1796,52 @@ class ReleaseTestCase extends Component {
                                         <th width="130px" height="70px" ><b>Automated Percentage</b></th>
                                             {
                                                 this.state.automationCountDataWithRangeForGUI ? this.renderTableDataForAutomationCountWithRangeForGUI() : null
+                                            }
+                                    </tbody>
+                                </Table>
+                            </div>
+                        </Row>
+                    </Collapse>
+                </Col>
+            </Row>
+            <Row>
+                <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
+                    <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                        <div class="row">
+                            <div class='col-lg-12'>
+                                <div style={{ display: 'flex' }}>
+                                    <div onClick={() => this.setState({ jiraDataView: !this.state.jiraDataView },()=>{this.getdata();})} style={{ display: 'inlineBlock' }}>
+                                    
+                                    {
+                                        !this.state.jiraDataView &&
+                                        <i className="fa fa-angle-down rp-rs-down-arrow"></i>
+                                    }
+                                    {
+                                        this.state.jiraDataView &&
+                                        <i className="fa fa-angle-up rp-rs-down-arrow"></i>
+                                    }
+                                    <div className='rp-icon-button'></div>
+                                    <span className='rp-app-table-title'>Bug Analysis</span>
+                                
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <Collapse isOpen={this.state.jiraDataView}>
+                        <Row>
+                            <div style={{ marginRight: '8rem' ,marginLeft: '4rem', width:'650px', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
+                                <Table>
+                                    <tbody>
+                                        <th width="140px" height="50px" ><b>Release</b></th>
+                                        <th width="140px" height="50px" ><b>Total Filed</b></th>
+                                        <th width="140px" height="50px" ><b>Resolved</b></th>
+                                        <th width="140px" height="50px" ><b>Customer Bugs</b></th>
+                                        <th width="140px" height="50px" ><b>Still Open</b></th>
+                                        
+                                            {
+                                                this.state.jiraBugData ? this.renderTableDataForJiraBugData() :null 
                                             }
                                     </tbody>
                                 </Table>

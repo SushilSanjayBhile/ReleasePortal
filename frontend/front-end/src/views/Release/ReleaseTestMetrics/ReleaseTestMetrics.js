@@ -20,6 +20,7 @@ import Sunburst from '../components/Sunburst';
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
 import CreateTCs from '../CreateTCs/CreateTCs';
 import ImportTCs from '../ImportTCs/ImportTCs';
+import NonExecutedTCs from '../ImportTCs/NonExecutedTCs';
 import AddOptions from '../AddOptions/AddOptions';
 const options = {
     tooltips: {
@@ -247,7 +248,10 @@ class ReleaseTestMetrics extends Component {
                     this.props.currentUser && this.props.currentUser.email &&
                     <ImportTCs></ImportTCs>
                 }
-
+                 {
+                    this.props.currentUser && this.props.currentUser.email &&
+                    <NonExecutedTCs></NonExecutedTCs>
+                }
                 <Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                     <ModalHeader toggle={() => this.toggle()}>Confirmation</ModalHeader>
                     <ModalBody>
