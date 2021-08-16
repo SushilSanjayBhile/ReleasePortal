@@ -246,6 +246,48 @@ app.use('/rest/featuredetail', (req, res) => {
 }, err => {
 })
 
+app.use('/rest/cbug',(req,res) => {
+    var cusBugsStr = `/rest/gadget/1.0/twodimensionalfilterstats/generate?filterId=filter-13703&xstattype=statuses&ystattype=allVersion&sortDirection=desc&sortBy=total&numberToShow=1000`
+    var jiraReq = client.get(JIRA_URL + cusBugsStr, searchArgs, function (searchResultTotal, response) {
+        if (response.statusCode === 401) {
+                loginJIRA().then(function () {
+                    client.get(JIRA_URL + totalBugsStr, function (searchResultTotal2, responseTotal) {                    
+                        res.send(searchResultTotal2);
+                    }, err1 => { console.log('cannot get jira') });
+                }).catch(err => { console.log('promise failed'); console.log(err) })
+            } else {
+               res.send({searchResultTotal})
+            }
+        }, err => {
+            console.log('caught error in primitive')
+        });
+        jiraReq.on('error', function (err) {
+            console.log('cannot get features due to error in fetching JIRA')
+        })
+
+
+})
+
+app.use('/rest/jira/bugdata', (req, res) => {
+    var totalBugsStr = `/rest/gadget/1.0/twodimensionalfilterstats/generate?filterId=filter-13644&xstattype=statuses&ystattype=allFixfor&sortDirection=desc&sortBy=total&numberToShow=1000` 
+    var jiraReq = client.get(JIRA_URL + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+    if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + totalBugsStr, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
+
 app.use('/api/release/all', (req, res) => {
     res.send(releases);
 }, err => { })
