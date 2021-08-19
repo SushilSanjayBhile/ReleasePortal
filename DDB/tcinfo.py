@@ -16,6 +16,35 @@ from .forms import LogForm
 from itertools import chain
 from .new import rootRelease, update_automation_count
 
+@csrf_exempt
+def GetNonExecutedTCs(request):
+    if request.method == "GET":
+        Release = request.GET.get("Release")
+        platform = request.GET.get("Platform")
+        platforms = json.loads(platform)
+        tcIdDict = []
+        infodata = TC_INFO.objects.using(Release).values().all()
+        infodata = infodata.filter(applicable__icontains = "Applicable")
+        infodata = infodata.filter(~Q(Priority__icontains = "skip") & ~Q(Priority__icontains = "NA"))
+        #infodata = infodata.filter()
+        tcID = []
+        for i in infodata:
+            ser = TC_INFO_SERIALIZER(i).data
+            if ser["CardType"] in platforms and ser["TcID"] not in tcID :
+                check = TC_STATUS.objects.using(Release).values().all().filter(TcID = ser["TcID"])
+                if len(check) == 0:
+                    tcDict = {}
+                    tcID.append(ser["TcID"])
+                    tcDict["TcID"] = ser["TcID"]
+                    tcDict["Platform"] = ser["CardType"]
+                    tcDict["Domain"] = ser["Domain"]
+                    tcDict["SubDomain"] = ser["SubDomain"]
+                    tcDict["Priority"] = ser["Priority"]
+                    tcDict["TcName"] = ser["TcName"]
+                    tcIdDict.append(tcDict)
+        print(len(tcIdDict))
+        return HttpResponse(json.dumps(tcIdDict)) 
+
 def GenerateLogData(UserName, RequestType, url, logData, tcid, card, Release):
     Timestamp = datetime.datetime.now()
     data = {'UserName': UserName, 'RequestType': RequestType, 'LogData': logData, 'Timestamp': Timestamp, 'URL': url, 'TcID': tcid, 'CardType': card}

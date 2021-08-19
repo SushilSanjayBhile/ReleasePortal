@@ -13,6 +13,34 @@ import datetime
 from .new import rootRelease, update_automation_count
 
 @csrf_exempt
+def GetNonExecutedTCsGui(request):
+    if request.method == "GET":
+        Release = request.GET.get("Release")
+        platform = request.GET.get("Platform")
+        platforms = json.loads(platform)
+        tcIdDict = []
+        infodata = TC_INFO_GUI.objects.using(Release).values().all()
+        infodata = infodata.filter(applicable__icontains = "Applicable")
+        infodata = infodata.filter(~Q(Priority__icontains = "skip") & ~Q(Priority__icontains = "NA"))
+        #infodata = infodata.filter()
+        tcID = []
+        for i in infodata:
+            ser = TC_INFO_GUI_SERIALIZER(i).data
+            if ser["CardType"] in platforms and ser["TcID"] not in tcID :
+                check = GUI_TC_STATUS.objects.using(Release).values().all().filter(tcInfoNum = ser["id"])
+                if len(check) == 0:
+                    tcDict = {}
+                    tcID.append(ser["TcID"])
+                    tcDict["TcID"] = ser["TcID"]
+                    tcDict["Platform"] = ser["CardType"]
+                    tcDict["Domain"] = ser["Domain"]
+                    tcDict["SubDomain"] = ser["SubDomain"]
+                    tcDict["Priority"] = ser["Priority"]
+                    tcDict["TcName"] = ser["TcName"]
+                    tcIdDict.append(tcDict)
+        return HttpResponse(json.dumps(tcIdDict))
+
+@csrf_exempt
 def MULTIPLE_TC_INFO_GUI_UPDATION(request, Release):
     if request.method == "PUT":
         requests = json.loads(request.body.decode("utf-8"))

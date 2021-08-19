@@ -2255,7 +2255,6 @@ def USER_LOGIN_VIEW(request):
 @csrf_exempt
 def IMPORT_TCs(request):
     if request.method == "GET":
-        
         interface = request.GET.get("interface")
         froRelease = request.GET.get("froRelease")
         toRelease = request.GET.get("toRelease")
@@ -2266,22 +2265,16 @@ def IMPORT_TCs(request):
         #check if domains subdomains are in toRelease if not adding it
         for d in domains:
             dom.append(d)
-            print("d",d)
             domainGet = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(toRelease).filter(Domain = d)
             if len(domainGet) < 1:
-                print("<1")
                 addDomain(d, toRelease)
                 for subd in domains[d]:
-                    print("subd in if",subd)
                     addSubDomain(d, subd, toRelease)
             else:
                 subdomainGet = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(toRelease).get(Domain = d)
                 ser = DOMAIN_SUBDOMAIN_SERIALIZER(subdomainGet)
-                print("serdata",ser.data)
                 for subd in domains[d]:
-                    print("subd in else",subd)
                     if subd not in ser.data['SubDomain']:
-                        print(subd)
                         addSubDomain(d, subd, toRelease)
         #Adding given platform and domain tcs to intended release
         if interface == "CLI":
