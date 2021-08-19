@@ -11,7 +11,7 @@ import { CSVLink } from 'react-csv'
 import { element, object } from 'prop-types';
 import  CheckBox  from '../../../components/TestCasesAll/CheckBox';
 
-class NonExecutedTCs extends Component {
+class NonExecutedTCsGui extends Component {
     
     constructor(){
         super();
@@ -28,7 +28,7 @@ class NonExecutedTCs extends Component {
     handleSubmit = (e) => {
             this.setState({disable:true})
             this.state.data = []
-            axios.get(`/api/getNonExecutedTCs/`,{
+            axios.get(`/api/getNonExecutedTCsGui/`,{
                 params: {
                 Release:this.props.selectedRelease.ReleaseNumber,
                 Platform:JSON.stringify(this.state.importTc),
@@ -61,7 +61,7 @@ class NonExecutedTCs extends Component {
     } 
 
     render() {
-        let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsCli ? this.props.selectedRelease.PlatformsCli : []
+        let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsGui ? this.props.selectedRelease.PlatformsGui : []
         let d = platforms.length > 0 ? platforms.map(item => ({ value: item, selected: this.state.importTc && this.state.importTc.includes(item) })) : [];
         let multiselect = { 'Platforms': d};
         return(
@@ -101,7 +101,6 @@ class NonExecutedTCs extends Component {
                                         {
                                                 [
                                                     { field: 'Platforms', header: 'Select Platforms' },
-                                                    //{ field: 'SubDomains', header: 'Select Sub Domains' }
                                                 ].map(item => (
                                                     <Col xs="10" md="10" lg="10">
                                                         <FormGroup className='rp-app-table-value'>
@@ -149,4 +148,4 @@ const mapStateToProps = (state, ownProps) => ({
 }
 )
 
-export default connect(mapStateToProps, {getCurrentRelease })(NonExecutedTCs);
+export default connect(mapStateToProps, {getCurrentRelease })(NonExecutedTCsGui);

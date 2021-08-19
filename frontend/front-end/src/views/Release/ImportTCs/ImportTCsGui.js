@@ -10,7 +10,6 @@ import Multiselect from 'react-bootstrap-multiselect';
 import { element, object } from 'prop-types';
 import  CheckBox  from '../../../components/TestCasesAll/CheckBox';
 
-let form = {}
 class ImportTCsGui extends Component {
     
     constructor(){

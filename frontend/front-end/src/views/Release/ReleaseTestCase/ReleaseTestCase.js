@@ -1067,7 +1067,7 @@ class ReleaseTestCase extends Component {
                 if(keyofelement.length > 0){
                     let key = keyofelement[0]
                     let filter = element[key][0]["markup"].split(".")
-                        if(element[key][0]["markup"] !== 'Unscheduled' && element[key][0]["markup"] !== "Total Unique Issues:" && filter[0] !== "2" && filter[0] !== "1" && filter[0] !== "0"){
+                        if(filter.length > 1 && filter[0] !== "2" && filter[0] !== "1" && filter[0] !== "0"){
                             let openurl = element[key][1]["markup"]
                             let openBugCount = parseInt(openurl.split(">")[1].split("<")[0],10)
 
@@ -1110,8 +1110,7 @@ class ReleaseTestCase extends Component {
                         if(keyofelement.length > 0){
                             let key = keyofelement[0]
                             let filter = element[key][0]["markup"].split(".")
-                                if(filter.length != 1 && element[key][0]["markup"] !== 'No version' && element[key][0]["markup"] !== 'Unscheduled' && element[key][0]["markup"] !== "Total Unique Issues:" && filter[0] !== "2" && filter[0] !== "1" && filter[0] !== "0"){
-                                    
+                                if(filter.length != 1 && filter[0] !== "2" && filter[0] !== "1" && filter[0] !== "0"){
                                     let totalurl = element[key][13]["markup"]
                                     let totalBugCount = parseInt(totalurl.split(">")[1].split("<")[0],10)
         

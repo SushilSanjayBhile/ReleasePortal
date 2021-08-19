@@ -24,6 +24,7 @@ import './ReleaseTestMetricsGUI.scss'
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
 import CreateTCs from '../CreateTCs/CreateTCsGUI';
 import ImportTCsGui from '../ImportTCs/ImportTCsGui';
+import NonExecutedTCsGui from '../ImportTCs/NonExecutedTCsGui';
 const options = {
     tooltips: {
         enabled: false,
@@ -96,7 +97,10 @@ class ReleaseTestMetricsGUI extends Component {
                     this.props.currentUser && this.props.currentUser.email &&
                     <ImportTCsGui></ImportTCsGui>
                 }
-
+                {
+                    this.props.currentUser && this.props.currentUser.email &&
+                    <NonExecutedTCsGui></NonExecutedTCsGui>
+                }
 
                 <Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                     <ModalHeader toggle={() => this.toggle()}>Confirmation</ModalHeader>
