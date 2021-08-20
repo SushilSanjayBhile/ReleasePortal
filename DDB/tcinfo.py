@@ -944,7 +944,6 @@ def MULTIPLE_TC_UPDATION(request, Release):
             tcid = req['TcID']
 
             data = TC_INFO.objects.using(Release).filter(TcID = tcid)
-            #print("len of data",len(data))
             serializer = TC_INFO_SERIALIZER(data, many = True)
             for d in serializer.data:
                 singleData = TC_INFO.objects.using(Release).get(id= d['id'])
@@ -1004,10 +1003,10 @@ def MULTIPLE_TC_UPDATION(request, Release):
                     AD = requests['Activity']
                     GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
         
-            if len(errRecords) > 0:
-                return HttpResponse(json.dumps(errRecords))
+        if len(errRecords) > 0:
+            return HttpResponse(json.dumps(errRecords))
 
-            return HttpResponse({"SUCCESS": "Record Successfully updated"})
+        return HttpResponse({"SUCCESS": "Record Successfully updated"})
 
     #elif request.method == "DELETE":
     #    requests = json.loads(request.body.decode("utf-8"))

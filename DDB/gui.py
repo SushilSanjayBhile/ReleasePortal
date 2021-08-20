@@ -618,7 +618,6 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             card = req['CardType']
             #data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid, CardType = card)
             data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid)
-            print("data in first", len(data))
             dataSer = TC_INFO_GUI_SERIALIZER(data,many=True)
             for data in dataSer.data:
                 #print("data current",data["TcID"],"\n\n")
@@ -630,7 +629,6 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 except:
                     workingStatusReplace = "{\"CREATED\":\"DEFAULT\"}"
                     updatedData["stateUserMapping"] = workingStatusReplace
-                    print("going to update GuiTCInfo")
                     updateGuiTcInfo(updatedData, data, Release)
 
                     data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid).get(CardType = card)
@@ -671,7 +669,6 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
                 d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
-                print("Printing d",d)
                 #print("len of data 3rd last", len(d))
                 updateGuiTcInfo(d, updatedData, Release)
 
@@ -683,7 +680,6 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     master = "master"
             #data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'], CardType = req["CardType"])
             data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'])
-            print("len of data in second last", data)
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
 
             for data in dataSer.data:
@@ -702,7 +698,6 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             Release = rootRelease
             #data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
             data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'])
-            print("len of data in root", data)
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
             for data in dataSer.data:
                 #print("rootrelease data",data)
