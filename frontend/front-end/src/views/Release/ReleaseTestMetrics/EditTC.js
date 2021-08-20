@@ -406,6 +406,20 @@ class EditTC extends Component {
                                         }
                                     </FormGroup>
                                 </Col>
+                                <Col xs="12" md="6" lg="6">
+                                    <FormGroup className='rp-app-table-value'>
+                                        <Label className='rp-app-table-label' htmlFor="applicable">
+                                            Applicability
+                                            {
+                                                this.props.testcaseEdit.errors['applicable'] &&
+                                                <i className='fa fa-exclamation-circle rp-error-icon'>{this.props.testcaseEdit.errors['applicable']}</i>
+                                            }
+                                        </Label>
+                                        {
+                                            <div className='rp-app-table-value'><span className='rp-edit-TC-span'>{this.props.testcaseDetail && this.props.testcaseDetail.applicable}</span></div>
+                                        }
+                                    </FormGroup>
+                                </Col>
                                 {/* <Col xs="12" md="6" lg="6">
                                     <FormGroup className='rp-app-table-value'>
                                         <Label className='rp-app-table-label' htmlFor='WorkingStatus'>Working Status {
