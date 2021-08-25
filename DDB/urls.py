@@ -14,7 +14,7 @@ from .tcinfo import TC_INFO_GET_POST_VIEW, GET_TC_INFO_BY_ID, WHOLE_TC_INFO, MUL
         UPDATE_TC_INFO_BY_ID, TcCountByFilter,MULTIPLE_TC_INFO_UPDATION, sync_tcs, sync_platform, duplicate_tcs, duplicate_tcs_gui, duplicate_tcs_by_rel,duplicate_tcs_by_rel_gui, MULTIPLE_TC_UPDATION_APPROVAL_UNAPPROVAL, GetNonExecutedTCs
 
 from .getStatistics import BUG_WISE_BLOCKED_TCS 
-from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO,MULTIPLE_TC_UPDATION_GUI,GetNonExecutedTCsGui
+from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO,MULTIPLE_TC_UPDATION_GUI,GetNonExecutedTCsGui, GUI_TC_INFO_GET_POST_VIEW1
 from .releaseBuildInfo import RELEASEBUILDINFOGETPOSTVIEW,RELEASEBUILDINFODELETEVIEW
 from .createRelease import mergeDB
 from .removeReleaseResults import  removeOldReleaseData
@@ -75,10 +75,12 @@ urlpatterns = [
     path('tccount/<str:Release>', TcCountByFilter),
     path('<str:Release>/tcinfo/domain/<str:Domain>', DOMAINWISETCINFO),
     path('tcupdate/<str:Release>', MULTIPLE_TC_UPDATION),
+    path('tcapplicabilityupdate/<str:Release>', MULTIPLE_TC_UPDATION_APPROVAL_UNAPPROVAL),
     path('tcapprovUnapprove/<str:Release>',MULTIPLE_TC_UPDATION_APPROVAL_UNAPPROVAL),
     path('multipletcinfoupdate/<str:Release>', MULTIPLE_TC_INFO_UPDATION),
 
     path('tcinfogui/<str:Release>', GUI_TC_INFO_GET_POST_VIEW),
+    path('tcinfoapplicabilitygui/<str:Release>', GUI_TC_INFO_GET_POST_VIEW1),
     path('tcstatusgui/<str:Release>', GUI_TC_STATUS_GET_POST_VIEW),
    # path('tcinfoGUIput/<str:Release>/id/<str:id>/card/<str:card>',UPDATE_TC_INFO_GUI_BY_ID)
 

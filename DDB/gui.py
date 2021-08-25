@@ -401,8 +401,8 @@ def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
         for req in requests:
             tcid = req['TcID']
             card = req['CardType']
-            #data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid, CardType = card)
-            data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid)
+            data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid, CardType = card)
+            #data = TC_INFO_GUI.objects.using(Release).filter(TcID = tcid)
             dataSer = TC_INFO_GUI_SERIALIZER(data,many=True)
             for data in dataSer.data:
                 #print("data current",data["TcID"],"\n\n")
@@ -463,8 +463,8 @@ def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
                     master = "DMC Master"
                 else:
                     master = "master"
-            #data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'], CardType = req["CardType"])
-            data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'])
+            data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'], CardType = req["CardType"])
+            #data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'])
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
 
             for data in dataSer.data:
@@ -480,8 +480,8 @@ def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
 
             # UPDATE ROOTRELEASE
             Release = rootRelease
-            #data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
-            data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'])
+            data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
+            #data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'])
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
             for data in dataSer.data:
                 #print("rootrelease data",data)

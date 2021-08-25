@@ -410,14 +410,13 @@ def WHOLE_TC_INFO(request, Release):
                 appl = Applicable.split(",")
 
                 for a in appl:
-                    infod = infodata.filter(applicable__icontains = a)
+                    infod = infodata.filter(applicable = a)
                     try:
                         infodataone = infodataone | infod
                     except:
                         infodataone = infod
 
                 infodata = infodataone
-
         for i in infodata:
                 serializer = TC_INFO_SERIALIZER(i)
         #if Platform != []:
