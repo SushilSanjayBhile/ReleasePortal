@@ -28,6 +28,7 @@ import EditTCGUI from '../../../views/Release/ReleaseTestMetricsGUI/EditTCGUI';
 import { roles, ws, tcTypes } from '../../../constants';
 import TcSummaryGUI from '../../../components/TestCasesAllGUI/TcSummaryGUI';
 import  CheckBox  from '../../../components/TestCasesAll/CheckBox';
+import Multiselect from 'react-bootstrap-multiselect';
 
 
 // import { data, domains, subDomains } from './constants';
@@ -199,6 +200,7 @@ class adminDashboardGUI extends Component {
             displayPlatforms : [],
             newPlatforms:'',
             platforms: [],
+            platformToAdd: [],
 
             tableColumnsTcs: [
                 {id: 1, value: "Show Skip", isChecked: false},
@@ -1624,11 +1626,16 @@ class adminDashboardGUI extends Component {
         })
 
 
-        if(this.state.platforms){
-            this.state.platforms.forEach(each=>{
-                if(each.isChecked){
-                    data.push(each.value)
-                }
+        // if(this.state.platforms){
+        //     this.state.platforms.forEach(each=>{
+        //         if(each.isChecked){
+        //             data.push(each.value)
+        //         }
+        //     })
+        // }
+        if(this.state.platformToAdd){
+            this.state.platformToAdd.forEach(each=>{
+                    data.push(each)
             })
         }
 
@@ -1688,7 +1695,28 @@ class adminDashboardGUI extends Component {
         
         this.setState({platforms: platforms})
     }
-    
+    selectMultiselect(field, event, checked, select) {
+        let value = event.val();
+        switch (field) {
+            case 'Platforms':
+                let rel = null;
+                if (checked && this.state.platformToAdd) {
+                    rel = [...this.state.platformToAdd, value];
+                }
+                if (checked && !this.state.platformToAdd) {
+                    rel = [value];
+                }
+                if (!checked && this.state.platformToAdd) {
+                    let array = this.state.platformToAdd;
+                    array.splice(array.indexOf(value), 1);
+                    rel = array;
+                }
+                this.setState({ platformToAdd: rel});
+                break;
+            default:
+                break;
+        }
+    }
 
     render() {
         //let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate["domain-gui"] && Object.keys(this.props.selectedRelease.TcAggregate["domain-gui"]);
@@ -1699,6 +1727,8 @@ class adminDashboardGUI extends Component {
         let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[this.state.platform]);
         let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainGui[this.state.platform][this.state.domain];
         let priority = this.state.platform ? ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'] : []
+        let rel = this.state.displayPlatforms ? this.state.displayPlatforms.map(item => ({ value: item, selected: this.state.platformToAdd && this.state.platformToAdd.includes(item) })) : [];
+        let multiselect = {'Platforms':rel};
         if (platforms) {
             platforms.sort();
         } else {
@@ -1957,11 +1987,10 @@ class adminDashboardGUI extends Component {
                                                         <Button disabled={this.state.isApiUnderProgress} id="PopoverAssignPlatformGUI" type="button">Apply Multiple</Button>
                                                         <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignPlatformGUI" id="PopoverAssignButtonPlatformGUI" toggle={() => this.popoverTogglePlatformGUI()} isOpen={this.state.popoverOpenPlatformGUI}>
                                                         <PopoverBody>
-                                                                
                                                                 <Row>
                                                                     <Col>
-                                                                        <FormGroup className='rp-app-table-value'>
-                                                                            {/* <input type="checkbox" onClick={this.handleAllCheckedForplatforms}  value="checkedall" /> Check / Uncheck All */}
+                                                                        {/* <FormGroup className='rp-app-table-value'>
+                                                                            <input type="checkbox" onClick={this.handleAllCheckedForplatforms}  value="checkedall" />
                                                                             <ul>
                                                                             {
                                                                             this.state.platforms.map((platformName) => {
@@ -1969,18 +1998,33 @@ class adminDashboardGUI extends Component {
                                                                             })
                                                                             }
                                                                             </ul>
-                                                                        </FormGroup>
-
+                                                                        </FormGroup> */}
+                                                                        {
+                                                                            [
+                                                                                { field: 'Platforms', header: 'Select Platform' }
+                                                                            ].map(item => (
+                                                                                <Col xs="8" md="8" lg="8">
+                                                                                    <FormGroup className='rp-app-table-value'>
+                                                                                        <Label className='rp-app-table-label' htmlFor={item.field}>{item.header}
+                                                                                            {
+                                                                                                //this.state.errors[item.field] &&
+                                                                                                //<i className='fa fa-exclamation-circle rp-error-icon'>{this.state.errors[item.field]}</i>
+                                                                                            }</Label>
+                                                                                        {
+                                                                                                <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(item.field, e, checked, select)}
+                                                                                                    data={multiselect[item.field]} multiple /></div>
+                                                                                        }
+                                                                                    </FormGroup>
+                                                                                </Col>
+                                                                            ))
+                                                                        }
                                                                         <span>
-                                                                        
                                                                         <Button disabled={this.state.isApiUnderProgress} title="Save" size="md" className="rp-rb-save-btn" onClick={() => { this.savePlatormInfo() }} >
                                                                             Save
                                                                         </Button>
-                                                                       
                                                                     </span>
                                                                     </Col>
                                                                 </Row>
-
                                                                 <Row>
                                                                     <Col style={{ float: 'right', marginTop: '0.5rem' }}>
                                                                         <FormGroup className='rp-app-table-value'>
@@ -1992,14 +2036,11 @@ class adminDashboardGUI extends Component {
                                                                                 Add
                                                                             </Button>
                                                                         </span>
-                                                                        
-                                                                       
                                                                     </Col>
                                                                 </Row>
                                                             </PopoverBody>
                                                         </UncontrolledPopover>
                                                     </span>
-
                                                 </div>
                                             }
                                             <div style={{ width: '6rem', marginLeft: '0.5rem' }}>

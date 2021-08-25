@@ -46,6 +46,7 @@ class TestCasesAll extends Component {
     editedRows = {};
     isApiUnderProgress = false;
     isAnyChanged = false;
+    isApplicableChanged = false;
     isBlockedOrFailed = false;
     allTCsToShow = [];
     tcHolder = [];
@@ -562,8 +563,12 @@ class TestCasesAll extends Component {
     toggleAll = () => {
         this.setState({ multipleChanges: !this.state.multipleChanges })
     };
+    toggleApplicable = () => {
+        this.setState({ multipleApplicableChanges: !this.state.multipleApplicableChanges })
+    };
     toggle = () => this.setState({ modal: !this.state.modal });
     popoverToggle = () => this.setState({ popoverOpen: !this.state.popoverOpen });
+    popoverToggleApplicable = () => this.setState({ ApplicablepopoverOpen: !this.state.ApplicablepopoverOpen });
     popoverToggle1 = () => this.setState({ popoverOpen1: !this.state.popoverOpen1 });
     popoverToggle2 = () => this.setState({ popoverOpen2: !this.state.popoverOpen2 });
     confirmStatusDeleteToggle = () => this.setState({ deleteStatusModal: !this.state.deleteStatusModal });
@@ -679,6 +684,7 @@ class TestCasesAll extends Component {
         if (this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
             this.editedRows = {};
             this.isAnyChanged = false;
+            this.isApplicableChanged = false;
             this.isBlockedOrFailed = false;
             this.setState({
                 rowSelect: false, CardType: '', platform: '', domain: '', subDomain: '', Priority: '',
@@ -1133,15 +1139,16 @@ class TestCasesAll extends Component {
     resetRows(resetCount) {
         this.editedRows = {};
         this.isAnyChanged = false;
+        this.isApplicableChanged = false;
         this.isBlockedOrFailed = false;
         if (this.gridApi) {
             this.gridApi.deselectAll();
         }
         this.saveLocalTC();
         if (!resetCount) {
-            this.setState({ multi: {}, totalRows: this.gridApi.getModel().rowsToDisplay.length, selectedRows: this.gridApi.getSelectedRows().length })
+            this.setState({ multi: {}, multiApplicable:{}, totalRows: this.gridApi.getModel().rowsToDisplay.length, selectedRows: this.gridApi.getSelectedRows().length })
         } else {
-            this.setState({ multi: {}, selectedRows: 0, totalRows: 0 })
+            this.setState({ multi: {}, multiApplicable:{}, selectedRows: 0, totalRows: 0 })
         }
     }
     resetSingle() {
@@ -1172,7 +1179,7 @@ class TestCasesAll extends Component {
                 }
             };
             
-            ['Priority', 'Assignee',  'WorkingStatus','applicable','OS'].map(each => {
+            ['Priority', 'Assignee',  'WorkingStatus','OS'].map(each => {
                 let Manual_Assignee = item.stateUserMapping["Manual Assignee"]
                 if (item[each]) {
                     pushable[each] = item[each]
@@ -1233,7 +1240,6 @@ class TestCasesAll extends Component {
             
             items.push(pushable);
         })
-        
         if (items.length === 0 && statusItems.length === 0) {
             return;
         }
@@ -1243,6 +1249,45 @@ class TestCasesAll extends Component {
             this.saveMultipleTcInfo(items)
         }
     }
+
+    saveApplicable() {
+        this.gridOperations(false);
+        let items = [];
+        let selectedRows = this.gridApi.getSelectedRows();
+        selectedRows.forEach(item => {
+            let pushable = {
+                TcID: item.TcID,
+                CardType: item.CardType,
+                Activity: {
+                    Release: this.props.selectedRelease.ReleaseNumber,
+                    "TcID": item.TcID,
+                    CardType: item.CardType,
+                    "UserName": this.props.user.email,
+                    LogData: ``,
+                    "RequestType": 'PUT',
+                    "URL": `/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`
+                }
+            };
+            ['applicable'].map(each => {
+                if (item[each]) {
+                    pushable[each] = item[each]
+                    let old = item[each];
+                    if (this.editedRows[`${item.TcID}_${item.CardType}`] && this.editedRows[`${item.TcID}_${item.CardType}`][each]) {
+                        old = `${this.editedRows[`${item.TcID}_${item.CardType}`][each].originalValue}`
+                    }
+                    pushable.Activity.LogData += `${each}:{old: ${old}, new: ${item[each]}}, `
+                }
+            })
+            items.push(pushable);
+        })
+        if (items.length === 0) {
+            return;
+        }
+        else {
+            this.saveMultipleApplicableTcInfo(items)
+        }
+    }
+
     saveMultipleTcStatus(statusItems, items) {
         this.gridOperations(false);
 
@@ -1265,6 +1310,21 @@ class TestCasesAll extends Component {
     saveMultipleTcInfo(items) {
         this.gridOperations(false);
         axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
+        .then(res => {
+            this.gridOperations(true);
+            //this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true)
+            this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
+            //this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
+            alert('Tc Info Updated Successfully');
+        }, error => {
+            this.gridOperations(true);
+            alert('Failed To Update TC Info');
+        });
+    }
+
+    saveMultipleApplicableTcInfo(items) {
+        this.gridOperations(false);
+        axios.put(`/api/tcapplicabilityupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
         .then(res => {
             this.gridOperations(true);
             //this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true)
@@ -1771,7 +1831,7 @@ class TestCasesAll extends Component {
                                                                             </Input>
                                                                         </FormGroup>
                                                                     </Col>
-                                                                    <Col md="6">
+                                                                    {/* <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
                                                                             <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Build} onChange={(e) => {
                                                                                 this.isAnyChanged = true;
@@ -1790,7 +1850,7 @@ class TestCasesAll extends Component {
                                                                                 }
                                                                             </Input> 
                                                                         </FormGroup>
-                                                                    </Col>
+                                                                    </Col> */}
                                                                     <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
                                                                             <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.TestedOn} onChange={(e) => {
@@ -1908,8 +1968,59 @@ class TestCasesAll extends Component {
 
                                                 </div>
                                             }
-                                             
-                                            <div style={{ width: '5rem', marginLeft: '0.5rem' }}>
+                                            {
+                                                this.props.user &&
+                                                <div style={{ width: '8rem', marginLeft: '0.5rem' }}>
+                                                    <span>
+                                                        <Button disabled={this.state.isApiUnderProgress} id="PopoverAssignn" type="button">Applicable/Skip/NA</Button>
+                                                        <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignn" id="PopoverAssignnButton" toggle={() => this.popoverToggleApplicable()} isOpen={this.state.ApplicablepopoverOpen}>
+                                                            <PopoverBody>
+                                                                <Row>
+                                                                    <Col md="12">
+                                                                        <FormGroup className='rp-app-table-value'>
+                                                                            <Input required disabled={this.state.isApiUnderProgress} value={this.state.multiApplicable && this.state.multiApplicable.applicable} onChange={(e) => {
+                                                                                this.isApplicableChanged = true;
+                                                                                let selectedRows = this.gridApi.getSelectedRows();
+                                                                                if (e.target.value && e.target.value !== '') {
+                                                                                    selectedRows.forEach(item => {
+                                                                                        this.onCellEditing(item, 'applicable', e.target.value)
+                                                                                        item['applicable'] = e.target.value;
+                                                                                    })
+                                                                                }
+                                                                                this.setState({ multiApplicable: { ...this.state.multiApplicable, applicable: e.target.value } })
+                                                                                setTimeout(this.gridApi.redrawRows(), 0);
+                                                                            }} type="select" id={`select_Status`} >
+                                                                                {
+                                                                                    ["Applicability","Applicable","NA","Skip"].map(item => <option value={item}>{item}</option>)
+                                                                                }
+                                                                            </Input>
+                                                                        </FormGroup>
+                                                                    </Col>
+                                                                </Row>
+                                                                <div style={{ float: 'right', marginBottom: '0.5rem' }}>
+                                                                    <span>
+                                                                        {
+                                                                            this.isApplicableChanged &&
+                                                                            <Button disabled={this.state.isApiUnderProgress} title="Undo" size="md" className="rp-rb-save-btn" onClick={() => /*this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain)*/this.getTcs(true, this.state.CardType, this.state.platform, null, null)} >
+                                                                                Undo
+                                                                            </Button>
+                                                                        }
+                                                                    </span>
+                                                                    <span>
+                                                                        {
+                                                                            this.isApplicableChanged &&
+                                                                            <Button disabled={this.state.isApiUnderProgress} title="Save" size="md" className="rp-rb-save-btn" onClick={() => { this.popoverToggleApplicable(); this.toggleApplicable() }} >
+                                                                                Save
+                                                                            </Button>
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                            </PopoverBody>
+                                                        </UncontrolledPopover>
+                                                    </span>
+                                                </div>
+                                            }
+                                            <div style={{ width: '5rem', marginLeft: '1rem' }}>
                                                 <Button disabled={this.state.isApiUnderProgress} title="Only selected TCS will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.gridApi) {
                                                         let selected = this.gridApi.getSelectedRows().length;
@@ -2194,6 +2305,25 @@ class TestCasesAll extends Component {
                         <Button color="primary" onClick={() => { this.toggleAll(); this.saveAll(); }}>Ok</Button>{' '}
                         {
                             <Button color="secondary" onClick={() => this.toggleAll()}>Cancel</Button>
+                        }
+                    </ModalFooter>
+                </Modal>
+                <Modal isOpen={this.state.multipleApplicableChanges} toggle={() => this.toggleApplicable()}>
+                    {
+                        <ModalHeader toggle={() => this.toggleApplicable()}>{
+                            'Confirmation'
+                        }</ModalHeader>
+                    }
+                    <ModalBody>
+                        {
+                            `Are you sure you want to update multiple changes ?`
+                        }
+
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => { this.toggleApplicable(); this.saveApplicable(); }}>Ok</Button>{' '}
+                        {
+                            <Button color="secondary" onClick={() => this.toggleAllApplicable()}>Cancel</Button>
                         }
                     </ModalFooter>
                 </Modal>

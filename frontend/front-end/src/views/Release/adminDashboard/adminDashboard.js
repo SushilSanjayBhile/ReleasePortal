@@ -218,6 +218,7 @@ class adminDashboard extends Component {
             ],
 
             platforms: [],
+            platformToAdd: [],
 
             applicableTCForStatus:[],
             statusColumn:[
@@ -1462,20 +1463,18 @@ class adminDashboard extends Component {
             
             allSelectedTc.push(item.id)
         })
-
-        if(this.state.platforms){
-            this.state.platforms.forEach(each=>{
-                if(each.isChecked){
-                    data.push(each.value)
-                }
-            })
-        }
-        // if(this.state.platformToAdd){
-        //     this.state.platformToAdd.forEach(each=>{
-        //             data.push(each)
+        // if(this.state.platforms){
+        //     this.state.platforms.forEach(each=>{
+        //         if(each.isChecked){
+        //             data.push(each.value)
+        //         }
         //     })
         // }
-
+        if(this.state.platformToAdd){
+            this.state.platformToAdd.forEach(each=>{
+                    data.push(each)
+            })
+        }
         let testList = []
         data.map((item)=>{
             testList.push({
@@ -1489,7 +1488,6 @@ class adminDashboard extends Component {
         //     Platforms : data,
         //     Interface : "CLI" 
         // })
-
         if (this.props.selectedRelease.ReleaseNumber == "DCX-DMC-Master"){
             axios.post('/api/applicable/' + this.props.selectedRelease.ReleaseNumber , testList)
             .then(response=>{
@@ -1628,30 +1626,29 @@ class adminDashboard extends Component {
             this.getTC(this.currentSelectedRow, true, true);
         }, 400);
     }
-    // selectMultiselect(field, event, checked, select) {
-    //     let value = event.val();
-    //     switch (field) {
-    //         case 'Platforms':
-    //             let rel = null;
-    //             if (checked && this.state.platformToAdd) {
-    //                 rel = [...this.state.platformToAdd, value];
-    //             }
-    //             if (checked && !this.state.platformToAdd) {
-    //                 rel = [value];
-    //             }
-    //             if (!checked && this.state.platformToAdd) {
-    //                 let array = this.state.platformToAdd;
-    //                 array.splice(array.indexOf(value), 1);
-    //                 rel = array;
-    //             }
-    //             this.setState({ platformToAdd: rel});
-    //             break;
-    
-    //         default:
-    //             break;
-    //         }
-            
-    // }
+    selectMultiselect(field, event, checked, select) {
+        let value = event.val();
+        switch (field) {
+            case 'Platforms':
+                let rel = null;
+                if (checked && this.state.platformToAdd) {
+                    rel = [...this.state.platformToAdd, value];
+                }
+                if (checked && !this.state.platformToAdd) {
+                    rel = [value];
+                }
+                if (!checked && this.state.platformToAdd) {
+                    let array = this.state.platformToAdd;
+                    array.splice(array.indexOf(value), 1);
+                    rel = array;
+                }
+                this.setState({ platformToAdd: rel});
+                console.log("platformToAdd",this.state.platformToAdd)
+                break;
+            default:
+                break;
+        }
+    }
 
     render() {
         //let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
@@ -1660,8 +1657,8 @@ class adminDashboard extends Component {
         let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsCli ? this.props.selectedRelease.PlatformsCli : []
         let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform]) ? Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform]) : [];
         let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform][this.state.domain];
-        //let rel = this.state.displayPlatforms ? this.state.displayPlatforms.map(item => ({ value: item, selected: this.state.platformToAdd && this.state.platformToAdd.includes(item) })) : [];
-        //let multiselect = {'Platforms':rel};
+        let rel = this.state.displayPlatforms ? this.state.displayPlatforms.map(item => ({ value: item, selected: this.state.platformToAdd && this.state.platformToAdd.includes(item) })) : [];
+        let multiselect = {'Platforms':rel};
         let priority = this.state.platform ? ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'] : []
         if (platforms) {
             platforms.sort();
@@ -1893,7 +1890,7 @@ class adminDashboard extends Component {
                                                                 
                                                                 <Row>
                                                                     <Col>
-                                                                        <FormGroup className='rp-app-table-value'>
+                                                                        {/* <FormGroup className='rp-app-table-value'>
                                                                             <input type="checkbox" onClick={this.handleAllCheckedForPlatforms}  value="checkedall" /> Check / Uncheck All
                                                                             <ul>
                                                                             {
@@ -1902,8 +1899,8 @@ class adminDashboard extends Component {
                                                                             })
                                                                             }
                                                                             </ul>
-                                                                        </FormGroup>
-                                                                        {/* {
+                                                                        </FormGroup> */}
+                                                                        {
                                                                             [
                                                                                 { field: 'Platforms', header: 'Select Platform' }
                                                                             ].map(item => (
@@ -1921,7 +1918,7 @@ class adminDashboard extends Component {
                                                                                     </FormGroup>
                                                                                 </Col>
                                                                             ))
-                                                                        } */}
+                                                                        }
 
                                                                         <span>
                                                                         

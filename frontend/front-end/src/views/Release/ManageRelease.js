@@ -1297,9 +1297,9 @@ class ManageRelease extends Component {
             .then(single => {
                 if(single.data){
                     setTimeout(() => {  
-                        axios.post(`/api/cleanupdb`, { ...data })
+                        axios.put(url, formData)
                         .then(response=>{
-                                axios.put(url,formData)
+                                axios.post(`/api/cleanupdb`, { ...data })
                                 .then(response=>{
                                     alert('successfully added the release');
                                     window.location.reload()
