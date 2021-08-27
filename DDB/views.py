@@ -266,8 +266,8 @@ def get_cli_dataDict(cliTcInfo, cliStatus):
     csd = {} #csd stands for cli status dict  # csd consist of only latest tc status'
 
     tcinfoserializer = TC_INFO_SERIALIZER(cliTcInfo, many=True)
-    statusserializer = LATEST_TC_STATUS_SERIALIZER(cliStatus, many=True)
-
+    #statusserializer = LATEST_TC_STATUS_SERIALIZER(cliStatus, many=True)
+    statusserializer = TC_STATUS_SERIALIZER(cliStatus, many=True)
     for status in statusserializer.data:
         domain = status["Domain"]
         card = status["CardType"]
@@ -458,9 +458,11 @@ def domain_cli_aggreggation(cliTcInfo, cliStatus):
         scard = stat["CardType"]
         stcname = stat["TcName"]
         sPriority = stat["Priority"]
+        sApplicable = stat["applicable"]
 
         # Skip and NA checking
-        if sPriority == "Skip" or sPriority == "NA":
+        #if sPriority == "Skip" or sPriority == "NA": #commenting Priority check bcoz using applicability as NA/Skip 
+        if sApplicable == "Skip" or sApplicable == "NA":
             continue
 
         try:
@@ -479,14 +481,16 @@ def domain_cli_aggreggation(cliTcInfo, cliStatus):
             pass
 
     for tc in tcinfoserializer.data:
-        if tc["Priority"] == "Skip": # we need NA count, so skipping only SKIP(priority) tcs
+        #if tc["Priority"] == "Skip": # we need NA count, so skipping only SKIP(priority) tcs
+        if tc["applicable"] == "Skip": #commenting Priority check bcoz using applicability as NA/Skip
             continue
 
         domain = tc["Domain"]
         card = tc["CardType"]
         tcid = tc["TcID"]
 
-        if tc["Priority"] == "NA":
+        #if tc["Priority"] == "NA":
+        if tc["applicable"] == "NA":
             myDict['domain-cli'][domain]['NotApplicable'] += 1
             continue
 
@@ -503,8 +507,9 @@ def get_cli_priorityDict(cliTcInfo,cliStatus):
     priorityStatusList = ['Pass', 'Fail', 'Skip', 'Blocked', 'NotTested']
 
     for prior in priorities:
-        if prior["Priority"] == "Skip" or prior["Priority"]  == "NA":   # only applicable
-            continue
+        #if prior["Priority"] == "Skip" or prior["Priority"]  == "NA":   # only applicable
+        #if prior["applicable"] == "Skip" or prior["applicable"]  == "NA":
+        #    continue
 
         myDict['Priority'][prior['Priority']] = {}
         for item in priorityStatusList:
@@ -513,10 +518,12 @@ def get_cli_priorityDict(cliTcInfo,cliStatus):
     for domain in cid:
         for tc in cid[domain]:
             for item in cid[domain][tc]:
+                appl = cid[domain][tc][item]["applicable"]
                 priority = cid[domain][tc][item]["Priority"]
-                if priority == "Skip" or priority == "NA":
+                #if priority == "Skip" or priority == "NA":
+                #    continue
+                if appl == "Skip" or appl == "NA":
                     continue
-
                 try:
                     result = cid[domain][tc][item]["Result"]
                 except:
@@ -547,12 +554,39 @@ def get_gui_dataDict(guiTcInfo, guiStatus):
 
         if id not in gid:
             gid[id] = tc
-
     for status in statusserializer.data:
         id = status["tcInfoNum"]
         if id not in gsd:
             gsd[id] = status
+        try:
+            appl = gid[id]["applicable"]
+            prio = gid[id]["Priority"]
+            gid[id].update(gsd[id])
+            gid[id]["applicable"] = appl
+            gid[id]["Priority"] = prio
+            #gsd[id].update(gid[id])
+        except:
+            pass
 
+    return (gid,gsd)
+
+def get_gui_dataDict1(guiTcInfo, guiStatus):
+
+    gid = {} #gid stands for gui info dict
+    gsd = {} #gsd stands for gui status dict
+
+    tcinfoserializer = TC_INFO_GUI_SERIALIZER(guiTcInfo, many=True)
+    statusserializer = LATEST_TC_STATUS_GUI_SERIALIZER(guiStatus, many=True)
+
+    for tc in tcinfoserializer.data:
+        id = tc["id"]
+
+        if id not in gid:
+            gid[id] = tc
+    for status in statusserializer.data:
+        id = status["tcInfoNum"]
+        if id not in gsd:
+            gsd[id] = status
         try:
             gsd[id].update(gid[id])
         except:
@@ -560,18 +594,19 @@ def get_gui_dataDict(guiTcInfo, guiStatus):
 
     return (gid,gsd)
 
+
 def get_gui_priorityDict(guiTcInfo,guiStatus):
     myDict = {}
     myDict['Priority'] = {}
     priorityStatusList = ['Pass','Fail','Skip','Blocked','NotTested']
 
-    _, gsd = get_gui_dataDict(guiTcInfo, guiStatus)
-
+    #_, gsd = get_gui_dataDict(guiTcInfo, guiStatus)
+    gsd, _ = get_gui_dataDict(guiTcInfo, guiStatus)
     # creating priority wise default dictionary
     priorities = guiTcInfo.values('Priority').distinct()
     for prior in priorities:
-        if prior["Priority"] == "Skip" or prior["Priority"]  == "NA":
-            continue
+        #if prior["Priority"] == "Skip" or prior["Priority"]  == "NA":
+        #    continue
         myDict['Priority'][prior['Priority']] = {}
         for item in priorityStatusList:
             myDict['Priority'][prior['Priority']][item] = 0
@@ -579,18 +614,22 @@ def get_gui_priorityDict(guiTcInfo,guiStatus):
     for id in gsd:
         try:
             priority = gsd[id]["Priority"]
+            applicable = gsd[id]["applicable"]
             result = gsd[id]["Result"]
 
-            if priority == "Skip" or priority == "NA":
+            #if priority == "Skip" or priority == "NA":
+            #    continue
+            if applicable == "Skip" or applicable == "NA":
                 continue
-
             #check to add unblocked in not tested
             if result == 'Unblocked':
                 myDict['Priority'][priority]['NotTested'] += 1
             else:
                 myDict['Priority'][priority][result] += 1
         except:
-            pass
+            #pass
+            priority = gsd[id]["Priority"]
+            myDict['Priority'][priority]['NotTested'] +=1
 
     return myDict["Priority"]
 
@@ -601,7 +640,7 @@ def domain_gui_aggreggation(guiTcInfo, guiStatus):
     myDict['domain-gui'] = {}
     global statusList
 
-    gid,gsd = get_gui_dataDict(guiTcInfo, guiStatus)
+    gid,gsd = get_gui_dataDict1(guiTcInfo, guiStatus)
 
     priorityList = ['P0','P1','P2','P3','P4','P5','P6','P7']
 
@@ -643,8 +682,8 @@ def domain_gui_aggreggation(guiTcInfo, guiStatus):
         domain = gsd[status]["Domain"]
         tcname = gsd[status]["AutomatedTcName"]
 
-        if prior == "Skip" or prior == "NA" or res == "Unblocked":
-             continue
+        #if prior == "Skip" or prior == "NA" or res == "Unblocked":
+        #     continue
 
         if tcname == "TC NOT AUTOMATED":
             myDict['domain-gui'][domain]['Tested']['manual'][res] += 1
@@ -655,13 +694,16 @@ def domain_gui_aggreggation(guiTcInfo, guiStatus):
 
     ser = TC_INFO_GUI_SERIALIZER(guiTcInfo, many = True)
     for tc in ser.data:
-        if tc["Priority"] == "Skip":
+        #if tc["Priority"] == "Skip":
+        #    continue
+        if tc["applicable"] == "Skip":
             continue
         domain = tc["Domain"]
         card = tc["CardType"]
         tcid = tc["TcID"]
 
-        if tc["Priority"] == "NA":
+        #if tc["Priority"] == "NA":
+        if tc["applicable"] == "NA":
             myDict['domain-gui'][domain]['NotApplicable'] += 1
             continue
 
@@ -845,8 +887,8 @@ def TCAGGREGATE_DASHBOARD(request, Release):
         # GUI TC INFO AND STATUS
         guiTcInfo = TC_INFO_GUI.objects.using(Release).all()
         #guiTcInfo = TC_INFO_GUI.objects.using(Release).filter(~Q(Priority = "NA"))
-        guiStatus = GUI_TC_STATUS.objects.using(Release).all().order_by('-Date')
-
+        #guiStatus = GUI_TC_STATUS.objects.using(Release).all().order_by('-Date')
+        guiStatus = GUI_LATEST_TC_STATUS.objects.using(Release).all().order_by('-Date')
         #domain-gui function call
         dictionary['domain-gui'] = domain_gui_aggreggation(guiTcInfo, guiStatus) #domain wise aggregation
         dictionary["PriorityGui"] = get_gui_priorityDict(guiTcInfo,guiStatus) #priority wise aggregation
@@ -856,7 +898,8 @@ def TCAGGREGATE_DASHBOARD(request, Release):
 
         ############################################
         # cli total numbers calculation for dashboard
-        applicableCliInfo = cliTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "Skp")).filter(~Q(Priority = "NA"))
+        #applicableCliInfo = cliTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "Skp")).filter(~Q(Priority = "NA"))
+        applicableCliInfo = cliTcInfo.filter(applicable = "Applicable").filter(~Q(applicable = "Skip")).filter(~Q(applicable = "NA"))
         # default dictionary for CLI
         dictionary["all"] = {}
         dictionary["all"]["Blocked"] = 0 # default values
@@ -871,8 +914,10 @@ def TCAGGREGATE_DASHBOARD(request, Release):
 
         # actual values calculation for CLI
         dictionary["all"]["All"] = cliTcInfo.count()
-        dictionary["all"]["Skip"] = cliTcInfo.filter(Priority = "Skip").count() + cliTcInfo.filter(Priority = "Skp").count()
-        dictionary["all"]["NotApplicable"] = cliTcInfo.filter(Priority = "NA").count()
+        #dictionary["all"]["Skip"] = cliTcInfo.filter(Priority = "Skip").count() + cliTcInfo.filter(Priority = "Skp").count()
+        dictionary["all"]["Skip"] = cliTcInfo.filter(applicable = "Skip").count()
+        #dictionary["all"]["NotApplicable"] = cliTcInfo.filter(Priority = "NA").count()
+        dictionary["all"]["NotApplicable"] = cliTcInfo.filter(applicable = "NA").count()
         dictionary["all"]["NonAutomated"] = applicableCliInfo.filter(TcName = "TC NOT AUTOMATED").count()
         temp = applicableCliInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).filter(~Q(TcName = "NOT AUTOMATED")).filter(~Q(TcName = "undefined"))
         #dictionary["all"]["Automated"] = applicableCliInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
@@ -894,7 +939,8 @@ def TCAGGREGATE_DASHBOARD(request, Release):
 
         #############################################
         # GUI total numbers calculation for dashboard
-        applicableGuiInfo = guiTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "Skp")).filter(~Q(Priority = "NA"))
+        #applicableGuiInfo = guiTcInfo.filter(applicable = "Applicable").filter(~Q(Priority = "Skip")).filter(~Q(Priority = "Skp")).filter(~Q(Priority = "NA"))
+        applicableGuiInfo = guiTcInfo.filter(applicable = "Applicable").filter(~Q(applicable = "Skip")).filter(~Q(applicable = "NA"))
 
         # default dictionary for CLI
         dictionary["allGUI"] = {}
@@ -912,8 +958,10 @@ def TCAGGREGATE_DASHBOARD(request, Release):
 
         # actual values calculation for CLI
         dictionary["allGUI"]["All"] = guiTcInfo.count()
-        dictionary["allGUI"]["Skip"] = guiTcInfo.filter(Priority = "Skip").filter(Priority = "Skp").count()
-        dictionary["allGUI"]["NotApplicable"] = guiTcInfo.filter(Priority = "NA").count()
+        #dictionary["allGUI"]["Skip"] = guiTcInfo.filter(Priority = "Skip").filter(Priority = "Skp").count()
+        dictionary["allGUI"]["Skip"] = guiTcInfo.filter(applicable = "Skip").count()
+        #dictionary["allGUI"]["NotApplicable"] = guiTcInfo.filter(Priority = "NA").count()
+        dictionary["allGUI"]["NotApplicable"] = guiTcInfo.filter(applicable = "NA").count()
         dictionary["allGUI"]["NonAutomated"] = applicableGuiInfo.filter(TcName = "TC NOT AUTOMATED").count()
         #dictionary["allGUI"]["Automated"] = applicableGuiInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).count()
         tempg = applicableGuiInfo.filter(~Q(TcName = "TC NOT AUTOMATED")).filter(~Q(TcName = "NOT AUTOMATED")).filter(~Q(TcName = "undefined"))
