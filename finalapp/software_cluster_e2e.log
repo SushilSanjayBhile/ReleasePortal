@@ -1,0 +1,1163 @@
+Diamanti test package path : /dwshome/chetan/diamanti-test-pkg
+Default log file location : /dwshome/chetan/diamanti-test-pkg/logs/e2e_log2020-10-26_02-06-45.log
+2020-10-26T02:06:45.325-0700	DEBUG	lib/util.go:2313	Removing leading and trailing spaces from Ipmi IP of all nodes.
+2020-10-26T02:07:00.175-0700	DEBUG	lib/util.go:2590	Local dctl release number :[91m 679 [0m
+2020-10-26T02:07:00.175-0700	DEBUG	lib/util.go:2591	Given rpm's dctl release number :[91m 680 [0m
+2020-10-26T02:07:00.175-0700	DEBUG	lib/util.go:2592	[91mDctl release number mismatch !![0m
+2020-10-26T02:07:01.354-0700	DEBUG	tests/driver.go:125	Testbed type used is to get list of Tcs is: Vagrant
+Running Suite: DWS e2e Suite run 1 of 1
+=======================================
+Random Seed: [1m1603703205[0m - Will randomize all specs
+Will run [1m19[0m of [1m456[0m specs
+
+2020-10-26T02:07:01.455-0700	DEBUG	tests/volume.go:71	Planning to run tests on following nodes :
+2020-10-26T02:07:01.455-0700	DEBUG	tests/volume.go:73	softserv67
+2020-10-26T02:07:01.455-0700	DEBUG	tests/volume.go:73	softserv68
+2020-10-26T02:07:01.455-0700	DEBUG	tests/volume.go:73	softserv69
+2020-10-26T02:07:01.455-0700	DEBUG	lib/dwtest_lib.go:758	Checking existance of loopback device(s) on all cluster nodes
+2020-10-26T02:07:03.796-0700	DEBUG	tests/volume.go:90	Saving cluster info of primary and secondary clusters: 
+2020-10-26T02:07:03.888-0700	DEBUG	tests/util.go:266	Saving configuration of primary cluster: 
+2020-10-26T02:07:04.810-0700	DEBUG	tests/volume.go:94	Checking if cluster already exists 
+2020-10-26T02:07:04.871-0700	DEBUG	tests/volume.go:114	Login to cluster
+2020-10-26T02:07:05.490-0700	DEBUG	lib/util.go:166	Recording timestamp of all services on all nodes
+2020-10-26T02:07:10.292-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:07:10.895-0700	DEBUG	tests/util.go:220	Overwritting e2e parameter : ExpectedBasicVnicUsageCount
+2020-10-26T02:07:15.738-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:07:15.852-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:07:15.852-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:07:15.852-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:07:16.387-0700	DEBUG	lib/util.go:1221	Labeled all nodes with node=node$
+
+2020-10-26T02:07:16.387-0700	DEBUG	tests/clusterutil.go:115	Creating storage classes
+2020-10-26T02:07:30.893-0700	DEBUG	tests/volume.go:203	[32m Installing Diamanti Rpms [0m
+2020-10-26T02:07:32.806-0700	DEBUG	lib/util.go:1101	Diamanti Package diamanti-cx is installed on 172.16.6.67
+2020-10-26T02:07:33.609-0700	DEBUG	lib/util.go:1632	Version of the old dctl : 9.9.1
+2020-10-26T02:07:33.638-0700	DEBUG	lib/util.go:1638	Version of the rpm which we are going to install: 9.9.1
+2020-10-26T02:07:33.638-0700	DEBUG	lib/util.go:1646	Method used :upgrade. RPM path: diamanti-cx-9.9.1-680.x86_64.rpm
+2020-10-26T02:07:33.638-0700	DEBUG	lib/util.go:1650	Output from softserv67
+2020-10-26T02:07:49.447-0700	DEBUG	lib/util.go:1104	Diamanti package diamanti-cx-9.9.1-680.x86_64.rpm is not installed on 172.16.6.69
+2020-10-26T02:07:50.222-0700	DEBUG	lib/util.go:1104	Diamanti package diamanti-cx-9.9.1-680.x86_64.rpm is not installed on 172.16.6.67
+2020-10-26T02:07:50.521-0700	DEBUG	lib/util.go:1104	Diamanti package diamanti-cx-9.9.1-680.x86_64.rpm is not installed on 172.16.6.68
+2020-10-26T02:07:51.502-0700	DEBUG	lib/util.go:2725	[33m Uninstalling diamanti-cx-9.9.1-680.x86_64 from 172.16.6.69 [0m
+2020-10-26T02:07:52.064-0700	DEBUG	lib/util.go:2725	[33m Uninstalling diamanti-cx-9.9.1-680.x86_64 from 172.16.6.67 [0m
+2020-10-26T02:07:52.596-0700	DEBUG	lib/util.go:2725	[33m Uninstalling diamanti-cx-9.9.1-680.x86_64 from 172.16.6.68 [0m
+diamanti: Stopping services on uninstall...
+diamanti: Stopping services on uninstall...
+diamanti: Stopping services on uninstall...
+warning: /etc/kubernetes/kubelet.conf saved as /etc/kubernetes/kubelet.conf.rpmsave
+warning: /etc/kubernetes/controller-manager saved as /etc/kubernetes/controller-manager.rpmsave
+warning: /etc/diamanti/prometheus/prometheus.yml saved as /etc/diamanti/prometheus/prometheus.yml.rpmsave
+warning: /etc/diamanti/node_properties.conf saved as /etc/diamanti/node_properties.conf.rpmsave
+warning: /etc/diamanti/convoy.conf saved as /etc/diamanti/convoy.conf.rpmsave
+diamanti: Cleaning up on uninstall...
+warning: /etc/kubernetes/kubelet.conf saved as /etc/kubernetes/kubelet.conf.rpmsave
+warning: /etc/kubernetes/controller-manager saved as /etc/kubernetes/controller-manager.rpmsave
+warning: /etc/diamanti/prometheus/prometheus.yml saved as /etc/diamanti/prometheus/prometheus.yml.rpmsave
+warning: /etc/diamanti/node_properties.conf saved as /etc/diamanti/node_properties.conf.rpmsave
+warning: /etc/diamanti/convoy.conf saved as /etc/diamanti/convoy.conf.rpmsave
+diamanti: Cleaning up on uninstall...
+warning: /etc/kubernetes/kubelet.conf saved as /etc/kubernetes/kubelet.conf.rpmsave
+warning: /etc/kubernetes/controller-manager saved as /etc/kubernetes/controller-manager.rpmsave
+warning: /etc/diamanti/prometheus/prometheus.yml saved as /etc/diamanti/prometheus/prometheus.yml.rpmsave
+warning: /etc/diamanti/node_properties.conf saved as /etc/diamanti/node_properties.conf.rpmsave
+warning: /etc/diamanti/convoy.conf saved as /etc/diamanti/convoy.conf.rpmsave
+diamanti: Cleaning up on uninstall...
+Preparing...                                                            (100%)#                                 (100%)##                                (100%)###                               (100%)####                              (100%)#####                             (100%)######                            (100%)#######                           (100%)########                          (100%)#########                         (100%)##########                        (100%)###########                       (100%)############                      (100%)#############                     (100%)##############                    (100%)###############                   (100%)################                  (100%)#################                 (100%)##################                (100%)###################               (100%)####################              (100%)#####################             (100%)######################            (100%)#######################           (100%)########################          (100%)#########################         (100%)##########################        (100%)###########################       (100%)############################      (100%)#############################     (100%)##############################    (100%)###############################   (100%)################################  (100%)################################# (100%)################################# [100%]
+Updating / installing...
+   1:diamanti-cx-9.9.1-680                                              (  1%)#                                 (  4%)##                                (  7%)###                               ( 10%)####                              ( 13%)#####                             ( 16%)######                            ( 19%)#######                           ( 22%)########                          ( 25%)#########                         ( 28%)##########                        ( 31%)###########                       ( 34%)############                      ( 37%)#############                     ( 40%)##############                    ( 43%)###############                   ( 46%)################                  ( 49%)#################                 ( 51%)##################                ( 54%)###################               ( 57%)####################              ( 60%)#####################             ( 63%)######################            ( 66%)#######################           ( 69%)########################          ( 72%)#########################         ( 75%)##########################        ( 78%)###########################       ( 81%)############################      ( 84%)#############################     ( 87%)##############################    ( 90%)###############################   ( 93%)################################  ( 96%)################################# ( 99%)################################# [100%]
+Please powercycle for changes to take effect
+
+ Output from  softserv68
+Preparing...                                                            (100%)#                                 (100%)##                                (100%)###                               (100%)####                              (100%)#####                             (100%)######                            (100%)#######                           (100%)########                          (100%)#########                         (100%)##########                        (100%)###########                       (100%)############                      (100%)#############                     (100%)##############                    (100%)###############                   (100%)################                  (100%)#################                 (100%)##################                (100%)###################               (100%)####################              (100%)#####################             (100%)######################            (100%)#######################           (100%)########################          (100%)#########################         (100%)##########################        (100%)###########################       (100%)############################      (100%)#############################     (100%)##############################    (100%)###############################   (100%)################################  (100%)################################# (100%)################################# [100%]
+Updating / installing...
+   1:diamanti-cx-9.9.1-680                                              (  1%)#                                 (  4%)##                                (  7%)###                               ( 10%)####                              ( 13%)#####                             ( 16%)######                            ( 19%)#######                           ( 22%)########                          ( 25%)#########                         ( 28%)##########                        ( 31%)###########                       ( 34%)############                      ( 37%)#############                     ( 40%)##############                    ( 43%)###############                   ( 46%)################                  ( 49%)#################                 ( 51%)##################                ( 54%)###################               ( 57%)####################              ( 60%)#####################             ( 63%)######################            ( 66%)#######################           ( 69%)########################          ( 72%)#########################         ( 75%)##########################        ( 78%)###########################       ( 81%)############################      ( 84%)#############################     ( 87%)##############################    ( 90%)###############################   ( 93%)################################  ( 96%)################################# ( 99%)################################# [100%]
+Please powercycle for changes to take effect
+
+CentOS Linux 7 (Core)
+Kernel 3.10.0-957.el7.x86_64 on an x86_64
+
+
+ Output from  softserv69
+Preparing...                                                            (100%)#                                 (100%)##                                (100%)###                               (100%)####                              (100%)#####                             (100%)######                            (100%)#######                           (100%)########                          (100%)#########                         (100%)##########                        (100%)###########                       (100%)############                      (100%)#############                     (100%)##############                    (100%)###############                   (100%)################                  (100%)#################                 (100%)##################                (100%)###################               (100%)####################              (100%)#####################             (100%)######################            (100%)#######################           (100%)########################          (100%)#########################         (100%)##########################        (100%)###########################       (100%)############################      (100%)#############################     (100%)##############################    (100%)###############################   (100%)################################  (100%)################################# (100%)################################# [100%]
+Updating / installing...
+   1:diamanti-cx-9.9.1-680                                              (  1%)#                                 (  4%)##                                (  7%)###                               ( 10%)####                              ( 13%)#####                             ( 16%)######                            ( 19%)#######                           ( 22%)########                          ( 25%)#########                         ( 28%)##########                        ( 31%)###########                       ( 34%)############                      ( 37%)#############                     ( 40%)##############                    ( 43%)###############                   ( 46%)################                  ( 49%)#################                 ( 51%)##################                ( 54%)###################               ( 57%)####################              ( 60%)#####################             ( 63%)######################            ( 66%)#######################           ( 69%)########################          ( 72%)#########################         ( 75%)##########################        ( 78%)###########################       ( 81%)############################      ( 84%)#############################     ( 87%)##############################    ( 90%)###############################   ( 93%)################################  ( 96%)################################# ( 99%)################################# [100%]
+Please powercycle for changes to take effect
+
+CentOS Linux 7 (Core)
+Kernel 3.10.0-957.el7.x86_64 on an x86_64
+
+2020-10-26T02:10:59.227-0700	DEBUG	lib/util.go:1691	Old rpm verison was = 9.9.1
+2020-10-26T02:10:59.227-0700	DEBUG	lib/util.go:1696	Current rpm verison is = 9.9.1
+2020-10-26T02:10:59.227-0700	DEBUG	lib/util.go:1553	Rebooting all nodes.
+2020-10-26T02:10:59.227-0700	DEBUG	lib/dwtest_lib.go:735	Doing sync on 172.16.6.67
+2020-10-26T02:11:00.060-0700	DEBUG	lib/dwtest_lib.go:735	Doing sync on 172.16.6.68
+2020-10-26T02:11:00.901-0700	DEBUG	lib/dwtest_lib.go:735	Doing sync on 172.16.6.69
+2020-10-26T02:11:01.761-0700	DEBUG	lib/util.go:1744	Waiting for nodes to come up, will wait upto 1800 seconds
+...2020-10-26T02:11:48.095-0700	DEBUG	lib/util.go:1775	Nodes are up, waiting for armada to start
+...
+2020-10-26T02:12:18.100-0700	DEBUG	tests/util.go:216	PerStorageLinkExpectedIOPs : 200000, PerStorageLinkExpectedIOPsBiDi : 100000, LocalStoageExpectedIOPs : 500000
+2020-10-26T02:12:18.100-0700	DEBUG	tests/volume.go:211	Starting tests
+2020-10-26T02:12:18.145-0700	DEBUG	lib/cluster.go:422	Cluster admin password is Diamanti@111
+2020-10-26T02:12:18.145-0700	DEBUG	lib/cluster.go:430	Cluster Spec Node list is [softserv67 softserv68 softserv69]
+2020-10-26T02:12:18.145-0700	DEBUG	lib/cluster.go:431	Cluster Spec Master Node list is [softserv67 softserv68 softserv69]
+2020-10-26T02:12:18.145-0700	DEBUG	lib/cluster.go:434	Getting dns domain name
+2020-10-26T02:12:18.150-0700	DEBUG	lib/cluster.go:442	FQDN : softtb11.eng.diamanti.com
+2020-10-26T02:12:18.150-0700	DEBUG	lib/cluster.go:444	Generating certificates for the cluster: (Name: softtb11, VIP: 172.16.19.182, FQDN: softtb11.eng.diamanti.com)
+2020-10-26T02:12:18.150-0700	DEBUG	lib/cluster.go:186	Clean up existing certs if any:
+2020-10-26T02:12:18.153-0700	DEBUG	lib/cluster.go:195	Generate unique CA name with current date
+2020-10-26T02:12:18.160-0700	DEBUG	lib/cluster.go:205	Integrate CA name in file
+2020-10-26T02:12:18.168-0700	DEBUG	lib/cluster.go:213	Generate CA certs
+2020-10-26T02:12:18.813-0700	DEBUG	lib/cluster.go:221	Create a CSR to generate a certificate using FQDN, VIP, Cluster Name for a server certs
+2020-10-26T02:12:18.820-0700	DEBUG	lib/cluster.go:229	Generate server certificate:
+2020-10-26T02:12:19.323-0700	DEBUG	lib/cluster.go:452	Getting CertificateAuthority from /dwshome/chetan/diamanti-test-pkg/server_certs/ca.pem file
+2020-10-26T02:12:19.324-0700	DEBUG	lib/cluster.go:461	Getting ServerCertificate from /dwshome/chetan/diamanti-test-pkg/server_certs/server.pem file
+2020-10-26T02:12:19.324-0700	DEBUG	lib/cluster.go:470	Getting ServerPrivateKey from /dwshome/chetan/diamanti-test-pkg/server_certs/server-key.pem file
+2020-10-26T02:12:19.328-0700	DEBUG	lib/cluster.go:489	Creating the cluster
+2020-10-26T02:12:34.902-0700	DEBUG	lib/cluster.go:497	Please import "/dwshome/chetan/diamanti-test-pkg/server_certs/ca.pem" certificate to your client machine
+2020-10-26T02:12:34.903-0700	DEBUG	lib/util.go:1377	Sleeping for 60 sec
+2020-10-26T02:13:34.976-0700	DEBUG	lib/util.go:1386	Save cluster configuration: 
+2020-10-26T02:13:35.751-0700	DEBUG	lib/util.go:1390	Login to cluster
+2020-10-26T02:13:35.751-0700	DEBUG	lib/util.go:1436	Polling for cluster login for 300 seconds.
+2020-10-26T02:13:36.355-0700	DEBUG	lib/util.go:1396	Checking in a loop for cluster status
+2020-10-26T02:13:36.463-0700	DEBUG	lib/cluster.go:942	Found '3' nodes
+2020-10-26T02:13:36.463-0700	DEBUG	lib/cluster.go:982	Waiting for softserv67 to into "Ready" state.
+2020-10-26T02:13:36.570-0700	DEBUG	lib/cluster.go:982	Waiting for softserv68 to into "Ready" state.
+2020-10-26T02:13:36.675-0700	DEBUG	lib/cluster.go:982	Waiting for softserv69 to into "Ready" state.
+2020-10-26T02:13:36.807-0700	DEBUG	lib/util.go:1407	Creating network red
+2020-10-26T02:13:36.957-0700	DEBUG	lib/network-overlay.go:66	Waiting for 30 seconds, so that overlay network can make entry in etcd: 
+2020-10-26T02:14:06.958-0700	DEBUG	lib/util.go:1419	Add default tag to red network
+2020-10-26T02:14:17.628-0700	DEBUG	lib/util.go:1221	Labeled all nodes with node=node$
+
+2020-10-26T02:14:17.629-0700	DEBUG	tests/clusterutil.go:53	Getting cluster ID
+2020-10-26T02:14:17.736-0700	DEBUG	tests/clusterutil.go:60	Created test cluster: 5987efe9-176b-11eb-8a38-000c29e66b03
+2020-10-26T02:14:17.736-0700	DEBUG	tests/clusterutil.go:63	Deleting all LCVs, volumes, snapshots from previous cluster if any.
+2020-10-26T02:14:17.950-0700	DEBUG	lib/util.go:166	Recording timestamp of all services on all nodes
+2020-10-26T02:14:23.445-0700	DEBUG	tests/util.go:220	Overwritting e2e parameter : ExpectedBasicVnicUsageCount
+2020-10-26T02:14:28.263-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:14:28.856-0700	DEBUG	tests/clusterutil.go:115	Creating storage classes
+2020-10-26T02:14:40.151-0700	DEBUG	tests/volume.go:343	rpm=diamanti-cx-9.9.1-680.x86_64
+[0mLocalStorage.MultiplePodsOneVolumeEach Daily SP_Basic-1.1 Soft_Volume-1.3 Soft_Volume-1.6 Qos Software[0m [90mMultiple pods, One simple volume each.[0m 
+  [1mMultiple Pods, One Simple volume each.[0m
+  [37m/gocode/main/test/e2e/tests/volume.go:3418[0m
+[BeforeEach] Multiple pods, One simple volume each.
+  /gocode/main/test/e2e/tests/volume.go:3406
+2020-10-26T02:14:40.152-0700	DEBUG	tests/volume.go:3408	START_TEST LocalStorage.MultiplePodsOneVolumeEach
+2020-10-26T02:14:40.152-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:14:40.778-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:14:40.873-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:14:41.417-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:14:41.523-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:14:41.523-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:14:41.523-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+[It] Multiple Pods, One Simple volume each.
+  /gocode/main/test/e2e/tests/volume.go:3418
+2020-10-26T02:14:46.876-0700	DEBUG	helper/pod.go:283	Creating 4 Dynamic Persistent Volume Claims (PVCs). Mirror count: 1. Selector: node=node1
+2020-10-26T02:14:47.254-0700	DEBUG	crud/pvc_crud.go:184	Created PVC successfully.
+2020-10-26T02:14:47.864-0700	DEBUG	crud/pvc_crud.go:184	Created PVC successfully.
+2020-10-26T02:14:48.242-0700	DEBUG	crud/pvc_crud.go:184	Created PVC successfully.
+2020-10-26T02:14:48.603-0700	DEBUG	crud/pvc_crud.go:184	Created PVC successfully.
+2020-10-26T02:14:49.586-0700	DEBUG	helper/pod.go:327	Creating 4 fio pods: 
+2020-10-26T02:15:06.328-0700	DEBUG	helper/pod.go:398	Wait for volumes to move into attached state: 
+2020-10-26T02:15:06.328-0700	DEBUG	lib/volume.go:2913	Waiting for volume to move to "Attached" state
+2020-10-26T02:15:06.860-0700	DEBUG	helper/pod.go:410	Deleting pods : 
+2020-10-26T02:15:11.969-0700	DEBUG	tests/volume.go:3339	Wait for volumes to come in Available state: 
+2020-10-26T02:15:12.064-0700	DEBUG	crud/pvc_crud.go:278	Delete PVCs: 
+2020-10-26T02:15:13.781-0700	DEBUG	crud/pvc_crud.go:289	Waiting for volumes to get deleted: 
+[AfterEach] Multiple pods, One simple volume each.
+  /gocode/main/test/e2e/tests/volume.go:3413
+2020-10-26T02:16:13.027-0700	DEBUG	tests/volume.go:3414	END_TEST LocalStorage.MultiplePodsOneVolumeEach Time-taken : 92.875117354
+2020-10-26T02:16:13.027-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:16:13.132-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:16:13.132-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:16:13.132-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:93.090 seconds][0m
+LocalStorage.MultiplePodsOneVolumeEach Daily SP_Basic-1.1 Soft_Volume-1.3 Soft_Volume-1.6 Qos Software
+[90m/gocode/main/test/e2e/tests/volume.go:3399[0m
+  Multiple pods, One simple volume each.
+  [90m/gocode/main/test/e2e/tests/volume.go:3401[0m
+    Multiple Pods, One Simple volume each.
+    [90m/gocode/main/test/e2e/tests/volume.go:3418[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mLocalVolume.NegativeTests Management Weekly S_Negative-1.0 S_Negative-1.1 S_Negative-1.2 S_Negative-1.3 S_Negative-1.5 S_Negative-1.6 S_Negative-1.7 Soft_Negative-1.1 Soft_Negative-1.2 Soft_Negative-1.3 Soft_Negative-1.4 Soft_Negative-1.5 Soft_Negative-1.6 Soft_Negative-1.8 Software[0m [90mLocal volume negative test cases[0m 
+  [1mLocal volume negative test cases[0m
+  [37m/gocode/main/test/e2e/tests/volume.go:509[0m
+[BeforeEach] Local volume negative test cases
+  /gocode/main/test/e2e/tests/volume.go:492
+2020-10-26T02:16:13.242-0700	DEBUG	tests/volume.go:494	START_TEST LocalVolume.NegativeTests
+2020-10-26T02:16:13.242-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:16:13.878-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:16:13.970-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:16:14.526-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:16:14.623-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:16:14.623-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:16:14.623-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+[It] Local volume negative test cases
+  /gocode/main/test/e2e/tests/volume.go:509
+2020-10-26T02:16:19.797-0700	DEBUG	tests/volume.go:563	Creating a local volume
+2020-10-26T02:16:21.119-0700	DEBUG	tests/volume.go:567	Attaching the volume
+2020-10-26T02:16:22.746-0700	DEBUG	tests/volume.go:571	Trying to delete volume when it is in Use
+2020-10-26T02:16:22.852-0700	DEBUG	tests/volume.go:576	Delete non existant volume.
+2020-10-26T02:16:22.852-0700	DEBUG	tests/volume.go:578	Deleting non existant volume.
+2020-10-26T02:16:22.937-0700	DEBUG	tests/volume.go:583	Create an existing volume.
+2020-10-26T02:16:23.144-0700	DEBUG	tests/volume.go:586	Trying to create another volume with same
+2020-10-26T02:16:23.231-0700	DEBUG	tests/volume.go:591	Trying to attach already attached volume
+2020-10-26T02:16:23.435-0700	DEBUG	tests/volume.go:594	Trying to attach the volume
+2020-10-26T02:16:24.931-0700	DEBUG	tests/volume.go:599	Re-attaching volume, which is in Attached state.
+2020-10-26T02:16:26.465-0700	DEBUG	tests/volume.go:603	Attach an already attached volume to another host
+2020-10-26T02:16:26.683-0700	DEBUG	tests/volume.go:621	Attaching the volume
+2020-10-26T02:16:28.175-0700	DEBUG	tests/volume.go:625	Re-attaching the volume to another node
+2020-10-26T02:16:29.827-0700	DEBUG	tests/volume.go:638	Detach already detached volume
+2020-10-26T02:16:30.034-0700	DEBUG	tests/volume.go:641	Detaching the volume first time
+2020-10-26T02:16:30.235-0700	DEBUG	tests/volume.go:645	Detaching already detached volume
+2020-10-26T02:16:30.339-0700	ERROR	lib/volume.go:662	Error failed to run commmand 'dctl  -o json volume detach test-vol -y ', status:&{{Status } {  0} Failure VolumeAttachment "e8e4dc4b-176b-11eb-af8a-000c29e66b03" not found NotFound 0xc00016c9b0 404}, error:{
+ "kind": "Status",
+ "metadata": {},
+ "status": "Failure",
+ "message": "VolumeAttachment \"e8e4dc4b-176b-11eb-af8a-000c29e66b03\" not found",
+ "reason": "NotFound",
+ "details": {
+  "name": "e8e4dc4b-176b-11eb-af8a-000c29e66b03",
+  "kind": "VolumeAttachment"
+ },
+ "code": 404
+}
+
+ detaching volume, cmd:volume detach test-vol -y  out: {[] 0 0}
+
+2020-10-26T02:16:30.339-0700	DEBUG	tests/volume.go:649	Detach a volume while it is mounted
+2020-10-26T02:16:30.543-0700	DEBUG	tests/volume.go:652	Attaching the volume
+2020-10-26T02:16:32.132-0700	DEBUG	tests/volume.go:660	Mounting the volume
+2020-10-26T02:16:33.246-0700	DEBUG	tests/volume.go:664	Detaching the volume while it is mounted
+2020-10-26T02:33:13.374-0700	DEBUG	tests/volume.go:669	Delete a volume while it is mounted
+2020-10-26T02:33:13.592-0700	DEBUG	tests/volume.go:672	Trying to delete the mounted volume
+2020-10-26T02:33:13.704-0700	DEBUG	tests/volume.go:677	Unmounting the volume
+[AfterEach] Local volume negative test cases
+  /gocode/main/test/e2e/tests/volume.go:502
+2020-10-26T02:34:12.008-0700	ERROR	lib/volume.go:662	Error failed to run commmand 'dctl  -o json volume detach test-vol -y ', status:&{{Status } {  0} Failure VolumeAttachment "e8e4dc4b-176b-11eb-af8a-000c29e66b03" not found NotFound 0xc000824000 404}, error:{
+ "kind": "Status",
+ "metadata": {},
+ "status": "Failure",
+ "message": "VolumeAttachment \"e8e4dc4b-176b-11eb-af8a-000c29e66b03\" not found",
+ "reason": "NotFound",
+ "details": {
+  "name": "e8e4dc4b-176b-11eb-af8a-000c29e66b03",
+  "kind": "VolumeAttachment"
+ },
+ "code": 404
+}
+
+ detaching volume, cmd:volume detach test-vol -y  out: {[] 0 0}
+
+2020-10-26T02:35:13.259-0700	DEBUG	tests/volume.go:505	END_TEST LocalVolume.NegativeTests Time-taken : 1140.016921008
+2020-10-26T02:35:13.259-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:35:13.365-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:35:13.365-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:35:13.365-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:1140.230 seconds][0m
+LocalVolume.NegativeTests Management Weekly S_Negative-1.0 S_Negative-1.1 S_Negative-1.2 S_Negative-1.3 S_Negative-1.5 S_Negative-1.6 S_Negative-1.7 Soft_Negative-1.1 Soft_Negative-1.2 Soft_Negative-1.3 Soft_Negative-1.4 Soft_Negative-1.5 Soft_Negative-1.6 Soft_Negative-1.8 Software
+[90m/gocode/main/test/e2e/tests/volume.go:482[0m
+  Local volume negative test cases
+  [90m/gocode/main/test/e2e/tests/volume.go:485[0m
+    Local volume negative test cases
+    [90m/gocode/main/test/e2e/tests/volume.go:509[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mVolume.NameLengthCheck Management Daily M_Volume-1.1 Soft_Volume-1.1 Software[0m [90mwhen volume name is[0m 
+  [1mequal to defined character limit[0m
+  [37m/gocode/main/test/e2e/tests/volume.go:446[0m
+[BeforeEach] when volume name is
+  /gocode/main/test/e2e/tests/volume.go:433
+2020-10-26T02:35:13.472-0700	DEBUG	tests/volume.go:435	START_TEST Volume.NameLengthCheck
+2020-10-26T02:35:13.472-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:35:14.138-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:35:14.244-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:35:14.801-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:35:14.910-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:35:14.910-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:35:14.910-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+[It] equal to defined character limit
+  /gocode/main/test/e2e/tests/volume.go:446
+2020-10-26T02:35:20.099-0700	DEBUG	tests/volume.go:451	Creating the volume
+2020-10-26T02:35:21.410-0700	DEBUG	tests/volume.go:455	Getting Volume
+2020-10-26T02:35:21.507-0700	DEBUG	tests/volume.go:459	Verify that volume status is Available
+2020-10-26T02:35:21.507-0700	DEBUG	tests/volume.go:464	Deleting the volume
+[AfterEach] when volume name is
+  /gocode/main/test/e2e/tests/volume.go:441
+2020-10-26T02:35:21.719-0700	DEBUG	tests/volume.go:442	END_TEST Volume.NameLengthCheck Time-taken : 8.246783203
+2020-10-26T02:35:21.719-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:35:21.821-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:35:21.821-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:35:21.821-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+
+[32m• [SLOW TEST:8.449 seconds][0m
+Volume.NameLengthCheck Management Daily M_Volume-1.1 Soft_Volume-1.1 Software
+[90m/gocode/main/test/e2e/tests/volume.go:423[0m
+  when volume name is
+  [90m/gocode/main/test/e2e/tests/volume.go:426[0m
+    equal to defined character limit
+    [90m/gocode/main/test/e2e/tests/volume.go:446[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mCluster.StopArmadaOnMaster Management Weekly M_Cluster-1.18 Soft_ClusterManagement-3.11 Software[0m [90mProcess stop[0m 
+  [1mStoping armada process on master and verifying master failover should happen.[0m
+  [37m/gocode/main/test/e2e/tests/cluster.go:628[0m
+[BeforeEach] Process stop
+  /gocode/main/test/e2e/tests/cluster.go:617
+2020-10-26T02:35:21.921-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:35:22.561-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:35:22.664-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:35:23.250-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:35:23.355-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:35:23.355-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:35:23.355-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:35:28.608-0700	DEBUG	tests/cluster.go:620	START_TEST Cluster.StopArmadaOnMaster
+[It] Stoping armada process on master and verifying master failover should happen.
+  /gocode/main/test/e2e/tests/cluster.go:628
+2020-10-26T02:35:28.608-0700	DEBUG	tests/cluster.go:630	Getting master
+2020-10-26T02:35:28.719-0700	DEBUG	tests/cluster.go:634	Getting pid of armada on node : softserv67
+2020-10-26T02:35:29.134-0700	DEBUG	tests/cluster.go:638	Stoping armada on master : softserv67
+2020-10-26T02:35:59.898-0700	DEBUG	lib/cluster.go:596	Error: failed to run commmand 'dctl  -o json cluster status', output:, error:Get https://softtb11.eng.diamanti.com:443/api/v1/cluster: dial tcp 172.16.19.182:443: connect: connection refused
+Cannot reach cluster, please check if vip / fqdn is reachable
+
+, Retrying once again...
+2020-10-26T02:36:04.974-0700	DEBUG	lib/cluster.go:596	Error: failed to run commmand 'dctl  -o json cluster status', output:, error:Get https://softtb11.eng.diamanti.com:443/api/v1/cluster: dial tcp 172.16.19.182:443: connect: connection refused
+Cannot reach cluster, please check if vip / fqdn is reachable
+
+, Retrying once again...
+2020-10-26T02:36:10.051-0700	DEBUG	lib/cluster.go:596	Error: failed to run commmand 'dctl  -o json cluster status', output:, error:Get https://softtb11.eng.diamanti.com:443/api/v1/cluster: dial tcp 172.16.19.182:443: connect: connection refused
+Cannot reach cluster, please check if vip / fqdn is reachable
+
+, Retrying once again...
+2020-10-26T02:36:15.166-0700	DEBUG	tests/cluster.go:655	Verifying master failover
+2020-10-26T02:36:15.273-0700	DEBUG	tests/cluster.go:659	Old master node : softserv67 and New master node : softserv69
+2020-10-26T02:36:15.273-0700	DEBUG	tests/cluster.go:664	After master failover, updating timestamp of node : softserv69
+2020-10-26T02:36:17.292-0700	DEBUG	tests/cluster.go:667	Restarting armada on old master
+2020-10-26T02:36:17.981-0700	DEBUG	tests/cluster.go:671	Getting pid of armada on node : softserv67
+2020-10-26T02:36:18.498-0700	DEBUG	tests/cluster.go:675	Checking Old pid : 2578 with New pid : 2077, pid should different
+2020-10-26T02:36:18.498-0700	DEBUG	tests/cluster.go:680	After process restart, updating timestamp of node : softserv67
+[AfterEach] Process stop
+  /gocode/main/test/e2e/tests/cluster.go:623
+2020-10-26T02:36:20.254-0700	DEBUG	tests/cluster.go:624	END_TEST Cluster.StopArmadaOnMaster Time-taken : 51.646140593
+2020-10-26T02:36:20.254-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:36:20.364-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:36:20.364-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:36:20.364-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:58.550 seconds][0m
+Cluster.StopArmadaOnMaster Management Weekly M_Cluster-1.18 Soft_ClusterManagement-3.11 Software
+[90m/gocode/main/test/e2e/tests/cluster.go:605[0m
+  Process stop
+  [90m/gocode/main/test/e2e/tests/cluster.go:611[0m
+    Stoping armada process on master and verifying master failover should happen.
+    [90m/gocode/main/test/e2e/tests/cluster.go:628[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mCluster.RemoveTwoQuorumNodesFromThreeNodeCluster Management Weekly QM_Delete-1.1 QM_Delete-1.2 QM_Delete-1.3 M_Cluster-1.22 DM_Discovery-1.2 Soft_ClusterManagement-2.5 Soft_ClusterManagement-2.3 Soft_ClusterManagement-3.10 Software[0m [90mCreate cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail[0m 
+  [1mCreate cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed[0m
+  [37m/gocode/main/test/e2e/tests/cluster.go:1067[0m
+[BeforeEach] Create cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail
+  /gocode/main/test/e2e/tests/cluster.go:1055
+2020-10-26T02:36:20.472-0700	DEBUG	tests/cluster.go:1058	START_TEST Cluster.RemoveTwoQuorumNodesFromThreeNodeCluster
+2020-10-26T02:36:20.472-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:36:21.055-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:36:21.162-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:36:21.744-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:36:21.857-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:36:21.857-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:36:21.857-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+[It] Create cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed
+  /gocode/main/test/e2e/tests/cluster.go:1067
+2020-10-26T02:36:27.473-0700	DEBUG	tests/cluster.go:1068	Getting cluster quorum nodes
+2020-10-26T02:36:27.582-0700	DEBUG	tests/cluster.go:1076	Getting cluster nodes
+2020-10-26T02:36:27.686-0700	DEBUG	tests/cluster.go:1080	Getting cluster quorum nodes except master
+2020-10-26T02:36:27.901-0700	DEBUG	lib/cluster.go:728	Quorum nodes except master: [softserv67 softserv68]
+2020-10-26T02:36:27.901-0700	DEBUG	tests/cluster.go:1083	Quorum nodes : [softserv67 softserv68]
+2020-10-26T02:36:27.901-0700	DEBUG	tests/cluster.go:1088	Draining first quorum node : softserv67
+2020-10-26T02:36:33.748-0700	DEBUG	tests/cluster.go:1092	Removing first quorum node : softserv67
+2020-10-26T02:36:33.892-0700	DEBUG	tests/cluster.go:1096	Checking quorum health
+2020-10-26T02:36:41.927-0700	DEBUG	tests/cluster.go:1108	Checking if all drives of nodes [softserv68 softserv69] are in good state or not: 
+2020-10-26T02:36:42.116-0700	DEBUG	tests/cluster.go:1114	Draining second quorum node : softserv68
+2020-10-26T02:36:53.868-0700	DEBUG	tests/cluster.go:1118	Removing second quorum node which is expected to fail : softserv68
+2020-10-26T02:36:53.979-0700	DEBUG	tests/cluster.go:1123	Removing second quorum node softserv68 failed as expected, Uncordon node softserv68
+2020-10-26T02:36:54.116-0700	DEBUG	tests/cluster.go:1130	Running cleanup on removed quorum node : softserv67
+2020-10-26T02:37:15.198-0700	DEBUG	tests/cluster.go:1134	Reboot removed node : softserv67
+2020-10-26T02:37:15.199-0700	DEBUG	lib/dwtest_lib.go:735	Doing sync on 172.16.6.67
+2020-10-26T02:37:16.069-0700	DEBUG	tests/cluster.go:1138	Waiting for nodes to come up and armada to start : softserv67
+2020-10-26T02:37:16.069-0700	DEBUG	tests/cluster.go:1195	Waiting for nodes to come up, will wait upto 1800 seconds
+.2020-10-26T02:37:41.093-0700	DEBUG	tests/cluster.go:1218	Waiting for node ports: 22 port of softserv67 node is not up in 1800 seconds
+2020-10-26T02:37:41.093-0700	DEBUG	tests/cluster.go:1222	Nodes are up, waiting for armada to start
+..2020-10-26T02:38:01.095-0700	DEBUG	tests/cluster.go:1225	Waiting for armada: armada for node softserv67 not up in 1800 seconds
+.
+2020-10-26T02:38:11.095-0700	DEBUG	tests/cluster.go:1141	Adding quorum node back to cluster
+2020-10-26T02:38:11.288-0700	DEBUG	tests/cluster.go:1145	Waiting for quorum node to join cluster and come in ready state: softserv67
+2020-10-26T02:38:11.399-0700	DEBUG	lib/cluster.go:942	Found '3' nodes
+2020-10-26T02:38:11.399-0700	DEBUG	lib/cluster.go:982	Waiting for softserv67 to into "Ready" state.
+2020-10-26T02:38:33.718-0700	DEBUG	lib/cluster.go:982	Waiting for softserv68 to into "Ready" state.
+2020-10-26T02:38:33.850-0700	DEBUG	lib/cluster.go:982	Waiting for softserv69 to into "Ready" state.
+2020-10-26T02:38:33.965-0700	DEBUG	tests/cluster.go:1149	Getting cluster nodes
+2020-10-26T02:38:34.087-0700	DEBUG	tests/cluster.go:1153	Checking if all drives of nodes [softserv67 softserv68 softserv69] are in good state or not: 
+2020-10-26T02:38:34.810-0700	DEBUG	lib/util.go:1221	Labeled all nodes with node=node$
+
+2020-10-26T02:38:34.810-0700	DEBUG	tests/cluster.go:1161	After power cycle/reboot, updating timestamp of node : softserv67
+2020-10-26T02:38:36.169-0700	DEBUG	tests/cluster.go:1163	Timestamp updated : softserv67
+[AfterEach] Create cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail
+  /gocode/main/test/e2e/tests/cluster.go:1062
+2020-10-26T02:38:36.169-0700	DEBUG	tests/cluster.go:1063	END_TEST Cluster.RemoveTwoQuorumNodesFromThreeNodeCluster Time-taken : 135.696883506
+2020-10-26T02:38:36.169-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:38:36.298-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:38:36.298-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:38:36.298-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+
+[32m• [SLOW TEST:135.932 seconds][0m
+Cluster.RemoveTwoQuorumNodesFromThreeNodeCluster Management Weekly QM_Delete-1.1 QM_Delete-1.2 QM_Delete-1.3 M_Cluster-1.22 DM_Discovery-1.2 Soft_ClusterManagement-2.5 Soft_ClusterManagement-2.3 Soft_ClusterManagement-3.10 Software
+[90m/gocode/main/test/e2e/tests/cluster.go:1048[0m
+  Create cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail
+  [90m/gocode/main/test/e2e/tests/cluster.go:1049[0m
+    Create cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed
+    [90m/gocode/main/test/e2e/tests/cluster.go:1067[0m
+[90m------------------------------[0m
+[0mCluster.ProcessRestart Management Weekly M_Cluster-1.17 Soft_ClusterManagement-1.22 Software[0m [90mProcess restart[0m 
+  [1mKilling armada and verifying it should start automatically.[0m
+  [37m/gocode/main/test/e2e/tests/cluster.go:548[0m
+[BeforeEach] Process restart
+  /gocode/main/test/e2e/tests/cluster.go:526
+2020-10-26T02:38:36.404-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:38:36.968-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:38:37.065-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:38:37.667-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:38:37.777-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:38:37.777-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:38:37.777-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:38:43.626-0700	DEBUG	tests/cluster.go:529	START_TEST Cluster.ProcessRestart
+[It] Killing armada and verifying it should start automatically.
+  /gocode/main/test/e2e/tests/cluster.go:548
+2020-10-26T02:38:43.626-0700	DEBUG	tests/cluster.go:550	Killing armada process on each node and verifying process is running or not
+2020-10-26T02:38:43.626-0700	DEBUG	tests/cluster.go:574	Getting id of armada process on softserv67 node
+2020-10-26T02:38:44.057-0700	DEBUG	tests/cluster.go:578	Killing armada process on softserv67 node
+2020-10-26T02:39:14.442-0700	DEBUG	tests/cluster.go:583	Check if process got restarted automatically
+2020-10-26T02:39:14.851-0700	DEBUG	tests/cluster.go:587	Getting id of newly started armada process
+2020-10-26T02:39:15.226-0700	DEBUG	tests/cluster.go:598	After process restart, updating timestamp of node : softserv67
+2020-10-26T02:39:16.661-0700	DEBUG	tests/cluster.go:574	Getting id of armada process on softserv68 node
+2020-10-26T02:39:17.069-0700	DEBUG	tests/cluster.go:578	Killing armada process on softserv68 node
+2020-10-26T02:39:47.435-0700	DEBUG	tests/cluster.go:583	Check if process got restarted automatically
+2020-10-26T02:39:47.850-0700	DEBUG	tests/cluster.go:587	Getting id of newly started armada process
+2020-10-26T02:39:48.228-0700	DEBUG	tests/cluster.go:598	After process restart, updating timestamp of node : softserv68
+2020-10-26T02:39:49.680-0700	DEBUG	tests/cluster.go:574	Getting id of armada process on softserv69 node
+2020-10-26T02:39:50.113-0700	DEBUG	tests/cluster.go:578	Killing armada process on softserv69 node
+2020-10-26T02:40:20.487-0700	DEBUG	tests/cluster.go:583	Check if process got restarted automatically
+2020-10-26T02:40:20.923-0700	DEBUG	tests/cluster.go:587	Getting id of newly started armada process
+2020-10-26T02:40:21.347-0700	DEBUG	tests/cluster.go:598	After process restart, updating timestamp of node : softserv69
+2020-10-26T02:40:23.621-0700	DEBUG	tests/cluster.go:554	Waiting for 60 seconds for Armada to get fully fuctional
+[AfterEach] Process restart
+  /gocode/main/test/e2e/tests/cluster.go:532
+2020-10-26T02:41:23.621-0700	DEBUG	tests/cluster.go:533	END_TEST Cluster.ProcessRestart Time-taken : 159.995275183
+2020-10-26T02:41:23.622-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:41:23.760-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:41:23.760-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:41:23.760-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:167.465 seconds][0m
+Cluster.ProcessRestart Management Weekly M_Cluster-1.17 Soft_ClusterManagement-1.22 Software
+[90m/gocode/main/test/e2e/tests/cluster.go:510[0m
+  Process restart
+  [90m/gocode/main/test/e2e/tests/cluster.go:518[0m
+    Killing armada and verifying it should start automatically.
+    [90m/gocode/main/test/e2e/tests/cluster.go:548[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mCluster.ProcessRestart Management Weekly M_Cluster-1.17 Soft_ClusterManagement-1.22 Software[0m [90mProcess restart[0m 
+  [1mKilling bosun and verifying it should start automatically.[0m
+  [37m/gocode/main/test/e2e/tests/cluster.go:558[0m
+[BeforeEach] Process restart
+  /gocode/main/test/e2e/tests/cluster.go:526
+2020-10-26T02:41:23.870-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:41:24.517-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:41:24.629-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:41:25.200-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:41:25.300-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:41:25.300-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:41:25.300-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:41:30.509-0700	DEBUG	tests/cluster.go:529	START_TEST Cluster.ProcessRestart
+[It] Killing bosun and verifying it should start automatically.
+  /gocode/main/test/e2e/tests/cluster.go:558
+2020-10-26T02:41:30.509-0700	DEBUG	tests/cluster.go:560	Killing bosun process on each node and verifying process is running or not
+2020-10-26T02:41:30.509-0700	DEBUG	tests/cluster.go:574	Getting id of bosun process on softserv67 node
+2020-10-26T02:41:30.909-0700	DEBUG	tests/cluster.go:578	Killing bosun process on softserv67 node
+2020-10-26T02:42:01.370-0700	DEBUG	tests/cluster.go:583	Check if process got restarted automatically
+2020-10-26T02:42:01.776-0700	DEBUG	tests/cluster.go:587	Getting id of newly started bosun process
+2020-10-26T02:42:02.177-0700	DEBUG	tests/cluster.go:598	After process restart, updating timestamp of node : softserv67
+2020-10-26T02:42:03.517-0700	DEBUG	tests/cluster.go:574	Getting id of bosun process on softserv68 node
+2020-10-26T02:42:03.927-0700	DEBUG	tests/cluster.go:578	Killing bosun process on softserv68 node
+2020-10-26T02:42:34.302-0700	DEBUG	tests/cluster.go:583	Check if process got restarted automatically
+2020-10-26T02:42:34.731-0700	DEBUG	tests/cluster.go:587	Getting id of newly started bosun process
+2020-10-26T02:42:35.136-0700	DEBUG	tests/cluster.go:598	After process restart, updating timestamp of node : softserv68
+2020-10-26T02:42:36.523-0700	DEBUG	tests/cluster.go:574	Getting id of bosun process on softserv69 node
+2020-10-26T02:42:36.951-0700	DEBUG	tests/cluster.go:578	Killing bosun process on softserv69 node
+2020-10-26T02:43:07.337-0700	DEBUG	tests/cluster.go:583	Check if process got restarted automatically
+2020-10-26T02:43:07.799-0700	DEBUG	tests/cluster.go:587	Getting id of newly started bosun process
+2020-10-26T02:43:08.221-0700	DEBUG	tests/cluster.go:598	After process restart, updating timestamp of node : softserv69
+2020-10-26T02:43:10.493-0700	DEBUG	tests/cluster.go:564	Waiting for 60 seconds for Bosun to get fully fuctional
+[AfterEach] Process restart
+  /gocode/main/test/e2e/tests/cluster.go:532
+2020-10-26T02:44:10.493-0700	DEBUG	tests/cluster.go:533	END_TEST Cluster.ProcessRestart Time-taken : 159.984599672
+2020-10-26T02:44:10.494-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:44:10.625-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:44:10.625-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:44:10.625-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:166.867 seconds][0m
+Cluster.ProcessRestart Management Weekly M_Cluster-1.17 Soft_ClusterManagement-1.22 Software
+[90m/gocode/main/test/e2e/tests/cluster.go:510[0m
+  Process restart
+  [90m/gocode/main/test/e2e/tests/cluster.go:518[0m
+    Killing bosun and verifying it should start automatically.
+    [90m/gocode/main/test/e2e/tests/cluster.go:558[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mVolume.CheckStorageReservation Management Sanity M_Volume-1.4 Software[0m [90mCheck reserved space on drive & in cluster status[0m 
+  [1mcheck the reserved space on drive by volume[0m
+  [37m/gocode/main/test/e2e/tests/volume.go:847[0m
+[BeforeEach] Check reserved space on drive & in cluster status
+  /gocode/main/test/e2e/tests/volume.go:833
+2020-10-26T02:44:10.738-0700	DEBUG	tests/volume.go:835	START_TEST Volume.CheckStorageReservation
+2020-10-26T02:44:10.738-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:44:11.386-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:44:11.495-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:44:12.096-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:44:12.207-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:44:12.207-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:44:12.207-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+[AfterEach] Check reserved space on drive & in cluster status
+  /gocode/main/test/e2e/tests/volume.go:842
+2020-10-26T02:44:17.391-0700	DEBUG	tests/volume.go:843	END_TEST Volume.CheckStorageReservation Time-taken : 6.653540975
+2020-10-26T02:44:17.391-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:44:17.496-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:44:17.496-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:44:17.496-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[36m[1mS [SKIPPING] in Spec Setup (BeforeEach) [6.862 seconds][0m
+Volume.CheckStorageReservation Management Sanity M_Volume-1.4 Software
+[90m/gocode/main/test/e2e/tests/volume.go:822[0m
+  Check reserved space on drive & in cluster status
+  [90m/gocode/main/test/e2e/tests/volume.go:824[0m
+    [36m[1mcheck the reserved space on drive by volume [BeforeEach][0m
+    [90m/gocode/main/test/e2e/tests/volume.go:847[0m
+
+    [36mSkipping because Storage reservation doesn't match with given value[0m
+
+    /gocode/main/test/e2e/tests/volume.go:839
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mOverlayNetwork.CreatingPodWithoutAnyNetworkAnnotation NW_OVS_1.15 Soft_Basic1.19 Network Daily Sanity Software[0m [90mCreate a pod without any network annotation while overlay network is created with default tag.[0m 
+  [1mCreate a pod without any network annotation while overlay network is created with default tag.[0m
+  [37m/gocode/main/test/e2e/tests/network-overlay.go:190[0m
+[BeforeEach] Create a pod without any network annotation while overlay network is created with default tag.
+  /gocode/main/test/e2e/tests/network-overlay.go:179
+2020-10-26T02:44:17.600-0700	DEBUG	tests/network-overlay.go:181	START_TEST OverlayNetwork.CreatingPodWithoutAnyNetworkAnnotation
+2020-10-26T02:44:17.600-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:44:18.243-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:44:18.348-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:44:18.924-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:44:19.027-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:44:19.027-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:44:19.027-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+[It] Create a pod without any network annotation while overlay network is created with default tag.
+  /gocode/main/test/e2e/tests/network-overlay.go:190
+2020-10-26T02:44:24.237-0700	DEBUG	tests/network-overlay.go:213	Getting overlay network: 
+2020-10-26T02:44:24.328-0700	DEBUG	tests/network-overlay.go:217	Creating an iperf server pod: test-pod
+2020-10-26T02:44:38.525-0700	DEBUG	tests/network-overlay.go:222	Getting ip address of pod from interface: 
+2020-10-26T02:44:38.742-0700	DEBUG	tests/network-overlay.go:227	The interface ip is 172.30.12.2 : 
+2020-10-26T02:44:38.742-0700	DEBUG	tests/network-overlay.go:233	Checking whether pod interface eth0 is using ip from overlay network: 
+2020-10-26T02:44:38.742-0700	DEBUG	tests/network-overlay.go:240	Deleting the test-pod pod 
+[AfterEach] Create a pod without any network annotation while overlay network is created with default tag.
+  /gocode/main/test/e2e/tests/network-overlay.go:185
+2020-10-26T02:44:50.047-0700	DEBUG	tests/network-overlay.go:186	END_TEST OverlayNetwork.CreatingPodWithoutAnyNetworkAnnotation Time-taken : 32.447160174
+2020-10-26T02:44:50.047-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:44:50.155-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:44:50.155-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:44:50.155-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:32.662 seconds][0m
+OverlayNetwork.CreatingPodWithoutAnyNetworkAnnotation NW_OVS_1.15 Soft_Basic1.19 Network Daily Sanity Software
+[90m/gocode/main/test/e2e/tests/network-overlay.go:164[0m
+  Create a pod without any network annotation while overlay network is created with default tag.
+  [90m/gocode/main/test/e2e/tests/network-overlay.go:166[0m
+    Create a pod without any network annotation while overlay network is created with default tag.
+    [90m/gocode/main/test/e2e/tests/network-overlay.go:190[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mCluster.RemoveTwoQuorumNodesFromThreeNodeCluster Management Weekly QM_Delete-1.1 QM_Delete-1.2 QM_Delete-1.3 M_Cluster-1.22 DM_Discovery-1.2 Soft_ClusterManagement-2.5 Soft_ClusterManagement-2.3 Soft_ClusterManagement-3.10 Software[0m [90mCreate cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail[0m 
+  [1mCreate cluster. Removing master quorum node should not be allowed[0m
+  [37m/gocode/main/test/e2e/tests/cluster.go:1166[0m
+[BeforeEach] Create cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail
+  /gocode/main/test/e2e/tests/cluster.go:1055
+2020-10-26T02:44:50.262-0700	DEBUG	tests/cluster.go:1058	START_TEST Cluster.RemoveTwoQuorumNodesFromThreeNodeCluster
+2020-10-26T02:44:50.262-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:44:50.828-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:44:50.920-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:44:51.559-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:44:51.659-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:44:51.659-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:44:51.659-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+[It] Create cluster. Removing master quorum node should not be allowed
+  /gocode/main/test/e2e/tests/cluster.go:1166
+2020-10-26T02:44:56.957-0700	DEBUG	tests/cluster.go:1168	Getting cluster master node
+2020-10-26T02:44:57.055-0700	DEBUG	tests/cluster.go:1171	Trying to remove master "softserv69" quorum node. It should fail: 
+[AfterEach] Create cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail
+  /gocode/main/test/e2e/tests/cluster.go:1062
+2020-10-26T02:44:57.156-0700	DEBUG	tests/cluster.go:1063	END_TEST Cluster.RemoveTwoQuorumNodesFromThreeNodeCluster Time-taken : 6.89435477
+2020-10-26T02:44:57.156-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:44:57.355-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:44:57.355-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:44:57.355-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:7.207 seconds][0m
+Cluster.RemoveTwoQuorumNodesFromThreeNodeCluster Management Weekly QM_Delete-1.1 QM_Delete-1.2 QM_Delete-1.3 M_Cluster-1.22 DM_Discovery-1.2 Soft_ClusterManagement-2.5 Soft_ClusterManagement-2.3 Soft_ClusterManagement-3.10 Software
+[90m/gocode/main/test/e2e/tests/cluster.go:1048[0m
+  Create cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail
+  [90m/gocode/main/test/e2e/tests/cluster.go:1049[0m
+    Create cluster. Removing master quorum node should not be allowed
+    [90m/gocode/main/test/e2e/tests/cluster.go:1166[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mVolume.Basic Management Sanity M_Volume-1.5 Soft_Volume-1.4 Software[0m [90mvolume provisioning test[0m 
+  [1mvolume provisioning[0m
+  [37m/gocode/main/test/e2e/tests/volume.go:400[0m
+[BeforeEach] volume provisioning test
+  /gocode/main/test/e2e/tests/volume.go:387
+2020-10-26T02:44:57.469-0700	DEBUG	tests/volume.go:389	START_TEST Volume.Basic
+2020-10-26T02:44:57.469-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:44:58.143-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:44:58.250-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:44:58.829-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:44:58.930-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:44:58.930-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:44:58.930-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+[It] volume provisioning
+  /gocode/main/test/e2e/tests/volume.go:400
+2020-10-26T02:45:04.167-0700	DEBUG	tests/volume.go:403	Creating the volume
+2020-10-26T02:45:05.511-0700	DEBUG	tests/volume.go:407	Getting Volume
+2020-10-26T02:45:05.607-0700	DEBUG	tests/volume.go:411	Verify that volume status is Available
+2020-10-26T02:45:05.607-0700	DEBUG	tests/volume.go:416	Deleting the volume
+[AfterEach] volume provisioning test
+  /gocode/main/test/e2e/tests/volume.go:395
+2020-10-26T02:45:05.875-0700	DEBUG	tests/volume.go:396	END_TEST Volume.Basic Time-taken : 8.406334199
+2020-10-26T02:45:05.875-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:45:06.001-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:45:06.001-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:45:06.001-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+
+[32m• [SLOW TEST:8.662 seconds][0m
+Volume.Basic Management Sanity M_Volume-1.5 Soft_Volume-1.4 Software
+[90m/gocode/main/test/e2e/tests/volume.go:379[0m
+  volume provisioning test
+  [90m/gocode/main/test/e2e/tests/volume.go:382[0m
+    volume provisioning
+    [90m/gocode/main/test/e2e/tests/volume.go:400[0m
+[90m------------------------------[0m
+[36mS[0m
+[90m------------------------------[0m
+[0mVolume.Schedule Management Sanity M_Volume-1.2 M_Volume-1.3 Soft_Volume-1.2 Software[0m [90mvolume scheduling test[0m 
+  [1mvolume scheduling[0m
+  [37m/gocode/main/test/e2e/tests/volume.go:751[0m
+[BeforeEach] volume scheduling test
+  /gocode/main/test/e2e/tests/volume.go:736
+2020-10-26T02:45:06.131-0700	DEBUG	tests/volume.go:738	START_TEST Volume.Schedule
+2020-10-26T02:45:06.131-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:45:06.712-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:45:06.806-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:45:07.405-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:45:07.502-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:45:07.502-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:45:07.502-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+[It] volume scheduling
+  /gocode/main/test/e2e/tests/volume.go:751
+2020-10-26T02:45:12.956-0700	DEBUG	tests/volume.go:752	Creating the volume test-vol1
+2020-10-26T02:45:14.256-0700	DEBUG	tests/volume.go:758	Creating the volume test-vol2
+2020-10-26T02:45:15.581-0700	DEBUG	tests/volume.go:762	Getting Volume
+2020-10-26T02:45:15.814-0700	DEBUG	tests/volume.go:769	Verify that volume status is Available
+2020-10-26T02:45:15.814-0700	DEBUG	tests/volume.go:777	Verify that volumes are scheduled on separate nodes
+2020-10-26T02:45:15.814-0700	DEBUG	tests/volume.go:785	Deleting volumes
+2020-10-26T02:46:26.363-0700	DEBUG	tests/volume.go:795	Creating the volume to test node affinity
+2020-10-26T02:46:27.678-0700	DEBUG	tests/volume.go:799	Getting Volume
+2020-10-26T02:46:27.782-0700	DEBUG	tests/volume.go:803	Verify that volume status is Available
+2020-10-26T02:46:27.782-0700	DEBUG	tests/volume.go:808	Verify that volume is created on specified node
+2020-10-26T02:46:27.782-0700	DEBUG	tests/volume.go:815	Deleting volumes
+[AfterEach] volume scheduling test
+  /gocode/main/test/e2e/tests/volume.go:746
+2020-10-26T02:46:55.637-0700	DEBUG	tests/volume.go:747	END_TEST Volume.Schedule Time-taken : 109.505480092
+2020-10-26T02:46:55.637-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:46:55.741-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:46:55.741-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:46:55.741-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:109.722 seconds][0m
+Volume.Schedule Management Sanity M_Volume-1.2 M_Volume-1.3 Soft_Volume-1.2 Software
+[90m/gocode/main/test/e2e/tests/volume.go:725[0m
+  volume scheduling test
+  [90m/gocode/main/test/e2e/tests/volume.go:728[0m
+    volume scheduling
+    [90m/gocode/main/test/e2e/tests/volume.go:751[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mOverlayNetwork.MultiplePodsCreationWhenAllVnicsConsumed Network Weekly Software Soft_Basic1.18 NW_OVS_1.60[0m [90mCreate pods using public network to exhaust all vnics, after that verify that pods created with overlay network should go into running phase.[0m 
+  [1mCreate pods using public network to exhaust all vnics, after that verify that pods created with overlay network should go into running phase.[0m
+  [37m/gocode/main/test/e2e/tests/network-overlay.go:697[0m
+[BeforeEach] Create pods using public network to exhaust all vnics, after that verify that pods created with overlay network should go into running phase.
+  /gocode/main/test/e2e/tests/network-overlay.go:686
+2020-10-26T02:46:55.854-0700	DEBUG	tests/network-overlay.go:688	START_TEST OverlayNetwork.MultiplePodsCreationWhenAllVnicsConsumed
+2020-10-26T02:46:55.854-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:46:56.304-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:46:56.393-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:46:56.873-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:46:56.995-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:46:56.995-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:46:56.995-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+[It] Create pods using public network to exhaust all vnics, after that verify that pods created with overlay network should go into running phase.
+  /gocode/main/test/e2e/tests/network-overlay.go:697
+2020-10-26T02:47:02.124-0700	DEBUG	tests/network-overlay.go:727	Getting overlay network: 
+2020-10-26T02:47:02.211-0700	DEBUG	helper/pod.go:429	Creating 20 pods of docker.io/redis:3.0.5 image with network : red and qos : best-effort
+2020-10-26T02:47:25.932-0700	DEBUG	tests/network-overlay.go:742	Deleting all the pods: 
+2020-10-26T02:47:25.932-0700	DEBUG	helper/pod.go:410	Deleting pods : 
+[AfterEach] Create pods using public network to exhaust all vnics, after that verify that pods created with overlay network should go into running phase.
+  /gocode/main/test/e2e/tests/network-overlay.go:692
+2020-10-26T02:47:44.267-0700	DEBUG	tests/network-overlay.go:693	END_TEST OverlayNetwork.MultiplePodsCreationWhenAllVnicsConsumed Time-taken : 48.413534673
+2020-10-26T02:47:44.267-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:47:44.363-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:47:44.363-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:47:44.363-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:48.614 seconds][0m
+OverlayNetwork.MultiplePodsCreationWhenAllVnicsConsumed Network Weekly Software Soft_Basic1.18 NW_OVS_1.60
+[90m/gocode/main/test/e2e/tests/network-overlay.go:667[0m
+  Create pods using public network to exhaust all vnics, after that verify that pods created with overlay network should go into running phase.
+  [90m/gocode/main/test/e2e/tests/network-overlay.go:669[0m
+    Create pods using public network to exhaust all vnics, after that verify that pods created with overlay network should go into running phase.
+    [90m/gocode/main/test/e2e/tests/network-overlay.go:697[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mCluster.Basic Management Sanity Daily M_Cluster-1.0 M_Cluster-1.7 M_Cluster-1.11 Soft_ClusterManagement-3.4 Software[0m [90mwhen cluster is created with all nodes[0m 
+  [1mshould be created and destroyed[0m
+  [37m/gocode/main/test/e2e/tests/cluster.go:63[0m
+[BeforeEach] when cluster is created with all nodes
+  /gocode/main/test/e2e/tests/cluster.go:50
+2020-10-26T02:47:44.467-0700	DEBUG	tests/cluster.go:52	START_TEST Cluster.Basic
+[It] should be created and destroyed
+  /gocode/main/test/e2e/tests/cluster.go:63
+2020-10-26T02:47:44.467-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T02:47:45.072-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T02:47:45.163-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:47:45.633-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:47:45.746-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:47:45.747-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:47:45.747-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T02:47:51.427-0700	DEBUG	lib/util.go:1488	Login to cluster
+2020-10-26T02:47:52.568-0700	DEBUG	lib/util.go:1853	Destroying the cluster: 5987efe9-176b-11eb-8a38-000c29e66b03, Master node is softserv69
+2020-10-26T02:47:52.656-0700	DEBUG	lib/util.go:1860	Checking in a loop for cluster status
+2020-10-26T02:48:26.070-0700	DEBUG	lib/util.go:1507	Doing sync all nodes.
+2020-10-26T02:48:26.476-0700	DEBUG	lib/util.go:1507	Doing sync all nodes.
+2020-10-26T02:48:26.869-0700	DEBUG	lib/util.go:1507	Doing sync all nodes.
+2020-10-26T02:48:29.278-0700	DEBUG	lib/util.go:1515	Checking for cluster-info.json on node :softserv67
+2020-10-26T02:48:29.688-0700	DEBUG	lib/util.go:1515	Checking for cluster-info.json on node :softserv68
+2020-10-26T02:48:37.249-0700	DEBUG	lib/util.go:1515	Checking for cluster-info.json on node :softserv69
+2020-10-26T02:48:37.628-0700	DEBUG	lib/util.go:1553	Rebooting all nodes.
+2020-10-26T02:48:37.628-0700	DEBUG	lib/dwtest_lib.go:735	Doing sync on 172.16.6.67
+2020-10-26T02:48:38.390-0700	DEBUG	lib/dwtest_lib.go:735	Doing sync on 172.16.6.68
+2020-10-26T02:48:39.261-0700	DEBUG	lib/dwtest_lib.go:735	Doing sync on 172.16.6.69
+2020-10-26T02:48:40.162-0700	DEBUG	lib/util.go:1744	Waiting for nodes to come up, will wait upto 1800 seconds
+...................2020-10-26T02:52:00.611-0700	DEBUG	lib/util.go:1775	Nodes are up, waiting for armada to start
+...[AfterEach] when cluster is created with all nodes
+  /gocode/main/test/e2e/tests/cluster.go:58
+
+2020-10-26T02:52:30.622-0700	DEBUG	tests/cluster.go:59	END_TEST Cluster.Basic Time-taken : 286.154583932
+
+[32m• [SLOW TEST:286.165 seconds][0m
+Cluster.Basic Management Sanity Daily M_Cluster-1.0 M_Cluster-1.7 M_Cluster-1.11 Soft_ClusterManagement-3.4 Software
+[90m/gocode/main/test/e2e/tests/cluster.go:42[0m
+  when cluster is created with all nodes
+  [90m/gocode/main/test/e2e/tests/cluster.go:45[0m
+    should be created and destroyed
+    [90m/gocode/main/test/e2e/tests/cluster.go:63[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mCluster.ProcessRestart Management Weekly M_Cluster-1.17 Soft_ClusterManagement-1.22 Software[0m [90mProcess restart[0m 
+  [1mKilling convoy and verifying it should start automatically.[0m
+  [37m/gocode/main/test/e2e/tests/cluster.go:537[0m
+[BeforeEach] Process restart
+  /gocode/main/test/e2e/tests/cluster.go:526
+2020-10-26T02:52:30.758-0700	DEBUG	lib/cluster.go:422	Cluster admin password is Diamanti@111
+2020-10-26T02:52:30.758-0700	DEBUG	lib/cluster.go:430	Cluster Spec Node list is [softserv67 softserv68 softserv69]
+2020-10-26T02:52:30.758-0700	DEBUG	lib/cluster.go:431	Cluster Spec Master Node list is [softserv67 softserv68 softserv69]
+2020-10-26T02:52:30.758-0700	DEBUG	lib/cluster.go:434	Getting dns domain name
+2020-10-26T02:52:30.770-0700	DEBUG	lib/cluster.go:442	FQDN : softtb11.eng.diamanti.com
+2020-10-26T02:52:30.770-0700	DEBUG	lib/cluster.go:444	Generating certificates for the cluster: (Name: softtb11, VIP: 172.16.19.182, FQDN: softtb11.eng.diamanti.com)
+2020-10-26T02:52:30.770-0700	DEBUG	lib/cluster.go:186	Clean up existing certs if any:
+2020-10-26T02:52:30.779-0700	DEBUG	lib/cluster.go:195	Generate unique CA name with current date
+2020-10-26T02:52:30.786-0700	DEBUG	lib/cluster.go:205	Integrate CA name in file
+2020-10-26T02:52:30.803-0700	DEBUG	lib/cluster.go:213	Generate CA certs
+2020-10-26T02:52:31.961-0700	DEBUG	lib/cluster.go:221	Create a CSR to generate a certificate using FQDN, VIP, Cluster Name for a server certs
+2020-10-26T02:52:31.981-0700	DEBUG	lib/cluster.go:229	Generate server certificate:
+2020-10-26T02:52:32.331-0700	DEBUG	lib/cluster.go:452	Getting CertificateAuthority from /dwshome/chetan/diamanti-test-pkg/server_certs/ca.pem file
+2020-10-26T02:52:32.333-0700	DEBUG	lib/cluster.go:461	Getting ServerCertificate from /dwshome/chetan/diamanti-test-pkg/server_certs/server.pem file
+2020-10-26T02:52:32.335-0700	DEBUG	lib/cluster.go:470	Getting ServerPrivateKey from /dwshome/chetan/diamanti-test-pkg/server_certs/server-key.pem file
+2020-10-26T02:52:32.362-0700	DEBUG	lib/cluster.go:489	Creating the cluster
+2020-10-26T02:52:47.418-0700	DEBUG	lib/cluster.go:497	Please import "/dwshome/chetan/diamanti-test-pkg/server_certs/ca.pem" certificate to your client machine
+2020-10-26T02:52:47.420-0700	DEBUG	lib/util.go:1377	Sleeping for 60 sec
+2020-10-26T02:53:47.488-0700	DEBUG	lib/util.go:1386	Save cluster configuration: 
+2020-10-26T02:53:48.219-0700	DEBUG	lib/util.go:1390	Login to cluster
+2020-10-26T02:53:48.219-0700	DEBUG	lib/util.go:1436	Polling for cluster login for 300 seconds.
+2020-10-26T02:53:48.821-0700	DEBUG	lib/util.go:1396	Checking in a loop for cluster status
+2020-10-26T02:53:48.933-0700	DEBUG	lib/cluster.go:942	Found '3' nodes
+2020-10-26T02:53:48.933-0700	DEBUG	lib/cluster.go:982	Waiting for softserv68 to into "Ready" state.
+2020-10-26T02:53:49.038-0700	DEBUG	lib/cluster.go:982	Waiting for softserv69 to into "Ready" state.
+2020-10-26T02:53:49.140-0700	DEBUG	lib/cluster.go:982	Waiting for softserv67 to into "Ready" state.
+2020-10-26T02:53:49.245-0700	DEBUG	lib/util.go:1407	Creating network red
+2020-10-26T02:53:49.390-0700	DEBUG	lib/network-overlay.go:66	Waiting for 30 seconds, so that overlay network can make entry in etcd: 
+2020-10-26T02:54:19.391-0700	DEBUG	lib/util.go:1419	Add default tag to red network
+2020-10-26T02:54:30.528-0700	DEBUG	lib/util.go:1221	Labeled all nodes with node=node$
+
+2020-10-26T02:54:30.528-0700	DEBUG	tests/clusterutil.go:53	Getting cluster ID
+2020-10-26T02:54:30.711-0700	DEBUG	tests/clusterutil.go:60	Created test cluster: f7cb51aa-1770-11eb-8897-000c29e66b03
+2020-10-26T02:54:30.711-0700	DEBUG	tests/clusterutil.go:63	Deleting all LCVs, volumes, snapshots from previous cluster if any.
+2020-10-26T02:54:31.147-0700	DEBUG	lib/util.go:166	Recording timestamp of all services on all nodes
+2020-10-26T02:54:36.689-0700	DEBUG	tests/util.go:220	Overwritting e2e parameter : ExpectedBasicVnicUsageCount
+2020-10-26T02:54:41.488-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T02:54:42.058-0700	DEBUG	tests/clusterutil.go:115	Creating storage classes
+2020-10-26T02:54:54.661-0700	DEBUG	tests/cluster.go:529	START_TEST Cluster.ProcessRestart
+[It] Killing convoy and verifying it should start automatically.
+  /gocode/main/test/e2e/tests/cluster.go:537
+2020-10-26T02:54:54.661-0700	DEBUG	tests/cluster.go:539	Getting master
+2020-10-26T02:54:54.768-0700	DEBUG	tests/cluster.go:544	Killing convoy process on master and verifying convoy process is running or not
+2020-10-26T02:54:54.768-0700	DEBUG	tests/cluster.go:574	Getting id of convoy process on softserv67 node
+2020-10-26T02:54:55.152-0700	DEBUG	tests/cluster.go:578	Killing convoy process on softserv67 node
+2020-10-26T02:55:25.499-0700	DEBUG	tests/cluster.go:583	Check if process got restarted automatically
+2020-10-26T02:55:25.955-0700	DEBUG	tests/cluster.go:587	Getting id of newly started convoy process
+2020-10-26T02:55:26.327-0700	DEBUG	tests/cluster.go:595	Waiting 60 seconds for convoy service to get fully functional
+2020-10-26T02:56:26.328-0700	DEBUG	tests/cluster.go:598	After process restart, updating timestamp of node : softserv67
+[AfterEach] Process restart
+  /gocode/main/test/e2e/tests/cluster.go:532
+2020-10-26T02:56:28.439-0700	DEBUG	tests/cluster.go:533	END_TEST Cluster.ProcessRestart Time-taken : 93.77775913
+2020-10-26T02:56:28.439-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T02:56:28.558-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T02:56:28.558-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T02:56:28.558-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:238.036 seconds][0m
+Cluster.ProcessRestart Management Weekly M_Cluster-1.17 Soft_ClusterManagement-1.22 Software
+[90m/gocode/main/test/e2e/tests/cluster.go:510[0m
+  Process restart
+  [90m/gocode/main/test/e2e/tests/cluster.go:518[0m
+    Killing convoy and verifying it should start automatically.
+    [90m/gocode/main/test/e2e/tests/cluster.go:537[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mCluster.NameLengthCheck Management Weekly M_Cluster-1.2 DM_Discovery-1.1 Soft_ClusterManagement-3.2 Software[0m [90mCluster Name Length Check[0m 
+  [1mCluster Name Length equal to defined character limit[0m
+  [37m/gocode/main/test/e2e/tests/cluster.go:101[0m
+[BeforeEach] Cluster Name Length Check
+  /gocode/main/test/e2e/tests/cluster.go:90
+2020-10-26T02:56:28.749-0700	DEBUG	lib/util.go:1488	Login to cluster
+2020-10-26T02:56:29.831-0700	DEBUG	lib/util.go:1853	Destroying the cluster: f7cb51aa-1770-11eb-8897-000c29e66b03, Master node is softserv67
+2020-10-26T02:56:29.938-0700	DEBUG	lib/util.go:1860	Checking in a loop for cluster status
+2020-10-26T02:57:03.359-0700	DEBUG	lib/util.go:1507	Doing sync all nodes.
+2020-10-26T02:57:04.270-0700	DEBUG	lib/util.go:1507	Doing sync all nodes.
+2020-10-26T02:57:04.654-0700	DEBUG	lib/util.go:1507	Doing sync all nodes.
+2020-10-26T02:57:07.048-0700	DEBUG	lib/util.go:1515	Checking for cluster-info.json on node :softserv67
+2020-10-26T02:57:07.401-0700	DEBUG	lib/util.go:1515	Checking for cluster-info.json on node :softserv68
+2020-10-26T02:57:08.283-0700	DEBUG	lib/util.go:1515	Checking for cluster-info.json on node :softserv69
+2020-10-26T02:57:08.644-0700	DEBUG	lib/util.go:1553	Rebooting all nodes.
+2020-10-26T02:57:08.644-0700	DEBUG	lib/dwtest_lib.go:735	Doing sync on 172.16.6.67
+2020-10-26T02:57:09.391-0700	DEBUG	lib/dwtest_lib.go:735	Doing sync on 172.16.6.68
+2020-10-26T02:57:10.243-0700	DEBUG	lib/dwtest_lib.go:735	Doing sync on 172.16.6.69
+2020-10-26T02:57:11.157-0700	DEBUG	lib/util.go:1744	Waiting for nodes to come up, will wait upto 1800 seconds
+...2020-10-26T02:57:53.577-0700	DEBUG	lib/util.go:1775	Nodes are up, waiting for armada to start
+...2020-10-26T02:58:23.580-0700	DEBUG	tests/cluster.go:94	START_TEST Cluster.NameLengthCheck
+
+[It] Cluster Name Length equal to defined character limit
+  /gocode/main/test/e2e/tests/cluster.go:101
+2020-10-26T02:58:23.580-0700	DEBUG	tests/cluster.go:104	Try to create cluster with Cluster Name Length 64
+2020-10-26T02:58:23.580-0700	DEBUG	lib/cluster.go:422	Cluster admin password is Diamanti@111
+2020-10-26T02:58:23.580-0700	DEBUG	lib/cluster.go:430	Cluster Spec Node list is [softserv67 softserv68 softserv69]
+2020-10-26T02:58:23.580-0700	DEBUG	lib/cluster.go:431	Cluster Spec Master Node list is [softserv67 softserv68 softserv69]
+2020-10-26T02:58:23.580-0700	DEBUG	lib/cluster.go:434	Getting dns domain name
+2020-10-26T02:58:23.585-0700	DEBUG	lib/cluster.go:442	FQDN : aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.eng.diamanti.com
+2020-10-26T02:58:23.585-0700	DEBUG	lib/cluster.go:444	Generating certificates for the cluster: (Name: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, VIP: 172.16.19.182, FQDN: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.eng.diamanti.com)
+2020-10-26T02:58:23.585-0700	DEBUG	lib/cluster.go:186	Clean up existing certs if any:
+2020-10-26T02:58:23.588-0700	DEBUG	lib/cluster.go:195	Generate unique CA name with current date
+2020-10-26T02:58:23.594-0700	DEBUG	lib/cluster.go:205	Integrate CA name in file
+2020-10-26T02:58:23.601-0700	DEBUG	lib/cluster.go:213	Generate CA certs
+2020-10-26T02:58:23.968-0700	DEBUG	lib/cluster.go:221	Create a CSR to generate a certificate using FQDN, VIP, Cluster Name for a server certs
+2020-10-26T02:58:23.976-0700	DEBUG	lib/cluster.go:229	Generate server certificate:
+2020-10-26T02:58:24.333-0700	DEBUG	lib/cluster.go:452	Getting CertificateAuthority from /dwshome/chetan/diamanti-test-pkg/server_certs/ca.pem file
+2020-10-26T02:58:24.333-0700	DEBUG	lib/cluster.go:461	Getting ServerCertificate from /dwshome/chetan/diamanti-test-pkg/server_certs/server.pem file
+2020-10-26T02:58:24.333-0700	DEBUG	lib/cluster.go:470	Getting ServerPrivateKey from /dwshome/chetan/diamanti-test-pkg/server_certs/server-key.pem file
+2020-10-26T02:58:24.338-0700	DEBUG	lib/cluster.go:489	Creating the cluster
+2020-10-26T02:58:27.390-0700	DEBUG	lib/cluster.go:493	CfgJson is :{
+ "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+ "uuid": "",
+ "selfLink": "",
+ "spec": {
+  "nodes": [
+   "softserv67",
+   "softserv68",
+   "softserv69"
+  ],
+  "masters": [
+   "softserv67",
+   "softserv68",
+   "softserv69"
+  ],
+  "config": {
+   "virtualIP": "172.16.19.182",
+   "vipMgmt": "local",
+   "podDnsDomain": "cluster.local",
+   "stats": "enable",
+   "storageVlan": 2,
+   "events": {
+    "snmp": null
+   },
+   "certificateAuthority": "-----BEGIN CERTIFICATE-----\nMIID3jCCAsagAwIBAgIUQI687VKdQ8F70eieeZcbkgJAAmQwDQYJKoZIhvcNAQEL\nBQAwdTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExETAPBgNVBAcT\nCFNhbiBKb3NlMREwDwYDVQQKEwhEaWFtYW50aTELMAkGA1UECxMCQ0ExHjAcBgNV\nBAMTFUQxMCBDQSAyMDIwMTAyNjAyNTgyMzAeFw0yMDEwMjYwOTUzMDBaFw0yNTEw\nMjUwOTUzMDBaMHUxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMREw\nDwYDVQQHEwhTYW4gSm9zZTERMA8GA1UEChMIRGlhbWFudGkxCzAJBgNVBAsTAkNB\nMR4wHAYDVQQDExVEMTAgQ0EgMjAyMDEwMjYwMjU4MjMwggEiMA0GCSqGSIb3DQEB\nAQUAA4IBDwAwggEKAoIBAQCz5hKoi/6s4WW+7ixats/R9NVVSAvZSrhzk3YHEHc1\nsj+XlY9Or8nmkfxNjL3V07J8siLHqbUgRhI9Uu433wAAY3jE3KAXtWzf/yX0DpYc\nmWFwaq0gw+A6MCDNV2SrdzVoMmpjOn7X14DDnw30SpUpsfGvhl+wYaVrNpDN/sbb\nMBE1qzSTMP3nXNpExFN0DQO5CoRuO9UIfpYwSpRiFyuL+ToWIuYMnV2rdXnnerfy\n59TrkEWqHSxP/5t8KGjF9Pa60VI6VECzQUgxfDZdu2VlyQpHHmVjSuwVee9ekTnx\n4FNLJLmNWBeoWB/IGjJ5Bta8+XLk0t91+d1sqmacKFMpAgMBAAGjZjBkMA4GA1Ud\nDwEB/wQEAwIBBjASBgNVHRMBAf8ECDAGAQH/AgECMB0GA1UdDgQWBBTDfHLCl/CQ\nFIizSlh0V5Avmhaa6DAfBgNVHSMEGDAWgBTDfHLCl/CQFIizSlh0V5Avmhaa6DAN\nBgkqhkiG9w0BAQsFAAOCAQEAggoPrvZgo5OR7pg4wqqDoXjEMBk4Dqgxo4QJj+lQ\naMoF6ZJ+3mtd5jV2xSlXuBR/cZodZ2Fchy31fXY8TF8R10eylU8lUSyYqTxDSqFg\nO6eKNVi+OfrG+y/ZVPvs6gQOO81xqEJNUr/jZCypaO/TDiC9S1TcCS6WBwqeoBuq\nbZkbhwIFCS8yxEF2MJs0KpM6c/7WAgksJ+3H86Fal8E+WrG8FImNW3/A8pAA8ztE\nIxwq9Fu+GhniVUdX8LOW/Bh4QA/a+sNrkRkcjis/EvDrUtsrlT6/Gd5tHsYw+A9U\njtpkEDBBTrOg+YR7CfuvY1mICOkADQP7CNWs9KyQRi1/wQ==\n-----END CERTIFICATE-----\n",
+   "serverCertificate": "-----BEGIN CERTIFICATE-----\nMIIE3zCCA8egAwIBAgIUA2pYx0PQl0HY7TjwMmmGZ43ibygwDQYJKoZIhvcNAQEL\nBQAwdTELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExETAPBgNVBAcT\nCFNhbiBKb3NlMREwDwYDVQQKEwhEaWFtYW50aTELMAkGA1UECxMCQ0ExHjAcBgNV\nBAMTFUQxMCBDQSAyMDIwMTAyNjAyNTgyMzAeFw0yMDEwMjYwOTUzMDBaFw0yMTEw\nMjYwOTUzMDBaMIG5MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTER\nMA8GA1UEBxMIU2FuIEpvc2UxETAPBgNVBAoTCERpYW1hbnRpMRMwEQYDVQQLEwpB\nUEkgU2VydmVyMVowWAYDVQQDE1FhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\nYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhLmVuZy5kaWFtYW50\naS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDcyUkYyJ1jVsEr\nDpeUcR1T+7UlJ/s5tmCKzyUNp1Dsgl6j6wCIB+twW4dbnxd1nw0M0mc/DwMwtD3S\nnsgbhVKJSyk8ai88zRKBzuzlGIayG1vJnsBXbFrGsQ8cBs5ZoQlY4l77Y4F4QNC6\nIgcIsIp7vq2qk8jqwjagdhVO8cFSAWRwXRt755FQ1cKmh1Fm4Te1a9yjxfX+FOn5\nyOzDyOPYV1CRj+pu927aOPvC/sTdnEernKPwCgapnNaKCjq34d9frGV2IV+8TSo0\nnWBZyDxvpw6jkZHehMOtTjknzfuEH/KOTvUQhP9Jo/pMjhQChSR7hKH+yd6FDRVa\nUI3/Zmp3AgMBAAGjggEgMIIBHDAOBgNVHQ8BAf8EBAMCBaAwEwYDVR0lBAwwCgYI\nKwYBBQUHAwEwDAYDVR0TAQH/BAIwADAdBgNVHQ4EFgQUCdESHEMUeaJh8Hu1Bx9Z\nssX7wvwwHwYDVR0jBBgwFoAUw3xywpfwkBSIs0pYdFeQL5oWmugwgaYGA1UdEQSB\nnjCBm4JRYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\nYWFhYWFhYWFhYWFhYWFhYWFhYWFhYS5lbmcuZGlhbWFudGkuY29tgkBhYWFhYWFh\nYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh\nYWFhYWFhYWFhhwSsEBO2MA0GCSqGSIb3DQEBCwUAA4IBAQAhGpyKxvSIygLCmXGb\nJEMI4wxCIbg6rh8Qo6VcmuSSppkg46zQnf5+4VQNr8aN7a0u/o7KQqEiJBS3GUgr\nBF+x+1JSgcsUh83L6jAybRnn7D1iFWTJJkR5CQqQAINWb6M4mQnBtVpHm7s8aSJb\nbBqqsWiksC/8YubMUxNWtzUv5Q0cClZKXDUwHO4TiyvZA2pG8mtZiIpS/rv1ZsFt\npM9yO3TiV0LRmyNXoYXwNA4Q5NkuyRoRerJfuovcbEhkuKCDBK5fQifJaRFkbLWb\nFnQoE4/N1pRAW+DwsYrP5a6ibR194zQWeefg/pFQw8hpfio3d08MKlnccABdaN2/\nNTjk\n-----END CERTIFICATE-----\n",
+   "serverPrivateKey": "-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEA3MlJGMidY1bBKw6XlHEdU/u1JSf7ObZgis8lDadQ7IJeo+sA\niAfrcFuHW58XdZ8NDNJnPw8DMLQ90p7IG4VSiUspPGovPM0Sgc7s5RiGshtbyZ7A\nV2xaxrEPHAbOWaEJWOJe+2OBeEDQuiIHCLCKe76tqpPI6sI2oHYVTvHBUgFkcF0b\ne+eRUNXCpodRZuE3tWvco8X1/hTp+cjsw8jj2FdQkY/qbvdu2jj7wv7E3ZxHq5yj\n8AoGqZzWigo6t+HfX6xldiFfvE0qNJ1gWcg8b6cOo5GR3oTDrU45J837hB/yjk71\nEIT/SaP6TI4UAoUke4Sh/snehQ0VWlCN/2ZqdwIDAQABAoIBAQDF3wPK2WjsscC3\nhQFmgSXGscx7+2QVKhVF8jYEEZLeFE0bXS8Buw9PiEg8Xc2Zla0Nc7gidKLoUHEj\nxTgUKh15fEn9ojCpriTK/5eiDqQRFaHihYteDncgoWioNpVTEJce+OolJN3Q1035\nsytYp1fFZXOhb4deliZ9ErcwJEyc34X5kNDfsBaKsNs1ny4zck8TjuIUcbeuqfn1\nW7sDbSE23g0vepx53wxWoOs4PA1r+JOPmHdACH76vjTPJVeSEP/KFJFe+Zut1Y0o\nAuKKhYzl7sH6MdVQnzcmNnJZwfc3eZ05KJB9VpsXUHenraUa3KCwqJ8ekcth0CHp\n/4/e2d2ZAoGBAOLw5DTo8USNdKEnkPqorWMAO1Zz+yxOgvlxTimRNN/a1nS1sX/w\ngjxcAvsYpv/0RQBMdHrXw9mm3T/Soao8qy7c+zkcL8va2ZnSrjWomLcgGrCOzAxX\nmd+W0a5r5+hrHTnGU+MshSFNN4TQckLhMKLYCpNJ51VNMbw8gy1ncsjrAoGBAPkO\npKVH2Mu3R0AJ5N27yjq7x6VOLTHhQBv5MpZlL07rEv8qTU6BbHdUQ1cn7v2sQ7Kk\n0dKOzCvEey/87mHSNlz8sgD2wGxfbQWXKkeNgG+B0km0gCKtYSg5LHWsKtS7xwUC\nTtNUCkp6yfjSFZSsvWNsfgC+ytNeIsTG0P/2ZgGlAoGAZMqeYE1xEoRM32JGRr1x\nvH2W3Q/H52a7TvQexeFi/WUhSFaGDg+QmCQ5grHxQc6IctiCBykbJ+ivbTAscwJc\n+QRWY4f8RmrdqC7lBpnpsbOFhxL01yp1AdPnLrNoHVatdUJ7cXMNcbvsw4Ucqk1/\nn2OaVs5E+yK8yyCJFjpSxZ8CgYAzPxUXwTHVsQ+jGKYUDejtrufEltJr2gpj9yG2\nmnlihrIw+NZRWgYkg50bmObvIXwIjStzZNiUBOjIFgZC8IspFQHXeu5bHkODi/gy\nIuaTiyXm7pITEJPWP/Vq/RMPFNg9qpznlPpNGvjmDuxL3ENX6uH+a0O2vD7xOGuW\nz29r1QKBgBKo0lBcYInXEF5bLNdXWvkBi9uJ02bxGgbOXQkoOPgKAqGpEQl9BkzQ\nOQbD8xaQN9rH1W4w3yJpKO1eYMU/F0s/Nppi8SvqPjhTxS7HkqzCqdrmGBqpdppq\n2XVn+RLEmvdlcC+T9G/NuUoE5iNepizb+dn1HrYUItt15Y5UlCR4\n-----END RSA PRIVATE KEY-----\n",
+   "adminUserPassword": "Diamanti@111",
+   "features": {
+    "kubevirt": "",
+    "kubevirtConfig": {},
+    "kvm": "",
+    "helm": "",
+    "storageOverlay": "",
+    "secureVolumes": {
+     "state": ""
+    },
+    "dataservice": ""
+   },
+   "upgrade": {
+    "abortOnFailure": false,
+    "nodeList": null
+   },
+   "enableMultiZone": false
+  }
+ },
+ "status": {
+  "state": "",
+  "master": "",
+  "message": "",
+  "nodeStatus": null,
+  "clusterUpgrade": {
+   "state": "",
+   "upgradeCookie": "",
+   "timeStamp": {
+    "startTime": "",
+    "endTime": ""
+   },
+   "phaseStatus": null,
+   "nodesInProgress": 0,
+   "nodesSuccess": 0,
+   "nodesFailed": 0
+  }
+ }
+}
+2020-10-26T02:58:27.391-0700	DEBUG	tests/cluster.go:116	Max Cluster Name Length is 63
+2020-10-26T02:58:27.429-0700	DEBUG	lib/cluster.go:422	Cluster admin password is Diamanti@111
+2020-10-26T02:58:27.429-0700	DEBUG	lib/cluster.go:430	Cluster Spec Node list is [softserv67 softserv68 softserv69]
+2020-10-26T02:58:27.429-0700	DEBUG	lib/cluster.go:431	Cluster Spec Master Node list is [softserv67 softserv68 softserv69]
+2020-10-26T02:58:27.429-0700	DEBUG	lib/cluster.go:434	Getting dns domain name
+2020-10-26T02:58:27.432-0700	DEBUG	lib/cluster.go:442	FQDN : aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.eng.diamanti.com
+2020-10-26T02:58:27.433-0700	DEBUG	lib/cluster.go:444	Generating certificates for the cluster: (Name: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, VIP: 172.16.19.182, FQDN: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa.eng.diamanti.com)
+2020-10-26T02:58:27.433-0700	DEBUG	lib/cluster.go:186	Clean up existing certs if any:
+2020-10-26T02:58:27.435-0700	DEBUG	lib/cluster.go:195	Generate unique CA name with current date
+2020-10-26T02:58:27.440-0700	DEBUG	lib/cluster.go:205	Integrate CA name in file
+2020-10-26T02:58:27.447-0700	DEBUG	lib/cluster.go:213	Generate CA certs
+2020-10-26T02:58:27.753-0700	DEBUG	lib/cluster.go:221	Create a CSR to generate a certificate using FQDN, VIP, Cluster Name for a server certs
+2020-10-26T02:58:27.760-0700	DEBUG	lib/cluster.go:229	Generate server certificate:
+2020-10-26T02:58:28.474-0700	DEBUG	lib/cluster.go:452	Getting CertificateAuthority from /dwshome/chetan/diamanti-test-pkg/server_certs/ca.pem file
+2020-10-26T02:58:28.475-0700	DEBUG	lib/cluster.go:461	Getting ServerCertificate from /dwshome/chetan/diamanti-test-pkg/server_certs/server.pem file
+2020-10-26T02:58:28.475-0700	DEBUG	lib/cluster.go:470	Getting ServerPrivateKey from /dwshome/chetan/diamanti-test-pkg/server_certs/server-key.pem file
+2020-10-26T02:58:28.479-0700	DEBUG	lib/cluster.go:489	Creating the cluster
+2020-10-26T02:58:44.017-0700	DEBUG	lib/cluster.go:497	Please import "/dwshome/chetan/diamanti-test-pkg/server_certs/ca.pem" certificate to your client machine
+2020-10-26T02:58:44.019-0700	DEBUG	lib/util.go:1377	Sleeping for 60 sec
+2020-10-26T02:59:44.094-0700	DEBUG	lib/util.go:1386	Save cluster configuration: 
+2020-10-26T02:59:44.892-0700	DEBUG	lib/util.go:1390	Login to cluster
+2020-10-26T02:59:44.892-0700	DEBUG	lib/util.go:1436	Polling for cluster login for 300 seconds.
+2020-10-26T02:59:45.532-0700	DEBUG	lib/util.go:1396	Checking in a loop for cluster status
+2020-10-26T02:59:45.630-0700	DEBUG	lib/cluster.go:942	Found '3' nodes
+2020-10-26T02:59:45.630-0700	DEBUG	lib/cluster.go:982	Waiting for softserv67 to into "Ready" state.
+2020-10-26T02:59:45.734-0700	DEBUG	lib/cluster.go:982	Waiting for softserv68 to into "Ready" state.
+2020-10-26T02:59:45.843-0700	DEBUG	lib/cluster.go:982	Waiting for softserv69 to into "Ready" state.
+2020-10-26T02:59:45.949-0700	DEBUG	lib/util.go:1407	Creating network red
+2020-10-26T02:59:46.090-0700	DEBUG	lib/network-overlay.go:66	Waiting for 30 seconds, so that overlay network can make entry in etcd: 
+2020-10-26T03:00:16.091-0700	DEBUG	lib/util.go:1419	Add default tag to red network
+2020-10-26T03:00:26.751-0700	DEBUG	lib/util.go:1221	Labeled all nodes with node=node$
+
+2020-10-26T03:00:26.751-0700	DEBUG	tests/clusterutil.go:53	Getting cluster ID
+2020-10-26T03:00:26.861-0700	DEBUG	tests/clusterutil.go:60	Created test cluster: cbf74e7d-1771-11eb-8275-000c29e66b03
+2020-10-26T03:00:26.861-0700	DEBUG	tests/clusterutil.go:63	Deleting all LCVs, volumes, snapshots from previous cluster if any.
+2020-10-26T03:00:27.035-0700	DEBUG	lib/util.go:166	Recording timestamp of all services on all nodes
+2020-10-26T03:00:32.013-0700	DEBUG	tests/util.go:220	Overwritting e2e parameter : ExpectedBasicVnicUsageCount
+2020-10-26T03:00:41.735-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T03:00:42.319-0700	DEBUG	tests/clusterutil.go:115	Creating storage classes
+2020-10-26T03:00:52.851-0700	DEBUG	tests/cluster.go:123	Getting cluster nodes
+2020-10-26T03:00:52.963-0700	DEBUG	tests/cluster.go:127	Checking if all drives of nodes [softserv67 softserv68 softserv69] are in good state or not: 
+[AfterEach] Cluster Name Length Check
+  /gocode/main/test/e2e/tests/cluster.go:97
+2020-10-26T03:00:53.264-0700	DEBUG	tests/cluster.go:98	END_TEST Cluster.NameLengthCheck Time-taken : 149.683721221
+2020-10-26T03:00:53.264-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T03:00:53.372-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T03:00:53.372-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T03:00:53.372-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+
+[32m• [SLOW TEST:264.807 seconds][0m
+Cluster.NameLengthCheck Management Weekly M_Cluster-1.2 DM_Discovery-1.1 Soft_ClusterManagement-3.2 Software
+[90m/gocode/main/test/e2e/tests/cluster.go:81[0m
+  Cluster Name Length Check
+  [90m/gocode/main/test/e2e/tests/cluster.go:84[0m
+    Cluster Name Length equal to defined character limit
+    [90m/gocode/main/test/e2e/tests/cluster.go:101[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mCluster.ClusterSanity Management Daily MZ_ClusterSanity-1.0 MZ_ClusterSanity-1.1 MZ_ClusterSanity-1.2 MZ_ClusterSanity-1.3 Soft_ClusterSanity-1.0 Soft_ClusterSanity-1.1 Soft_ClusterSanity-1.2 Soft_ClusterSanity-1.3 Multizone Software[0m [90mVerify that all system pods running in the cluster[0m 
+  [1mverifies all the system pods are running in the cluster[0m
+  [37m/gocode/main/test/e2e/tests/cluster.go:2242[0m
+[BeforeEach] Verify that all system pods running in the cluster
+  /gocode/main/test/e2e/tests/cluster.go:2232
+2020-10-26T03:00:53.477-0700	DEBUG	tests/cluster.go:2233	START_TEST Cluster.ClusterSanity
+2020-10-26T03:00:53.477-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T03:00:54.119-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T03:00:54.223-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T03:00:54.876-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T03:00:54.996-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T03:00:54.996-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T03:00:54.996-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+[It] verifies all the system pods are running in the cluster
+  /gocode/main/test/e2e/tests/cluster.go:2242
+2020-10-26T03:01:00.119-0700	DEBUG	tests/cluster.go:2244	Getting cluster nodes
+2020-10-26T03:01:00.223-0700	DEBUG	tests/cluster.go:2248	Getting cluster quorum nodes
+2020-10-26T03:01:00.330-0700	DEBUG	tests/cluster.go:2253	Verify "csi-external-attacher" pod is running
+2020-10-26T03:01:00.637-0700	DEBUG	tests/cluster.go:2253	Verify "csi-external-provisioner" pod is running
+2020-10-26T03:01:00.933-0700	DEBUG	tests/cluster.go:2253	Verify "csi-external-resizer" pod is running
+2020-10-26T03:01:01.245-0700	DEBUG	tests/cluster.go:2253	Verify "csi-external-snapshotter" pod is running
+2020-10-26T03:01:01.562-0700	DEBUG	tests/cluster.go:2253	Verify "alertmanager" pod is running
+2020-10-26T03:01:01.854-0700	DEBUG	tests/cluster.go:2259	Verify "prometheus" pod running on quorum nodes in the cluster
+2020-10-26T03:01:02.170-0700	DEBUG	tests/cluster.go:2272	Verify "collectd" pod running on all nodes in the cluster
+2020-10-26T03:01:02.451-0700	DEBUG	tests/cluster.go:2272	Verify "csi-diamanti-driver" pod running on all nodes in the cluster
+2020-10-26T03:01:02.760-0700	DEBUG	tests/cluster.go:2285	Verify "helm-chart" pod is running
+2020-10-26T03:01:02.924-0700	DEBUG	tests/cluster.go:2285	Verify "tiller-deploy" pod is running
+2020-10-26T03:01:03.087-0700	DEBUG	tests/cluster.go:2285	Verify "metrics-server" pod is running
+2020-10-26T03:01:03.247-0700	DEBUG	tests/cluster.go:2291	Verify "coredns" pods are in running on quorum nodes in the cluster
+[AfterEach] Verify that all system pods running in the cluster
+  /gocode/main/test/e2e/tests/cluster.go:2237
+2020-10-26T03:01:03.397-0700	DEBUG	tests/cluster.go:2238	END_TEST Cluster.ClusterSanity Time-taken : 3258.227944133
+2020-10-26T03:01:03.397-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T03:01:03.501-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T03:01:03.501-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T03:01:03.501-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+
+[32m• [SLOW TEST:10.117 seconds][0m
+Cluster.ClusterSanity Management Daily MZ_ClusterSanity-1.0 MZ_ClusterSanity-1.1 MZ_ClusterSanity-1.2 MZ_ClusterSanity-1.3 Soft_ClusterSanity-1.0 Soft_ClusterSanity-1.1 Soft_ClusterSanity-1.2 Soft_ClusterSanity-1.3 Multizone Software
+[90m/gocode/main/test/e2e/tests/cluster.go:2223[0m
+  Verify that all system pods running in the cluster
+  [90m/gocode/main/test/e2e/tests/cluster.go:2224[0m
+    verifies all the system pods are running in the cluster
+    [90m/gocode/main/test/e2e/tests/cluster.go:2242[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m
+[90m------------------------------[0m
+[0mVolume.NameLengthCheck Management Daily M_Volume-1.1 Soft_Volume-1.1 Software[0m [90mwhen volume name is[0m 
+  [1mgreater than defined character limit[0m
+  [37m/gocode/main/test/e2e/tests/volume.go:469[0m
+[BeforeEach] when volume name is
+  /gocode/main/test/e2e/tests/volume.go:433
+2020-10-26T03:01:03.594-0700	DEBUG	tests/volume.go:435	START_TEST Volume.NameLengthCheck
+2020-10-26T03:01:03.594-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T03:01:04.217-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T03:01:04.337-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T03:01:04.941-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T03:01:05.068-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T03:01:05.068-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T03:01:05.068-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+[It] greater than defined character limit
+  /gocode/main/test/e2e/tests/volume.go:469
+2020-10-26T03:01:10.090-0700	DEBUG	tests/volume.go:474	Creating the volume
+[AfterEach] when volume name is
+  /gocode/main/test/e2e/tests/volume.go:441
+2020-10-26T03:01:10.190-0700	DEBUG	tests/volume.go:442	END_TEST Volume.NameLengthCheck Time-taken : 6.595664111
+2020-10-26T03:01:10.190-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T03:01:10.295-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T03:01:10.295-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T03:01:10.295-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:6.806 seconds][0m
+Volume.NameLengthCheck Management Daily M_Volume-1.1 Soft_Volume-1.1 Software
+[90m/gocode/main/test/e2e/tests/volume.go:423[0m
+  when volume name is
+  [90m/gocode/main/test/e2e/tests/volume.go:426[0m
+    greater than defined character limit
+    [90m/gocode/main/test/e2e/tests/volume.go:469[0m
+[90m------------------------------[0m
+[36mS[0m
+[90m------------------------------[0m
+[0mCluster.RemoveTwoQuorumNodesFromThreeNodeCluster Management Weekly QM_Delete-1.1 QM_Delete-1.2 QM_Delete-1.3 M_Cluster-1.22 DM_Discovery-1.2 Soft_ClusterManagement-2.5 Soft_ClusterManagement-2.3 Soft_ClusterManagement-3.10 Software[0m [90mCreate cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail[0m 
+  [1mCreate cluster. Removing quorum node with "dctl cluster node" should not be allowed[0m
+  [37m/gocode/main/test/e2e/tests/cluster.go:1176[0m
+[BeforeEach] Create cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail
+  /gocode/main/test/e2e/tests/cluster.go:1055
+2020-10-26T03:01:10.400-0700	DEBUG	tests/cluster.go:1058	START_TEST Cluster.RemoveTwoQuorumNodesFromThreeNodeCluster
+2020-10-26T03:01:10.400-0700	DEBUG	tests/clusterutil.go:36	Login to cluster
+2020-10-26T03:01:11.049-0700	DEBUG	tests/clusterutil.go:41	Checking basic Vnic usage
+2020-10-26T03:01:11.160-0700	DEBUG	lib/dwtest_lib.go:501	Updating inventory struct
+2020-10-26T03:01:11.741-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T03:01:11.854-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T03:01:11.854-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T03:01:11.854-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+[It] Create cluster. Removing quorum node with "dctl cluster node" should not be allowed
+  /gocode/main/test/e2e/tests/cluster.go:1176
+2020-10-26T03:01:16.942-0700	DEBUG	tests/cluster.go:1178	Getting cluster master node
+2020-10-26T03:01:17.153-0700	DEBUG	lib/cluster.go:728	Quorum nodes except master: [softserv69 softserv68]
+2020-10-26T03:01:17.153-0700	DEBUG	tests/cluster.go:1182	Trying to remove quorum "softserv69" quorum node using "dctl cluster remove" command. It should fail: 
+[AfterEach] Create cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail
+  /gocode/main/test/e2e/tests/cluster.go:1062
+2020-10-26T03:01:17.249-0700	DEBUG	tests/cluster.go:1063	END_TEST Cluster.RemoveTwoQuorumNodesFromThreeNodeCluster Time-taken : 6.849004359
+2020-10-26T03:01:17.249-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T03:01:17.350-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T03:01:17.350-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T03:01:17.350-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+
+[32m• [SLOW TEST:7.053 seconds][0m
+Cluster.RemoveTwoQuorumNodesFromThreeNodeCluster Management Weekly QM_Delete-1.1 QM_Delete-1.2 QM_Delete-1.3 M_Cluster-1.22 DM_Discovery-1.2 Soft_ClusterManagement-2.5 Soft_ClusterManagement-2.3 Soft_ClusterManagement-3.10 Software
+[90m/gocode/main/test/e2e/tests/cluster.go:1048[0m
+  Create cluster with 3 etcd nodes. Remove first and second etcd node. Removing second etcd node should not be allowed. Removing master node should fail
+  [90m/gocode/main/test/e2e/tests/cluster.go:1049[0m
+    Create cluster. Removing quorum node with "dctl cluster node" should not be allowed
+    [90m/gocode/main/test/e2e/tests/cluster.go:1176[0m
+[90m------------------------------[0m
+[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m[36mS[0m2020-10-26T03:01:17.453-0700	DEBUG	tests/volume.go:3480	Running After suite ...
+2020-10-26T03:01:17.453-0700	DEBUG	lib/dwtest_lib.go:758	Checking existance of loopback device(s) on all cluster nodes
+2020-10-26T03:01:24.314-0700	DEBUG	tests/clusterutil.go:164	Checking stale resources
+2020-10-26T03:01:24.439-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv67
+2020-10-26T03:01:24.439-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv68
+2020-10-26T03:01:24.439-0700	DEBUG	lib/dwtest_lib.go:457	Checking stale resources on the node: softserv69
+2020-10-26T03:01:24.547-0700	DEBUG	tests/volume.go:3491	Delete storage classes
+2020-10-26T03:01:26.602-0700	DEBUG	tests/volume.go:3519	Bug converted to warning list is:
+2020-10-26T03:01:26.602-0700	DEBUG	tests/volume.go:3473	For detailed logs -
+2020-10-26T03:01:26.602-0700	DEBUG	tests/volume.go:3474		Default log file location : /dwshome/chetan/diamanti-test-pkg/logs/e2e_log2020-10-26_02-06-45.log
+
+
+[1m[32mRan 18 of 456 Specs in 3265.148 seconds[0m
+[1m[32mSUCCESS![0m -- [32m[1m18 Passed[0m | [91m[1m0 Failed[0m | [33m[1m0 Pending[0m | [36m[1m438 Skipped[0m
