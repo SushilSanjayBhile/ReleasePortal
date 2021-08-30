@@ -881,13 +881,12 @@ def WHOLE_GUI_TC_INFO(request, Release):
                     if "CREATED" in SUM:
                         updatedData2["stateUserMapping"] = "{\"Manual Assignee\": \"Portal\", \"Manual WorkingStatus\": \"Inprogress\",\"Automation Assignee\": \"Portal\", \"Automation WorkingStatus\": \"AUTO_ASSIGNED\"}"
                         updateGuiTcInfo(data1, updatedData2, Release)
-
         if Applicable != 'None':
             if "," in Applicable:
                 appl = Applicable.split(",")
 
                 for a in appl:
-                    infod = infodata.filter(applicable__icontains = a)
+                    infod = infodata.filter(applicable = a)
                     try:
                         infodataone = infodataone | infod
                     except:
