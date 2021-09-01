@@ -955,42 +955,50 @@ class TestCasesAll extends Component {
     getTcsToShow(release,updateRelease){
 
         let showTc = []
-        let skipTcs = []
-        let NATcs = []
-        //let ApplicableTcs = []
+        // let skipTcs = []
+        // let NATcs = []
+        // let ApplicableTcs = []
         this.ApplicableTcs = []
         
-        for(let i = 0; i < this.allTCsToShow.length; i++){
-            if(this.allTCsToShow[i].Priority == 'Skip' || this.allTCsToShow[i].Priority == 'Skp' ){
-                skipTcs.push(this.allTCsToShow[i])
-            }
-            if(this.allTCsToShow[i].Priority == 'NA'){
-                NATcs.push(this.allTCsToShow[i])
-            }
-            if(this.allTCsToShow[i].Priority != 'NA' && this.allTCsToShow[i].Priority != 'Skip' && this.allTCsToShow[i].Priority != 'Skp'){
-                this.ApplicableTcs.push(this.allTCsToShow[i])
-                //ApplicableTcs.push(this.allTCsToShow[i])
-            }
-        }
+        // for(let i = 0; i < this.allTCsToShow.length; i++){
+        //     if(this.allTCsToShow[i].Priority == 'Skip' || this.allTCsToShow[i].Priority == 'Skp' ){
+        //         skipTcs.push(this.allTCsToShow[i])
+        //     }
+        //     if(this.allTCsToShow[i].Priority == 'NA'){
+        //         NATcs.push(this.allTCsToShow[i])
+        //     }
+        //     // if(this.allTCsToShow[i].Priority != 'NA' && this.allTCsToShow[i].Priority != 'Skip' && this.allTCsToShow[i].Priority != 'Skp'){
+        //     //     this.ApplicableTcs.push(this.allTCsToShow[i])
+        //     //     //ApplicableTcs.push(this.allTCsToShow[i])
+        //     // }
+        //     if(this.allTCsToShow[i]){
+        //         this.ApplicableTcs.push(this.allTCsToShow[i])
+        //         //ApplicableTcs.push(this.allTCsToShow[i])
+        //     }
+        // }
         showTc = []
-        this.state.tableColumnsTcs.forEach(item=>{
-            if(item.isChecked == true  && item.value == 'Skip'){
-                skipTcs.forEach(skipTC=>{
-                    showTc.push(skipTC)
-                })
-            }
-            if(item.isChecked == true && item.value == 'NA' ){
-                NATcs.forEach(NATC=>{
-                    showTc.push(NATC)
-                })
-            } 
-            if(item.isChecked == true && item.value == 'Applicable' ){
-                //ApplicableTcs.forEach(applicableTC=>{
-                this.ApplicableTcs.forEach(applicableTC=>{
-                    showTc.push(applicableTC)
-                })
-            }
-        })
+        // this.state.tableColumnsTcs.forEach(item=>{
+        //     if(item.isChecked == true  && item.value == 'Skip'){
+        //         if(this.allTCsToShow[i].applicable == 'Skip'){
+        //             skipTcs.push(this.allTCsToShow[i])
+        //         }
+        //         skipTcs.forEach(skipTC=>{
+        //             showTc.push(skipTC)
+        //         })
+        //     }
+        //     if(item.isChecked == true && item.value == 'NA' ){
+        //         NATcs.forEach(NATC=>{
+        //             showTc.push(NATC)
+        //         })
+        //     }
+        //     if(item.isChecked == true && item.value == 'Applicable' ){
+        //         //ApplicableTcs.forEach(applicableTC=>{
+        //         this.ApplicableTcs.forEach(applicableTC=>{
+        //             showTc.push(applicableTC)
+        //         })
+        //     }
+        // })
+        showTc = this.allTCsToShow
         let showTc1 = []
         let statusFlag = 0
         this.state.statusColumn.forEach(item=>{
@@ -1022,6 +1030,7 @@ class TestCasesAll extends Component {
             showTc1 = showTc; 
             
         }
+        this.ApplicableTcs = showTc1
         this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
         this.gridOperations(true);
     }
@@ -1061,41 +1070,42 @@ class TestCasesAll extends Component {
                 this.tcHolder = [...tem]
             }
         let showTc = []
-        let skipTcs = []
-        let NATcs = []
-        //let ApplicableTcs = []
+        // let skipTcs = []
+        // let NATcs = []
+        // //let ApplicableTcs = []
         this.ApplicableTcs = []
-        for(let i = 0; i < this.tcHolder.length; i++){
-            if(this.tcHolder[i].Priority == 'Skip' || this.tcHolder[i].Priority == 'Skp' ){
-                skipTcs.push(this.tcHolder[i])
-            }
-            if(this.tcHolder[i].Priority == 'NA'){
-                NATcs.push(this.tcHolder[i])
-            }
-            if(this.tcHolder[i].Priority != 'NA' && this.tcHolder[i].Priority != 'Skip' && this.tcHolder[i].Priority != 'Skp'){
-                this.ApplicableTcs.push(this.tcHolder[i])
-                //ApplicableTcs.push(this.allTCsToShow[i])
-            }
-        }
+        // for(let i = 0; i < this.tcHolder.length; i++){
+        //     if(this.tcHolder[i].Priority == 'Skip' || this.tcHolder[i].Priority == 'Skp' ){
+        //         skipTcs.push(this.tcHolder[i])
+        //     }
+        //     if(this.tcHolder[i].Priority == 'NA'){
+        //         NATcs.push(this.tcHolder[i])
+        //     }
+        //     if(this.tcHolder[i].Priority != 'NA' && this.tcHolder[i].Priority != 'Skip' && this.tcHolder[i].Priority != 'Skp'){
+        //         this.ApplicableTcs.push(this.tcHolder[i])
+        //         //ApplicableTcs.push(this.allTCsToShow[i])
+        //     }
+        // }
         showTc = []
-        this.state.tableColumnsTcs.forEach(item=>{
-            if(item.isChecked == true  && item.value == 'Skip'){
-                skipTcs.forEach(skipTC=>{
-                    showTc.push(skipTC)
-                })
-            }
-            if(item.isChecked == true && item.value == 'NA' ){
-                NATcs.forEach(NATC=>{
-                    showTc.push(NATC)
-                })
-            } 
-            if(item.isChecked == true && item.value == 'Applicable' ){
-                //ApplicableTcs.forEach(applicableTC=>{
-                this.ApplicableTcs.forEach(applicableTC=>{
-                    showTc.push(applicableTC)
-                })
-            }
-        })
+        // this.state.tableColumnsTcs.forEach(item=>{
+        //     if(item.isChecked == true  && item.value == 'Skip'){
+        //         skipTcs.forEach(skipTC=>{
+        //             showTc.push(skipTC)
+        //         })
+        //     }
+        //     if(item.isChecked == true && item.value == 'NA' ){
+        //         NATcs.forEach(NATC=>{
+        //             showTc.push(NATC)
+        //         })
+        //     }
+        //     if(item.isChecked == true && item.value == 'Applicable' ){
+        //         //ApplicableTcs.forEach(applicableTC=>{
+        //         this.ApplicableTcs.forEach(applicableTC=>{
+        //             showTc.push(applicableTC)
+        //         })
+        //     }
+        // })
+        showTc = this.tcHolder
         let showTc1 = []
         let statusFlag = 0
         this.state.statusColumn.forEach(item=>{
@@ -1127,7 +1137,7 @@ class TestCasesAll extends Component {
             showTc1 = showTc; 
             
         }
-        //console.log("showtc1",showTc1)
+        this.ApplicableTcs = showTc1
         this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
         // if (this.state.isApiUnderProgress) {
         //     this.setState({ isApiUnderProgress: false, loading: false });
@@ -1705,7 +1715,7 @@ class TestCasesAll extends Component {
                                                 <Button disabled={this.state.isApiUnderProgress} id="getall" onClick={() => this.getAlltcs()} type="button">All</Button>
                                             </div>
                                             <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
-                                                <Button id="PopoverAssign2" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
+                                                <Button disabled={this.state.isApiUnderProgress} id="PopoverAssign2" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
                                                 <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2" id="PopoverAssignButton2" toggle={() => this.popoverToggle2()} isOpen={this.state.popoverOpen2}>
                                                     <PopoverBody>
                                                         <div>
