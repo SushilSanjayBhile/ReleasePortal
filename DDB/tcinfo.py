@@ -501,6 +501,7 @@ def TC_INFO_GET_POST_VIEW(request, Release):
     errorMsg = {}
     errorMsg[Release] = []
     errorMsg[master] = []
+    errorMsg[dmcMaster] = []
 
     if request.method == "POST":
         req = json.loads(request.body.decode("utf-8"))

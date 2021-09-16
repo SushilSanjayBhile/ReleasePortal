@@ -479,8 +479,8 @@ def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
                 updateGuiTcInfo(d, updatedData, master)
 
             # UPDATE ROOTRELEASE
-            Release = rootRelease
-            data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
+            #Release = rootRelease
+            data = TC_INFO_GUI.objects.using(rootRelease).filter(TcID = req['TcID'], CardType = req["CardType"])
             #data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'])
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
             for data in dataSer.data:
@@ -490,8 +490,8 @@ def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
                     #print("rootrelease row",row)
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
-                d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
-                updateGuiTcInfo(d, updatedData, Release)
+                d = TC_INFO_GUI.objects.using(rootRelease).get(id = updatedData["id"])
+                updateGuiTcInfo(d, updatedData, rootRelease)
         return HttpResponse("SUCCESSFULLY UPDATED")
 
 @csrf_exempt
@@ -695,9 +695,9 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 updateGuiTcInfo(d, updatedData, master)
 
             # UPDATE ROOTRELEASE
-            Release = rootRelease
+            #Release = rootRelease
             #data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
-            data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'])
+            data = TC_INFO_GUI.objects.using(rootRelease).filter(TcID = req['TcID'])
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
             for data in dataSer.data:
                 #print("rootrelease data",data)
@@ -706,8 +706,8 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     #print("rootrelease row",row)
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
-                d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
-                updateGuiTcInfo(d, updatedData, Release)
+                d = TC_INFO_GUI.objects.using(rootRelease).get(id = updatedData["id"])
+                updateGuiTcInfo(d, updatedData, rootRelease)
         return HttpResponse("SUCCESSFULLY UPDATED")
 
 
