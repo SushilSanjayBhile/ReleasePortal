@@ -11,6 +11,7 @@ import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../a
 import './ReleaseTestCase.scss'
 import { CustomTooltips } from '@coreui/coreui-plugin-chartjs-custom-tooltips';
 import Sunburst from '../components/Sunburst';
+import CustomerBugs from '../../../components/CustomerBugs/CustomerBugs';
 import { element, object } from 'prop-types';
 const Status = {
     Fail: 'Fail',
@@ -1963,7 +1964,9 @@ class ReleaseTestCase extends Component {
                 
 
                 
-
+            {
+                <CustomerBugs></CustomerBugs>
+            }
             < Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                 <ModalHeader toggle={() => this.toggle()}>Confirmation</ModalHeader>
                 <ModalBody>

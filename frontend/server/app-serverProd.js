@@ -310,6 +310,26 @@ app.use('/rest/jira/bugdata', (req, res) => {
     })
 }, err => { });
 
+app.use('/rest/CustomerBugDatewise', (req, res) => {
+    var totalBugsStr = `?jql=project%20in%20(SPEK%2C%20DWS)%20AND%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20status%20in%20(Closed%2C%20Duplicate%2C%20%22In%20Progress%22%2C%20%22IN%20QA%22%2C%20Info%2C%20Open%2C%20Resolved%2C%20%22To%20Do%22%2C%20Unreproducible)%20AND%20((created%20%3E%3D%20${req.query.sdate}%20AND%20created%20%3C%3D%20${req.query.edate})%20OR%20((statusCategory%20%3D%20Done)%20AND%20(statusCategoryChangedDate%20%3E%3D%20${req.query.sdate}%20AND%20statusCategoryChangedDate%20%3C%3D%20${req.query.edate})))%20order%20by%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+    if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
+
 // GET ALL TCs of this release
 // app.get('/api/tcinfo/:release', (req, res) => {
 //     console.log('called')
