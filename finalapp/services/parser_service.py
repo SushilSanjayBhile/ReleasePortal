@@ -137,20 +137,21 @@ def parse_log_file(filename) :
         resultDict['msg'] = res
         print(resultDict)
         exit(0)
-	
-    logger.info("PASS IDs :\n{}\n".format(pass_id_list))
-    logger.info("FAIL IDs :\n{}\n".format(fail_id_list))
-    logger.info("SKIPPED IDs :\n{}\n".format(skipped_list))
 
-    resultDict['pass_id_list'] = pass_id_list
-    resultDict['fail_id_list'] = fail_id_list
-    resultDict['skipped_id_list'] = skipped_list
+    else:
+        logger.info("PASS IDs :\n{}\n".format(pass_id_list))
+        logger.info("FAIL IDs :\n{}\n".format(fail_id_list))
+        logger.info("SKIPPED IDs :\n{}\n".format(skipped_list))
 
-    res = requests.post(url = e2eResultUpdateAPI, data = json.dumps(resultDict))
-    #print(res, "if response is 200: data entered successfully")
-    #res = res.json()
-    resultDict['msg'] = res
-    print(resultDict)
+        resultDict['pass_id_list'] = pass_id_list
+        resultDict['fail_id_list'] = fail_id_list
+        resultDict['skipped_id_list'] = skipped_list
+
+        res = requests.post(url = e2eResultUpdateAPI, data = json.dumps(resultDict))
+        #print(res, "if response is 200: data entered successfully")
+        #res = res.json()
+        resultDict['msg'] = res
+        print(resultDict)
     pass_id_dict = group_list_elements( pass_id_list)
     fail_id_dict = group_list_elements( fail_id_list)
 
