@@ -630,7 +630,6 @@ def updateData(updatedData, data, Release):
         update_automation_count("increaseAutomated", "CLI")
     
     if data.TcName != "TC NOT AUTOMATED" and updatedData["TcName"] == "TC NOT AUTOMATED" and Release == rootRelease:
-        print("2",updatedData['AutomationDate'])
         update_automation_count("decreaseAutomated", "CLI")
 
     if data.TcName != updatedData["TcName"] and data.TcName == "TC NOT AUTOMATED":
@@ -660,7 +659,6 @@ def updateData(updatedData, data, Release):
     data.UnapproveTCReason = updatedData['UnapproveTCReason']
     data.Platform = updatedData['Platform']
     data.AutomationDate = updatedData['AutomationDate']
-    print("data changing",data.AutomationDate)
 
     data.save(using = Release)
     return 1
@@ -1199,7 +1197,7 @@ def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
                 errRecords.append(req)
             elif "Activity" in req:
                 AD = req['Activity']
-                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], d['CardType'], Release)
         
         if "5.0.0" in Release:
             if len(errRecords) > 0:
@@ -1207,21 +1205,23 @@ def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
             return JsonResponse({'message': 'Success'}, status = 200)
 
         if "dmc" in Release.lower():
-            Release = "DMC Master"
+            #Release = "DMC Master"
+            pRelease = "DMC Master"
         else:
-            Release = "master"
-        data = TC_INFO.objects.using(Release).filter(TcID = id)
+            #Release = "master"
+            pRelease = "master"
+        data = TC_INFO.objects.using(pRelease).filter(TcID = id)
         serializer = TC_INFO_SERIALIZER(data, many = True)
 
         for d in serializer.data:
-            singleData = TC_INFO.objects.using(Release).get(id= d['id'])
+            singleData = TC_INFO.objects.using(pRelease).get(id= d['id'])
             singleSerializer = TC_INFO_SERIALIZER(singleData)
 
             updatedData = singleSerializer.data
 
             for key in req:
                 if key == "NewTcID":
-                    verifyData = TC_INFO.objects.using(Release).filter(TcID = req['NewTcID']).filter(CardType = d['CardType'])
+                    verifyData = TC_INFO.objects.using(pRelease).filter(TcID = req['NewTcID']).filter(CardType = d['CardType'])
                     if len(verifyData) > 0:
                         errRecords.append(req)
                         continue
@@ -1229,30 +1229,30 @@ def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
                 elif key != "Activity":
                     updatedData[key] = req[key]
 
-            res = updateData(updatedData, singleData, Release)
+            res = updateData(updatedData, singleData, pRelease)
             if res == 0:
                 errRecords.append(req)
             elif "Activity" in req:
                 AD = req['Activity']
-                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], d['CardType'], pRelease)
 
         if len(errRecords) > 0:
             return JsonResponse({'Conflict': errRecords}, status = 409)
 
         # code to update tc in dmc-dcx-master release
-        Release = rootRelease
-        data = TC_INFO.objects.using(Release).filter(TcID = id)
+        #Release = rootRelease
+        data = TC_INFO.objects.using(rootRelease).filter(TcID = id)
         serializer = TC_INFO_SERIALIZER(data, many = True)
 
         for d in serializer.data:
-            singleData = TC_INFO.objects.using(Release).get(id= d['id'])
+            singleData = TC_INFO.objects.using(rootRelease).get(id= d['id'])
             singleSerializer = TC_INFO_SERIALIZER(singleData)
 
             updatedData = singleSerializer.data
 
             for key in req:
                 if key == "NewTcID":
-                    verifyData = TC_INFO.objects.using(Release).filter(TcID = req['NewTcID']).filter(CardType = d['CardType'])
+                    verifyData = TC_INFO.objects.using(rootRelease).filter(TcID = req['NewTcID']).filter(CardType = d['CardType'])
                     if len(verifyData) > 0:
                         errRecords.append(req)
                         continue
@@ -1260,12 +1260,12 @@ def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
                 elif key != "Activity":
                     updatedData[key] = req[key]
 
-            res = updateData(updatedData, singleData, Release)
+            res = updateData(updatedData, singleData, rootRelease)
             if res == 0:
                 errRecords.append(req)
             elif "Activity" in req:
                 AD = req['Activity']
-                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], d['CardType'], rootRelease)
 
         if len(errRecords) > 0:
             return JsonResponse({'Conflict': errRecords}, status = 409)
