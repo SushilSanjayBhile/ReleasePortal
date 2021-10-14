@@ -29,6 +29,7 @@ from .migrate import Migrate
 from .new import automation_count_get_post_view, custom_automation_count_get_view
 
 from .tcReport import getTcReport
+from .qaReport import getQAReport
 from .mergeCardType import MergingCardTypes
 from .commandExec import update_data
 
@@ -45,6 +46,7 @@ urlpatterns = [
     path('automationCountByDomainForGUI/<str:Platform>', GUIAutomationCountByDomain),
     path('automation/', automation_count_get_post_view),
     path('tcReport/', getTcReport),
+    path('qaReport/', getQAReport),
     path('customautomation/', custom_automation_count_get_view),
 
     #applicability api's
@@ -129,5 +131,5 @@ urlpatterns = [
     path('duptcgui', duplicate_tcs_gui),
     path('tcupdategui/<str:Release>', MULTIPLE_TC_UPDATION_GUI),
     path('release_all_info/releaseName/<str:Release>', TCAGGREGATE_DASHBOARD),
-    path('execute/<str:release>/<str:platform>',update_data)
+    path('execute/<str:release>/<str:platform>/<str:fileName>',update_data)
 ]

@@ -183,12 +183,10 @@ def GenerateGUILogData(userName, requestType, url, logData, tcInfoNum, Release):
     data = {'UserName': userName, 'RequestType': requestType, 'LogData': logData, 'Timestamp': Timestamp, 'URL': url, 'tcInfoNum': tcInfoNum}
     fd = GuiLogsForm(data)
     if fd.is_valid():
-        print("valid")
         data = fd.save(commit = False)
         data.save(using = Release)
     else:
         print("INVALID", fd.errors)
-
 
 def updateGuiTcInfo(data, updatedData, Release):
     if data.TcName == "TC NOT AUTOMATED" and data.TcName != updatedData["TcName"] and Release == rootRelease:
@@ -543,11 +541,11 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             if "dmc" in Release.lower():
                 master = dmcMaster
             if Release != master and Release != "TestDatabase":
-                Release = master
+                #Release = master
+                ReleaseMaster = master
                 conflictFlag = False
-
                 # post request for current release
-                data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = card)
+                data = TC_INFO_GUI.objects.using(ReleaseMaster).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = card)
                 if len(data) != 0:
                     conflictFlag = True
                 else:
@@ -562,7 +560,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     if fd.is_valid():
                         data = fd.save(commit = False)
                         flag = 1
-                        data.save(using = Release)
+                        data.save(using = ReleaseMaster)
 
                         if "Activity" in req:
                             AD = req['Activity']
@@ -574,10 +572,11 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             #post data in dmc-dmc-master release
             master = rootRelease
             if Release != master and Release != "TestDatabase":
-                Release = master
+                #Release = master
+                ReleaseMaster = master
                 conflictFlag = False
 
-                data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = card)
+                data = TC_INFO_GUI.objects.using(ReleaseMaster).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = card)
                 if len(data) != 0:
                     conflictFlag = True
                 else:
@@ -591,7 +590,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
 
                     if fd.is_valid():
                         data = fd.save(commit = False)
-                        data.save(using = Release)
+                        data.save(using = ReleaseMaster)
                         flag = 1
                     
                         if "Activity" in req:
@@ -670,7 +669,11 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                         updatedData[row] = req[row]
                 d = TC_INFO_GUI.objects.using(Release).get(id = updatedData["id"])
                 #print("len of data 3rd last", len(d))
+                dat = TC_INFO_GUI_SERIALIZER(d)
                 updateGuiTcInfo(d, updatedData, Release)
+                if "Activity" in req:
+                    AD = req['Activity']
+                    GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], updatedData["id"], Release)
 
             # UPDATE GUI TC INFO IN DCX-DMC-Master release
             if Release != "TestDatabase":
@@ -692,7 +695,11 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 #d = TC_INFO_GUI.objects.using(Release).get(TcID = req['TcID'], CardType = req["CardType"], BrowserName = data["BrowserName"])
                 d = TC_INFO_GUI.objects.using(master).get(id = updatedData["id"])
                 #print("updatedData for master dmc master",updateData)
+                dat = TC_INFO_GUI_SERIALIZER(d)
                 updateGuiTcInfo(d, updatedData, master)
+                if "Activity" in req:
+                    AD = req['Activity']
+                    GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], updatedData["id"], master)
 
             # UPDATE ROOTRELEASE
             #Release = rootRelease
@@ -707,7 +714,12 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
                         updatedData[row] = req[row]
                 d = TC_INFO_GUI.objects.using(rootRelease).get(id = updatedData["id"])
+                dat = TC_INFO_GUI_SERIALIZER(d)
                 updateGuiTcInfo(d, updatedData, rootRelease)
+                if "Activity" in req:
+                    AD = req['Activity']
+                    GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], updatedData["id"], rootRelease)
+
         return HttpResponse("SUCCESSFULLY UPDATED")
 
 

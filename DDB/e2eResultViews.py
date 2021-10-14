@@ -69,10 +69,10 @@ def e2eResultUpdate(request):
 
     if request.method == "POST":
         req = json.loads(request.body.decode("utf-8"))
-        print(req)
+        #print(req)
 
         Release = req["drive_dir_name"]
-        print(Release)
+        #print(Release)
 
         if 'drive_sub_directory' in req:
             CardType = req['drive_sub_directory']
@@ -193,7 +193,7 @@ def e2eResultUpdate(request):
                         updateStatusFunc("NOT FOUND", "NOT FOUND", tc, "NOT FOUND", build, "Skip", "NOT FOUND", Release)
                         #errorTCs.append(tc)
 
-        latestResultUpdateFunction(Release)
+        #latestResultUpdateFunction(Release)
 
         if len(errorTCs) > 0:
             return HttpResponse(json.dumps([{"ERROR UPDATING FOLLOWING TCs IN RELEASE DATABASE. TC WITH GIVEN ID DOES NOT EXIST: " + str(len(errorTCs)) :errorTCs}, {"SUCCESSFULLY UPDATED FOLLOWING TCS " + str(len(sucessTCs)) : sucessTCs}]))
