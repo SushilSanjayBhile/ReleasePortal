@@ -48,7 +48,8 @@ const ReleaseBuilds = React.lazy(() => import('./views/Release/ReleaseBuilds/Rel
 const Settings = React.lazy(() => import('./views/Release/Settings/createUser'));
 const ReleaseTestMetricsGUI = React.lazy(() => import('./views/Release/ReleaseTestMetricsGUI/ReleaseTestMetricsGUI'))
 const ReleaseSanityResult = React.lazy(() => import('./views/Release/ReleaseSanityResult/ReleaseSanityResult'))
-const teamwork = React.lazy(() => import('./views/TeamWorkComponent/TaskOverView'))
+//const teamwork = React.lazy(() => import('./views/TeamWorkComponent/TaskOverView'))
+const qawork = React.lazy(() => import('./views/Release/QaReport/QaAnalysis'))
 const MyTestMetrics = React.lazy(() => import('./views/Release/MyTestMetrics/MyTestMetrics'));
 const adminDashboard = React.lazy(() => import('./views/Release/adminDashboard/adminDashboard'));
 const adminDashboardGUI = React.lazy(() => import('./views/Release/adminDashboard/adminDashboardGUI'));
@@ -71,7 +72,8 @@ const routes = [
   { path: '/release/builds', name: 'Release Build', exact: true, component: ReleaseBuilds },
   { path: '/release/settings', name: 'settings', exact: true, component: Settings },
   { path: '/release/sanityresults', name: 'sanityresults', exact: true, component: ReleaseSanityResult },
-  { path: '/release/teamwork', name: 'teamwork', exact: true, component: teamwork },
+  //{ path: '/release/teamwork', name: 'teamwork', exact: true, component: teamwork },
+  { path: '/release/qawork', name: 'qawork', exact: true, component: qawork },
   { path: '/release/mytestmatrics', name: 'MyTestMetrics', exact: true, component: MyTestMetrics },
   { path: '/release/adminDashboard', name: 'adminDashboard', exact: true, component: adminDashboard },
   { path: '/release/adminDashboardGUI', name: 'adminDashboardGUI', exact: true, component: adminDashboardGUI },

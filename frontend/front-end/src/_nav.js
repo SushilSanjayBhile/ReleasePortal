@@ -62,7 +62,11 @@ export default {
     //   url: '/release/teamwork',
     //   icon: 'fa fa-bars',
     // },
-
+    {
+      name: 'QA Report',
+      url: '/release/qawork',
+      icon: 'fa fa-bars',
+    },
     {
       name: 'My Test Metrics',
       url: '/release/mytestmatrics',

@@ -1151,7 +1151,7 @@ class ReleaseTestCase extends Component {
         let DATE7 = ttempDateStartGUI     
         let DATE8 = ttempDateEndGUI
         return (
-            this.props.currentUser && this.props.currentUser.isAdmin &&
+            this.props.currentUser &&
             <div>
                 <div>
                 <Row>
@@ -1177,7 +1177,6 @@ class ReleaseTestCase extends Component {
                         <Collapse isOpen={this.state.metricsOpen}>
                             <React.Fragment>
                                 <Row>
-
                                     <Col xs="11" sm="11" md="4">
                                         <div style={{ marginLeft: '1rem', marginTop: '1rem' }}>
                                             <Sunburst
@@ -1221,7 +1220,6 @@ class ReleaseTestCase extends Component {
                                                             </Col>
                                                         )
                                                     }
-
                                                 })
                                             }
                                             {
@@ -1263,7 +1261,6 @@ class ReleaseTestCase extends Component {
                                                                     columnDefs={this.state.e2eColumnDefs}
                                                                     defaultColDef={this.state.defaultColDef}
                                                                     rowData={this.props.tcDetails ? this.props.tcDetails.StatusList : []}
-
                                                                 />
                                                             </div>
                                                         </div>
@@ -1360,7 +1357,6 @@ class ReleaseTestCase extends Component {
                                     </div>
                                 </div>
                             </div>
-
                             <Collapse isOpen={this.state.showTable}>
                                 <Row style={
                                     {
@@ -1379,7 +1375,6 @@ class ReleaseTestCase extends Component {
                                                     <th>Block</th>
                                                     <th>Not Tested</th>
                                                     <th>Total</th>
-
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1388,9 +1383,6 @@ class ReleaseTestCase extends Component {
                                                     }
                                                 </tbody>
                                             </Table>
-
-
-                                            
                                         </div>
                                     </Col>
                                 </Row>
@@ -1398,7 +1390,6 @@ class ReleaseTestCase extends Component {
                         </Col>
                     </Row>
                 </div>
-
                 <div>
                     <Row>
                         <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
@@ -1424,7 +1415,6 @@ class ReleaseTestCase extends Component {
                                     </div>
                                 </div>
                             </div>
-
                         <Collapse isOpen={this.state.showTableCLI}>
                             <Row style={
                                 {
@@ -1481,7 +1471,6 @@ class ReleaseTestCase extends Component {
                     </Col>
                 </Row>
             </div>
-
             <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
@@ -1490,7 +1479,6 @@ class ReleaseTestCase extends Component {
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
                                         <div onClick={() => this.setState({ showTableGUI: !this.state.showTableGUI },()=>{this.getReleaseDataGUI();})} style={{ display: 'inlineBlock' }}>
-                                        
                                         {
                                             !this.state.showTableGUI &&
                                             <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1501,13 +1489,11 @@ class ReleaseTestCase extends Component {
                                         }
                                         <div className='rp-icon-button'></div>
                                         <span className='rp-app-table-title'>Test Case Status (GUI)</span>
-                                    
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     <Collapse isOpen={this.state.showTableGUI}>
                         <Row style={
                             {
@@ -1526,7 +1512,6 @@ class ReleaseTestCase extends Component {
                                             <th>Block</th>
                                             <th>Not Tested</th>
                                             <th>Total</th>
-
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1559,13 +1544,11 @@ class ReleaseTestCase extends Component {
                                         }
                                         <div className='rp-icon-button'></div>
                                         <span className='rp-app-table-title'>CLI Automation Percentage Platformwise</span>
-                                    
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
                         <Collapse isOpen={this.state.automationCountView}>
                             <Row>
                                 <div style={{ marginRight: '4rem' ,marginLeft: '4rem', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
@@ -1586,7 +1569,6 @@ class ReleaseTestCase extends Component {
                                                 }
                                         </tbody>
                                     </Table>
-
                                     {
                                             this.state.platformWiseDomain.length >= 1 ?
                                             <Table scroll responsive style={{ overflow: 'scroll'}} >
@@ -1614,9 +1596,6 @@ class ReleaseTestCase extends Component {
                         </Collapse>
                     </Col>
                 </Row>
-
-
-
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                         <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
@@ -1624,7 +1603,6 @@ class ReleaseTestCase extends Component {
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
                                         <div onClick={() => this.setState({ automationCountViewGUI: !this.state.automationCountViewGUI },()=>{this.getAutomationCountDataGUI();})} style={{ display: 'inlineBlock' }}>
-                                        
                                         {
                                             !this.state.automationCountViewGUI &&
                                             <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1635,13 +1613,11 @@ class ReleaseTestCase extends Component {
                                         }
                                         <div className='rp-icon-button'></div>
                                         <span className='rp-app-table-title'>GUI Automation Percentage Platformwise</span>
-                                    
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
                         <Collapse isOpen={this.state.automationCountViewGUI}>
                             <Row>
                                 <div style={{ marginRight: '4rem' ,marginLeft: '4rem', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
@@ -1662,7 +1638,6 @@ class ReleaseTestCase extends Component {
                                                 }
                                         </tbody>
                                     </Table>
-
                                     {
                                             this.state.platformWiseDomainGUI.length >= 1 ? 
                                             <Table scroll responsive style={{ overflow: 'scroll'}} >
@@ -1690,15 +1665,13 @@ class ReleaseTestCase extends Component {
                         </Collapse>
                     </Col>
                 </Row>
-
-            <Row>
+            {/* <Row>
                 <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                     <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
                         <div class="row">
                             <div class='col-lg-12'>
                                 <div style={{ display: 'flex' }}>
                                     <div onClick={() => this.setState({ automationCountWithRangeView: !this.state.automationCountWithRangeView },()=>{this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');})} style={{ display: 'inlineBlock' }}>
-                                    
                                     {
                                         !this.state.automationCountWithRangeView &&
                                         <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1709,16 +1682,13 @@ class ReleaseTestCase extends Component {
                                     }
                                     <div className='rp-icon-button'></div>
                                     <span className='rp-app-table-title'>CLI Weekly Automation Progress</span>
-                                
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
                     <Collapse isOpen={this.state.automationCountWithRangeView}>
                         <Row>
-                            
                             <div style={{ marginRight: '4rem' ,marginLeft: '4rem', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
                                 <div class="row"  style={{marginTop:'1rem'}}>
                                     <div class="col-md-3">
@@ -1746,16 +1716,14 @@ class ReleaseTestCase extends Component {
                         </Row>
                     </Collapse>
                 </Col>
-            </Row>
-
-            <Row>
+            </Row> */}
+            {/* <Row>
                 <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                     <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
                         <div class="row">
                             <div class='col-lg-12'>
                                 <div style={{ display: 'flex' }}>
                                     <div onClick={() => this.setState({ automationCountWithRangeViewForGUI: !this.state.automationCountWithRangeViewForGUI },()=>{this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');})} style={{ display: 'inlineBlock' }}>
-                                    
                                     {
                                         !this.state.automationCountWithRangeViewForGUI &&
                                         <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1766,13 +1734,11 @@ class ReleaseTestCase extends Component {
                                     }
                                     <div className='rp-icon-button'></div>
                                     <span className='rp-app-table-title'>GUI Weekly Automation Progress</span>
-                                
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
                     <Collapse isOpen={this.state.automationCountWithRangeViewForGUI}>
                         <Row>
                             <div style={{ marginRight: '4rem' ,marginLeft: '4rem', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
@@ -1780,11 +1746,9 @@ class ReleaseTestCase extends Component {
                                     <div class="col-md-3">
                                         From Date<Input  type="date" id="StartDate1" value={DATE3} onChange={(e) => this.selectedStartDateGUI({ StartDate1: e.target.value })} ></Input>
                                     </div> 
-
                                     <div class="col-md-3">
                                         To Date<Input  type="date" id="EndDate1" value={DATE4} onChange={(e) => this.selectedEndDateGUI({ EndDate1: e.target.value })} />
-                                    </div>         
-                                    
+                                    </div>
                                 </div>
                                 <Table>
                                     <tbody>
@@ -1803,8 +1767,8 @@ class ReleaseTestCase extends Component {
                         </Row>
                     </Collapse>
                 </Col>
-            </Row>
-            <Row>
+            </Row> */}
+            {/* <Row>
                 <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                     <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
                         <div class="row">
@@ -1822,13 +1786,11 @@ class ReleaseTestCase extends Component {
                                     }
                                     <div className='rp-icon-button'></div>
                                     <span className='rp-app-table-title'>Bug Analysis</span>
-                                
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
                     <Collapse isOpen={this.state.jiraDataView}>
                         <Row>
                             <div style={{ marginRight: '8rem' ,marginLeft: '4rem', width:'650px', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
@@ -1839,7 +1801,6 @@ class ReleaseTestCase extends Component {
                                         <th width="140px" height="50px" ><b>Resolved</b></th>
                                         <th width="140px" height="50px" ><b>Customer Bugs</b></th>
                                         <th width="140px" height="50px" ><b>Still Open</b></th>
-                                        
                                             {
                                                 this.state.jiraBugData ? this.renderTableDataForJiraBugData() :null 
                                             }
@@ -1849,15 +1810,14 @@ class ReleaseTestCase extends Component {
                         </Row>
                     </Collapse>
                 </Col>
-            </Row>
-            <Row>
+            </Row> */}
+            {/* <Row>
                 <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                     <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
                         <div class="row">
                             <div class='col-lg-12'>
                                 <div style={{ display: 'flex' }}>
                                     <div onClick={() => this.setState({ testCountWithRangeView: !this.state.testCountWithRangeView },()=>{this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');})} style={{ display: 'inlineBlock' }}>
-                                    
                                     {
                                         !this.state.testCountWithRangeView &&
                                         <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1868,13 +1828,11 @@ class ReleaseTestCase extends Component {
                                     }
                                     <div className='rp-icon-button'></div>
                                     <span className='rp-app-table-title'>CLI Test case report</span>
-                                
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
                     <Collapse isOpen={this.state.testCountWithRangeView}>
                         <Row>
                             <div style={{ marginRight: '8rem' ,marginLeft: '4rem', width:'650px', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
@@ -1885,13 +1843,11 @@ class ReleaseTestCase extends Component {
 
                                     <div class="col-md-3">
                                         To Date<Input  type="date" id="tEndDate" value={DATE6} onChange={(e) => this.testSelectedEndDateCLI({ tEndDate: e.target.value })} />
-                                    </div>         
-                                    
+                                    </div>
                                 </div>
                                 <Table>
                                     <tbody>
                                         <th width="140px" height="50px" ><b>Release</b></th>
-                                        {/* <th width="250px" height="50px" ><b>Date Range</b></th> */}
                                         <th width="140px" height="50px" ><b>Total Tested</b></th>
                                             {
                                                 this.state.testCountDataWithRange ? this.renderTableDataForTestCountWithRange() : null
@@ -1902,15 +1858,14 @@ class ReleaseTestCase extends Component {
                         </Row>
                     </Collapse>
                 </Col>
-            </Row>
-            <Row>
+            </Row> */}
+            {/* <Row>
                 <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                     <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
                         <div class="row">
                             <div class='col-lg-12'>
                                 <div style={{ display: 'flex' }}>
                                     <div onClick={() => this.setState({ testCountWithRangeViewForGUI: !this.state.testCountWithRangeViewForGUI },()=>{this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');})} style={{ display: 'inlineBlock' }}>
-                                    
                                     {
                                         !this.state.testCountWithRangeViewForGUI &&
                                         <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1921,13 +1876,11 @@ class ReleaseTestCase extends Component {
                                     }
                                     <div className='rp-icon-button'></div>
                                     <span className='rp-app-table-title'>GUI Test Case Report</span>
-                                
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
                     <Collapse isOpen={this.state.testCountWithRangeViewForGUI}>
                         <Row>
                             <div style={{ marginRight: '4rem' ,marginLeft: '4rem', width:'650px', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
@@ -1938,13 +1891,11 @@ class ReleaseTestCase extends Component {
 
                                     <div class="col-md-3">
                                         To Date<Input  type="date" id="tEndDate1" value={DATE8} onChange={(e) => this.testSelectedEndDateGUI({ tEndDate1: e.target.value })} />
-                                    </div>         
-                                    
+                                    </div>
                                 </div>
                                 <Table>
                                     <tbody>
                                         <th width="140px" height="50px" ><b>Release </b></th>
-                                        {/* <th width="250px" height="50px" ><b>Date Range</b></th> */}
                                         <th width="140px" height="50px" ><b>Total Tested</b></th>
                                             {
                                                 this.state.testCountDataWithRangeForGUI ? this.renderTableDataForTestCountWithRangeForGUI() : null
@@ -1955,18 +1906,11 @@ class ReleaseTestCase extends Component {
                         </Row>
                     </Collapse>
                 </Col>
-            </Row>
-                            </div>
-                    {/* </>
-                : null
-                } */}
-
-                
-
-                
-            {
+            </Row> */}
+            </div>
+            {/* {
                 <CustomerBugs></CustomerBugs>
-            }
+            } */}
             < Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                 <ModalHeader toggle={() => this.toggle()}>Confirmation</ModalHeader>
                 <ModalBody>

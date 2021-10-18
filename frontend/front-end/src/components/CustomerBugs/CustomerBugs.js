@@ -88,7 +88,7 @@ class CustomerBugs extends Component {
                 cellClass: 'cell-wrap-text',
             },
             'Developer' : {
-                headerName: "Developer", field: "Developer", sortable: true, filter: true, //cellStyle: this.renderEditedCell,
+                headerName: "Assigned To", field: "Developer", sortable: true, filter: true, //cellStyle: this.renderEditedCell,
                 width: '90',
                 cellClass: 'cell-wrap-text',
                 editable: false,
@@ -437,6 +437,7 @@ class CustomerBugs extends Component {
                 let diff = new Date(date1).getTime() - new Date(date2).getTime()
                 let res = Math.round(diff / MS_PER_DAY)
                 temp.OpenDays = res.toString()
+                temp.ETA = temp.QAValidatedDate
                 if(temp.OpenDays === "0"){
                     temp.OpenDays = "1"
                 }
