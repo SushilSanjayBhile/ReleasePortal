@@ -30,6 +30,9 @@ def getQAReport(request):
             if key in outputGui:
                 output[key]["auto"] = output[key]["auto"] + outputGui[key]["auto"]
                 output[key]["exec"] = output[key]["exec"] + outputGui[key]["exec"]
+        for key in outputGui:
+            if key not in output:
+                output[key] = outputGui[key]
 
         return JsonResponse({"qaReport": output}, status = 200)
 
