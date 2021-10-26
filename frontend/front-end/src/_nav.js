@@ -63,7 +63,7 @@ export default {
     //   icon: 'fa fa-bars',
     // },
     {
-      name: 'QA Report',
+      name: 'Report',
       url: '/release/qawork',
       icon: 'fa fa-bars',
     },

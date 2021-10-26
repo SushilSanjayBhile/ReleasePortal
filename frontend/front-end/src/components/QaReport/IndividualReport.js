@@ -124,7 +124,7 @@ class IndividualReport extends Component {
     componentDidMount() {
         //this.gridOperations(false);
         //this.getTcs(this.DateStart,this.DateEnd);
-        setTimeout(() => this.getTcs(this.DateStart, this.DateEnd), 400);
+        //setTimeout(() => this.getTcs(this.DateStart, this.DateEnd), 400);
     }
     getTcs(startDate, endDate) {
         this.gridOperations(false);
@@ -197,7 +197,7 @@ class IndividualReport extends Component {
             <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ tcOpen: !this.state.tcOpen })}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => {this.setState({ tcOpen: !this.state.tcOpen });this.getTcs(this.DateStart, this.DateEnd)}}>
                             <div class="row">
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
@@ -211,7 +211,7 @@ class IndividualReport extends Component {
                                                 <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                             }
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
-                                            <span className='rp-app-table-title'>INDIVIDUAL REPORT</span>
+                                            <span className='rp-app-table-title'>SDET REPORT</span>
                                             {
                                                 this.state.tcOpen &&
                                                 <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>

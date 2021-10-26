@@ -7,6 +7,10 @@ import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../a
 import './QaAnalysis.scss'
 import CustomerBugs from '../../../components/CustomerBugs/CustomerBugs';
 import IndividualReport from '../../../components/QaReport/IndividualReport';
+import CustomerReport from '../../../components/CustomerBugs/CustomerReport';
+import ManagerReport from '../../../components/CustomerBugs/ManagerReport';
+import ManagerClosedBugReport from '../../../components/CustomerBugs/ManagerClosedBugReport';
+import DeveloperReport from '../../../components/CustomerBugs/DeveloperReport';
 function daysInThisMonth() {
     var now = new Date();
     return new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
@@ -780,6 +784,18 @@ class QaAnalysis extends Component {
                 }
                 {
                     <IndividualReport></IndividualReport>
+                }
+                {
+                    <CustomerReport></CustomerReport>
+                }
+                {
+                    <ManagerReport></ManagerReport>
+                }
+                {
+                    <DeveloperReport></DeveloperReport>
+                }
+                {
+                    <ManagerClosedBugReport></ManagerClosedBugReport>
                 }
                 < Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                     <ModalHeader eader toggle={() => this.toggle()}>Confirmation</ModalHeader>

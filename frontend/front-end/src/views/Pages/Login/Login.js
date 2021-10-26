@@ -5,6 +5,7 @@ import { logInSuccess } from '../../../actions';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import { gapi } from 'gapi-script';
+import ReactLoginMS from 'react-microsoft-login'
 import logo from '../../../assets/img/brand/diamanti_full.png'
 import { GoogleLogin } from 'react-google-login';
 /* global gapi */
@@ -15,7 +16,9 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      googleAuthLoaded: false
+      googleAuthLoaded: false,
+      name: null,
+      email: null,
     }
   }
   loginBackend(user) {
@@ -24,7 +27,6 @@ class Login extends Component {
 
       let email = user.profileObj.email;
       let name = user.profileObj.name;
-   
    
     axios.post('/user/login', { email: email, name: name })
       .then(res => {
@@ -51,14 +53,13 @@ class Login extends Component {
         this.auth2 = gapi.auth2.init({
           'apiKey': 'AIzaSyCx0M1qs_LyfAgVmkTmDE6qIfgUiDekM-I',
           'client_id': '271454306292-q477q7slv0vpe1gep84habq5m2gv58k3.apps.googleusercontent.com',
-         
           //new token
           // 'apiKey': 'AIzaSyD-ngwn8edSCCFudBTyoxAWz4TB4XNLoQU',
           // 'client_id': '256255355384-c2vb4kqmrg8pgnrn7tdvbvi1g1b9moc3.apps.googleusercontent.com',
           'scope': this.SCOPE
         }).then(() => {
           this.GoogleAuth = gapi.auth2.getAuthInstance();
-          this.setState({ googleAuthLoaded: true })
+          //this.setState({ googleAuthLoaded: true })
           this.setSigninStatus();
         })
       });
@@ -74,7 +75,18 @@ class Login extends Component {
       }
     }
   }
-
+  handleChange = (e) => {
+    if(e.target.name == 'name'){
+        this.setState({
+            name: e.target.value.trim()
+        })
+    }
+    if(e.target.name == 'email'){
+        this.setState({
+            email: e.target.value.trim()
+        })
+    }
+};
 
   render() {
     return (
@@ -112,8 +124,41 @@ class Login extends Component {
                     }
                     {
                       !this.state.googleAuthLoaded &&
-                      <div>Please wait while Google Auth is loading...</div>
+                      // <div>Please wait while Google Auth is loading...</div>
+                        //this.state.googleAuthLoaded &&
+                        <div style={{ textAlign: 'center' }}>
+                         <Input type="email" name="email" id = 'email' placeholder="Enter Email"  onChange={this.handleChange} />
+                         <Input type="text" name="name" id = 'name' placeholder="Enter User Name"  onChange={this.handleChange} />
+                         <Button disabled={this.state.isApiUnderProgress} title="Login" size="md" className="rp-rb-save-btn" onClick={() => {
+                          if (this.state.name && this.state.email) {
+                            let dict = {"profileObj":{name: this.state.name, email: this.state.email}}
+                            this.loginBackend(dict)
+                          }
+                          else{
+                            alert('Enter email and Name');
+                                  return
+                          }
+                          }} >
+                          Login
+                        </Button>
+                        </div>
                     }
+                    {/* {
+                      <div style={{ textAlign: 'center' }}>
+                       <ReactLoginMS
+                        clientId="262400a6-0900-416e-a7a9-82b7c137b667"
+                        redirectUri="https://localhost:5050"
+                        cssClass="ms-login"
+                        btnContent="LOGIN"
+                        responseType="token"
+                        //tenantUrl="https://login.microsoftonline.com/common"
+                        tenantUrl="https://login.microsoftonline.com/523a3181-8608-4651-889d-201bae12e39c"
+                        useLocalStorageCache={true}
+                        authCallback={this.authHandler}
+                        //handleLogin={(data) => this.setSigninStatus(data)}
+                        />
+                      </div>
+                    } */}
                   </div>
                 </CardBody>
               </Card>
