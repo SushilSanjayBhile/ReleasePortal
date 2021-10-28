@@ -17,6 +17,7 @@ import NumericEditor from "../TestCasesAll/numericEditor";
 import SelectionEditor from '../TestCasesAll/selectionEditor';
 import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
+import { timeMondays } from 'd3-time';
 
 class ManagerReport extends Component {
     pageNumber = 0;
@@ -26,6 +27,8 @@ class ManagerReport extends Component {
     ApplicableTcs = [];
     defaultBugs = [];
     cusReportList = [];
+    devReportList = [];
+    devList = [];
     month = new Date().getMonth() + 1;
     year = new Date().getFullYear();
     dayInCurrentMonth = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
@@ -36,7 +39,7 @@ class ManagerReport extends Component {
         super(props);
         let columnDefDict = {
             'BugNo' : {
-                headerName: "BugNo", field: "BugNo", sortable: true, filter: true,
+                headerName: "Bug No", field: "BugNo", sortable: true, filter: true,
                 editable: false,
                 width: '130',
                 cellRenderer: function(params) {
@@ -78,13 +81,13 @@ class ManagerReport extends Component {
                 editable: false,
             },
             'QAName' : {
-                headerName: "QAName", field: "QAName", sortable: true, filter: true,
+                headerName: "QA Name", field: "QAName", sortable: true, filter: true,
                 width: '90',
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
             'ReportedBy' : {
-                headerName: "ReportedBy", field: "ReportedBy", sortable: true, filter: true,
+                headerName: "Reported By", field: "ReportedBy", sortable: true, filter: true,
                 width: '90',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -96,25 +99,25 @@ class ManagerReport extends Component {
                 editable: false,
             },
             'DevManager' : {
-                headerName: "DevManager", field: "DevManager", sortable: true, filter: true,
+                headerName: "Dev Manager", field: "DevManager", sortable: true, filter: true,
                 width: '90',
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
             'BuManager' :  {
-                headerName: "BuManager", field: "BuManager", sortable: true, filter: true,
+                headerName: "Bu Manager", field: "BuManager", sortable: true, filter: true,
                 width: '90',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
             'ReportedDate' : {
-                headerName: "ReportedDate", field: "ReportedDate", sortable: true, filter: true,
+                headerName: "Reported Date", field: "ReportedDate", sortable: true, filter: true,
                 width: '100',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
             'OpenDays' : {
-                headerName: "OpenDays", field: "OpenDays", sortable: true, filter: true,
+                headerName: "Open Days", field: "OpenDays", sortable: true, filter: true,
                 width: '80',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -126,7 +129,7 @@ class ManagerReport extends Component {
                 cellClass: 'cell-wrap-text',
             },
             'QAValidatedDate' : {
-                headerName: "QAValidatedDate", field: "QAValidatedDate", sortable: true, filter: true,
+                headerName: "QA Validated Date", field: "QAValidatedDate", sortable: true, filter: true,
                 width: '100',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -172,15 +175,81 @@ class ManagerReport extends Component {
                 editable: false,
             },
         }
+        let devReportColumnDefDict = {
+            'BU' : {
+                headerCheckboxSelection: (params) => {
+                    if (this.reportGridApi) {
+                        this.setState({ selectedRows: this.reportGridApi.getSelectedRows().length })
+                    }
+                    return true;
+                  },
+                headerCheckboxSelectionFilteredOnly: true,
+                checkboxSelection: true,
+                headerName: "BU", field: "BU", sortable: true, filter: true,
+                width: '130',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'Developer': {
+                headerName: "Developer", field: "Developer", sortable: true, filter: true,
+                width: '250',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'Manager': {
+                headerName: "Manager", field: "Manager", sortable: true, filter: true,
+                width: '250',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'OpenBugs' : {
+                headerName: "Open Bugs", field: "OpenBugs", sortable: true, filter: true,
+                width: '130',
+                cellClass: 'cell-wrap-text',
+                editable: false,
+            },
+            'AvgDays' : {
+                headerName: "Avg Days Bugs Open", field: "AvgDays", sortable: true, filter: true,
+                width: '130',
+                cellClass: 'cell-wrap-text',
+                editable: false,
+            },
+            'UE': {
+                headerName: "Ultima Enterprise Bugs", field: "UE", sortable: true, filter: true,
+                width: '250',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'UA': {
+                headerName: "Ultima Accelerator Bugs", field: "UA", sortable: true, filter: true,
+                width: '250',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'SP': {
+                headerName: "Spektra Bugs", field: "SP", sortable: true, filter: true,
+                width: '250',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'NA': {
+                headerName: "NA Bugs", field: "NA", sortable: true, filter: true,
+                width: '250',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+        }
 
         this.state = {
             selectedRows: 0,
             reportSelectedRows: 0,
+            devReportSelectedRows: 0,
             overlayLoadingTemplate: '<span class="ag-overlay-loading-center"><font color = "red">Please wait while table is loading</font></span>',
             overlayNoRowsTemplate: '<span class="ag-overlay-loading-center"><font color = "red">No rows to show</font></span>',
             startDate: null,
             endDate: null,
             buisnessUnit: null,
+            developer: null,
 
             statusColumn:[
                 {id:1,value:'P1', isChecked: true},
@@ -188,6 +257,7 @@ class ManagerReport extends Component {
                 {id:3,value:'P3', isChecked: false},
                 {id:4,value:'P4', isChecked: false},
                 {id:5,value:'P5', isChecked: false},
+                {id:5,value:'P6', isChecked: false},
             ],
             columnDefs: [
                 columnDefDict['BU'],
@@ -209,8 +279,18 @@ class ManagerReport extends Component {
                 cusReportColumnDefDict['BU'],
                 cusReportColumnDefDict['Manager'],
                 cusReportColumnDefDict['OpenBugs'],
-                //managercolumnDefDict['ClosedBugs'],
                 cusReportColumnDefDict['AvgDays'],
+            ],
+            devReportColumnDefs: [
+                devReportColumnDefDict['BU'],
+                devReportColumnDefDict['Developer'],
+                devReportColumnDefDict['Manager'],
+                devReportColumnDefDict['OpenBugs'],
+                devReportColumnDefDict['AvgDays'],
+                devReportColumnDefDict['UE'],
+                devReportColumnDefDict['UA'],
+                devReportColumnDefDict['SP'],
+                devReportColumnDefDict['NA'],
             ],
             defaultColDef: { resizable: true },
             modules: AllCommunityModules,
@@ -289,6 +369,9 @@ class ManagerReport extends Component {
     onReportSelectionChanged = (event) => {
         this.setState({ reportSelectedRows: event.api.getSelectedRows().length })
     }
+    onDevReportSelectionChanged = (event) => {
+        this.setState({ devReportSelectedRows: event.api.getSelectedRows().length })
+    }
     onGridReady = params => {
         this.gridApi = params.api;
         this.gridColumnApi = params.columnApi;
@@ -301,6 +384,15 @@ class ManagerReport extends Component {
     onReportGridReady = params => {
         this.reportGridApi = params.api;
         this.reportGridColumnApi = params.columnApi;
+        params.api.sizeColumnsToFit();
+    };
+    onDevReportGridReady = params => {
+        this.devReportGridApi = params.api;
+        this.devReportGridColumnApi = params.columnApi;
+        const sortModel = [
+            {colId: 'Developer', sort: 'asc'}
+        ];
+        this.devReportGridApi.setSortModel(sortModel);
         params.api.sizeColumnsToFit();
     };
     gridOperations(enable) {
@@ -317,6 +409,7 @@ class ManagerReport extends Component {
     componentDidMount() {
         this.ApplicableTcs = []
         this.cusReportList = []
+        this.devReportList = []
         //setTimeout(() => this.getTcs(this.startAt), 400);
     }
     onSelectBU(bu) {
@@ -324,7 +417,14 @@ class ManagerReport extends Component {
             bu = null;
         }
         this.setState({buisnessUnit:bu})
-        this.filterBugs(bu);
+        this.filterBugs(bu, this.state.developer);
+    }
+    onSelectDeveloper(dev) {
+        if (dev === '') {
+            dev = null;
+        }
+        this.setState({developer: dev})
+        this.filterBugs(this.state.buisnessUnit, dev);
     }
     showSelectedTCs = () =>{
         this.filterBugs(this.state.buisnessUnit, this.state.developer)
@@ -357,8 +457,10 @@ class ManagerReport extends Component {
     getTcsToShow(){
         this.ApplicableTcs = []
         this.cusReportList = []
+        this.devReportList = []
         this.bugsToShow = []
-        let severity = {"Highest":"P1","High":"P2","Medium":"P3","Low":"P4", "Lowest":"P5"}
+        let devDict = {}
+        let severity = {"Highest":"P2","High":"P3","Medium":"P4","Low":"P5", "Lowest":"P6"}
         let devManager = {"Abhay Singh":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate"],
                           "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu"],
                           "Rahul Soman":["Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Mayur Shinde", "Swapnil Shende", "Sandeep Zende"],
@@ -367,6 +469,13 @@ class ManagerReport extends Component {
                           "Vinod Lohar":["Diksha Tambe"],
                           "Arvind Krishnan":["Arvind Krishnan"]
                            };
+        let buMap = {"Ultima Enterprise":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate","Madhav Buddhi","Mayur Shinde"],
+                    "Spektra":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar","Swapnil Shende"],
+                    "Ultima Accelerator":["Naveen Seth","Tanya Singh","Vinod Lohar","Diksha Tambe"],
+                        }
+        let QAs = {"Prachee Ahire":'', "Mukesh Shinde":'', "Chetan Noginahal":'', "Dinesh":'', "Rajat Gupta":'',
+                    "Shweta Burte":'', "Aditya Nilkanthwar":'', "Arati Jadhav":'', "Varsha Suryawanshi":'', "Priyanka Birajdar":'',
+                    "Ashutosh Das":'', "Yatish Devadiga":'', "Ketan Divekar":'', "Bharati Bhole":'', "Kiran Kothule":'', "Swapnil Sonawane":''}
         let spektraBugCount = 0, ultimaBugCount = 0, ultimaSoftBugCount = 0, NAcount = 0, spektraBugOpenDays = 0, ultimaBugOpenDays = 0, ultimaSoftBugOpenDays = 0 , NAopenDays = 0;
         let today = new Date()
         today.setDate(today.getDate())
@@ -384,7 +493,7 @@ class ManagerReport extends Component {
                 QAName: this.allTCsToShow[i]["fields"]["creator"]["displayName"],
                 Developer: this.allTCsToShow[i]["fields"].assignee ? this.allTCsToShow[i]["fields"]["assignee"]["displayName"] : "NA",
                 OpenDays: 0,
-                ETA: today,
+                ETA: this.allTCsToShow[i]["fields"]["duedate"] ? this.allTCsToShow[i]["fields"]["duedate"].split("T")[0] : "NA",
                 ReportedDate: this.allTCsToShow[i]["fields"]["created"].split("T")[0],
                 QAValidatedDate: "NA",
                 DevManager: "NA",
@@ -402,6 +511,7 @@ class ManagerReport extends Component {
                 let loLabel = label.toLowerCase()
                 if(loLabel.includes("customer-") || loLabel.includes("customer")) {
                     temp.ReportedBy = "Support"
+                    temp.Severity = "P1"
                     let cusName = loLabel.split("-")
                     if(cusName.length > 1) {
                         temp.Customer = cusName[1]
@@ -415,7 +525,7 @@ class ManagerReport extends Component {
                     temp.BuManager = "Abhay Singh"
                     if(ue == false){
                         ultimaSoftBugCount = ultimaSoftBugCount + 1
-                        ua = true
+                        ue = true
                     }
                     else{
                         console.log(this.allTCsToShow[i].key)
@@ -446,9 +556,6 @@ class ManagerReport extends Component {
                     
                 }
             })
-            if(this.allTCsToShow[i]["fields"]["duedate"]) {
-                temp.ETA = this.allTCsToShow[i]["fields"]["duedate"].split("T")[0]
-            }
             if(this.allTCsToShow[i]["fields"]["status"]["name"] === "Closed") {
                 let date1 = this.allTCsToShow[i]["fields"]["statuscategorychangedate"]
                 let date2 = this.allTCsToShow[i]["fields"]["created"]
@@ -485,6 +592,56 @@ class ManagerReport extends Component {
                 NAopenDays = NAopenDays + temp.OpenDays
             }
             else{}
+
+            if(devDict[temp.Developer]){
+                devDict[temp.Developer]["OpenBugs"] = devDict[temp.Developer]["OpenBugs"] + 1
+                devDict[temp.Developer]["OpenDays"] = devDict[temp.Developer]["OpenDays"] + temp.OpenDays
+                if(temp.BU === "Ultima Enterprise"){
+                    devDict[temp.Developer]["UEcount"] = devDict[temp.Developer]["UEcount"] + 1
+                }
+                else if(temp.BU === "Ultima Accelerator"){
+                    devDict[temp.Developer]["UAcount"] = devDict[temp.Developer]["UAcount"] + 1
+                }
+                else if(temp.BU === "Spektra"){
+                    devDict[temp.Developer]["Spcount"] = devDict[temp.Developer]["Spcount"] + 1
+                }
+                else{
+                    devDict[temp.Developer]["NA"] = devDict[temp.Developer]["NA"] + 1
+                }
+            }
+            else{
+                devDict[temp.Developer] = {
+                    BU: "NA",
+                    Manager: temp.DevManager,
+                    OpenBugs: 1,
+                    OpenDays: temp.OpenDays,
+                    AvgDays: 0,
+                    UAcount: 0,
+                    Spcount: 0,
+                    UEcount: 0,
+                    NA: 0,
+                }
+                let buKeys = Object.keys(buMap)
+                    buKeys.some(key => {
+                        buMap[key].some(value => {
+                            if(temp.Developer === value){
+                                devDict[temp.Developer]["BU"] = key
+                            }
+                        });
+                })
+                if(temp.BU === "Ultima Enterprise"){
+                    devDict[temp.Developer]["UEcount"] = devDict[temp.Developer]["UEcount"] + 1
+                }
+                else if(temp.BU === "Ultima Accelerator"){
+                    devDict[temp.Developer]["UAcount"] = devDict[temp.Developer]["UAcount"] + 1
+                }
+                else if(temp.BU === "Spektra"){
+                    devDict[temp.Developer]["Spcount"] = devDict[temp.Developer]["Spcount"] + 1
+                }
+                else{
+                    devDict[temp.Developer]["NA"] = devDict[temp.Developer]["NA"] + 1
+                }
+            }
             this.bugsToShow.push(temp)
         }
         let cusReport = [
@@ -513,18 +670,45 @@ class ManagerReport extends Component {
                 AvgDays: NAcount > 0 ? Math.round(NAopenDays / NAcount) : 0,
             }
         ]
+        let devReport = []
+        Object.keys(devDict).forEach(key => {
+            if(!(QAs[key] === '')){
+                this.devList.push(key)
+                devReport.push({Developer: key, BU: devDict[key]["BU"], Manager: devDict[key]["Manager"], OpenBugs: devDict[key]["OpenBugs"],
+                AvgDays: devDict[key]["OpenBugs"] > 0 ? Math.round(devDict[key]["OpenDays"]/devDict[key]["OpenBugs"]) : 0 ,
+                UE: devDict[key]["UEcount"], UA: devDict[key]["UAcount"], SP: devDict[key]["Spcount"], NA: devDict[key]["NA"]})
+            }
+        })
+        this.devList.sort()
         this.cusReportList = cusReport
-        this.filterBugs(this.state.buisnessUnit)
+        this.devReportList = devReport
+        this.filterBugs(this.state.buisnessUnit, this.state.developer)
     }
-    filterBugs(bu){
-        if(bu == null){
+    filterBugs(bu, dev){
+        if(bu == null && dev == null){
             this.ApplicableTcs = []
              this.ApplicableTcs = this.bugsToShow
+        }
+        else if(bu == null && dev != null){
+            this.ApplicableTcs = []
+            for(let i = 0; i < this.bugsToShow.length; i++){
+                if(this.bugsToShow[i]["Developer"] === dev){
+                    this.ApplicableTcs.push(this.bugsToShow[i])
+                }
+            }
+        }
+        else if(bu != null && dev == null){
+            this.ApplicableTcs = []
+            for(let i = 0; i < this.bugsToShow.length; i++){
+                if(this.bugsToShow[i]["BU"] === bu){
+                    this.ApplicableTcs.push(this.bugsToShow[i])
+                }
+            }
         }
         else{
             this.ApplicableTcs = []
             for(let i = 0; i < this.bugsToShow.length; i++){
-                if(this.bugsToShow[i]["BU"] === bu){
+                if(this.bugsToShow[i]["BU"] === bu && this.bugsToShow[i]["Developer"] === dev){
                     this.ApplicableTcs.push(this.bugsToShow[i])
                 }
             }
@@ -584,6 +768,15 @@ class ManagerReport extends Component {
                 this.reportGridApi.hideOverlay();
             }
         }
+        if (this.devReportGridApi) {
+            if (this.state.isApiUnderProgress) {
+                this.devReportGridApi.showLoadingOverlay();
+            } else if (this.devReportList.length === 0) {
+                this.devReportGridApi.showNoRowsOverlay();
+            } else {
+                this.devReportGridApi.hideOverlay();
+            }
+        }
         return (
             <div>
                 <Row>
@@ -621,9 +814,13 @@ class ManagerReport extends Component {
                                 <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
+                                            <div style={{ width: '8rem', marginLeft: '1rem' }}>
+                                                <span className='rp-app-table-title'>BUG LIST</span>
+                                            </div>
                                             {
                                                 [
                                                     { style: { width: '8rem', marginLeft: '1rem' }, field: 'BU', onChange: (e) => this.onSelectBU(e), values: [{ value: '', text: 'Select Buisness Unit' }, ...(['Spektra', 'Ultima Accelerator', 'Ultima Enterprise', 'NA'].map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '1rem' }, field: 'Developer', onChange: (e) => this.onSelectDeveloper(e), values: [{ value: '', text: 'Select Developer' }, ...(this.devList.map(each => ({ value: each, text: each })))] },
                                                 ].map(item => (
                                                     <div style={item.style}>
                                                         <Input /*disabled={this.state.isApiUnderProgress}*/ style={{ fontSize: '12px' }} value={this.state[item.field]} onChange={(e) => item.onChange(e.target.value)} type="select" name={`select${item.field}`} id={`select${item.field}`}>
@@ -655,12 +852,15 @@ class ManagerReport extends Component {
                                             <div style={{ width: '5rem', marginLeft: '2rem' }}>
                                                 <Button disabled={this.state.isApiUnderProgress} title="Only selected Bugs will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.gridApi) {
-                                                        let selected = this.gridApi.getSelectedRows().length;
-                                                        if (!selected) {
-                                                            alert('Only selected Bugs will be downloaded');
-                                                            return
-                                                        }
-                                                        this.gridApi.exportDataAsCsv({ allColumns: true, onlySelected: true });
+                                                        this.gridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: 'ManagerReport_Bug_List.csv', });
+                                                    }
+                                                    if(this.reportGridApi)
+                                                    {
+                                                        this.reportGridApi.exportDataAsCsv({allColumns: true, onlySelected: false, fileName: 'ManagerReport_Summary.csv'});
+                                                    }
+                                                    if(this.devReportGridApi)
+                                                    {
+                                                        this.devReportGridApi.exportDataAsCsv({allColumns: true, onlySelected: false, fileName: 'DeveloperReport_Summary.csv'});
                                                     }
                                                 }} >
                                                     Download
@@ -709,15 +909,6 @@ class ManagerReport extends Component {
                                                     <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {this.ApplicableTcs.length}/{this.maxResult}</span>
                                                 </div>
                                             }
-                                            {/* <div style={{
-                                                float: 'right', display: this.state.isApiUnderProgress
-                                                }}>
-                                                <Button onClick={() => this.paginate(-1)}>Previous</Button>
-                                                <span  >{`   Page: ${this.pageNumber}   `}</span>
-
-                                                <Button onClick={() => this.paginate(1)}>Next</Button>
-
-                                            </div> */}
                                     </div>
                                 </div>
                             </div >
@@ -725,21 +916,10 @@ class ManagerReport extends Component {
                                 <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
-                                            <div style={{ width: '5rem', marginLeft: '2rem' }}>
-                                                <Button disabled={this.state.isApiUnderProgress} title="Only selected Bugs will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
-                                                    if (this.reportGridApi) {
-                                                        let selected = this.reportGridApi.getSelectedRows().length;
-                                                        if (!selected) {
-                                                            alert('Only selected Bugs will be downloaded');
-                                                            return
-                                                        }
-                                                        this.reportGridApi.exportDataAsCsv({ allColumns: true, onlySelected: true });
-                                                    }
-                                                }} >
-                                                    Download
-                                                </Button>
+                                            <div style={{ width: '20rem', marginLeft: '1rem' }}>
+                                                <span className='rp-app-table-title'>Manager Report Summary</span>
                                             </div>
-                                            <div style={{ width: '10rem', position: 'absolute', marginTop: '0.5rem', right: '1.5rem'}}>
+                                            <div style={{ width: '10rem', position: 'absolute', right: '1.5rem'}}>
                                                 <span className='rp-app-table-value'>Selected: {this.state.reportSelectedRows}</span>
                                             </div>
                                         </div>
@@ -785,15 +965,62 @@ class ManagerReport extends Component {
                                                     <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {this.cusReportList.length}</span>
                                                 </div>
                                             }
-                                            {/* <div style={{
-                                                float: 'right', display: this.state.isApiUnderProgress
-                                                }}>
-                                                <Button onClick={() => this.paginate(-1)}>Previous</Button>
-                                                <span  >{`   Page: ${this.pageNumber}   `}</span>
-
-                                                <Button onClick={() => this.paginate(1)}>Next</Button>
-
-                                            </div> */}
+                                    </div>
+                                </div>
+                            </div >
+                            <div>
+                                <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
+                                    <div class="test-header">
+                                        <div class="row">
+                                            <div style={{ width: '20rem', marginLeft: '1rem' }}>
+                                                <span className='rp-app-table-title'>Developer Report Summary</span>
+                                            </div>
+                                            <div style={{ width: '10rem', position: 'absolute', right: '1.5rem'}}>
+                                                <span className='rp-app-table-value'>Selected: {this.state.devReportSelectedRows}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style={{ width: "100%", height: "100%" }}>
+                                        <div
+                                            id="devReportGrid"
+                                            style={{
+                                                height: "100%",
+                                                width: "100%",
+                                            }}
+                                            className="ag-theme-balham"
+                                        >
+                                            <AgGridReact
+                                                suppressScrollOnNewData={true}
+                                                onSelectionChanged={(e) => this.onDevReportSelectionChanged(e)}
+                                                rowStyle={{ alignItems: 'top' }}
+                                                enableCellTextSelection={true}
+                                                //onRowClicked={(e) => this.getTC(e)}
+                                                modules={this.state.modules}
+                                                columnDefs={this.state.devReportColumnDefs}
+                                                rowSelection='multiple'
+                                                getRowHeight={this.getRowHeight}
+                                                defaultColDef={this.state.defaultColDef}
+                                                //rowData={this.props.data}
+                                                rowData={this.devReportList}
+                                                onGridReady={(params) => this.onDevReportGridReady(params)}
+                                                //onCellEditingStarted={this.onCellEditingStarted}
+                                                frameworkComponents={this.state.frameworkComponents}
+                                                stopEditingWhenGridLosesFocus={true}
+                                                overlayLoadingTemplate={this.state.overlayLoadingTemplate}
+                                                overlayNoRowsTemplate={this.state.overlayNoRowsTemplate}
+                                                rowMultiSelectWithClick={true}
+                                            // onRowSelected={(params) => this.onRowSelected(params)}
+                                            // onCellFocused={(e) => this.onCellFocused(e)}
+                                            // suppressCopyRowsToClipboard = {true}
+                                            />
+                                        </div>
+                                    </div>
+                                        <div style={{ display: 'inline' }}>
+                                            {
+                                                <div style={{ display: 'inline' }}>
+                                                    <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {this.devReportList.length}</span>
+                                                </div>
+                                            }
                                     </div>
                                 </div>
                             </div >

@@ -36,7 +36,7 @@ class CustomerReport extends Component {
         super(props);
         let columnDefDictCR = {
             'BugNo' : {
-                headerName: "BugNo", field: "BugNo", sortable: true, filter: true,
+                headerName: "Bug No", field: "BugNo", sortable: true, filter: true,
                 editable: false,
                 width: '130',
                 cellRenderer: function(params) {
@@ -78,13 +78,13 @@ class CustomerReport extends Component {
                 editable: false,
             },
             'QAName' : {
-                headerName: "QAName", field: "QAName", sortable: true, filter: true,
+                headerName: "QA Name", field: "QAName", sortable: true, filter: true,
                 width: '90',
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
             'ReportedBy' : {
-                headerName: "ReportedBy", field: "ReportedBy", sortable: true, filter: true,
+                headerName: "Reported By", field: "ReportedBy", sortable: true, filter: true,
                 width: '90',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -96,25 +96,25 @@ class CustomerReport extends Component {
                 editable: false,
             },
             'DevManager' : {
-                headerName: "DevManager", field: "DevManager", sortable: true, filter: true,
+                headerName: "Dev Manager", field: "DevManager", sortable: true, filter: true,
                 width: '90',
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
             'BuManager' :  {
-                headerName: "BuManager", field: "BuManager", sortable: true, filter: true,
+                headerName: "Bu Manager", field: "BuManager", sortable: true, filter: true,
                 width: '90',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
             'ReportedDate' : {
-                headerName: "ReportedDate", field: "ReportedDate", sortable: true, filter: true,
+                headerName: "Reported Date", field: "ReportedDate", sortable: true, filter: true,
                 width: '100',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
             'OpenDays' : {
-                headerName: "OpenDays", field: "OpenDays", sortable: true, filter: true,
+                headerName: "Open Days", field: "OpenDays", sortable: true, filter: true,
                 width: '80',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -126,7 +126,7 @@ class CustomerReport extends Component {
                 cellClass: 'cell-wrap-text',
             },
             'QAValidatedDate' : {
-                headerName: "QAValidatedDate", field: "QAValidatedDate", sortable: true, filter: true,
+                headerName: "QA Validated Date", field: "QAValidatedDate", sortable: true, filter: true,
                 width: '100',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -159,12 +159,6 @@ class CustomerReport extends Component {
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
-            // 'ClosedBugs' : {
-            //     headerName: "Closed Bugs", field: "ClosedBugs", sortable: true, filter: true,
-            //     width: '50',
-            //     cellClass: 'cell-wrap-text',
-            //     editable: false,
-            // },
             'AvgDays' : {
                 headerName: "Avg Days Bugs Open", field: "AvgDays", sortable: true, filter: true,
                 width: '130',
@@ -188,6 +182,7 @@ class CustomerReport extends Component {
                 {id:3,value:'P3', isChecked: false},
                 {id:4,value:'P4', isChecked: false},
                 {id:4,value:'P5', isChecked: false},
+                {id:4,value:'P6', isChecked: false},
             ],
             columnDefsCR: [
                 columnDefDictCR['BU'],
@@ -209,7 +204,6 @@ class CustomerReport extends Component {
                 cusReportColumnDefDictCR['BU'],
                 cusReportColumnDefDictCR['Manager'],
                 cusReportColumnDefDictCR['OpenBugs'],
-                //managercolumnDefDict['ClosedBugs'],
                 cusReportColumnDefDictCR['AvgDays'],
             ],
             defaultColDef: { resizable: true },
@@ -357,7 +351,7 @@ class CustomerReport extends Component {
         this.ApplicableTcsCR = []
         this.cusReportListCR = []
         this.bugsToShowCR = []
-        let severity = {"Highest":"P1","High":"P2","Medium":"P3","Low":"P4", "Lowest":"P5"}
+        let severity = {"Highest":"P2","High":"P3","Medium":"P4","Low":"P5", "Lowest":"P6"}
         let devManager = {"Abhay Singh":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate"],
                           "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu"],
                           "Rahul Soman":["Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Mayur Shinde", "Swapnil Shende", "Sandeep Zende"],
@@ -383,7 +377,7 @@ class CustomerReport extends Component {
                 QAName: this.allTCsToShowCR[i]["fields"]["creator"]["displayName"],
                 Developer: this.allTCsToShowCR[i]["fields"].assignee ? this.allTCsToShowCR[i]["fields"]["assignee"]["displayName"] : "NA",
                 OpenDays: 0,
-                ETA: today,
+                ETA: this.allTCsToShowCR[i]["fields"]["duedate"] ? this.allTCsToShowCR[i]["fields"]["duedate"].split("T")[0] : "NA",
                 ReportedDate: this.allTCsToShowCR[i]["fields"]["created"].split("T")[0],
                 QAValidatedDate: "NA",
                 DevManager: "NA",
@@ -396,10 +390,12 @@ class CustomerReport extends Component {
                     }
                 });
             })
+            let ue = false, ua = false, sp = false;
             this.allTCsToShowCR[i]["fields"]["labels"].forEach(label => {
                 let loLabel = label.toLowerCase()
                 if(loLabel.includes("customer-") || loLabel.includes("customer")) {
                     temp.ReportedBy = "Support"
+                    temp.Severity = "P1"
                     let cusName = loLabel.split("-")
                     if(cusName.length > 1) {
                         temp.Customer = cusName[1]
@@ -411,22 +407,37 @@ class CustomerReport extends Component {
                 else if(loLabel.includes("ultima-software")) {
                     temp.BU = "Ultima Enterprise"
                     temp.BuManager = "Abhay Singh"
-                    ultimaSoftBugCount = ultimaSoftBugCount + 1
+                    if(ue == false){
+                        ultimaSoftBugCount = ultimaSoftBugCount + 1
+                        ue = true
+                    }
+                    else{
+                        console.log(this.allTCsToShow[i].key)
+                    }
                 }
                 else if(loLabel.includes("ultima")) {
                     temp.BU = "Ultima Accelerator"
                     temp.BuManager = "Naveen Seth"
-                    ultimaBugCount = ultimaBugCount + 1
+                    if(ua == false){
+                        ultimaBugCount = ultimaBugCount + 1
+                        ua = true
+                    }
+                    else{
+                        console.log(this.allTCsToShow[i].key)
+                    }
                 }
                 else if(loLabel.includes("spektra")) {
                     temp.BU = "Spektra"
                     temp.BuManager = "Kshitij Gunjikar"
-                    spektraBugCount = spektraBugCount + 1
+                    if(sp == false){
+                        spektraBugCount = spektraBugCount + 1
+                        sp = true
+                    }
+                    else{
+                        console.log(this.allTCsToShow[i].key)
+                    }
                 }
             })
-            if(this.allTCsToShowCR[i]["fields"]["duedate"]) {
-                temp.ETA = this.allTCsToShowCR[i]["fields"]["duedate"].split("T")[0]
-            }
             if(this.allTCsToShowCR[i]["fields"]["status"]["name"] === "Closed") {
                 let date1 = this.allTCsToShowCR[i]["fields"]["statuscategorychangedate"]
                 let date2 = this.allTCsToShowCR[i]["fields"]["created"]
@@ -434,7 +445,6 @@ class CustomerReport extends Component {
                 let diff = new Date(date1).getTime() - new Date(date2).getTime()
                 let res = Math.round(diff / MS_PER_DAY)
                 temp.OpenDays = res
-                temp.ETA = temp.QAValidatedDate
                 if(temp.OpenDays == 0){
                     temp.OpenDays = 1
                 }
@@ -598,6 +608,9 @@ class CustomerReport extends Component {
                                 <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
+                                            <div style={{ width: '8rem', marginLeft: '1rem' }}>
+                                                <span className='rp-app-table-title'>BUG LIST</span>
+                                            </div>
                                             {
                                                 [
                                                     { style: { width: '8rem', marginLeft: '1rem' }, field: 'BU', onChange: (e) => this.onSelectBUCR(e), values: [{ value: '', text: 'Select Buisness Unit' }, ...(['Spektra', 'Ultima Accelerator', 'Ultima Enterprise', 'NA'].map(each => ({ value: each, text: each })))] },
@@ -631,13 +644,22 @@ class CustomerReport extends Component {
                                             </div>
                                             <div style={{ width: '5rem', marginLeft: '2rem' }}>
                                                 <Button disabled={this.state.isApiUnderProgressCR} title="Only selected Bugs will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
+                                                    // if (this.gridApiCR) {
+                                                    //     let selected = this.gridApiCR.getSelectedRows().length;
+                                                    //     let selectedSummaryRows = this.reportGridApiCR.getSelectedRows().length;
+                                                    //     if (selected) {
+                                                    //         this.gridApiCR.exportDataAsCsv({ allColumns: true, onlySelected: true, fileName: 'Customer_Bug_List.csv', });
+                                                    //     }
+                                                    //     if (selectedSummaryRows) {
+                                                    //         this.reportGridApiCR.exportDataAsCsv({allColumns: true, onlySelected: true, fileName: 'Customer_Bug_Summary.csv'})
+                                                    //     }
+                                                    // }
                                                     if (this.gridApiCR) {
-                                                        let selected = this.gridApiCR.getSelectedRows().length;
-                                                        if (!selected) {
-                                                            alert('Only selected Bugs will be downloaded');
-                                                            return
-                                                        }
-                                                        this.gridApiCR.exportDataAsCsv({ allColumns: true, onlySelected: true });
+                                                        this.gridApiCR.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: 'Customer_Bug_List.csv', });
+                                                    }
+                                                    if(this.reportGridApiCR)
+                                                    {
+                                                        this.reportGridApiCR.exportDataAsCsv({allColumns: true, onlySelected: false, fileName: 'Customer_Bug_Summary.csv'});
                                                     }
                                                 }} >
                                                     Download
@@ -702,21 +724,10 @@ class CustomerReport extends Component {
                                 <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
-                                            <div style={{ width: '5rem', marginLeft: '2rem' }}>
-                                                <Button disabled={this.state.isApiUnderProgressCR} title="Only selected Bugs will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
-                                                    if (this.reportGridApiCR) {
-                                                        let selected = this.reportGridApiCR.getSelectedRows().length;
-                                                        if (!selected) {
-                                                            alert('Only selected Bugs will be downloaded');
-                                                            return
-                                                        }
-                                                        this.reportGridApiCR.exportDataAsCsv({ allColumns: true, onlySelected: true });
-                                                    }
-                                                }} >
-                                                    Download
-                                                </Button>
+                                            <div style={{ width: '8rem', marginLeft: '1rem' }}>
+                                                <span className='rp-app-table-title'>BUG Summary</span>
                                             </div>
-                                            <div style={{ width: '10rem', position: 'absolute', marginTop: '0.5rem', right: '1.5rem'}}>
+                                            <div style={{ width: '10rem', position: 'absolute', right: '2.0rem'}}>
                                                 <span className='rp-app-table-value'>Selected: {this.state.reportSelectedRowsCR}</span>
                                             </div>
                                         </div>
@@ -762,15 +773,6 @@ class CustomerReport extends Component {
                                                     <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {this.cusReportListCR.length}</span>
                                                 </div>
                                             }
-                                            {/* <div style={{
-                                                float: 'right', display: this.state.isApiUnderProgressCR
-                                                }}>
-                                                <Button onClick={() => this.paginate(-1)}>Previous</Button>
-                                                <span  >{`   Page: ${this.pageNumber}   `}</span>
-
-                                                <Button onClick={() => this.paginate(1)}>Next</Button>
-
-                                            </div> */}
                                     </div>
                                 </div>
                             </div >

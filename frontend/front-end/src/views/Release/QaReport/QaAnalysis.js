@@ -9,7 +9,7 @@ import CustomerBugs from '../../../components/CustomerBugs/CustomerBugs';
 import IndividualReport from '../../../components/QaReport/IndividualReport';
 import CustomerReport from '../../../components/CustomerBugs/CustomerReport';
 import ManagerReport from '../../../components/CustomerBugs/ManagerReport';
-import ManagerClosedBugReport from '../../../components/CustomerBugs/ManagerClosedBugReport';
+import ClosedBugReport from '../../../components/CustomerBugs/ClosedBugReport';
 import DeveloperReport from '../../../components/CustomerBugs/DeveloperReport';
 function daysInThisMonth() {
     var now = new Date();
@@ -791,11 +791,11 @@ class QaAnalysis extends Component {
                 {
                     <ManagerReport></ManagerReport>
                 }
-                {
+                {/* {
                     <DeveloperReport></DeveloperReport>
-                }
+                } */}
                 {
-                    <ManagerClosedBugReport></ManagerClosedBugReport>
+                    <ClosedBugReport></ClosedBugReport>
                 }
                 < Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                     <ModalHeader eader toggle={() => this.toggle()}>Confirmation</ModalHeader>
