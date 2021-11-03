@@ -2279,7 +2279,9 @@ def USER_LOGIN_VIEW(request):
             data ={}
             data['name'] = req['name']
             data['email'] = req['email']
-            if 'Role' not in req:
+            if req['email'] == "amandeep@diamanti.com":
+                data['role'] = "EXECUTIVE"
+            elif 'Role' not in req:
                 data['role'] = "Dev"
             else:
                 data['role'] = req['role']
