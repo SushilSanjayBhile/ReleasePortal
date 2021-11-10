@@ -68,6 +68,11 @@ export default {
       icon: 'fa fa-bars',
     },
     {
+      name: 'Defect Reports',
+      url: '/release/customerTickets',
+      icon: 'fa fa-bars',
+    },
+    {
       name: 'My Test Metrics',
       url: '/release/mytestmatrics',
       icon: 'fa fa-table',

@@ -513,6 +513,8 @@ class QaAnalysis extends Component {
         let DATE7 = ttempDateStartGUI     
         let DATE8 = ttempDateEndGUI
         return (
+            <div>
+            {
             this.props.currentUser && this.props.currentUser.isAdmin &&
             <div>
                 <div>
@@ -791,9 +793,6 @@ class QaAnalysis extends Component {
                 {
                     <ManagerReport></ManagerReport>
                 }
-                {/* {
-                    <DeveloperReport></DeveloperReport>
-                } */}
                 {
                     <ClosedBugReport></ClosedBugReport>
                 }
@@ -808,6 +807,14 @@ class QaAnalysis extends Component {
                     </ModalFooter>
                 </Modal>
             </div >
+            }
+            {
+                this.props.currentUser && !this.props.currentUser.isAdmin &&
+                <div class="container" style={{ 'margin-top': '1rem' }}>
+                    <h5>You are not allowed to view this page.</h5>
+                </div>
+            }
+            </div>
         )
     }
 }

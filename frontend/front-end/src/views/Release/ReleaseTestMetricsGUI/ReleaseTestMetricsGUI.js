@@ -88,31 +88,43 @@ class ReleaseTestMetricsGUI extends Component {
         let op = this.props.selectedRelease.OrchestrationPlatform ? this.props.selectedRelease.OrchestrationPlatform.map(item => ({ value: item })) : [];
         return (
             <div>
-                <TestCasesAllGUI title={'Test Cases'} type='all'></TestCasesAllGUI>
                 {
-                    this.props.currentUser &&
-                    <CreateTCs isEditing={true} update={() => this.save()}></CreateTCs>
-                }
-                {
-                    this.props.currentUser && this.props.currentUser.email &&
-                    <ImportTCsGui></ImportTCsGui>
-                }
-                {
-                    this.props.currentUser && this.props.currentUser.email &&
-                    <NonExecutedTCsGui></NonExecutedTCsGui>
-                }
+                    this.props.currentUser && !this.props.currentUser.isExe &&
+                    <div>
+                        <TestCasesAllGUI title={'Test Cases'} type='all'></TestCasesAllGUI>
+                        {
+                            this.props.currentUser &&
+                            <CreateTCs isEditing={true} update={() => this.save()}></CreateTCs>
+                        }
+                        {
+                            this.props.currentUser && this.props.currentUser.email &&
+                            <ImportTCsGui></ImportTCsGui>
+                        }
+                        {
+                            this.props.currentUser && this.props.currentUser.email &&
+                            <NonExecutedTCsGui></NonExecutedTCsGui>
+                        }
 
-                <Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
-                    <ModalHeader toggle={() => this.toggle()}>Confirmation</ModalHeader>
-                    <ModalBody>
-                        Are you sure you want to make the changes?
-                    </ModalBody>
-                    <ModalFooter>
-                        <Button color="primary" onClick={() => this.save()}>Ok</Button>{' '}
-                        <Button color="secondary" onClick={() => this.toggle()}>Cancel</Button>
-                    </ModalFooter>
-                </Modal>
-            </div >)
+                        <Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
+                            <ModalHeader toggle={() => this.toggle()}>Confirmation</ModalHeader>
+                            <ModalBody>
+                                Are you sure you want to make the changes?
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button color="primary" onClick={() => this.save()}>Ok</Button>{' '}
+                                <Button color="secondary" onClick={() => this.toggle()}>Cancel</Button>
+                            </ModalFooter>
+                        </Modal>
+                    </div >
+                }
+                {
+                    this.props.currentUser && this.props.currentUser.isExe &&
+                    <div class="container" style={{ 'margin-top': '1rem' }}>
+                        <h5>You are not allowed to view this page.</h5>
+                    </div>
+                }
+            </div>
+        )
     }
 }
 const mapStateToProps = (state, ownProps) => ({

@@ -1151,7 +1151,8 @@ class ReleaseTestCase extends Component {
         let DATE7 = ttempDateStartGUI     
         let DATE8 = ttempDateEndGUI
         return (
-            this.props.currentUser &&
+            <div>{
+            this.props.currentUser && !this.props.currentUser.isExe &&
             <div>
                 <div>
                 <Row>
@@ -1908,9 +1909,6 @@ class ReleaseTestCase extends Component {
                 </Col>
             </Row> */}
             </div>
-            {/* {
-                <CustomerBugs></CustomerBugs>
-            } */}
             < Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                 <ModalHeader toggle={() => this.toggle()}>Confirmation</ModalHeader>
                 <ModalBody>
@@ -1921,8 +1919,16 @@ class ReleaseTestCase extends Component {
                     <Button color="secondary" onClick={() => this.toggle()}>Cancel</Button>
                 </ModalFooter>
             </Modal>
-
-            </div >)
+            </div >
+        }
+        {
+            this.props.currentUser && this.props.currentUser.isExe &&
+            <div class="container" style={{ 'margin-top': '1rem' }}>
+                <h5>You are not allowed to view this page.</h5>
+            </div>
+        }
+        </div>
+        )
     }
 }
 const mapStateToProps = (state, ownProps) => ({

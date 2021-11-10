@@ -370,6 +370,46 @@ app.use('/rest/AllCustomerBugs', (req, res) => {
     })
 }, err => { });
 
+app.use('/rest/AllCustomerBugCountNoImprovement', (req, res) => {
+    var totalBugsStr = `/?jql=project+in+%28DWS%2C+SPEK%29+AND+issuetype+in+%28Bug%29+AND+status+in+%28%22In+Progress%22%2C+Info%2C+Open%2C+%22To+Do%22%29+AND+labels+%3D+customer+ORDER+BY+created+DESC&maxResults=0`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+    if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
+
+app.use('/rest/AllCustomerBugsNoImprovement', (req, res) => {
+    var totalBugsStr = `/?jql=project+in+%28DWS%2C+SPEK%29+AND+issuetype+in+%28Bug%29+AND+status+in+%28%22In+Progress%22%2C+Info%2C+Open%2C+%22To+Do%22%29+AND+labels+%3D+customer+ORDER+BY+created+DESC&maxResults=1000&startAt=${req.query.startAt}`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+    if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
+
 app.use('/rest/AllOpenBugCount', (req, res) => {
     var totalBugsStr = `/?jql=project+in+%28DWS%2C+SPEK%29+AND+issuetype+in+%28Bug%2C+Improvement%29+AND+status+in+%28Duplicate%2C+%22In+Progress%22%2C+Info%2C+Open%2C+%22To+Do%22%29+ORDER+BY+created+DESC&maxResults=0`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
@@ -392,6 +432,45 @@ app.use('/rest/AllOpenBugCount', (req, res) => {
 
 app.use('/rest/AllOpenBugs', (req, res) => {
     var totalBugsStr = `/?jql=project+in+%28DWS%2C+SPEK%29+AND+issuetype+in+%28Bug%2C+Improvement%29+AND+status+in+%28Duplicate%2C+%22In+Progress%22%2C+Info%2C+Open%2C+%22To+Do%22%29+ORDER+BY+created+DESC&maxResults=100&startAt=${req.query.startAt}`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+    if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
+
+app.use('/rest/AllOpenBugCountNoImprovement', (req, res) => {
+    var totalBugsStr = `/?jql=project+in+%28DWS%2C+SPEK%29+AND+issuetype+in+%28Bug%29+AND+status+in+%28%22In+Progress%22%2C+Info%2C+Open%2C+%22To+Do%22%29+ORDER+BY+created+DESC&maxResults=0`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+    if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
+app.use('/rest/AllOpenBugsNoImprovement', (req, res) => {
+    var totalBugsStr = `/?jql=project+in+%28DWS%2C+SPEK%29+AND+issuetype+in+%28Bug%29+AND+status+in+%28%22In+Progress%22%2C+Info%2C+Open%2C+%22To+Do%22%29+ORDER+BY+created+DESC&maxResults=1000&startAt=${req.query.startAt}`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {
             loginJIRA().then(function () {

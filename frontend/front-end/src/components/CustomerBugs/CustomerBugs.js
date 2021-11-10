@@ -492,7 +492,7 @@ class CustomerBugs extends Component {
                                                             { style: { width: '8rem', marginLeft: '1rem' }, field: 'BU', onChange: (e) => this.onSelectBU(e), values: [{ value: '', text: 'Select Buisness Unit' }, ...(['Spektra', 'Ultima Accelerator', 'Ultima Enterprise', 'NA'].map(each => ({ value: each, text: each })))] },
                                                         ].map(item => (
                                                             <div style={item.style}>
-                                                                <Input /*disabled={this.state.isApiUnderProgress}*/ style={{ fontSize: '12px' }} value={this.state[item.field]} onChange={(e) => item.onChange(e.target.value)} type="select" name={`select${item.field}`} id={`select${item.field}`}>
+                                                                <Input disabled={this.state.isApiUnderProgress} style={{ fontSize: '12px' }} value={this.state[item.field]} onChange={(e) => item.onChange(e.target.value)} type="select" name={`select${item.field}`} id={`select${item.field}`}>
                                                                     {
                                                                         item.values.map(each => <option value={each.value}>{each.text}</option>)
                                                                     }
@@ -502,7 +502,7 @@ class CustomerBugs extends Component {
                                                     }
                                             {/* </div> */}
                                             <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
-                                                <Button /*disabled={this.state.isApiUnderProgress}*/ id="PopoverAssign2" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
+                                                <Button disabled={this.state.isApiUnderProgress} id="PopoverAssign2" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
                                                 <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2" id="PopoverAssignButton2" toggle={() => this.popoverToggle2()} isOpen={this.state.popoverOpen2}>
                                                     <PopoverBody>
                                                         <div>

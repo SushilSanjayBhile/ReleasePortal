@@ -86,54 +86,54 @@ class MyTestMetrics extends Component {
             }
        
     }
-    
-
     render() {
         return (
+            <div>
+            {
+            this.props.currentUser && !this.props.currentUser.isExe &&
             <div>
                 {
                     this.props.currentUser &&
                     <AssignToUser></AssignToUser>
                 }
-
                 {
                     this.props.currentUser &&
                     <AssignToUserAutomationTC></AssignToUserAutomationTC>
                 }
-               
                 {
                     this.props.currentUser &&
                     <PendingForApproval></PendingForApproval>
                 }
-
                 {
                     this.props.currentUser &&
                     <UNAPPROVEDTC></UNAPPROVEDTC>
                 }
-
-
                 {
                     this.props.currentUser &&
                     <AssignToUserGUI></AssignToUserGUI>
                 }
-
                 {
                     this.props.currentUser  &&
                     <AssignToUserAutomationTCGUI></AssignToUserAutomationTCGUI>
                 } 
-
                 {
                     this.props.currentUser &&
                     <PendingForApprovalGUI></PendingForApprovalGUI>
                 }
-                
-               
                 {
                     this.props.currentUser &&
                     <UNAPPROVEDTCGUI></UNAPPROVEDTCGUI>
                 }
-                 
-            </div >)
+            </div >
+        }
+        {
+            this.props.currentUser && this.props.currentUser.isExe &&
+            <div class="container" style={{ 'margin-top': '1rem' }}>
+                <h5>You are not allowed to view this page.</h5>
+            </div>
+        }
+        </div>
+        )
     }
 }
 const mapStateToProps = (state, ownProps) => ({

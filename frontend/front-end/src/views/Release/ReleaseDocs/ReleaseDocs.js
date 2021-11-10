@@ -31,6 +31,9 @@ class ReleaseDocs extends Component {
     }
     render() {
         return (
+            <div>
+            {
+            this.props.currentUser && !this.props.currentUser.isExe &&
             <React.Fragment>
                             {
                 !this.state.show &&
@@ -96,11 +99,20 @@ class ReleaseDocs extends Component {
             //         <Bar data={cardChartData4} options={cardChartOpts4} height={70} />
             //     </div>
             // </Card>
+            }
+            {
+                this.props.currentUser && this.props.currentUser.isExe &&
+                <div class="container" style={{ 'margin-top': '1rem' }}>
+                    <h5>You are not allowed to view this page.</h5>
+                </div>
+            }
+            </div>
         )
     }
 }
 
 const mapStateToProps = (state, ownProps) => ({
+    currentUser: state.auth.currentUser,
     selectedRelease: getCurrentRelease(state, state.release.current.id),
 })
 export default connect(mapStateToProps, {})(ReleaseDocs);

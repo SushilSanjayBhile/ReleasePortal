@@ -100,7 +100,7 @@ class UpdateE2EResult extends Component {
         return(
             <div>
             {
-                this.props.currentUser &&
+                this.props.currentUser && !this.props.currentUser.isExe &&
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                         <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ Open: !this.state.Open })}>
@@ -195,6 +195,12 @@ class UpdateE2EResult extends Component {
                         </Collapse>
                     </Col>
                 </Row>
+            }
+            {
+            this.props.currentUser && this.props.currentUser.isExe &&
+                <div class="container" style={{ 'margin-top': '1rem' }}>
+                    <h5>You are not allowed to view this page.</h5>
+                </div>
             }
             </div>
         )

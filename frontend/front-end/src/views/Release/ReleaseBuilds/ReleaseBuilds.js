@@ -164,6 +164,9 @@ class ReleaseBuilds extends Component {
     
     render(){
         return(
+            <div>
+            {
+            this.props.currentUser && !this.props.currentUser.isExe &&
             <div className="main-container">
                 <div class="container" style={{ 'margin-top': '1rem' }}>
                     <button  style={{ 'margin-left': '56rem' }} type="button" class="btn btn-success"  data-toggle="modal" data-target="#myModal">Add New Build URL</button>
@@ -275,12 +278,21 @@ class ReleaseBuilds extends Component {
                     }
                 </Row>
             </div>
+        }
+        {
+            this.props.currentUser && this.props.currentUser.isExe &&
+            <div class="container" style={{ 'margin-top': '1rem' }}>
+                <h5>You are not allowed to view this page.</h5>
+            </div>
+        }
+        </div>
         )
     }
 }
 
 
 const mapStateToProps = (state, ownProps) => ({
+    currentUser: state.auth.currentUser,
     selectedRelease: getCurrentRelease(state, state.release.current.id),
 })
 export default connect(mapStateToProps, {getCurrentRelease })(ReleaseBuilds);

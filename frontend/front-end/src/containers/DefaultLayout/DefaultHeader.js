@@ -50,9 +50,13 @@ class DefaultHeader extends Component {
       .then(res => {
         localStorage.setItem('isAuthorized', true);
         if (res.data && res.data.role === 'ADMIN') {
-          this.props.logInSuccess({ email: email, name: name, isAdmin: true, role: res.data.role });
-        } else {
-          this.props.logInSuccess({ email: email, name: name, isAdmin: false, role: res.data.role });
+          this.props.logInSuccess({ email: email, name: name, isAdmin: true, isExe: false, role: res.data.role });
+        }
+        else if (res.data && res.data.role === 'EXECUTIVE') {
+          this.props.logInSuccess({ email: email, name: name, isAdmin: false, isExe: true, role: res.data.role });
+        }
+        else {
+          this.props.logInSuccess({ email: email, name: name, isAdmin: false, isExe: false, role: res.data.role });
         }
         this.props.history.push('/');
       })

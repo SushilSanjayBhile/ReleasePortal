@@ -134,6 +134,9 @@ class ReleaseTestMetrics extends Component {
         let op = this.props.selectedRelease.OrchestrationPlatform ? this.props.selectedRelease.OrchestrationPlatform.map(item => ({ value: item })) : [];
         return (
             <div>
+                {
+                    this.props.currentUser && !this.props.currentUser.isExe &&
+                <div>
                 <TestCasesAll title={'Test Cases'} type='all'></TestCasesAll>
                 {
                     this.props.currentUser &&
@@ -230,8 +233,6 @@ class ReleaseTestMetrics extends Component {
                                                         </div>
                                                     </Col>
                                                 )
-
-
                                             })
                                         }
                                     </Row>
@@ -262,7 +263,16 @@ class ReleaseTestMetrics extends Component {
                         <Button color="secondary" onClick={() => this.toggle()}>Cancel</Button>
                     </ModalFooter>
                 </Modal>
-            </div >)
+                </div>
+            }
+            {
+                this.props.currentUser && this.props.currentUser.isExe &&
+                <div class="container" style={{ 'margin-top': '1rem' }}>
+                    <h5>You are not allowed to view this page.</h5>
+                </div>
+            }
+            </div >
+        )
     }
 }
 const mapStateToProps = (state, ownProps) => ({

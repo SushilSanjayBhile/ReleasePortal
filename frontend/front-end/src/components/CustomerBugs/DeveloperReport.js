@@ -404,8 +404,7 @@ class DeveloperReport extends Component {
         this.cusReportList = []
         this.bugsToShow = []
         let devDict = {}
-        this.NAManager = []
-        let severity = {"Highest":"P1","High":"P2","Medium":"P3","Low":"P4", "Lowest":"P5"}
+        let severity = {"Highest":"P2","High":"P3","Medium":"P4","Low":"P5", "Lowest":"P6"}
         let devManager = {"Abhay Singh":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi"],
                           "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu"],
                           "Rahul Soman":["Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Mayur Shinde", , "Sandeep Zende", "Swapnil Shende"],
@@ -455,6 +454,7 @@ class DeveloperReport extends Component {
                 let loLabel = label.toLowerCase()
                 if(loLabel.includes("customer-") || loLabel.includes("customer")) {
                     temp.ReportedBy = "Support"
+                    temp.Severity = "P1"
                     let cusName = loLabel.split("-")
                     if(cusName.length > 1) {
                         temp.Customer = cusName[1]
@@ -467,7 +467,7 @@ class DeveloperReport extends Component {
                     temp.BU = "Ultima Enterprise"
                     temp.BuManager = "Abhay Singh"
                     if(ue == false){
-                        ua = true
+                        ue = true
                     }
                     else{
                         console.log(this.allTCsToShow[i].key)

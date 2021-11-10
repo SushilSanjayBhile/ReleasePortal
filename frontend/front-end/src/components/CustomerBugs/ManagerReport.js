@@ -459,19 +459,21 @@ class ManagerReport extends Component {
         this.cusReportList = []
         this.devReportList = []
         this.bugsToShow = []
+        this.devList = []
         let devDict = {}
         let severity = {"Highest":"P2","High":"P3","Medium":"P4","Low":"P5", "Lowest":"P6"}
-        let devManager = {"Abhay Singh":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate"],
+        let devManager = {"Abhay Singh":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi"],
                           "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu"],
                           "Rahul Soman":["Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Mayur Shinde", "Swapnil Shende", "Sandeep Zende"],
                           "Sourabh Shukla":["Abhijeet Chavan", "Narendra Raigar"],
-                          "Naveen Seth":["Naveen Seth","Tanya Singh"],
+                          "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan"],
+                          "Quentin Finck":["Quentin Finck"],
                           "Vinod Lohar":["Diksha Tambe"],
                           "Arvind Krishnan":["Arvind Krishnan"]
                            };
         let buMap = {"Ultima Enterprise":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate","Madhav Buddhi","Mayur Shinde"],
                     "Spektra":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar","Swapnil Shende"],
-                    "Ultima Accelerator":["Naveen Seth","Tanya Singh","Vinod Lohar","Diksha Tambe"],
+                    "Ultima Accelerator":["Naveen Seth","Tanya Singh","Vinod Lohar","Diksha Tambe", "Dinesh Radhakrishnan", "Alex Bahel"],
                         }
         let QAs = {"Prachee Ahire":'', "Mukesh Shinde":'', "Chetan Noginahal":'', "Dinesh":'', "Rajat Gupta":'',
                     "Shweta Burte":'', "Aditya Nilkanthwar":'', "Arati Jadhav":'', "Varsha Suryawanshi":'', "Priyanka Birajdar":'',
@@ -823,7 +825,7 @@ class ManagerReport extends Component {
                                                     { style: { width: '8rem', marginLeft: '1rem' }, field: 'Developer', onChange: (e) => this.onSelectDeveloper(e), values: [{ value: '', text: 'Select Developer' }, ...(this.devList.map(each => ({ value: each, text: each })))] },
                                                 ].map(item => (
                                                     <div style={item.style}>
-                                                        <Input /*disabled={this.state.isApiUnderProgress}*/ style={{ fontSize: '12px' }} value={this.state[item.field]} onChange={(e) => item.onChange(e.target.value)} type="select" name={`select${item.field}`} id={`select${item.field}`}>
+                                                        <Input disabled={this.state.isApiUnderProgress} style={{ fontSize: '12px' }} value={this.state[item.field]} onChange={(e) => item.onChange(e.target.value)} type="select" name={`select${item.field}`} id={`select${item.field}`}>
                                                             {
                                                                 item.values.map(each => <option value={each.value}>{each.text}</option>)
                                                             }
@@ -832,7 +834,7 @@ class ManagerReport extends Component {
                                                 ))
                                             }
                                              <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
-                                                <Button /*disabled={this.state.isApiUnderProgress}*/ id="PopoverAssign2MR" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
+                                                <Button disabled={this.state.isApiUnderProgress} id="PopoverAssign2MR" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
                                                 <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2MR" id="PopoverAssignButton2MR" toggle={() => this.popoverToggle2()} isOpen={this.state.popoverOpen2}>
                                                     <PopoverBody>
                                                         <div>

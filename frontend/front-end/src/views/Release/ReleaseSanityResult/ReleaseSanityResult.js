@@ -182,6 +182,9 @@ class ReleaseSanityResult extends Component {
         let op = this.props.selectedRelease.OrchestrationPlatform ? this.props.selectedRelease.OrchestrationPlatform.map(item => ({ value: item })) : [];
         return (
             <div>
+            {
+                this.props.currentUser && !this.props.currentUser.isExe &&
+            <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
                         <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ tcOpen: !this.state.tcOpen })}>
@@ -368,7 +371,14 @@ class ReleaseSanityResult extends Component {
                     </ModalFooter>
                 </Modal>
             </div>
-
+        }
+        {
+                this.props.currentUser && this.props.currentUser.isExe &&
+                <div class="container" style={{ 'margin-top': '1rem' }}>
+                    <h5>You are not allowed to view this page.</h5>
+                </div>
+        }
+        </div>
         )
     }
 }

@@ -352,12 +352,13 @@ class CustomerReport extends Component {
         this.cusReportListCR = []
         this.bugsToShowCR = []
         let severity = {"Highest":"P2","High":"P3","Medium":"P4","Low":"P5", "Lowest":"P6"}
-        let devManager = {"Abhay Singh":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate"],
+        let devManager = {"Abhay Singh":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi"],
                           "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu"],
                           "Rahul Soman":["Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Mayur Shinde", "Swapnil Shende", "Sandeep Zende"],
                           "Sourabh Shukla":["Abhijeet Chavan", "Narendra Raigar"],
-                          "Naveen Seth":["Naveen Seth","Tanya Singh"],
+                          "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan"],
                           "Vinod Lohar":["Diksha Tambe"],
+                          "Quentin Finck":["Quentin Finck"],
                           "Arvind Krishnan":["Arvind Krishnan"]
                            }
         let spektraBugCount = 0, ultimaBugCount = 0, ultimaSoftBugCount = 0, NAcount = 0, spektraBugOpenDays = 0, ultimaBugOpenDays = 0, ultimaSoftBugOpenDays = 0 , NAopenDays = 0;
@@ -616,7 +617,7 @@ class CustomerReport extends Component {
                                                     { style: { width: '8rem', marginLeft: '1rem' }, field: 'BU', onChange: (e) => this.onSelectBUCR(e), values: [{ value: '', text: 'Select Buisness Unit' }, ...(['Spektra', 'Ultima Accelerator', 'Ultima Enterprise', 'NA'].map(each => ({ value: each, text: each })))] },
                                                 ].map(item => (
                                                     <div style={item.style}>
-                                                        <Input /*disabled={this.state.isApiUnderProgressCR}*/ style={{ fontSize: '12px' }} value={this.state[item.field]} onChange={(e) => item.onChange(e.target.value)} type="select" name={`select${item.field}`} id={`select${item.field}`}>
+                                                        <Input disabled={this.state.isApiUnderProgressCR} style={{ fontSize: '12px' }} value={this.state[item.field]} onChange={(e) => item.onChange(e.target.value)} type="select" name={`select${item.field}`} id={`select${item.field}`}>
                                                             {
                                                                 item.values.map(each => <option value={each.value}>{each.text}</option>)
                                                             }
@@ -625,7 +626,7 @@ class CustomerReport extends Component {
                                                 ))
                                             }
                                             <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
-                                                <Button /*disabled={this.state.isApiUnderProgressCR}*/ id="PopoverAssign2CR" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
+                                                <Button disabled={this.state.isApiUnderProgressCR} id="PopoverAssign2CR" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
                                                 <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2CR" id="PopoverAssignButton2CR" toggle={() => this.popoverToggle2CR()} isOpen={this.state.popoverOpen2CR}>
                                                     <PopoverBody>
                                                         <div>
