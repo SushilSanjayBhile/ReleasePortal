@@ -301,7 +301,7 @@ class createUser extends Component {
                                                                 onChange={(e) => this.setState({ role: e.target.value , errors: { ...this.state.errors, role: null } },)} >
                                                                 <option value=''>Select Role</option>
                                                                 {
-                                                                    ["ADMIN", "QA", "Dev"].map(item => <option value={item}>{item}</option>)
+                                                                    ["ADMIN", "QA", "Dev", "EXECUTIVE"].map(item => <option value={item}>{item}</option>)
                                                                 }
                                                             </Input>
                                                     }
@@ -438,7 +438,7 @@ class createUser extends Component {
                                                                         onChange={(e) => this.setState({ role: e.target.value , errors: { ...this.state.errors, role: null } })} >
                                                                         <option value=''>Select User Role</option>
                                                                         {
-                                                                            ["ADMIN", "QA", "Dev"].map(item => <option value={item}>{item}</option>)
+                                                                            ["ADMIN", "QA", "Dev" ,"EXECUTIVE"].map(item => <option value={item}>{item}</option>)
                                                                         }
                                                                     </Input>
                                                             }

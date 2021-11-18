@@ -43,6 +43,7 @@ class DefaultLayout extends Component {
   selectedReleaseTest = ''
   GoogleAuth;
   auth2;
+  exePath = "/release/customerTickets";
   // SCOPE = 'https://www.googleapis.com/auth/drive.metadata.readonly';
   SCOPE = 'profile';
   userNotificationsInterval = null;
@@ -270,7 +271,7 @@ class DefaultLayout extends Component {
                     ) : (null);
                   })}
                   <Redirect from="/"
-                    to={this.state.routePath} />
+                    to={this.props.currentUser && this.props.currentUser.isExe ? this.exePath : this.state.routePath} />
                 </Switch>
               </Suspense>
             </Container>
