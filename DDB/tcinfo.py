@@ -659,6 +659,7 @@ def updateData(updatedData, data, Release):
     data.UnapproveTCReason = updatedData['UnapproveTCReason']
     data.Platform = updatedData['Platform']
     data.AutomationDate = updatedData['AutomationDate']
+    data.Time = updatedData['Time']
 
     data.save(using = Release)
     return 1
@@ -852,9 +853,9 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
                             if key in updatedDataMaster and (key != "CardType" and key != "TcID" and key != "Priority" and key != "applicable"):
                                 updatedDataMaster[key] = req[key]
                         updateData(updatedDataMaster, singleData, master)
-                        if "Activity" in requests:
-                            AD = requests['Activity']
-                            GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], master)
+                        if "Activity" in req:
+                            AD = req['Activity']
+                            GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], singleData.CardType, master)
 
             except:
                 pass
@@ -873,9 +874,9 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
                            if key in updatedDataMaster and (key != "CardType" and key != "TcID" and key != "Priority" and key != "applicable"):
                                updatedDataMaster[key] = req[key]
                        updateData(updatedDataMaster, singleData, master)
-                       if "Activity" in requests:
-                           AD = requests['Activity']
-                           GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], master)
+                       if "Activity" in req:
+                           AD = req['Activity']
+                           GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], singleData.CardType, master)
             except:
                 pass
 
@@ -906,9 +907,9 @@ def MULTIPLE_TC_INFO_UPDATION(request, Release):
                         if key in updatedData and (key != "CardType" and key != "TcID"):
                             updatedData[key] = req[key]
                     updateData(updatedData, singleData, Release)
-                    if "Activity" in requests:
-                        AD = requests['Activity']
-                        GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], AD['CardType'], AD['Release'])
+                    if "Activity" in req:
+                        AD = req['Activity']
+                        GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], singleData.CardType, AD['Release'])
             except:
                 data = TC_INFO.objects.using(Release).filter(TcID = tcid)
                 serializer = TC_INFO_SERIALIZER(data, many = True)

@@ -40,7 +40,7 @@ class TC_INFO(models.Model):
     applicable = models.TextField(blank = True, default = 'Applicable')
     OS = models.TextField(blank = True, null = True, default = 'NO OS')
     UnapproveTCReason = models.TextField(blank = True, default = "NO REASON PROVIDED")
-
+    Time = models.FloatField(blank = True, default = 0.0)
     def __str__(self):
         return self.TcID
 
@@ -73,6 +73,7 @@ class TC_INFO_GUI(models.Model):
     OS = models.TextField(blank = True, null = True, default = 'NO OS')
     UnapproveTCReason = models.TextField(blank = True, default = "NO REASON PROVIDED")
     Platform = ArrayField(models.CharField(max_length = 100, blank = True, default = "UNKNOWN"), blank = True, default = list)
+    Time = models.FloatField(blank = True, default = 0.0)
 
     def __str__(self):
         return self.TcID

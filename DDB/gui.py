@@ -173,6 +173,7 @@ def updateData(updatedData, data, Release):
     data.UnapproveTCReason = updatedData['UnapproveTCReason']
     data.Platform = updatedData['Platform']
     data.AutomationDate = updatedData['AutomationDate']
+    data.Time = updatedData['Time']
     print("data changing",data.AutomationDate)
     data.save(using = Release)
     print("Pirnting data",updatedData)
@@ -224,6 +225,7 @@ def updateGuiTcInfo(data, updatedData, Release):
     data.UnapproveTCReason = updatedData['UnapproveTCReason']
     data.Platform = updatedData['Platform']
     data.AutomationDate = updatedData['AutomationDate']
+    data.Time = updatedData['Time']
     data.save(using = Release)
 
 
