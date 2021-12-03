@@ -47,6 +47,7 @@ class TestCasesAll extends Component {
     isApiUnderProgress = false;
     isAnyChanged = false;
     isApplicableChanged = false;
+    isTimeChanged = false;
     isBlockedOrFailed = false;
     allTCsToShow = [];
     tcHolder = [];
@@ -194,6 +195,9 @@ class TestCasesAll extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+            'Time' :  {
+                headerName: "Time", field: "Time", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '150', cellClass: 'cell-wrap-text',
+            },
         }
         
         this.state = {
@@ -240,6 +244,7 @@ class TestCasesAll extends Component {
                 {id: 16, value: "applicable", isChecked: false},
                 //{id: 17, value: "Platform", isChecked: false},
                 {id: 18, value: "ExpectedBehaviour", isChecked: false},
+                {id: 19, value: "Time", isChecked: false},
               ],
               
             columnDefs: [
@@ -255,6 +260,7 @@ class TestCasesAll extends Component {
                 columnDefDict['Priority'],
                 //columnDefDict['Platform'],
                 columnDefDict['ExpectedBehaviour'],
+                columnDefDict['Time'],
             ],
             
             defaultColDef: { resizable: true },
@@ -507,6 +513,9 @@ class TestCasesAll extends Component {
             editable: false,
             cellClass: 'cell-wrap-text',
         },
+        'Time' :  {
+            headerName: "Time", field: "Time", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '150', cellClass: 'cell-wrap-text',
+        },
         }
         
         let tableColumns = this.state.tableColumns;
@@ -566,9 +575,13 @@ class TestCasesAll extends Component {
     toggleApplicable = () => {
         this.setState({ multipleApplicableChanges: !this.state.multipleApplicableChanges })
     };
+    toggleTime = () => {
+        this.setState({ multipleTimeChanges: !this.state.multipleTimeChanges })
+    };
     toggle = () => this.setState({ modal: !this.state.modal });
     popoverToggle = () => this.setState({ popoverOpen: !this.state.popoverOpen });
     popoverToggleApplicable = () => this.setState({ ApplicablepopoverOpen: !this.state.ApplicablepopoverOpen });
+    popoverToggleTime = () => this.setState({ TimepopoverOpen: !this.state.TimepopoverOpen });
     popoverToggle1 = () => this.setState({ popoverOpen1: !this.state.popoverOpen1 });
     popoverToggle2 = () => this.setState({ popoverOpen2: !this.state.popoverOpen2 });
     confirmStatusDeleteToggle = () => this.setState({ deleteStatusModal: !this.state.deleteStatusModal });
@@ -685,6 +698,7 @@ class TestCasesAll extends Component {
             this.editedRows = {};
             this.isAnyChanged = false;
             this.isApplicableChanged = false;
+            this.isTimeChanged = false;
             this.isBlockedOrFailed = false;
             this.setState({
                 rowSelect: false, CardType: '', platform: '', domain: '', subDomain: '', Priority: '',
@@ -1150,6 +1164,7 @@ class TestCasesAll extends Component {
         this.editedRows = {};
         this.isAnyChanged = false;
         this.isApplicableChanged = false;
+        this.isTimeChanged = false;
         this.isBlockedOrFailed = false;
         if (this.gridApi) {
             this.gridApi.deselectAll();
@@ -1298,6 +1313,45 @@ class TestCasesAll extends Component {
         }
     }
 
+    saveTime() {
+        this.gridOperations(false);
+        let items = [];
+        let selectedRows = this.gridApi.getSelectedRows();
+        selectedRows.forEach(item => {
+            let pushable = {
+                TcID: item.TcID,
+                CardType: item.CardType,
+                Activity: {
+                    Release: this.props.selectedRelease.ReleaseNumber,
+                    "TcID": item.TcID,
+                    CardType: item.CardType,
+                    "UserName": this.props.user.email,
+                    LogData: ``,
+                    "RequestType": 'PUT',
+                    "URL": `/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`
+                }
+            };
+            ['Time'].map(each => {
+                if (item[each]) {
+                    pushable[each] = item[each]
+                    let old = item[each];
+                    if (this.editedRows[`${item.TcID}_${item.CardType}`] && this.editedRows[`${item.TcID}_${item.CardType}`][each]) {
+                        old = `${this.editedRows[`${item.TcID}_${item.CardType}`][each].originalValue}`
+                    }
+                    pushable.Activity.LogData += `${each}:{old: ${old}, new: ${item[each]}}, `
+                }
+            })
+            items.push(pushable);
+        })
+        console.log("items",items)
+        if (items.length === 0) {
+            return;
+        }
+        else {
+            this.saveMultipleTimeTcInfo(items)
+        }
+    }
+
     saveMultipleTcStatus(statusItems, items) {
         this.gridOperations(false);
 
@@ -1335,6 +1389,21 @@ class TestCasesAll extends Component {
     saveMultipleApplicableTcInfo(items) {
         this.gridOperations(false);
         axios.put(`/api/tcapplicabilityupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
+        .then(res => {
+            this.gridOperations(true);
+            //this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true)
+            this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
+            //this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
+            alert('Tc Info Updated Successfully');
+        }, error => {
+            this.gridOperations(true);
+            alert('Failed To Update TC Info');
+        });
+    }
+
+    saveMultipleTimeTcInfo(items) {
+        this.gridOperations(false);
+        axios.put(`/api/multipletcinfoupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
         .then(res => {
             this.gridOperations(true);
             //this.getTcs(this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, false, false, false, true)
@@ -2030,6 +2099,58 @@ class TestCasesAll extends Component {
                                                     </span>
                                                 </div>
                                             }
+                                            {
+                                                this.props.user &&
+                                                <div style={{ width: '5rem', marginLeft: '2.5rem' }}>
+                                                    <span>
+                                                        <Button disabled={this.state.isApiUnderProgress} id="TimePopoverAssign" type="button">Time</Button>
+                                                        <UncontrolledPopover trigger="legacy" placement="bottom" target="TimePopoverAssign" id="TimePopoverAssignnButton" toggle={() => this.popoverToggleTime()} isOpen={this.state.TimepopoverOpen}>
+                                                            <PopoverBody>
+                                                                <Row>
+                                                                    <Col md="12">
+                                                                        <FormGroup className='rp-app-table-value'>
+                                                                            <Input required disabled={this.state.isApiUnderProgress} value={this.state.multiTime && this.state.multiTime.time} onChange={(e) => {
+                                                                                this.isTimeChanged = true;
+                                                                                let selectedRows = this.gridApi.getSelectedRows();
+                                                                                if (e.target.value && e.target.value !== '') {
+                                                                                    selectedRows.forEach(item => {
+                                                                                        this.onCellEditing(item, 'Time', e.target.value)
+                                                                                        item['Time'] = e.target.value;
+                                                                                    })
+                                                                                }
+                                                                                this.setState({ multiTime: { ...this.state.multiTime, time: e.target.value } })
+                                                                                setTimeout(this.gridApi.redrawRows(), 0);
+                                                                            }} type="select" id={`select_Status`} >
+                                                                                {
+                                                                                    ["Select Time(in hr)","0.25","0.5","0.75","1","1.5","2","2.5","3","4","5","6","8","12","24"].map(item => item == "Time" ? <option value=''>{item}</option> : <option value={item}>{item}</option>)
+                                                                                }
+                                                                            </Input>
+                                                                        </FormGroup>
+                                                                    </Col>
+                                                                </Row>
+                                                                <div style={{ float: 'right', marginBottom: '0.5rem' }}>
+                                                                    <span>
+                                                                        {
+                                                                            this.isTimeChanged &&
+                                                                            <Button disabled={this.state.isApiUnderProgress} title="Undo" size="md" className="rp-rb-save-btn" onClick={() => /*this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain)*/this.getTcs(true, this.state.CardType, this.state.platform, null, null)} >
+                                                                                Undo
+                                                                            </Button>
+                                                                        }
+                                                                    </span>
+                                                                    <span>
+                                                                        {
+                                                                            this.isTimeChanged &&
+                                                                            <Button disabled={this.state.isApiUnderProgress} title="Save" size="md" className="rp-rb-save-btn" onClick={() => { this.popoverToggleTime(); this.toggleTime() }} >
+                                                                                Save
+                                                                            </Button>
+                                                                        }
+                                                                    </span>
+                                                                </div>
+                                                            </PopoverBody>
+                                                        </UncontrolledPopover>
+                                                    </span>
+                                                </div>
+                                            }
                                             <div style={{ width: '5rem', marginLeft: '1rem' }}>
                                                 <Button disabled={this.state.isApiUnderProgress} title="Only selected TCS will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.gridApi) {
@@ -2333,7 +2454,26 @@ class TestCasesAll extends Component {
                     <ModalFooter>
                         <Button color="primary" onClick={() => { this.toggleApplicable(); this.saveApplicable(); }}>Ok</Button>{' '}
                         {
-                            <Button color="secondary" onClick={() => this.toggleAllApplicable()}>Cancel</Button>
+                            <Button color="secondary" onClick={() => this.toggleApplicable()}>Cancel</Button>
+                        }
+                    </ModalFooter>
+                </Modal>
+                <Modal isOpen={this.state.multipleTimeChanges} toggle={() => this.toggleTime()}>
+                    {
+                        <ModalHeader toggle={() => this.toggleTime()}>{
+                            'Confirmation'
+                        }</ModalHeader>
+                    }
+                    <ModalBody>
+                        {
+                            `Are you sure you want to update multiple changes ?`
+                        }
+
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button color="primary" onClick={() => { this.toggleTime(); this.saveTime(); }}>Ok</Button>{' '}
+                        {
+                            <Button color="secondary" onClick={() => this.toggleTime()}>Cancel</Button>
                         }
                     </ModalFooter>
                 </Modal>

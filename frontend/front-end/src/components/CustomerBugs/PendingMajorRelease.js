@@ -407,14 +407,14 @@ class PendingMajorRelease extends Component {
                 bugColumnDefDictCR['QAName'],
                 bugColumnDefDictCR['QAValidatedDate'],
             ],
-            statusColumnCR:[
-                {id:1,value:'P1', isChecked: true},
-                {id:2,value:'P2', isChecked: true},
-                {id:3,value:'P3', isChecked: false},
-                {id:4,value:'P4', isChecked: false},
-                {id:4,value:'P5', isChecked: false},
-                {id:4,value:'P6', isChecked: false},
-            ],
+            // statusColumnCR:[
+            //     {id:1,value:'P1', isChecked: true},
+            //     {id:2,value:'P2', isChecked: true},
+            //     {id:3,value:'P3', isChecked: false},
+            //     {id:4,value:'P4', isChecked: false},
+            //     {id:4,value:'P5', isChecked: false},
+            //     {id:4,value:'P6', isChecked: false},
+            // ],
             defaultColDef: { resizable: true },
             modules: AllCommunityModules,
             frameworkComponents: {
@@ -447,20 +447,20 @@ class PendingMajorRelease extends Component {
     //     }
     //     return false;
     // }
-    handleAllCheckedStatusTCsCR = (event) => {
-        let statusColumnCR = this.state.statusColumnCR
-        statusColumnCR.forEach(columnName => columnName.isChecked = event.target.checked) 
-        this.setState({statusColumnCR: statusColumnCR})
-    }
+    // handleAllCheckedStatusTCsCR = (event) => {
+    //     let statusColumnCR = this.state.statusColumnCR
+    //     statusColumnCR.forEach(columnName => columnName.isChecked = event.target.checked)
+    //     this.setState({statusColumnCR: statusColumnCR})
+    // }
 
-    handleCheckChieldElementStatusTcsCR = (event) => {
-        let statusColumnCR = this.state.statusColumnCR
-        statusColumnCR.forEach(columnName => {
-            if (columnName.value === event.target.value)
-                columnName.isChecked =  event.target.checked
-        })
-        this.setState({statusColumnCR: statusColumnCR})
-    }
+    // handleCheckChieldElementStatusTcsCR = (event) => {
+    //     let statusColumnCR = this.state.statusColumnCR
+    //     statusColumnCR.forEach(columnName => {
+    //         if (columnName.value === event.target.value)
+    //             columnName.isChecked =  event.target.checked
+    //     })
+    //     this.setState({statusColumnCR: statusColumnCR})
+    // }
     onBugSelectionChangedCR = (event) => {
         this.setState({ bugSelectedRowsCR: event.api.getSelectedRows().length })
     }
