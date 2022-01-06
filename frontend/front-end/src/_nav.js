@@ -69,7 +69,7 @@ export default {
     },
     {
       name: 'Defect Reports',
-      url: '/release/customerTickets',
+      url: '/release/defectReports',
       icon: 'fa fa-bars',
     },
     {

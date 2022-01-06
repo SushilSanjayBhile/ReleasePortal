@@ -2221,7 +2221,7 @@ class TestCasesAllGUI extends Component {
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="select" id={`select_Status`} >
                                                                                 {
-                                                                                    ["Select Time(in hr)","0.25","0.5","0.75","1","1.5","2","2.5","3","4","5","6","8","12","24"].map(item => item == "Time" ? <option value=''>{item}</option> : <option value={item}>{item}</option>)
+                                                                                    ["Select Time(in hr)","0.1","0.25","0.5","0.75","1","1.5","2","2.5","3","4","5","6","8","12","24"].map(item => item == "Time" ? <option value=''>{item}</option> : <option value={item}>{item}</option>)
                                                                                 }
                                                                             </Input>
                                                                         </FormGroup>

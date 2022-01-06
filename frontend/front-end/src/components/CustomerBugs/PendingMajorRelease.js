@@ -19,16 +19,17 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
 import { element } from 'prop-types';
 import { CSVLink } from 'react-csv';
-const devManager = {"Abhay Singh":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi"],
-                          "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu"],
-                          "Rahul Soman":["Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Mayur Shinde", "Swapnil Shende", "Sandeep Zende"],
-                          "Sourabh Shukla":["Abhijeet Chavan", "Narendra Raigar"],
-                          "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan"],
+const devManager = {"Abhay Singh":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde"],
+                          "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende"],
+                          "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende"],
                           "Quentin Finck":["Quentin Finck"],
-                          "Vinod Lohar":["Diksha Tambe"],
                           "Arvind Krishnan":["Arvind Krishnan"],
-                          "NA":["NA"]
-        };
+                          "Unclassified":["Unclassified"]
+};
+const Ulist = ["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde",
+                "Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende",
+                "Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende",
+                "Quentin Finck", "Arvind Krishnan"]
 const QAs = {"Prachee Ahire":'', "Mukesh Shinde":'', "Chetan Noginahal":'', "Dinesh":'', "Rajat Gupta":'',
             "Shweta Burte":'', "Aditya Nilkanthwar":'', "Arati Jadhav":'', "Varsha Suryawanshi":'', "Priyanka Birajdar":'',
             "Ashutosh Das":'', "Yatish Devadiga":'', "Ketan Divekar":'', "Bharati Bhole":'', "Kiran Kothule":'', "Swapnil Sonawane":'',
@@ -52,7 +53,7 @@ class PendingMajorRelease extends Component {
         this.csvLink = React.createRef();
         let bugColumnDefDictCR = {
             'BugNo' : {
-                headerName: "Bug_No", field: "BugNo", sortable: true, filter: true,
+                headerName: "Bug No", field: "BugNo", sortable: true, filter: true,
                 editable: false,
                 width: '130',
                 cellRenderer: function(params) {
@@ -94,43 +95,43 @@ class PendingMajorRelease extends Component {
                 editable: false,
             },
             'QAName' : {
-                headerName: "QA_Name", field: "QAName", sortable: true, filter: true,
+                headerName: "QA Name", field: "QAName", sortable: true, filter: true,
                 width: '90',
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
             'ReportedBy' : {
-                headerName: "Reported_By", field: "ReportedBy", sortable: true, filter: true,
+                headerName: "Reported By", field: "ReportedBy", sortable: true, filter: true,
                 width: '90',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
             'Developer' : {
-                headerName: "Assigned_To", field: "Developer", sortable: true, filter: true,
+                headerName: "Assigned To", field: "Developer", sortable: true, filter: true,
                 width: '90',
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
             'DevManager' : {
-                headerName: "Dev_Manager", field: "DevManager", sortable: true, filter: true,
+                headerName: "Dev Manager", field: "DevManager", sortable: true, filter: true,
                 width: '90',
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
             'BuManager' :  {
-                headerName: "Bu_Manager", field: "BuManager", sortable: true, filter: true,
+                headerName: "Bu Manager", field: "BuManager", sortable: true, filter: true,
                 width: '90',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
             'ReportedDate' : {
-                headerName: "Reported_Date", field: "ReportedDate", sortable: true, filter: true,
+                headerName: "Reported Date", field: "ReportedDate", sortable: true, filter: true,
                 width: '100',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
             'OpenDays' : {
-                headerName: "Open_Days", field: "OpenDays", sortable: true, filter: true,
+                headerName: "Open Days", field: "OpenDays", sortable: true, filter: true,
                 width: '80',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -142,7 +143,7 @@ class PendingMajorRelease extends Component {
                 cellClass: 'cell-wrap-text',
             },
             'QAValidatedDate' : {
-                headerName: "QA_Validated_Date", field: "QAValidatedDate", sortable: true, filter: true,
+                headerName: "QA Validated Date", field: "QAValidatedDate", sortable: true, filter: true,
                 width: '100',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -171,13 +172,13 @@ class PendingMajorRelease extends Component {
         }
         let devmColumnDefDict = {
             'DevManager' : {
-                headerName: "Dev_Manager", field: "DevManager", sortable: true, filter: true,
+                headerName: "Dev Manager", field: "DevManager", sortable: true, filter: true,
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
             'WithDueDate' : {
-                headerName: "With_due_date", field: "WithDueDate", sortable: true, filter: true,
+                headerName: "With due date", field: "WithDueDate", sortable: true, filter: true,
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
@@ -186,14 +187,27 @@ class PendingMajorRelease extends Component {
                     let Manager = params.data.DevManager;
                     let assignee = '';
                     let list = devManager[Manager];
-                    if(list.length == 1){
-                        assignee = `assignee="${list[0]}"`;
+                    if (Manager == "Unclassified"){
+                        if(Ulist.length == 1){
+                            assignee = `assignee!="${Ulist[0]}"`;
+                        }
+                        else{
+                            for(let i = 0; i < Ulist.length - 1; i++){
+                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                            }
+                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                        }
                     }
                     else{
-                        for(let i = 0; i < list.length - 1; i++){
-                            assignee = assignee + `assignee="${list[i]}" OR `;
+                        if(list.length == 1){
+                            assignee = `assignee="${list[0]}"`;
                         }
-                        assignee = assignee + `assignee="${list[list.length -1]}"`;
+                        else{
+                            for(let i = 0; i < list.length - 1; i++){
+                                assignee = assignee + `assignee="${list[i]}" OR `;
+                            }
+                            assignee = assignee + `assignee="${list[list.length -1]}"`;
+                        }
                     }
                     assignee = encodeURIComponent(assignee);
                     let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
@@ -201,7 +215,7 @@ class PendingMajorRelease extends Component {
                 },
             },
             'WithOutDueDate' : {
-                headerName: "Without_Due_Date", field: "WithOutDueDate", sortable: true, filter: true,
+                headerName: "Without Due Date", field: "WithOutDueDate", sortable: true, filter: true,
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
@@ -210,14 +224,27 @@ class PendingMajorRelease extends Component {
                     let Manager = params.data.DevManager;
                     let list = devManager[Manager];
                     let assignee = '';
-                    if(list.length == 1){
-                        assignee = `assignee="${list[0]}"`;
+                    if (Manager == "Unclassified"){
+                        if(Ulist.length == 1){
+                            assignee = `assignee!="${Ulist[0]}"`;
+                        }
+                        else{
+                            for(let i = 0; i < Ulist.length - 1; i++){
+                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                            }
+                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                        }
                     }
                     else{
-                        for(let i = 0; i < list.length - 1; i++){
-                            assignee = assignee + `assignee="${list[i]}" OR `;
+                        if(list.length == 1){
+                            assignee = `assignee="${list[0]}"`;
                         }
-                        assignee = assignee + `assignee="${list[list.length -1]}"`;
+                        else{
+                            for(let i = 0; i < list.length - 1; i++){
+                                assignee = assignee + `assignee="${list[i]}" OR `;
+                            }
+                            assignee = assignee + `assignee="${list[list.length -1]}"`;
+                        }
                     }
                     assignee = encodeURIComponent(assignee);
                     let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
@@ -225,7 +252,7 @@ class PendingMajorRelease extends Component {
                 },
             },
             'PassedDueDate' : {
-                headerName: "Passed_Due_Date", field: "PassedDueDate", sortable: true, filter: true,
+                headerName: "Passed Due Date", field: "PassedDueDate", sortable: true, filter: true,
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
@@ -234,14 +261,27 @@ class PendingMajorRelease extends Component {
                     let Manager = params.data.DevManager;
                     let list = devManager[Manager];
                     let assignee = '';
-                    if(list.length == 1){
-                        assignee = `assignee="${list[0]}"`;
+                    if (Manager == "Unclassified"){
+                        if(Ulist.length == 1){
+                            assignee = `assignee!="${Ulist[0]}"`;
+                        }
+                        else{
+                            for(let i = 0; i < Ulist.length - 1; i++){
+                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                            }
+                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                        }
                     }
                     else{
-                        for(let i = 0; i < list.length - 1; i++){
-                            assignee = assignee + `assignee="${list[i]}" OR `;
+                        if(list.length == 1){
+                            assignee = `assignee="${list[0]}"`;
                         }
-                        assignee = assignee + `assignee="${list[list.length -1]}"`;
+                        else{
+                            for(let i = 0; i < list.length - 1; i++){
+                                assignee = assignee + `assignee="${list[i]}" OR `;
+                            }
+                            assignee = assignee + `assignee="${list[list.length -1]}"`;
+                        }
                     }
                     assignee = encodeURIComponent(assignee);
                     let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
@@ -259,14 +299,27 @@ class PendingMajorRelease extends Component {
                     let Manager = params.data.DevManager;
                     let list = devManager[Manager];
                     let assignee = '';
-                    if(list.length == 1){
-                        assignee = `assignee="${list[0]}"`;
+                    if (Manager == "Unclassified"){
+                        if(Ulist.length == 1){
+                            assignee = `assignee!="${Ulist[0]}"`;
+                        }
+                        else{
+                            for(let i = 0; i < Ulist.length - 1; i++){
+                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                            }
+                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                        }
                     }
                     else{
-                        for(let i = 0; i < list.length - 1; i++){
-                            assignee = assignee + `assignee="${list[i]}" OR `;
+                        if(list.length == 1){
+                            assignee = `assignee="${list[0]}"`;
                         }
-                        assignee = assignee + `assignee="${list[list.length -1]}"`;
+                        else{
+                            for(let i = 0; i < list.length - 1; i++){
+                                assignee = assignee + `assignee="${list[i]}" OR `;
+                            }
+                            assignee = assignee + `assignee="${list[list.length -1]}"`;
+                        }
                     }
                     assignee = encodeURIComponent(assignee);
                     let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20%3C%20now())%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
@@ -291,8 +344,14 @@ class PendingMajorRelease extends Component {
                     let keyData = params.data.Total;
                     let Product = params.data.Product
                     let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;                       
+                    if (Product == "Unclassified"){
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
+                    }
+                    else{
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
+                    }
                 },
             },
         }
@@ -304,7 +363,7 @@ class PendingMajorRelease extends Component {
                 editable: false,
             },
             'WithDueDate' : {
-                headerName: "With_due_date", field: "WithDueDate", sortable: true, filter: true,
+                headerName: "With Due Date", field: "WithDueDate", sortable: true, filter: true,
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
@@ -316,7 +375,7 @@ class PendingMajorRelease extends Component {
                 },
             },
             'WithOutDueDate' : {
-                headerName: "Without_Due_Date", field: "WithOutDueDate", sortable: true, filter: true,
+                headerName: "Without Due Date", field: "WithOutDueDate", sortable: true, filter: true,
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
@@ -328,7 +387,7 @@ class PendingMajorRelease extends Component {
                 },
             },
             'PassedDueDate' : {
-                headerName: "Passed_Due_Date", field: "PassedDueDate", sortable: true, filter: true,
+                headerName: "Passed Due Date", field: "PassedDueDate", sortable: true, filter: true,
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
@@ -498,11 +557,19 @@ class PendingMajorRelease extends Component {
     onDevmGridReady = params => {
         this.devmGridApi = params.api;
         this.devmGridColumnApi = params.columnApi;
+        const sortModelCR = [
+            {colId: 'DevManager', sort: 'asc'}
+        ];
+        this.devmGridApi.setSortModel(sortModelCR);
         params.api.sizeColumnsToFit();
     };
     onDevGridReady = params => {
         this.devGridApi = params.api;
         this.devGridColumnApi = params.columnApi;
+        const sortModelCR = [
+            {colId: 'Developer', sort: 'asc'}
+        ];
+        this.devGridApi.setSortModel(sortModelCR);
         params.api.sizeColumnsToFit();
     };
     gridOperations(enable) {
@@ -598,12 +665,10 @@ class PendingMajorRelease extends Component {
 
         let severityDictP1 = { Severity: "P1", Total: 0,}; //severityDictP2 = { Severity: "P2", Total: 0,}, severityDictP3 = { Severity: "P3", Total: 0,}, severityDictP4= { Severity: "P4", Total: 0,}, severityDictP5 = { Severity: "P5", Total: 0,}, severityDictP6 = {Severity: "P6", Total: 0,};
         //let product = {"Ultima Enterprise": {P1: 0, P2: 0, P3: 0,}, "Ultima Accelerator": {P1: 0, P2: 0, P3: 0,}, "Spektra": {P1: 0, P2: 0, P3: 0,}}
-        let product = {"Ultima Enterprise": {Total: 0}, "Ultima Accelerator": {Total: 0}, "Spektra": {Total: 0}}
+        let product = {"Ultima Enterprise": {Total: 0}, "Ultima Accelerator": {Total: 0}, "Spektra": {Total: 0}, "Unclassified": {Total: 0}}
         let devM = {"Abhay Singh":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Kshitij Gunjikar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
-                         "Rahul Soman":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Sourabh Shukla":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
-                         "Naveen Seth":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Quentin Finck":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
-                         "Vinod Lohar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Arvind Krishnan":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
-                         "NA":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},}
+                         "Naveen Seth":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Quentin Finck":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Arvind Krishnan":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
+                         "Unclassified":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},}
         let dev = {}
         for(let i = 0; i < this.allTCsToShow.length; i++){
 
@@ -626,7 +691,7 @@ class PendingMajorRelease extends Component {
 
             let developer = this.allTCsToShow[i]["fields"].assignee ? this.allTCsToShow[i]["fields"]["assignee"]["displayName"] : "NA"
             let devKeys = Object.keys(devManager)
-            let manager = "NA"
+            let manager = "Unclassified"
             devKeys.some(key => {
                 devManager[key].some(value => {
                     if(developer === value){
@@ -638,7 +703,7 @@ class PendingMajorRelease extends Component {
             if(developer == "NA"){
                 console.log("No developer Name-",developer, temp.BugNo)
             }
-            if(manager == "NA"){
+            if(manager == "Unclassified"){
                 console.log("No manager Name-",developer, temp.BugNo)
             }
             if(!QAs[temp.Developer] && !devDict[temp.Developer]){
@@ -732,6 +797,12 @@ class PendingMajorRelease extends Component {
                     
                 }
             })
+            if (temp.BU == "NA"){
+                if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
+                    console.log("unclassified-",temp.BugNo)
+                    product["Unclassified"]["Total"] = product["Unclassified"]["Total"] + 1
+                }
+            }
             if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
                 severityDictP1.Total =severityDictP1.Total + 1
             }

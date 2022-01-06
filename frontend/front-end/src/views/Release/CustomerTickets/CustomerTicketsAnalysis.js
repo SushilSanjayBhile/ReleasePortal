@@ -16,7 +16,7 @@ class CustomerTicketsAnalysis extends Component {
         return (
             <div>
                 {
-                    this.props.currentUser && (this.props.currentUser.isAdmin || this.props.currentUser.isExe) &&
+                    this.props.currentUser &&
                     <div>
                         {
                             <CustomerTickets></CustomerTickets>
@@ -28,12 +28,6 @@ class CustomerTicketsAnalysis extends Component {
                             <PendingPostRelease></PendingPostRelease>
                         }
                     </div >
-                }
-                {
-                    this.props.currentUser && (!this.props.currentUser.isAdmin && !this.props.currentUser.isExe) &&
-                    <div class="container" style={{ 'margin-top': '1rem' }}>
-                        <h5>You are not allowed to view this page.</h5>
-                    </div>
                 }
             </div>
         )
