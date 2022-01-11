@@ -187,31 +187,36 @@ class PendingMajorRelease extends Component {
                     let Manager = params.data.DevManager;
                     let assignee = '';
                     let list = devManager[Manager];
-                    if (Manager == "Unclassified"){
-                        if(Ulist.length == 1){
-                            assignee = `assignee!="${Ulist[0]}"`;
+                    if(Manager != "Total"){
+                        if (Manager == "Unclassified"){
+                            if(Ulist.length == 1){
+                                assignee = `assignee!="${Ulist[0]}"`;
+                            }
+                            else{
+                                for(let i = 0; i < Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                }
+                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                            }
                         }
                         else{
-                            for(let i = 0; i < Ulist.length - 1; i++){
-                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                            if(list.length == 1){
+                                assignee = `assignee="${list[0]}"`;
                             }
-                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                            else{
+                                for(let i = 0; i < list.length - 1; i++){
+                                    assignee = assignee + `assignee="${list[i]}" OR `;
+                                }
+                                assignee = assignee + `assignee="${list[list.length -1]}"`;
+                            }
                         }
+                        assignee = encodeURIComponent(assignee);
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
                     }
                     else{
-                        if(list.length == 1){
-                            assignee = `assignee="${list[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < list.length - 1; i++){
-                                assignee = assignee + `assignee="${list[i]}" OR `;
-                            }
-                            assignee = assignee + `assignee="${list[list.length -1]}"`;
-                        }
+                        return keyData;
                     }
-                    assignee = encodeURIComponent(assignee);
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;                       
                 },
             },
             'WithOutDueDate' : {
@@ -224,31 +229,36 @@ class PendingMajorRelease extends Component {
                     let Manager = params.data.DevManager;
                     let list = devManager[Manager];
                     let assignee = '';
-                    if (Manager == "Unclassified"){
-                        if(Ulist.length == 1){
-                            assignee = `assignee!="${Ulist[0]}"`;
+                    if(Manager != "Total"){
+                        if (Manager == "Unclassified"){
+                            if(Ulist.length == 1){
+                                assignee = `assignee!="${Ulist[0]}"`;
+                            }
+                            else{
+                                for(let i = 0; i < Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                }
+                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                            }
                         }
                         else{
-                            for(let i = 0; i < Ulist.length - 1; i++){
-                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                            if(list.length == 1){
+                                assignee = `assignee="${list[0]}"`;
                             }
-                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                            else{
+                                for(let i = 0; i < list.length - 1; i++){
+                                    assignee = assignee + `assignee="${list[i]}" OR `;
+                                }
+                                assignee = assignee + `assignee="${list[list.length -1]}"`;
+                            }
                         }
+                        assignee = encodeURIComponent(assignee);
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
                     }
                     else{
-                        if(list.length == 1){
-                            assignee = `assignee="${list[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < list.length - 1; i++){
-                                assignee = assignee + `assignee="${list[i]}" OR `;
-                            }
-                            assignee = assignee + `assignee="${list[list.length -1]}"`;
-                        }
+                        return keyData;
                     }
-                    assignee = encodeURIComponent(assignee);
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
                 },
             },
             'PassedDueDate' : {
@@ -261,32 +271,36 @@ class PendingMajorRelease extends Component {
                     let Manager = params.data.DevManager;
                     let list = devManager[Manager];
                     let assignee = '';
-                    if (Manager == "Unclassified"){
-                        if(Ulist.length == 1){
-                            assignee = `assignee!="${Ulist[0]}"`;
+                    if(Manager != "Total"){
+                        if (Manager == "Unclassified"){
+                            if(Ulist.length == 1){
+                                assignee = `assignee!="${Ulist[0]}"`;
+                            }
+                            else{
+                                for(let i = 0; i < Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                }
+                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                            }
                         }
                         else{
-                            for(let i = 0; i < Ulist.length - 1; i++){
-                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                            if(list.length == 1){
+                                assignee = `assignee="${list[0]}"`;
                             }
-                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                            else{
+                                for(let i = 0; i < list.length - 1; i++){
+                                    assignee = assignee + `assignee="${list[i]}" OR `;
+                                }
+                                assignee = assignee + `assignee="${list[list.length -1]}"`;
+                            }
                         }
+                        assignee = encodeURIComponent(assignee);
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
                     }
                     else{
-                        if(list.length == 1){
-                            assignee = `assignee="${list[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < list.length - 1; i++){
-                                assignee = assignee + `assignee="${list[i]}" OR `;
-                            }
-                            assignee = assignee + `assignee="${list[list.length -1]}"`;
-                        }
+                        return keyData;
                     }
-                    assignee = encodeURIComponent(assignee);
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
-                            
                 },
             },
             'Total' : {
@@ -299,32 +313,36 @@ class PendingMajorRelease extends Component {
                     let Manager = params.data.DevManager;
                     let list = devManager[Manager];
                     let assignee = '';
-                    if (Manager == "Unclassified"){
-                        if(Ulist.length == 1){
-                            assignee = `assignee!="${Ulist[0]}"`;
+                    if(Manager != "Total"){
+                        if (Manager == "Unclassified"){
+                            if(Ulist.length == 1){
+                                assignee = `assignee!="${Ulist[0]}"`;
+                            }
+                            else{
+                                for(let i = 0; i < Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                }
+                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                            }
                         }
                         else{
-                            for(let i = 0; i < Ulist.length - 1; i++){
-                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                            if(list.length == 1){
+                                assignee = `assignee="${list[0]}"`;
                             }
-                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                            else{
+                                for(let i = 0; i < list.length - 1; i++){
+                                    assignee = assignee + `assignee="${list[i]}" OR `;
+                                }
+                                assignee = assignee + `assignee="${list[list.length -1]}"`;
+                            }
                         }
+                        assignee = encodeURIComponent(assignee);
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20%3C%20now())%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
                     }
                     else{
-                        if(list.length == 1){
-                            assignee = `assignee="${list[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < list.length - 1; i++){
-                                assignee = assignee + `assignee="${list[i]}" OR `;
-                            }
-                            assignee = assignee + `assignee="${list[list.length -1]}"`;
-                        }
+                        return keyData;
                     }
-                    assignee = encodeURIComponent(assignee);
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20%3C%20now())%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
-                            
                 },
             },
         }
@@ -348,9 +366,12 @@ class PendingMajorRelease extends Component {
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
-                    else{
+                    else if(Product != "Total"){
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
+                    }
+                    else{
+                        return keyData;
                     }
                 },
             },
@@ -369,9 +390,14 @@ class PendingMajorRelease extends Component {
                 editable: false,
                 cellRenderer: function(params) {
                     let keyData = params.data.WithDueDate;
-                    let dev = encodeURIComponent(params.data.Developer.trim());
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;                       
+                    if (params.data.Developer.trim() != "Total"){
+                        let dev = encodeURIComponent(params.data.Developer.trim());
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
+                    }
+                    else{
+                        return keyData;
+                    }
                 },
             },
             'WithOutDueDate' : {
@@ -381,9 +407,14 @@ class PendingMajorRelease extends Component {
                 editable: false,
                 cellRenderer: function(params) {
                     let keyData = params.data.WithOutDueDate;
-                    let dev = encodeURIComponent(params.data.Developer.trim());
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
+                    if (params.data.Developer.trim() != "Total"){
+                        let dev = encodeURIComponent(params.data.Developer.trim());
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
+                    }
+                    else{
+                        return keyData;
+                    }
                 },
             },
             'PassedDueDate' : {
@@ -393,10 +424,14 @@ class PendingMajorRelease extends Component {
                 editable: false,
                 cellRenderer: function(params) {
                     let keyData = params.data.PassedDueDate;
-                    let dev = encodeURIComponent(params.data.Developer.trim());
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
-                            
+                    if (params.data.Developer.trim() != "Total"){
+                        let dev = encodeURIComponent(params.data.Developer.trim());
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
+                    }
+                    else{
+                        return keyData;
+                    }
                 },
             },
             'Total' : {
@@ -406,10 +441,14 @@ class PendingMajorRelease extends Component {
                 editable: false,
                 cellRenderer: function(params) {
                     let keyData = params.data.Total;
-                    let dev = encodeURIComponent(params.data.Developer.trim());
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20%3C%20now())%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
-                            
+                    if (params.data.Developer.trim() != "Total"){
+                        let dev = encodeURIComponent(params.data.Developer.trim());
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20%3C%20now())%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
+                    }
+                    else{
+                        return keyData;
+                    }
                 },
             },
         }
@@ -557,19 +596,19 @@ class PendingMajorRelease extends Component {
     onDevmGridReady = params => {
         this.devmGridApi = params.api;
         this.devmGridColumnApi = params.columnApi;
-        const sortModelCR = [
-            {colId: 'DevManager', sort: 'asc'}
-        ];
-        this.devmGridApi.setSortModel(sortModelCR);
+        // const sortModelCR = [
+        //     {colId: 'DevManager', sort: 'asc'}
+        // ];
+        // this.devmGridApi.setSortModel(sortModelCR);
         params.api.sizeColumnsToFit();
     };
     onDevGridReady = params => {
         this.devGridApi = params.api;
         this.devGridColumnApi = params.columnApi;
-        const sortModelCR = [
-            {colId: 'Developer', sort: 'asc'}
-        ];
-        this.devGridApi.setSortModel(sortModelCR);
+        // const sortModelCR = [
+        //     {colId: 'Developer', sort: 'asc'}
+        // ];
+        // this.devGridApi.setSortModel(sortModelCR);
         params.api.sizeColumnsToFit();
     };
     gridOperations(enable) {
@@ -840,24 +879,77 @@ class PendingMajorRelease extends Component {
         Object.keys(devManager).forEach(key => {
             this.manList.push(key)
         })
+        let prtotal = 0;
         Object.keys(product).forEach(key => {
             if(key != "NA"){
                 this.TicketsByProduct.push({Product: key, Total: product[key]["Total"]})
+                prtotal = prtotal + product[key]["Total"];
             }
         })
+        this.TicketsByProduct.push({Product: "Total", Total: prtotal})
+        let wd = 0, wod = 0, pd = 0, dtotal = 0;
         Object.keys(devM).forEach(key => {
             if(key != "NA"){
                 this.TicketsByDevManager.push({DevManager: key, WithDueDate: devM[key]["WithDueDate"], WithOutDueDate: devM[key]["WithOutDueDate"], PassedDueDate: devM[key]["PassedDueDate"], Total: devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"]})
+                wd = wd + devM[key]["WithDueDate"];
+                wod = wod + devM[key]["WithOutDueDate"];
+                pd = pd + devM[key]["PassedDueDate"];
+                dtotal = dtotal + devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"];
             }
         })
+        this.Sort(this.TicketsByDevManager, "devm");
+        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, Total: dtotal})
+        let dewd = 0, dewod = 0, depd = 0, detotal = 0;
         Object.keys(dev).forEach(key => {
             if(key != "NA"){
                 this.TicketsByDeveloper.push({Developer: key, WithDueDate: dev[key]["WithDueDate"], WithOutDueDate: dev[key]["WithOutDueDate"], PassedDueDate: dev[key]["PassedDueDate"], Total: dev[key]["WithDueDate"] + dev[key]["WithOutDueDate"]})
+                dewd = dewd + dev[key]["WithDueDate"];
+                dewod = dewod + dev[key]["WithOutDueDate"];
+                depd = depd + dev[key]["PassedDueDate"];
+                detotal = detotal + dev[key]["WithDueDate"] + dev[key]["WithOutDueDate"];
             }
         })
+        this.Sort(this.TicketsByDeveloper,"dev");
+        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, Total: detotal})
         this.TicketsBySeverity.push(severityDictP1)
         this.filterBugsCR(this.state.buisnessUnitCR, this.state.customerCR, this.state.managerCR, this.state.developerCR);
         //this.gridOperations(true);
+    }
+    Sort(list, flag){
+        let namelist = []
+        let devList = []
+        switch(flag){
+            case "dev":
+                list.forEach(ele =>{
+                    namelist.push(ele["Developer"])
+                })
+                namelist.sort();
+                namelist.forEach(ele => {
+                    list.some(item => {
+                        if(item["Developer"] == ele){
+                            devList.push(item)
+                        }
+                        return;
+                    })
+                })
+                this.TicketsByDeveloper = devList
+            break;
+            case "devm":
+                list.forEach(ele =>{
+                    namelist.push(ele["DevManager"])
+                })
+                namelist.sort();
+                namelist.forEach(ele => {
+                    list.some(item => {
+                        if(item["DevManager"] == ele){
+                            devList.push(item)
+                        }
+                        return;
+                    })
+                })
+                this.TicketsByDevManager = devList
+            break;
+        }
     }
     filterBugsCR(bu, cus, man, dev){
         if(bu == null && cus == null && man == null && dev == null){

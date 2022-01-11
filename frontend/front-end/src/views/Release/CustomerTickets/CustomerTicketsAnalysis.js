@@ -8,6 +8,7 @@ import '../QaReport/QaAnalysis.scss'
 import CustomerTickets from '../../../components/CustomerBugs/CustomerTickets';
 import PendingMajorRelease from '../../../components/CustomerBugs/PendingMajorRelease';
 import PendingPostRelease from '../../../components/CustomerBugs/PendingPostRelease';
+import NewClosedInQaTickets from '../../../components/CustomerBugs/NewClosedInQaTickets';
 class CustomerTicketsAnalysis extends Component {
     constructor(props) {
         super(props);
@@ -26,6 +27,9 @@ class CustomerTicketsAnalysis extends Component {
                         }
                         {
                             <PendingPostRelease></PendingPostRelease>
+                        }
+                        {
+                            <NewClosedInQaTickets></NewClosedInQaTickets>
                         }
                     </div >
                 }

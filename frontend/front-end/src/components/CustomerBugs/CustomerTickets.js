@@ -51,6 +51,7 @@ class CustomerTickets extends Component {
     constructor(props) {
         super(props);
         this.csvLink = React.createRef();
+        let self = this
         let bugColumnDefDictCR = {
             'BugNo' : {
                 headerName: "Bug No", field: "BugNo", sortable: true, filter: true,
@@ -148,6 +149,12 @@ class CustomerTickets extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+            'Active' : {
+                headerName: "Active", field: "Active", sortable: true, filter: true,
+                width: '100',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
         }
         let columnDefDict = {
             'Severity' : {
@@ -168,16 +175,19 @@ class CustomerTickets extends Component {
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20%3D%20customer%20AND%20labels%20%3D%20active)%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
-                    else{
+                    else if(priority != "Total"){
                         let priMap = {"P1": "Highest", "P2": "High"}
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20%3D%20customer%20AND%20labels%20%3D%20active)%20AND%20priority%20%3D%20${priMap[priority]}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
+                    else{
+                        return keyData;
+                    }
                 },
             },
             'Inactive' : {
-                headerName: "Inactive", field: "Inactive", sortable: true, filter: true,
-                width: '150',
+                headerName: "Closed For Customer", field: "Inactive", sortable: true, filter: true,
+                width: '200',
                 cellClass: 'cell-wrap-text',
                 editable: false,
                 cellRenderer: function(params) {
@@ -187,10 +197,13 @@ class CustomerTickets extends Component {
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20%3D%20customer%20AND%20labels%20!%3D%20active)%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
-                    else{
+                    else if(priority != "Total"){
                         let priMap = {"P1": "Highest", "P2": "High"}
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20%3D%20customer%20AND%20labels%20!%3D%20active)%20AND%20priority%20%3D%20${priMap[priority]}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
+                    }
+                    else{
+                        return keyData;
                     }
                 },
             },
@@ -210,13 +223,30 @@ class CustomerTickets extends Component {
                 cellRenderer: function(params) {
                     let keyData = params.data.P1;
                     let customer = params.data.Customer
-                    if (customer == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
+                    if(customer != "Total"){
+                        let label = ` AND labels not in (`
+                        if(self.cusList.length == 0){
+                            label = '';
+                        }
+                        else{
+                            for(let i = 0; i < self.cusList.length - 1; i++){
+                                label = label + `"customer-${self.cusList[i]}", `;
+                            }
+                            label = label + `"customer-${self.cusList[self.cusList.length -1]}") `;
+                            label = encodeURIComponent(label);
+                        }
+                        if (customer == "Unclassified"){
+                            //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            return newLink;
+                        }
+                        else{
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            return newLink;
+                        }
                     }
                     else{
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
+                        return keyData;
                     }
                 },
             },
@@ -228,13 +258,30 @@ class CustomerTickets extends Component {
                 cellRenderer: function(params) {
                     let keyData = params.data.P2;
                     let customer = params.data.Customer
-                    if (customer == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
+                    if(customer != "Total"){
+                        let label = ` AND labels not in (`
+                        if(self.cusList.length == 0){
+                            label = '';
+                        }
+                        else{
+                            for(let i = 0; i < self.cusList.length - 1; i++){
+                                label = label + `"customer-${self.cusList[i]}", `;
+                            }
+                            label = label + `"customer-${self.cusList[self.cusList.length -1]}") `;
+                            label = encodeURIComponent(label);
+                        }
+                        if (customer == "Unclassified"){
+                            //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            return newLink;
+                        }
+                        else{
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            return newLink;
+                        }
                     }
                     else{
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
+                        return keyData;
                     }
                 },
             },
@@ -246,13 +293,30 @@ class CustomerTickets extends Component {
                 cellRenderer: function(params) {
                     let keyData = params.data.P3;
                     let customer = params.data.Customer
-                    if (customer == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
+                    if(customer != "Total"){
+                        let label = ` AND labels not in (`
+                        if(self.cusList.length == 0){
+                            label = '';
+                        }
+                        else{
+                            for(let i = 0; i < self.cusList.length - 1; i++){
+                                label = label + `"customer-${self.cusList[i]}", `;
+                            }
+                            label = label + `"customer-${self.cusList[self.cusList.length -1]}") `;
+                            label = encodeURIComponent(label);
+                        }
+                        if (customer == "Unclassified"){
+                            //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            return newLink;
+                        }
+                        else{
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            return newLink;
+                        }
                     }
                     else{
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
+                        return keyData;
                     }
                 },
             },
@@ -264,13 +328,30 @@ class CustomerTickets extends Component {
                 cellRenderer: function(params) {
                     let keyData = params.data.Total;
                     let customer = params.data.Customer
-                    if (customer == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
+                    if(customer != "Total"){
+                        let label = ` AND labels not in (`
+                        if(self.cusList.length == 0){
+                            label = '';
+                        }
+                        else{
+                            for(let i = 0; i < self.cusList.length - 1; i++){
+                                label = label + `"customer-${self.cusList[i]}", `;
+                            }
+                            label = label + `"customer-${self.cusList[self.cusList.length -1]}") `;
+                            label = encodeURIComponent(label);
+                        }
+                        if (customer == "Unclassified"){
+                            //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            return newLink;
+                        }
+                        else{
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            return newLink;
+                        }
                     }
                     else{
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
+                        return keyData;
                     }
                 },
             },
@@ -292,31 +373,36 @@ class CustomerTickets extends Component {
                     let Manager = params.data.DevManager;
                     let assignee = '';
                     let list = devManager[Manager];
-                    if (Manager == "Unclassified"){
-                        if(Ulist.length == 1){
-                            assignee = `assignee!="${Ulist[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < Ulist.length - 1; i++){
-                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                    if(Manager != "Total"){
+                        if (Manager == "Unclassified"){
+                            if(Ulist.length == 1){
+                                assignee = `assignee!="${Ulist[0]}"`;
                             }
-                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
-                        }
-                    }
-                    else {
-                        if(list.length == 1){
-                            assignee = `assignee="${list[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < list.length - 1; i++){
-                                assignee = assignee + `assignee="${list[i]}" OR `;
+                            else{
+                                for(let i = 0; i < Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                }
+                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
                             }
-                            assignee = assignee + `assignee="${list[list.length -1]}"`;
                         }
+                        else {
+                            if(list.length == 1){
+                                assignee = `assignee="${list[0]}"`;
+                            }
+                            else{
+                                for(let i = 0; i < list.length - 1; i++){
+                                    assignee = assignee + `assignee="${list[i]}" OR `;
+                                }
+                                assignee = assignee + `assignee="${list[list.length -1]}"`;
+                            }
+                        }
+                        assignee = encodeURIComponent(assignee);
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
                     }
-                    assignee = encodeURIComponent(assignee);
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
+                    else{
+                        return keyData;
+                    }
                 },
             },
             'WithOutDueDate' : {
@@ -329,31 +415,36 @@ class CustomerTickets extends Component {
                     let Manager = params.data.DevManager;
                     let assignee = '';
                     let list = devManager[Manager];
-                    if (Manager == "Unclassified"){
-                        if(Ulist.length == 1){
-                            assignee = `assignee!="${Ulist[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < Ulist.length - 1; i++){
-                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                    if(Manager != "Total"){
+                        if (Manager == "Unclassified"){
+                            if(Ulist.length == 1){
+                                assignee = `assignee!="${Ulist[0]}"`;
                             }
-                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
-                        }
-                    }
-                    else {
-                        if(list.length == 1){
-                            assignee = `assignee="${list[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < list.length - 1; i++){
-                                assignee = assignee + `assignee="${list[i]}" OR `;
+                            else{
+                                for(let i = 0; i < Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                }
+                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
                             }
-                            assignee = assignee + `assignee="${list[list.length -1]}"`;
                         }
+                        else {
+                            if(list.length == 1){
+                                assignee = `assignee="${list[0]}"`;
+                            }
+                            else{
+                                for(let i = 0; i < list.length - 1; i++){
+                                    assignee = assignee + `assignee="${list[i]}" OR `;
+                                }
+                                assignee = assignee + `assignee="${list[list.length -1]}"`;
+                            }
+                        }
+                        assignee = encodeURIComponent(assignee);
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
                     }
-                    assignee = encodeURIComponent(assignee);
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
+                    else{
+                        return keyData;
+                    }
                 },
             },
             'PassedDueDate' : {
@@ -366,31 +457,36 @@ class CustomerTickets extends Component {
                     let Manager = params.data.DevManager;
                     let assignee = '';
                     let list = devManager[Manager];
-                    if (Manager == "Unclassified"){
-                        if(Ulist.length == 1){
-                            assignee = `assignee!="${Ulist[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < Ulist.length - 1; i++){
-                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                    if(Manager != "Total"){
+                        if (Manager == "Unclassified"){
+                            if(Ulist.length == 1){
+                                assignee = `assignee!="${Ulist[0]}"`;
                             }
-                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
-                        }
-                    }
-                    else {
-                        if(list.length == 1){
-                            assignee = `assignee="${list[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < list.length - 1; i++){
-                                assignee = assignee + `assignee="${list[i]}" OR `;
+                            else{
+                                for(let i = 0; i < Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                }
+                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
                             }
-                            assignee = assignee + `assignee="${list[list.length -1]}"`;
                         }
+                        else {
+                            if(list.length == 1){
+                                assignee = `assignee="${list[0]}"`;
+                            }
+                            else{
+                                for(let i = 0; i < list.length - 1; i++){
+                                    assignee = assignee + `assignee="${list[i]}" OR `;
+                                }
+                                assignee = assignee + `assignee="${list[list.length -1]}"`;
+                            }
+                        }
+                        assignee = encodeURIComponent(assignee);
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20%3C%20now()%20AND%20(${assignee})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
                     }
-                    assignee = encodeURIComponent(assignee);
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20%3C%20now()%20AND%20(${assignee})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
+                    else{
+                        return keyData;
+                    }
                 },
             },
             'Total' : {
@@ -403,31 +499,36 @@ class CustomerTickets extends Component {
                     let Manager = params.data.DevManager;
                     let assignee = '';
                     let list = devManager[Manager];
-                    if (Manager == "Unclassified"){
-                        if(Ulist.length == 1){
-                            assignee = `assignee!="${Ulist[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < Ulist.length - 1; i++){
-                                assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                    if(Manager != "Total"){
+                        if (Manager == "Unclassified"){
+                            if(Ulist.length == 1){
+                                assignee = `assignee!="${Ulist[0]}"`;
                             }
-                            assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
-                        }
-                    }
-                    else {
-                        if(list.length == 1){
-                            assignee = `assignee="${list[0]}"`;
-                        }
-                        else{
-                            for(let i = 0; i < list.length - 1; i++){
-                                assignee = assignee + `assignee="${list[i]}" OR `;
+                            else{
+                                for(let i = 0; i < Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                }
+                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
                             }
-                            assignee = assignee + `assignee="${list[list.length -1]}"`;
                         }
+                        else {
+                            if(list.length == 1){
+                                assignee = `assignee="${list[0]}"`;
+                            }
+                            else{
+                                for(let i = 0; i < list.length - 1; i++){
+                                    assignee = assignee + `assignee="${list[i]}" OR `;
+                                }
+                                assignee = assignee + `assignee="${list[list.length -1]}"`;
+                            }
+                        }
+                        assignee = encodeURIComponent(assignee);
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20%3C%20now())%20AND%20(${assignee})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
                     }
-                    assignee = encodeURIComponent(assignee);
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20%3C%20now())%20AND%20(${assignee})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
+                    else{
+                        return keyData;
+                    }
                 },
             },
         }
@@ -451,9 +552,12 @@ class CustomerTickets extends Component {
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra)%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
-                    else{
+                    else if(Product != "Total"){
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
+                    }
+                    else{
+                        return keyData;
                     }
                 },
             },
@@ -470,9 +574,12 @@ class CustomerTickets extends Component {
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra)%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
-                    else{
+                    else if(Product != "Total"){
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
+                    }
+                    else{
+                        return keyData;
                     }
                 },
             },
@@ -489,9 +596,12 @@ class CustomerTickets extends Component {
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra)%20AND%20priority%20%3D%20Lowest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
-                    else{
+                    else if(Product != "Total"){
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20(priority%20%3D%20Medium%20OR%20priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
+                    }
+                    else{
+                        return keyData;
                     }
                 },
             },
@@ -508,9 +618,12 @@ class CustomerTickets extends Component {
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
-                    else{
+                    else if(Product != "Total"){
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20labels%20%3D%20${proMap[Product]}%20%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
+                    }
+                    else{
+                        return keyData;
                     }
                 },
             },
@@ -529,9 +642,14 @@ class CustomerTickets extends Component {
                 editable: false,
                 cellRenderer: function(params) {
                     let keyData = params.data.WithDueDate;
-                    let dev = encodeURIComponent(params.data.Developer.trim());
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
+                    if (params.data.Developer.trim() != "Total"){
+                        let dev = encodeURIComponent(params.data.Developer.trim());
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
+                    }
+                    else{
+                        return keyData;
+                    }
                 },
             },
             'WithOutDueDate' : {
@@ -541,9 +659,14 @@ class CustomerTickets extends Component {
                 editable: false,
                 cellRenderer: function(params) {
                     let keyData = params.data.WithOutDueDate;
-                    let dev = encodeURIComponent(params.data.Developer.trim());
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
+                    if (params.data.Developer.trim() != "Total"){
+                        let dev = encodeURIComponent(params.data.Developer.trim());
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
+                    }
+                    else{
+                        return keyData;
+                    }
                 },
             },
             'PassedDueDate' : {
@@ -553,10 +676,14 @@ class CustomerTickets extends Component {
                 editable: false,
                 cellRenderer: function(params) {
                     let keyData = params.data.PassedDueDate;
-                    let dev = encodeURIComponent(params.data.Developer.trim());
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
-                            
+                    if (params.data.Developer.trim() != "Total"){
+                        let dev = encodeURIComponent(params.data.Developer.trim());
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
+                    }
+                    else{
+                        return keyData;
+                    }
                 },
             },
             'Total' : {
@@ -566,10 +693,14 @@ class CustomerTickets extends Component {
                 editable: false,
                 cellRenderer: function(params) {
                     let keyData = params.data.Total;
-                    let dev = encodeURIComponent(params.data.Developer.trim());
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20%3C%20now())%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;
-                            
+                    if (params.data.Developer.trim() != "Total"){
+                        let dev = encodeURIComponent(params.data.Developer.trim());
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20Customer%20%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20%3C%20now())%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        return newLink;
+                    }
+                    else{
+                        return keyData;
+                    }
                 },
             },
         }
@@ -637,6 +768,7 @@ class CustomerTickets extends Component {
                 bugColumnDefDictCR['ReportedBy'],
                 bugColumnDefDictCR['QAName'],
                 bugColumnDefDictCR['QAValidatedDate'],
+                bugColumnDefDictCR['Active'],
             ],
             statusColumnCR:[
                 {id:1,value:'P1', isChecked: true},
@@ -656,7 +788,6 @@ class CustomerTickets extends Component {
                 datePicker: DatePickerEditor
             },
         }
-        console.log("**",this.state.custom)
     }
     popoverToggle2CR = () => this.setState({ popoverOpen2CR: !this.state.popoverOpen2CR });
     popoverToggle1CR = () => this.setState({ popoverOpen1CR: !this.state.popoverOpen1CR });
@@ -728,10 +859,10 @@ class CustomerTickets extends Component {
     onCustGridReady = params => {
         this.custGridApi = params.api;
         this.custGridColumnApi = params.columnApi;
-        const sortModelCR = [
-            {colId: 'Customer', sort: 'asc'}
-        ];
-        this.custGridApi.setSortModel(sortModelCR);
+        // const sortModelCR = [
+        //     {colId: 'Customer', sort: 'asc', }
+        // ];
+        // this.custGridApi.setSortModel(sortModelCR);
         params.api.sizeColumnsToFit();
     };
     onProGridReady = params => {
@@ -742,19 +873,19 @@ class CustomerTickets extends Component {
     onDevmGridReady = params => {
         this.devmGridApi = params.api;
         this.devmGridColumnApi = params.columnApi;
-        const sortModelCR = [
-            {colId: 'DevManager', sort: 'asc'}
-        ];
-        this.devmGridApi.setSortModel(sortModelCR);
+        // const sortModelCR = [
+        //     {colId: 'DevManager', sort: 'asc'}
+        // ];
+        // this.devmGridApi.setSortModel(sortModelCR);
         params.api.sizeColumnsToFit();
     };
     onDevGridReady = params => {
         this.devGridApi = params.api;
         this.devGridColumnApi = params.columnApi;
-        const sortModelCR = [
-            {colId: 'Developer', sort: 'asc'}
-        ];
-        this.devGridApi.setSortModel(sortModelCR);
+        // const sortModelCR = [
+        //     {colId: 'Developer', sort: 'asc'}
+        // ];
+        // this.devGridApi.setSortModel(sortModelCR);
         params.api.sizeColumnsToFit();
     };
     gridOperations(enable) {
@@ -857,7 +988,7 @@ class CustomerTickets extends Component {
         today = today.toISOString().split("T")[0]
         const MS_PER_DAY = 1000 * 60 * 60 * 24
 
-        let severityDictP1 = { Severity: "P1", Active: 0, Inactive: 0}, severityDictP2 = { Severity: "P2", Active: 0, Inactive: 0}, severityDictP3 = { Severity: "P3", Active: 0, Inactive: 0}
+        let severityDictP1 = { Severity: "P1", Active: 0, Inactive: 0}, severityDictP2 = { Severity: "P2", Active: 0, Inactive: 0}, severityDictP3 = { Severity: "P3", Active: 0, Inactive: 0}, sevetiryDictTotal = {Severity: "Total", Active: 0, Inactive: 0}
         let customer = {"Unclassified": {P1: 0, P2: 0, P3: 0},}
         let product = {"Ultima Enterprise": {P1: 0, P2: 0, P3: 0,}, "Ultima Accelerator": {P1: 0, P2: 0, P3: 0,}, "Spektra": {P1: 0, P2: 0, P3: 0,}, "Unclassified": {P1: 0, P2: 0, P3: 0,}}
         let devM = {"Abhay Singh":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Kshitij Gunjikar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
@@ -883,6 +1014,7 @@ class CustomerTickets extends Component {
                 ReportedDate: this.allTCsToShow[i]["fields"]["created"].split("T")[0],
                 QAValidatedDate: "NA",
                 DevManager: "NA",
+                Active: "No",
             }
 
             let developer = this.allTCsToShow[i]["fields"].assignee ? this.allTCsToShow[i]["fields"]["assignee"]["displayName"] : "NA"
@@ -1039,6 +1171,7 @@ class CustomerTickets extends Component {
                     
                 }
                 else if(loLabel.includes("active")){
+                    temp.Active = 'Yes'
                     activeFlag = true;
                 }
             })
@@ -1116,39 +1249,119 @@ class CustomerTickets extends Component {
             }
             this.bugsToShowCR.push(temp)
         }
+        let P1 = 0, P2 = 0, P3 = 0, total = 0;
         Object.keys(customer).forEach(key => {
             if(key!= "NA"){
                 this.TicketsByCustomer.push({Customer: key, P1: customer[key]["P1"], P2: customer[key]["P2"], P3: customer[key]["P3"], Total: customer[key]["P1"] + customer[key]["P2"] + customer[key]["P3"]})
+                P1 = P1 + customer[key]["P1"];
+                P2 = P2 + customer[key]["P2"];
+                P3 = P3 + customer[key]["P3"];
+                total = total + customer[key]["P1"] + customer[key]["P2"] + customer[key]["P3"];
                 this.cusList.push(key)
             }
             else{
                 this.cusList.push(key)
             }
         })
+        this.Sort(this.TicketsByCustomer, "cus");
+        this.TicketsByCustomer.push({Customer: "Total", P1: P1, P2: P2, P3: P3, Total: total})
         Object.keys(devDict).forEach(key => {
             this.devList.push(key)
         })
         Object.keys(devManager).forEach(key => {
             this.manList.push(key)
         })
+        let Pr1 = 0, Pr2 = 0, Pr3 = 0, prtotal = 0;
         Object.keys(product).forEach(key => {
             if(key != "NA"){
                 this.TicketsByProduct.push({Product: key, P1: product[key]["P1"], P2: product[key]["P2"], P3: product[key]["P3"], Total: product[key]["P1"] + product[key]["P2"] + product[key]["P3"]})
+                Pr1 = Pr1 + product[key]["P1"];
+                Pr2 = Pr2 + product[key]["P2"];
+                Pr3 = Pr3 + product[key]["P3"];
+                prtotal = prtotal + product[key]["P1"] + product[key]["P2"] + product[key]["P3"];
             }
         })
+        this.TicketsByProduct.push({Product: "Total", P1: Pr1, P2: Pr2, P3: Pr3, Total: prtotal})
+        let wd = 0, wod = 0, pd = 0, dtotal = 0;
         Object.keys(devM).forEach(key => {
             if(key != "NA"){
                 this.TicketsByDevManager.push({DevManager: key, WithDueDate: devM[key]["WithDueDate"], WithOutDueDate: devM[key]["WithOutDueDate"], PassedDueDate: devM[key]["PassedDueDate"], Total: devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"]})
+                wd = wd + devM[key]["WithDueDate"];
+                wod = wod + devM[key]["WithOutDueDate"];
+                pd = pd + devM[key]["PassedDueDate"];
+                dtotal = dtotal + devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"];
             }
         })
+        this.Sort(this.TicketsByDevManager, "devm");
+        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, Total: dtotal})
+        let dewd = 0, dewod = 0, depd = 0, detotal = 0;
         Object.keys(dev).forEach(key => {
             if(key != "NA"){
                 this.TicketsByDeveloper.push({Developer: key, WithDueDate: dev[key]["WithDueDate"], WithOutDueDate: dev[key]["WithOutDueDate"], PassedDueDate: dev[key]["PassedDueDate"], Total: dev[key]["WithDueDate"] + dev[key]["WithOutDueDate"]})
+                dewd = dewd + dev[key]["WithDueDate"];
+                dewod = dewod + dev[key]["WithOutDueDate"];
+                depd = depd + dev[key]["PassedDueDate"];
+                detotal = detotal + dev[key]["WithDueDate"] + dev[key]["WithOutDueDate"];
             }
         })
-        this.TicketsBySeverity.push(severityDictP1, severityDictP2, severityDictP3)
+        this.Sort(this.TicketsByDeveloper,"dev");
+        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, Total: detotal})
+        sevetiryDictTotal["Active"] = severityDictP1["Active"] + severityDictP2["Active"] + severityDictP3["Active"]
+        sevetiryDictTotal["Inactive"] = severityDictP1["Inactive"] + severityDictP2["Inactive"] + severityDictP3["Inactive"]
+        this.TicketsBySeverity.push(severityDictP1, severityDictP2, severityDictP3, sevetiryDictTotal)
         this.filterBugsCR(this.state.buisnessUnitCR, this.state.customerCR, this.state.managerCR, this.state.developerCR);
         //this.gridOperations(true);
+    }
+    Sort(list, flag){
+        let namelist = []
+        let devList = []
+        switch(flag){
+            case "dev":
+                list.forEach(ele =>{
+                    namelist.push(ele["Developer"])
+                })
+                namelist.sort();
+                namelist.forEach(ele => {
+                    list.some(item => {
+                        if(item["Developer"] == ele){
+                            devList.push(item)
+                        }
+                        return;
+                    })
+                })
+                this.TicketsByDeveloper = devList
+            break;
+            case "devm":
+                list.forEach(ele =>{
+                    namelist.push(ele["DevManager"])
+                })
+                namelist.sort();
+                namelist.forEach(ele => {
+                    list.some(item => {
+                        if(item["DevManager"] == ele){
+                            devList.push(item)
+                        }
+                        return;
+                    })
+                })
+                this.TicketsByDevManager = devList
+            break;
+            case "cus":
+                list.forEach(ele =>{
+                    namelist.push(ele["Customer"])
+                })
+                namelist.sort();
+                namelist.forEach(ele => {
+                    list.some(item => {
+                        if(item["Customer"] == ele){
+                            devList.push(item)
+                        }
+                        return;
+                    })
+                })
+                this.TicketsByCustomer = devList
+            break;
+        }
     }
     filterBugsCR(bu, cus, man, dev){
         if(bu == null && cus == null && man == null && dev == null){
