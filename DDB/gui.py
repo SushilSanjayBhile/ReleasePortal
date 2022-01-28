@@ -761,8 +761,8 @@ def GET_TC_INFO_GUI_ID(request, Release, id, browserName, cardType):
 
         try:
             print("INSIDE TRY")
-            browserName = "NB"
-            print(browserName)
+            #browserName = "NB"
+            #print(browserName)
             infoData = TC_INFO_GUI.objects.using(Release).filter(TcID = id).get(CardType = cardType, BrowserName = browserName)
             print("AFTER TRY")
         except:
