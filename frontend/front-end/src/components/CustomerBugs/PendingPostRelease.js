@@ -1607,7 +1607,7 @@ getData(){
                                                 </div> 
                                             }
                                     </div>
-                                    <CSVLink style={{ textDecoration: 'none' }} data={this.state.sevstr} ref={this.csvLink} filename={'Tickets_Pending_Post_Release(SEV P2-P3)'} target="_blank"/>
+                                    <CSVLink style={{ textDecoration: 'none' }} data={this.state.sevstr} ref={this.csvLink} filename={'Tickets_Pending_Post_Release(SEV P2-P3).csv'} target="_blank"/>
                                     <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
                                         <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={(e) => {this.getData()}} >
                                                 Download All

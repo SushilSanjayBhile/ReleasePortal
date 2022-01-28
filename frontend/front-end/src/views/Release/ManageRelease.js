@@ -906,7 +906,7 @@ class ManageRelease extends Component {
             }
             this.setState({
                 platforms : this.platformList
-            })   
+            })
         })
         .catch(err=>{
             console.log("error")
@@ -927,7 +927,7 @@ class ManageRelease extends Component {
             }
             this.setState({
                 platformsGui : this.platformListGui
-            })   
+            })
         })
         .catch(err=>{
             console.log("error")
@@ -967,17 +967,15 @@ class ManageRelease extends Component {
             if (priority) url += ('&Priority=' + priority);
         }
         url += ('&WorkingStatus=' + 'Manual Assignee')
-        
         /*let str1 = ''
         this.state.tableColumnsTcs.forEach(item=>{
             if(item.isChecked == true){
                 str1 = str1 + item.value + ","
 
-            } 
+            }
         })
         */
         url += ('&applicable=' + "Applicable");
-        
         axios.get(url)
             .then(all => {
                 // Filters should not go away if data is reloaded
@@ -1021,17 +1019,15 @@ class ManageRelease extends Component {
             if (priority) url += ('&Priority=' + priority);
         }
         url += ('&WorkingStatus=' + 'Manual Assignee')
-        
         /*let str1 = ''
         this.state.tableColumnsTcs.forEach(item=>{
             if(item.isChecked == true){
                 str1 = str1 + item.value + ","
 
-            } 
+            }
         })
         */
         url += ('&applicable=' + "Applicable");
-        
         axios.get(url)
             .then(all => {
                 // Filters should not go away if data is reloaded
@@ -1080,18 +1076,15 @@ class ManageRelease extends Component {
                      this.state.showTc.push(this.ApplicableTcs[i])
                     }
             })
-            
         }
         let tempList = [...new Set(this.state.showTc)]
-        
         this.gridOperations(true);
         this.setState({displayTc: tempList})
         }
-        else{ 
+        else{
             if(this.state.allTCsToShow.length > 0) { this.gridOperations(true);}
             this.setState({displayTc: [], showTc: []})
         }
-       
     }
     getTcsToShowGui(){
         this.gridOperations(false);
@@ -1119,18 +1112,16 @@ class ManageRelease extends Component {
                      this.state.showTcGui.push(this.ApplicableTcsGui[i])
                     }
             })
-            
         }
         let tempList = [...new Set(this.state.showTcGui)]
         this.gridOperations(true);
         this.setState({displayTcGui: tempList})
         }
-        else{ 
+        else{
             if(this.state.allTCsToShowGui.length > 0) { this.gridOperations(true);}
             this.setState({displayTcGui: [], showTcGui: []})
 
         }
-        
     }
     resetRows(resetCount) {
         this.editedRows = {};
@@ -1182,7 +1173,6 @@ class ManageRelease extends Component {
           })
         }, error => {
             console.log("Error Getting release Info")
-          
         });
         //this.setState({displayTc: [],displayTcGui:[], showTc: [], showTcGui: []});this.getTcs();this.getTcsGui();this.getPlatformList();this.getPlatformListGui();this.resetPlatforms();
         //this.getTcs();this.getTcsGui();this.getPlatformList();this.getPlatformListGui();this.resetPlatforms();
@@ -1195,15 +1185,13 @@ class ManageRelease extends Component {
         //     }
         //     this.setState({
         //         platforms : this.platformList
-        //     })   
+        //     })
         // })
         // .catch(err=>{
         //     console.log("error")
         // })
 
     }
-
-    
     reset() {
         this.setState({
             release: this.props.allReleases[0] ? this.props.allReleases[0].ReleaseNumber : '',
@@ -1221,7 +1209,6 @@ class ManageRelease extends Component {
             });
         this.delToggle();
     }
-    
     confirm() {
         this.save();
     }
@@ -1296,7 +1283,7 @@ class ManageRelease extends Component {
        axios.post(`/api/release`, { ...data })
             .then(single => {
                 if(single.data){
-                    setTimeout(() => {  
+                    setTimeout(() => {
                         axios.put(url, formData)
                         .then(response=>{
                                 axios.post(`/api/cleanupdb`, { ...data })
@@ -1307,7 +1294,6 @@ class ManageRelease extends Component {
                                 .catch(err=>{
                                     console.log("err",err);
                                 })
-                            
                         })
                         .catch(error=>{
                             console.log("error creating release")
@@ -1321,7 +1307,7 @@ class ManageRelease extends Component {
             this.toggle();
         }
 
-    }   
+    }
     resetPlatforms() {
         this.platformList.forEach(element => {
                 element.isChecked = false;
@@ -1333,7 +1319,6 @@ class ManageRelease extends Component {
     }
     toggle = () => this.setState({ modal: !this.state.modal });
     delToggle = () => this.setState({ delModal: !this.state.delModal });
-    
     selectMultiselect(event, checked) {
         let value = event.val();
         let users = null;
@@ -1389,7 +1374,6 @@ class ManageRelease extends Component {
                 this.gridApi.hideOverlay();
             }
         }
-        
         let manualFilter = this.state.domain || this.state.subdomain || this.state.CardType || this.state.Priority || this.state.filterValue
         let pass = 0, fail = 0, notTested = 0, prioritySkip = 0, priorityNA = 0, prioritySkipAndTested = 0, automated = 0, total = 0;
 
@@ -1463,7 +1447,6 @@ class ManageRelease extends Component {
                 }
             }
             total = this.state.displayTc.length
-        
         }
         let pass2 = 0, fail2 = 0, notTested2 = 0, automated2 = 0, total2 = 0;
         if (/*this.state.selectedParentRelease &&*/ !manualFilter && this.state.displayTcGui.length > 0) {
@@ -1479,7 +1462,7 @@ class ManageRelease extends Component {
                     automated2+=1;
                 }
             }
-            total2 = this.state.displayTcGui.length        
+            total2 = this.state.displayTcGui.length
         }
         return (
             (
@@ -1502,9 +1485,7 @@ class ManageRelease extends Component {
                             }}></i> Delete</Button>
                         </Col>
                     </Row> */}
-                    
                     <Row>
-                        
                         <Col xs="12" sm="12" lg="10" className="rp-summary-tables" style={{overflow:"auto", marginLeft: '1rem', marginTop: '1rem' }}>
                             <div className='rp-app-table-header'>
                                 <span className='rp-app-table-title'>Add Release</span>
@@ -1526,7 +1507,7 @@ class ManageRelease extends Component {
                                             ].map(each => <FormGroup className='rp-app-table-value'>
                                                 <Input onChange={(e) => {
                                                     this.setState({selectedParentRelease: e.target.value},()=>{
-                                                        this.setState({displayTc: [],displayTcGui:[], showTc: [], showTcGui: []});this.getTcs();this.getTcsGui();this.getPlatformList();this.getPlatformListGui();this.getUserList();this.resetPlatforms();});
+                                                        this.setState({displayTc: [],displayTcGui:[], showTc: [], showTcGui: []});this.getPlatformList();this.getPlatformListGui();this.getUserList();this.resetPlatforms();});
                                                 }} type="select" id={`select_${each.labels}`}>
                                                     {
                                                         each.values.map(item => <option value={item.value}>{item.text}</option>)
@@ -1539,7 +1520,6 @@ class ManageRelease extends Component {
                                 </div>
                             </Col>
                         </Row>
-                            
                             {
                                 this.state.selectedParentRelease ?
                                 <Row>
@@ -1606,7 +1586,6 @@ class ManageRelease extends Component {
                                                 })
                                             }
                                         </tbody>
-                                       
                                     </Table>
                                         {
                                                 [
@@ -1679,7 +1658,6 @@ class ManageRelease extends Component {
                                             </tr> */}
                                         </tbody>
                                     </Table>
-                                    
                                             {/* <Row> */}
                                                 <Col xs="12" sm="12" md="15" lg="15">
                                                     <FormGroup className='rp-app-table-value'>
@@ -1708,11 +1686,9 @@ class ManageRelease extends Component {
                                                     </FormGroup>
                                                 </Col>
                                             {/* </Row> */}
-                                            
                                 </Col>
                             </Row> : null
                             }
-                            
 
                             {/* <Card>
                                 <CardHeader>
@@ -1731,7 +1707,6 @@ class ManageRelease extends Component {
                                     </div>
                                 </CardFooter>
                             </Card> */}
-                             
                         </Col>
                     </Row>
 
@@ -1774,7 +1749,6 @@ class ManageRelease extends Component {
                                                 <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
                                                 <span className='rp-app-table-title'>CLI</span>
                                                 {/* <span style={{ 'marginLeft': '2rem', fontWeight:'500', color: 'red'  }}>Table Showing Only Applicable TC's. To see Skip Or NA TC's Use Filter [<i class="fa fa-filter" aria-hidden="true"></i>] Below</span> */}
-                                                
                                                 {
                                                     this.state.cli &&
                                                     <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
@@ -1789,7 +1763,6 @@ class ManageRelease extends Component {
                             </div>
                             <Collapse isOpen={this.state.cli}>
                                 <div>
-                                    
                                     {/* <div style={{ width: '100%', height: ((window.screen.height * (1 - 0.248)) - 20) + 'px', marginBottom: '6rem' }}> */}
                                     <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                         <div class="test-header">
@@ -1842,7 +1815,6 @@ class ManageRelease extends Component {
                                                                 })
                                                                 }
                                                                 </ul>
-                                                                    
                                                                 <Button onClick={() => this.showSelectedTCs()}>Show Selected TC</Button>
                                                             </div>
                                                         </PopoverBody>
@@ -1862,7 +1834,6 @@ class ManageRelease extends Component {
                                                                     }
                                                                     </ul>
                                                                 <Button onClick={() => this.setSelectedColumns()}>Change Column View</Button>
-                                                            
                                                             </div>
                                                         </PopoverBody>
                                                     </UncontrolledPopover>
@@ -1915,7 +1886,6 @@ class ManageRelease extends Component {
                                                                                         })
                                                                                     }
                                                                                     this.setState({ multi: { ...this.state.multi, Priority: e.target.value } })
-                                                                                    
                                                                                     setTimeout(this.gridApi.redrawRows(), 0);
                                                                                 }} type="select" id={`select_Priority`} >
                                                                                 {
@@ -1936,7 +1906,6 @@ class ManageRelease extends Component {
                                                                                         })
                                                                                     }
                                                                                     this.setState({ multi: { ...this.state.multi, OS: e.target.value } })
-                                                                                    
                                                                                     setTimeout(this.gridApi.redrawRows(), 0);
                                                                                 }} type="select" id={`select_OS`} >
                                                                                 {
@@ -1962,7 +1931,7 @@ class ManageRelease extends Component {
                                                                                     {
                                                                                         ["Applicability","Applicable","NA","Skip"].map(item => <option value={item}>{item}</option>)
                                                                                     }
-                                                                                </Input> 
+                                                                                </Input>
                                                                             </FormGroup>
                                                                         </Col>
 
@@ -2006,12 +1975,11 @@ class ManageRelease extends Component {
                                                                                     this.setState({ multi: { ...this.state.multi, Build: e.target.value } })
                                                                                     setTimeout(this.gridApi.redrawRows(), 0);
                                                                                 }} type="text" id={`select_Build`} placeholder="Build No" >
-                                                                                </Input> 
+                                                                                </Input>
                                                                             </FormGroup>
                                                                         </Col>
 
                                                                     </Row>
-                                                                    
                                                                     {
                                                                         this.isBlockedOrFailed &&
                                                                         <Row>
@@ -2019,7 +1987,6 @@ class ManageRelease extends Component {
                                                                                     <FormGroup className='rp-app-table-value'>
                                                                                         <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Bugs} onChange={(e) => {
                                                                                             this.isAnyChanged = true;
-                                                                                            
                                                                                             let selectedRows = this.gridApi.getSelectedRows();
                                                                                             if (e.target.value && e.target.value !== '') {
                                                                                                 selectedRows.forEach(item => {
@@ -2037,7 +2004,6 @@ class ManageRelease extends Component {
                                                                     }
 
                                                                     <div style={{ float: 'right', marginBottom: '0.5rem' }}>
-                                                                        
                                                                         <span>
                                                                             {
                                                                                 this.isAnyChanged &&
@@ -2054,7 +2020,6 @@ class ManageRelease extends Component {
                                                                                 </Button>
                                                                             }
                                                                         </span>
-                                                                    
                                                                     </div>
                                                                 </PopoverBody>
                                                             </UncontrolledPopover>
@@ -2062,7 +2027,6 @@ class ManageRelease extends Component {
 
                                                     </div>
                                                 }
-                                                
                                                 {/* <div style={{ width: '5rem', marginLeft: '0.5rem' }}>
                                                     <Button disabled={this.state.isApiUnderProgress} title="Only selected TCS will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
                                                         if (this.gridApi) {
@@ -2114,7 +2078,6 @@ class ManageRelease extends Component {
                                             </div>
                                         </div>
                                         <div style={{ display: 'inline' }}>
-                                            
                                                 {
                                                     this.gridApi && this.gridApi.getSelectedRows().length > 0 ?
                                                 <div style={{ display: 'inline' }}>
@@ -2303,7 +2266,6 @@ class ManageRelease extends Component {
                                                 <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
                                                 <span className='rp-app-table-title'>GUI</span>
                                                 {/* <span style={{ 'marginLeft': '2rem', fontWeight:'500', color: 'red'  }}>Table Showing Only Applicable TC's. To see Skip Or NA TC's Use Filter [<i class="fa fa-filter" aria-hidden="true"></i>] Below</span> */}
-                                                
                                                 {
                                                     this.state.gui &&
                                                     <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
@@ -2316,10 +2278,8 @@ class ManageRelease extends Component {
 
                                 </div>
                             </div>
-            
                             <Collapse isOpen={this.state.gui}>
                                 <div>
-                                    
                                     {/* <div style={{ width: '100%', height: ((window.screen.height * (1 - 0.248)) - 20) + 'px', marginBottom: '6rem' }}> */}
                                     <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                         <div class="test-header">
@@ -2372,7 +2332,6 @@ class ManageRelease extends Component {
                                                                 })
                                                                 }
                                                                 </ul>
-                                                                    
                                                                 <Button onClick={() => this.showSelectedTCs()}>Show Selected TC</Button>
                                                             </div>
                                                         </PopoverBody>
@@ -2392,7 +2351,6 @@ class ManageRelease extends Component {
                                                                     }
                                                                     </ul>
                                                                 <Button onClick={() => this.setSelectedColumns()}>Change Column View</Button>
-                                                            
                                                             </div>
                                                         </PopoverBody>
                                                     </UncontrolledPopover>
@@ -2445,7 +2403,6 @@ class ManageRelease extends Component {
                                                                                         })
                                                                                     }
                                                                                     this.setState({ multi: { ...this.state.multi, Priority: e.target.value } })
-                                                                                    
                                                                                     setTimeout(this.gridApi.redrawRows(), 0);
                                                                                 }} type="select" id={`select_Priority`} >
                                                                                 {
@@ -2466,7 +2423,6 @@ class ManageRelease extends Component {
                                                                                         })
                                                                                     }
                                                                                     this.setState({ multi: { ...this.state.multi, OS: e.target.value } })
-                                                                                    
                                                                                     setTimeout(this.gridApi.redrawRows(), 0);
                                                                                 }} type="select" id={`select_OS`} >
                                                                                 {
@@ -2492,7 +2448,7 @@ class ManageRelease extends Component {
                                                                                     {
                                                                                         ["Applicability","Applicable","NA","Skip"].map(item => <option value={item}>{item}</option>)
                                                                                     }
-                                                                                </Input> 
+                                                                                </Input>
                                                                             </FormGroup>
                                                                         </Col>
 
@@ -2536,12 +2492,11 @@ class ManageRelease extends Component {
                                                                                     this.setState({ multi: { ...this.state.multi, Build: e.target.value } })
                                                                                     setTimeout(this.gridApi.redrawRows(), 0);
                                                                                 }} type="text" id={`select_Build`} placeholder="Build No" >
-                                                                                </Input> 
+                                                                                </Input>
                                                                             </FormGroup>
                                                                         </Col>
 
                                                                     </Row>
-                                                                    
                                                                     {
                                                                         this.isBlockedOrFailed &&
                                                                         <Row>
@@ -2549,7 +2504,6 @@ class ManageRelease extends Component {
                                                                                     <FormGroup className='rp-app-table-value'>
                                                                                         <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Bugs} onChange={(e) => {
                                                                                             this.isAnyChanged = true;
-                                                                                            
                                                                                             let selectedRows = this.gridApi.getSelectedRows();
                                                                                             if (e.target.value && e.target.value !== '') {
                                                                                                 selectedRows.forEach(item => {
@@ -2567,7 +2521,6 @@ class ManageRelease extends Component {
                                                                     }
 
                                                                     <div style={{ float: 'right', marginBottom: '0.5rem' }}>
-                                                                        
                                                                         <span>
                                                                             {
                                                                                 this.isAnyChanged &&
@@ -2584,7 +2537,6 @@ class ManageRelease extends Component {
                                                                                 </Button>
                                                                             }
                                                                         </span>
-                                                                    
                                                                     </div>
                                                                 </PopoverBody>
                                                             </UncontrolledPopover>
@@ -2592,7 +2544,6 @@ class ManageRelease extends Component {
 
                                                     </div>
                                                 }
-                                                
                                                 {/* <div style={{ width: '5rem', marginLeft: '0.5rem' }}>
                                                     <Button disabled={this.state.isApiUnderProgress} title="Only selected TCS will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
                                                         if (this.gridApi) {
@@ -2644,14 +2595,12 @@ class ManageRelease extends Component {
                                             </div>
                                         </div>
                                         <div style={{ display: 'inline' }}>
-                                          
                                                 <div style={{ display: 'inline' }}>
                                                     <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Pass: {pass2}</span>
                                                     <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Fail: {fail2}</span>
                                                     <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Automated: {automated2}</span>
                                                     <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {total2}</span>
                                                 </div>
-                                                
                                             <div style={{
                                                 float: 'right', display: this.state.isApiUnderProgress || this.state.CardType || this.state.domain || this.state.subDomain
                                                     //(this.props.tcStrategy && this.gridApi && this.props.tcStrategy.totalTests === this.gridApi.getModel().rowsToDisplay.length)
@@ -2805,7 +2754,7 @@ class ManageRelease extends Component {
                             </Collapse>
 
                         </Col>
-                    </Row>    
+                    </Row>
                 </div >
             )
         )

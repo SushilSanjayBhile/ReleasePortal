@@ -882,7 +882,6 @@ class TestCasesAllGUI extends Component {
         if (!this.props.selectedRelease.ReleaseNumber) {
             return;
         }
-       
         this.gridOperations(false);
         let url = `/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/browsername/${data.BrowserName}/cardType/${data.CardType}`
         axios.get(url)

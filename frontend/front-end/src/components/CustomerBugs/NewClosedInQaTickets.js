@@ -308,13 +308,13 @@ class NewClosedInQaTickets extends Component {
         })
     }
     getDefectsToShow(callPDefect){
-        let custDefectCount = {"New Defects": 0, "Defects Closed": 0, "Defects Pending Verification by SDET": 0};
-        let pendingMDefectCount = {"New Defects": 0, "Defects Closed": 0, "Defects Pending Verification by SDET": 0};
-        let pendingPDefectCount = {"New Defects": 0, "Defects Closed": 0, "Defects Pending Verification by SDET": 0};
+        let custDefectCount = {"New Defects": 0, "Defects Closed": 0, "Defects Pending Verification": 0};
+        let pendingMDefectCount = {"New Defects": 0, "Defects Closed": 0, "Defects Pending Verification": 0};
+        let pendingPDefectCount = {"New Defects": 0, "Defects Closed": 0, "Defects Pending Verification": 0};
         if(callPDefect == false) {
-            custDefectCount["Defects Pending Verification by SDET"] = this.TicketsBySeverity[2]["Total"]
-            pendingMDefectCount["Defects Pending Verification by SDET"] = this.TicketsByCustomer[2]["Total"]
-            pendingPDefectCount["Defects Pending Verification by SDET"] = this.TicketsByProduct[2]["Total"]
+            custDefectCount["Defects Pending Verification"] = this.TicketsBySeverity[2]["Total"]
+            pendingMDefectCount["Defects Pending Verification"] = this.TicketsByCustomer[2]["Total"]
+            pendingPDefectCount["Defects Pending Verification"] = this.TicketsByProduct[2]["Total"]
         }
         this.TicketsBySeverity = [];
         this.TicketsByCustomer = [];
@@ -373,7 +373,7 @@ class NewClosedInQaTickets extends Component {
                 let loLabel = label.toLowerCase()
                 if(loLabel.includes("customer-") || loLabel.includes("customer")) {
                     if(increaseCusDCount){
-                        custDefectCount["Defects Pending Verification by SDET"] = custDefectCount["Defects Pending Verification by SDET"] + 1
+                        custDefectCount["Defects Pending Verification"] = custDefectCount["Defects Pending Verification"] + 1
                         increaseCusDCount = false
                     }
                     let cusName = label.split("-")
@@ -385,10 +385,10 @@ class NewClosedInQaTickets extends Component {
                 }
             })
             if(this.allPendingDefectsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                pendingMDefectCount["Defects Pending Verification by SDET"] = pendingMDefectCount["Defects Pending Verification by SDET"] + 1
+                pendingMDefectCount["Defects Pending Verification"] = pendingMDefectCount["Defects Pending Verification"] + 1
             }
             else if(this.allPendingDefectsToShow[i]["fields"]["priority"]["name"] != "Highest"){
-                pendingPDefectCount["Defects Pending Verification by SDET"] = pendingPDefectCount["Defects Pending Verification by SDET"] + 1
+                pendingPDefectCount["Defects Pending Verification"] = pendingPDefectCount["Defects Pending Verification"] + 1
             }
         }
         Object.keys(custDefectCount).forEach(key => {

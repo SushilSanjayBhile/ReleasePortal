@@ -1087,7 +1087,7 @@ class CustomerTickets extends Component {
                         }
                         else{
                             if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                                customer[cusName[1]]["P1"] = customer[cusName[1]]["P1"] + 1                        
+                                customer[cusName[1]]["P1"] = customer[cusName[1]]["P1"] + 1
                             }
                             else if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
                                 customer[cusName[1]]["P2"] = customer[cusName[1]]["P2"] + 1
@@ -1148,7 +1148,6 @@ class CustomerTickets extends Component {
                     else{
                         console.log(this.allTCsToShow[i].key)
                     }
-                    
                 }
                 else if(loLabel.includes("spektra")) {
                     temp.BU = "Spektra"
@@ -1156,7 +1155,7 @@ class CustomerTickets extends Component {
                     if(sp == false){
                         sp = true
                         if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                            product["Spektra"]["P1"] = product["Spektra"]["P1"] + 1                        
+                            product["Spektra"]["P1"] = product["Spektra"]["P1"] + 1
                         }
                         else if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
                             product["Spektra"]["P2"] = product["Spektra"]["P2"] + 1
@@ -1168,7 +1167,6 @@ class CustomerTickets extends Component {
                     else{
                         console.log(this.allTCsToShow[i].key)
                     }
-                    
                 }
                 else if(loLabel.includes("active")){
                     temp.Active = 'Yes'
