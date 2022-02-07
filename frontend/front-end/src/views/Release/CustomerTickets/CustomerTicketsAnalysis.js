@@ -9,6 +9,7 @@ import CustomerTickets from '../../../components/CustomerBugs/CustomerTickets';
 import PendingMajorRelease from '../../../components/CustomerBugs/PendingMajorRelease';
 import PendingPostRelease from '../../../components/CustomerBugs/PendingPostRelease';
 import NewClosedInQaTickets from '../../../components/CustomerBugs/NewClosedInQaTickets';
+import Graphs from '../../../components/CustomerBugs/Graphs';
 class CustomerTicketsAnalysis extends Component {
     constructor(props) {
         super(props);
@@ -30,6 +31,9 @@ class CustomerTicketsAnalysis extends Component {
                         }
                         {
                             <NewClosedInQaTickets></NewClosedInQaTickets>
+                        }
+                        {
+                            <Graphs></Graphs>
                         }
                     </div >
                 }

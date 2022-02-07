@@ -451,7 +451,8 @@ app.use('/rest/AllOpenBugs', (req, res) => {
 }, err => { });
 
 app.use('/rest/AllOpenBugCountNoImprovement', (req, res) => {
-    var totalBugsStr = `/?jql=project+in+%28DWS%2C+SPEK%29+AND+issuetype+in+%28Bug%29+AND+status+in+%28%22In+Progress%22%2C+Info%2C+Open%2C+%22To+Do%22%29+ORDER+BY+created+DESC&maxResults=0`
+    //var totalBugsStr = `/?jql=project+in+%28DWS%2C+SPEK%29+AND+issuetype+in+%28Bug%29+AND+status+in+%28%22In+Progress%22%2C+Info%2C+Open%2C+%22To+Do%22%29+ORDER+BY+created+DESC&maxResults=0`
+    var totalBugsStr = `/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20ORDER%20BY%20created%20DESC&maxResults=0`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {
             loginJIRA().then(function () {
@@ -470,7 +471,8 @@ app.use('/rest/AllOpenBugCountNoImprovement', (req, res) => {
     })
 }, err => { });
 app.use('/rest/AllOpenBugsNoImprovement', (req, res) => {
-    var totalBugsStr = `/?jql=project+in+%28DWS%2C+SPEK%29+AND+issuetype+in+%28Bug%29+AND+status+in+%28%22In+Progress%22%2C+Info%2C+Open%2C+%22To+Do%22%29+ORDER+BY+created+DESC&maxResults=1000&startAt=${req.query.startAt}`
+    //var totalBugsStr = `/?jql=project+in+%28DWS%2C+SPEK%29+AND+issuetype+in+%28Bug%29+AND+status+in+%28%22In+Progress%22%2C+Info%2C+Open%2C+%22To+Do%22%29+ORDER+BY+created+DESC&maxResults=1000&startAt=${req.query.startAt}`
+    var totalBugsStr = `/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {
             loginJIRA().then(function () {
