@@ -38,7 +38,7 @@ class NewClosedInQaTickets extends Component {
     constructor(props) {
         super(props);
         this.csvLink = React.createRef();
-        let self = this
+        let self = this;
         let columnDefDict = {
             'Defects' : {
                 headerName: "Defects", field: "Defects", sortable: true, filter: true,
@@ -234,7 +234,7 @@ class NewClosedInQaTickets extends Component {
         this.allTCsToShow = [];
         this.allClosedDefectsToShow = [];
         this.allPendingDefectsToShow = [];
-        axios.get(`/rest/NewDefectsCount`,{params: {"sdate": sdate,"edate": edate,}}).then(all => {
+        axios.get(`/rest/NewDefectsCount`,{params: {"sdate": sdate,"edate": edate,"flag": "no",}}).then(all => {
             let MaxResult = all.data.total
             for(let i = 0; i <= MaxResult; i=i+100){
                 promises1.push(axios.get(`/rest/NewDefects`,{
@@ -242,6 +242,7 @@ class NewClosedInQaTickets extends Component {
                         "startAt": i,
                         "sdate": sdate,
                         "edate": edate,
+                        "flag": "no",
                     }
                 }).then(all => {
                     this.allTCsToShow = [...this.allTCsToShow, ...all.data.issues];
@@ -258,7 +259,7 @@ class NewClosedInQaTickets extends Component {
     }
     getClosedDefects(sdate, edate, callPDefect){
         let promises2 = []
-        axios.get(`/rest/ClosedDefectsCount`,{params: {"sdate": sdate,"edate": edate,}}).then(all => {
+        axios.get(`/rest/ClosedDefectsCount`,{params: {"sdate": sdate,"edate": edate,"flag": "no",}}).then(all => {
             let MaxResult = all.data.total
             for(let i = 0; i <= MaxResult; i=i+100){
                 promises2.push(axios.get(`/rest/ClosedDefects`,{
@@ -266,6 +267,7 @@ class NewClosedInQaTickets extends Component {
                         "startAt": i,
                         "sdate": sdate,
                         "edate": edate,
+                        "flag": "no",
                     }
                 }).then(all => {
                     this.allClosedDefectsToShow = [...this.allClosedDefectsToShow, ...all.data.issues];
