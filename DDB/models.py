@@ -290,8 +290,10 @@ class STRESS(models.Model):
 # UNIVERSAL DATABASE ENTITY
 class RELEASES(models.Model):
     ReleaseNumber = models.CharField(max_length = 50, blank = False, primary_key = True)
+    RelNum = models.CharField(max_length = 50, blank = True)
     CreationDate = models.DateTimeField(auto_now_add = True, blank = True,null = True)
     BuildNumberList = ArrayField(models.CharField(max_length = 50, blank = True), blank = True)
+    BuList = ArrayField(models.CharField(max_length = 50, blank = True), blank = True, default = list) #ex ultima,spektra,ultima-enterprise
     Engineers = ArrayField(models.CharField(max_length = 50, blank = True, null = True), blank = True, null = True)
     CardType = ArrayField(models.CharField(max_length = 100, blank = True), blank = True)
     PlatformsCli = ArrayField(models.CharField(max_length = 100, blank = True, default = "UNKNOWN"), blank = True, default = list)
@@ -299,6 +301,7 @@ class RELEASES(models.Model):
     ServerType = ArrayField(models.CharField(max_length = 100, blank = True), blank = True)
     SetupsUsed = ArrayField(models.CharField(max_length = 100, blank = True), blank = True)
     QAStartDate = models.DateTimeField(auto_now = False, blank = True, null=True)
+    QAEndDate = models.DateTimeField(auto_now = False, blank = True, null=True)
     TargetedReleaseDate = models.DateTimeField(auto_now = False, blank = True, null=True)
     ActualReleaseDate = models.DateTimeField(auto_now = False, blank = True, null=True)
     TargetedCodeFreezeDate = models.DateTimeField(auto_now = False, blank = True, null=True)
