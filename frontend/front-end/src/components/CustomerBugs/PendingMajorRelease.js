@@ -19,14 +19,14 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
 import { element } from 'prop-types';
 import { CSVLink } from 'react-csv';
-const devManager = {"Abhay Singh":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde"],
+const devManager = {"Vivek Gupta":["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde"],
                           "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende"],
                           "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende"],
                           "Quentin Finck":["Quentin Finck"],
                           "Arvind Krishnan":["Arvind Krishnan"],
                           "Unclassified":["Unclassified"]
 };
-const Ulist = ["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde",
+const Ulist = ["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde",
                 "Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende",
                 "Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende",
                 "Quentin Finck", "Arvind Krishnan"]
@@ -705,7 +705,7 @@ class PendingMajorRelease extends Component {
         let severityDictP1 = { Severity: "P1", Total: 0,}; //severityDictP2 = { Severity: "P2", Total: 0,}, severityDictP3 = { Severity: "P3", Total: 0,}, severityDictP4= { Severity: "P4", Total: 0,}, severityDictP5 = { Severity: "P5", Total: 0,}, severityDictP6 = {Severity: "P6", Total: 0,};
         //let product = {"Ultima Enterprise": {P1: 0, P2: 0, P3: 0,}, "Ultima Accelerator": {P1: 0, P2: 0, P3: 0,}, "Spektra": {P1: 0, P2: 0, P3: 0,}}
         let product = {"Ultima Enterprise": {Total: 0}, "Ultima Accelerator": {Total: 0}, "Spektra": {Total: 0}, "Unclassified": {Total: 0}}
-        let devM = {"Abhay Singh":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Kshitij Gunjikar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
+        let devM = {"Vivek Gupta":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Kshitij Gunjikar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
                          "Naveen Seth":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Quentin Finck":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Arvind Krishnan":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
                          "Unclassified":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},}
         let dev = {}
@@ -796,7 +796,7 @@ class PendingMajorRelease extends Component {
                 }
                 else if(loLabel.includes("ultima-software")) {
                     temp.BU = "Ultima Enterprise"
-                    temp.BuManager = "Abhay Singh"
+                    temp.BuManager = "Vivek Gupta"
                     if(ue == false){
                         if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
                             product["Ultima Enterprise"]["Total"] = product["Ultima Enterprise"]["Total"] + 1                        

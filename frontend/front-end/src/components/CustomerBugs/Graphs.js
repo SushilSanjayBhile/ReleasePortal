@@ -15,14 +15,14 @@ import NumericEditor from "../TestCasesAll/numericEditor";
 import SelectionEditor from '../TestCasesAll/selectionEditor';
 import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { Bar} from 'react-chartjs-2';
-import { Pie } from 'react-chartjs-2';
+import { Bar, Line, Pie} from 'react-chartjs-2';
 class Graphs extends Component {
     isApiUnderProgress = false;
     allTCsToShow = [];
     allClosedDefectsToShow = [];
     allPendingDefectsToShow = [];
-    week = [];
+    week = {};
+    lineweek = {};
     newOptions = {};
     cloOptions = {};
     xcord = [];
@@ -81,12 +81,14 @@ class Graphs extends Component {
             }
         }
         this.week = {New: { labels: [], datasets: [],}, Closed: { labels: [], datasets: [],}};
+        this.lineweek = {New: { labels: [], datasets: [],}, Closed: { labels: [], datasets: [],}};
         for (let i = 0; i < this.xcord.length ; i = i + 2) {
             let dlabel = `${new Date(this.xcord[i].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`+'-'+`${new Date(this.xcord[i+1].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`;
             this.week["New"]["labels"].push(dlabel)
             this.week["Closed"]["labels"].push(dlabel)
+            this.lineweek["New"]["labels"].push(dlabel)
+            this.lineweek["Closed"]["labels"].push(dlabel)
         }
-        console.log("this.week",this.week)
         this.pie1 = {
             labels: [],
             datasets: [ { data: [], backgroundColor: []}],
@@ -382,13 +384,10 @@ class Graphs extends Component {
                 pie1["SEVP2+"]["data"] = pie1["SEVP2+"]["data"] + 1
             }
         }
-        let data = {
-            New: [],
-            Closed: []
-        }
         Object.keys(week).forEach(type => {
             Object.keys(week[type]).forEach( ele => {
                 this.week[type]["datasets"].push({data: week[type][ele]["data"], label: ele, backgroundColor: week[type][ele]["backgroundColor"]})
+                this.lineweek[type]["datasets"].push({data: week[type][ele]["data"], fill: false, lineTension: 0, label: ele, borderColor: week[type][ele]["backgroundColor"]})
             })
         })
         Object.keys(pie1).forEach(key => {
@@ -403,6 +402,8 @@ class Graphs extends Component {
         })
         this.weekNew = this.week["New"]
         this.weekClo = this.week["Closed"]
+        this.lineweekNew = this.lineweek["New"]
+        this.lineweekClo = this.lineweek["Closed"]
         this.cusgridOperations(true);
     }
     render() {
@@ -442,9 +443,17 @@ class Graphs extends Component {
                                             </div>
                                         </div>
                                     </div>
-                                        {
+                                        {/* {
                                             !this.state.isApiUnderProgress &&
                                             <Bar options={this.newOptions} data={this.weekNew}/>
+                                        }
+                                        {
+                                            this.state.isApiUnderProgress &&
+                                            <span className='rp-app-table-value'>Loading...</span>
+                                        } */}
+                                        {
+                                            !this.state.isApiUnderProgress &&
+                                            <Line data={this.lineweekNew}/>
                                         }
                                         {
                                             this.state.isApiUnderProgress &&
@@ -461,9 +470,17 @@ class Graphs extends Component {
                                             </div>
                                         </div>
                                     </div>
-                                    {
+                                    {/* {
                                         !this.state.isApiUnderProgress &&
                                         <Bar options={this.cloOptions} data={this.weekClo}/>
+                                    }
+                                    {
+                                        this.state.isApiUnderProgress &&
+                                        <span className='rp-app-table-value'>Loading...</span>
+                                    } */}
+                                    {
+                                        !this.state.isApiUnderProgress &&
+                                        <Line data={this.lineweekClo}/>
                                     }
                                     {
                                         this.state.isApiUnderProgress &&

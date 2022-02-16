@@ -35,6 +35,7 @@ class ManageRelease extends Component {
     ApplicableTcs = [];
     ApplicableTcsGui = [];
     userList = [];
+    buList = ["ultima", "ultima-software", "spektra"]
     constructor(props) {
         super(props);
         let columnDefDict = {
@@ -57,7 +58,6 @@ class ManageRelease extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-                     
             'Description': {
                 headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '520',
@@ -66,7 +66,6 @@ class ManageRelease extends Component {
             },
             // 'CardType' : {
             //     headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-            
             //     cellEditor: 'selectionEditor',
             //     cellClass: 'cell-wrap-text',
             //     cellEditorParams: {
@@ -76,13 +75,11 @@ class ManageRelease extends Component {
             // },
             'CardType' : {
                 headerName: "Platforms", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-    
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
             'Build' :  {
                 headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-            
                 cellEditor: 'selectionEditor',
                 cellClass: 'cell-wrap-text',
                 cellEditorParams: {
@@ -90,10 +87,8 @@ class ManageRelease extends Component {
                     multiple: true
                 }
             },
-            
             'Status' : {
                 headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-            
                 cellEditor: 'selectionEditor',
                 cellClass: 'cell-wrap-text',
                 cellEditorParams: {
@@ -112,11 +107,10 @@ class ManageRelease extends Component {
             },
             'Priority' :  {
                 headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
-            }, 
+            },
             'Assignee' : {
                 headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
                 cellClass: 'cell-wrap-text',
-            
                 cellEditor: 'selectionEditor',
                 cellEditorParams: {
                     values: this.props.users.map(item => item.name)
@@ -142,13 +136,13 @@ class ManageRelease extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            'Steps' : { 
+            'Steps' : {
                 headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-          'Notes' : { 
+          'Notes' : {
                 headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
@@ -202,6 +196,7 @@ class ManageRelease extends Component {
             allTCsToShow: [],
             allTCsToShowGui: [],
             addUsers: [],
+            addBu: [],
 
             tableColumnsTcs: [
                 {id: 1, value: "Skip", isChecked: false},
@@ -300,7 +295,6 @@ class ManageRelease extends Component {
         let tableColumnsTcs = this.state.tableColumnsTcs
         tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked) 
         this.setState({tableColumnsTcs: tableColumnsTcs})
-        
     }
 
     handleCheckChieldElementTcs = (event) => {
@@ -311,9 +305,8 @@ class ManageRelease extends Component {
         })
         this.setState({tableColumnsTcs: tableColumnsTcs})
     }
-   
+
     showSelectedTCs = () =>{
-        
         this.getTcsToShow(this.props.selectedRelease.ReleaseNumber , true);
         this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, this.state.Priority);
         this.setState({ popoverOpen2: !this.state.popoverOpen2 });
@@ -353,7 +346,7 @@ class ManageRelease extends Component {
         this.setState({tableColumns: tableColumns})
     }
 
-    //Handle platform 
+    //Handle platform
     handleAllCheckedForPlatforms = (event) => {
         let platforms = this.state.platforms
         platforms.forEach(columnName => columnName.isChecked = event.target.checked) 
@@ -366,7 +359,7 @@ class ManageRelease extends Component {
         })
         this.getTcsToShow()
     }
-   
+
     handleCheckChieldElementForPlatforms = (event) => {
         let platforms = this.state.platforms
         platforms.forEach(columnName => {
@@ -380,8 +373,7 @@ class ManageRelease extends Component {
                 this.state.checkbox = true
             }
         })
-       
-        this.getTcsToShow();  
+        this.getTcsToShow();
     }
     handleAllCheckedForPlatformsGui = (event) => {
         let platforms = this.state.platformsGui
@@ -395,7 +387,7 @@ class ManageRelease extends Component {
         })
         this.getTcsToShowGui()
     }
-   
+
     handleCheckChieldElementForPlatformsGui = (event) => {
         let platforms = this.state.platformsGui
         platforms.forEach(columnName => {
@@ -409,8 +401,7 @@ class ManageRelease extends Component {
                 this.state.checkbox = true
             }
         })
-       
-        this.getTcsToShowGui();  
+        this.getTcsToShowGui();
     }
     setSelectedColumns = () => {
 
@@ -426,7 +417,6 @@ class ManageRelease extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-           
           'Description': {
               headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               width: '520',
@@ -435,13 +425,11 @@ class ManageRelease extends Component {
           },
           'CardType' : {
               headerName: "Platforms", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellClass: 'cell-wrap-text',
               editable: false
           },
           'Build' :  {
               headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
@@ -451,7 +439,6 @@ class ManageRelease extends Component {
           },
           'Status' : {
               headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
@@ -470,11 +457,10 @@ class ManageRelease extends Component {
           },
           'Priority' :  {
               headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
-          }, 
+          },
           'Assignee' : {
               headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
               cellClass: 'cell-wrap-text',
-        
               cellEditor: 'selectionEditor',
               cellEditorParams: {
                   values: this.props.users.map(item => item.name)
@@ -499,13 +485,13 @@ class ManageRelease extends Component {
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-          'Steps' : { 
+          'Steps' : {
               headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               width: '180',
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-          'Notes' : { 
+          'Notes' : {
             headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
             width: '180',
             editable: false,
@@ -538,7 +524,6 @@ class ManageRelease extends Component {
             cellClass: 'cell-wrap-text',
         },
         }
-        
         let tableColumns = this.state.tableColumns;
         let selectedColumns = []
         tableColumns.forEach(columnName => {
@@ -641,9 +626,8 @@ class ManageRelease extends Component {
             }
         }
     }
-    
+
     onRowSelected = (params) => {
-       
         if (this.gridApi) {
             if (params.column && params.column.colId !== "TcID") {
                 return false
@@ -1210,7 +1194,13 @@ class ManageRelease extends Component {
         this.delToggle();
     }
     confirm() {
-        this.save();
+        if (this.state.addBu.length == 0) {
+            alert('Please Select at least one Business Unit');
+            return;
+        }
+        else{
+            this.save();
+        }
     }
     confirmToggle() {
         let data = { ...this.props.selectedRelease, ...this.state.basic.updated }
@@ -1222,6 +1212,7 @@ class ManageRelease extends Component {
     }
     save() {
         let data = { ...this.props.selectedRelease, ...this.state.basic.updated }
+        data["BuList"] = this.state.addBu;
         let dates = [
             'TargetedReleaseDate', 'ActualReleaseDate', 'TargetedCodeFreezeDate',
             'UpgradeTestingStartDate', 'QAStartDate', 'ActualCodeFreezeDate', 'TargetedQAStartDate'
@@ -1235,7 +1226,7 @@ class ManageRelease extends Component {
         });
         data = { ...data, ...formattedDates };
         let arrays = [
-            'Platform','ServerType', 'CardType', 'BuildNumberList', 'SetupsUsed', 'UpgradeMetrics', 'Customers', 'Engineers',
+            'Platform','ServerType', 'CardType', 'BuildNumberList', 'SetupsUsed', 'UpgradeMetrics', 'Customers', 'Engineers', 'BuList'
         ]
         let formattedArrays = {};
         arrays.forEach(item => {
@@ -1304,8 +1295,8 @@ class ManageRelease extends Component {
                 alert('error in updating');
             });
             if (this.state.modal) {
-            this.toggle();
-        }
+                this.toggle();
+            }
 
     }
     resetPlatforms() {
@@ -1319,21 +1310,42 @@ class ManageRelease extends Component {
     }
     toggle = () => this.setState({ modal: !this.state.modal });
     delToggle = () => this.setState({ delModal: !this.state.delModal });
-    selectMultiselect(event, checked) {
+    selectMultiselect(field, event, checked) {
         let value = event.val();
-        let users = null;
-        if (checked && this.state.addUsers) {
-            users = [...this.state.addUsers, value];
+        switch (field) {
+            case 'Users':
+                let users = null;
+                if (checked && this.state.addUsers) {
+                    users = [...this.state.addUsers, value];
+                }
+                if (checked && !this.state.addUsers) {
+                    users = [value];
+                }
+                if (!checked && this.state.addUsers) {
+                    let array = this.state.addUsers;
+                    array.splice(array.indexOf(value), 1);
+                    users = array;
+                }
+                this.setState({ addUsers: users });
+                break;
+            case 'Bu':
+                let bu = null;
+                if (checked && this.state.addBu) {
+                    bu = [...this.state.addBu, value];
+                }
+                if (checked && !this.state.addBu) {
+                    bu = [value];
+                }
+                if (!checked && this.state.addBu) {
+                    let array = this.state.addBu;
+                    array.splice(array.indexOf(value), 1);
+                    bu = array;
+                }
+                this.setState({ addBu: bu });
+                break;
+            default:
+                break;
         }
-        if (checked && !this.state.addUsers) {
-            users = [value];
-        }
-        if (!checked && this.state.addUsers) {
-            let array = this.state.addUsers;
-            array.splice(array.indexOf(value), 1);
-            users = array;
-        }
-        this.setState({ addUsers: users });
     }
     render() {
         //let platforms = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli);
@@ -1346,7 +1358,8 @@ class ManageRelease extends Component {
         //console.log(subdomains)
         //alert("checking")
         let users = this.userList ? this.userList.map(item => ({ value: item, selected: this.state.addUsers && this.state.addUsers.includes(item) })) : [];
-        let multiselect = { 'Users': users};
+        let bu = this.buList ? this.buList.map(item => ({ value: item, selected: this.state.addBu && this.state.addBu.includes(item) })) : [];
+        let multiselect = { 'Users': users, 'Bu': bu};
         /*if (domains) {
             domains.sort();
         } else {
@@ -1529,6 +1542,7 @@ class ManageRelease extends Component {
                                             {
                                                 [
                                                     { key: 'Release Name', value: '', field: 'ReleaseNumber' },
+                                                    { key: 'Release Number', value: '', field: 'RelNum' },
                                                     { key: 'Operating System', value: '', field: 'FinalOS' },
                                                     { key: 'Docker Core RPM Number', value: '', field: 'FinalDockerCore' },
                                                     { key: 'Build Number', field: 'BuildNumber', value: '' },
@@ -1589,13 +1603,14 @@ class ManageRelease extends Component {
                                     </Table>
                                         {
                                                 [
-                                                    { field: 'Users', header: 'Users' }
+                                                    { field: 'Users', header: 'Users' },
+                                                    { field: 'Bu', header: 'Buisness Unit'}
                                                 ].map(item => (
                                                     <Col xs="10" md="10" lg="10">
                                                         <FormGroup className='rp-app-table-value'>
                                                             <Label  className='rp-app-table-label' htmlFor={item.field}>{item.header}</Label>
                                                                 {
-                                                                    <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(e, checked)}
+                                                                    <div><Multiselect buttonClass='rp-app-multiselect-button' onChange={(e, checked, select) => this.selectMultiselect(item.field, e, checked)}
                                                                     data={multiselect[item.field]} multiple /></div>
                                                                 }
                                                         </FormGroup>

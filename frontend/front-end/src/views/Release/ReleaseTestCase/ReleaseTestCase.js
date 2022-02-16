@@ -85,7 +85,7 @@ else{
 
     tempDateStartAPI = year +"-"+ month +"-"+ "01"
     tempDateEndAPI = year +"-"+ month +"-"+ dayInCurrentMonth
-   
+
     tempDateStartAPIGUI = year +"-"+ month +"-"+ "01"
     tempDateEndAPIGUI = year +"-"+ month +"-"+ dayInCurrentMonth
 
@@ -129,10 +129,9 @@ class ReleaseTestCase extends Component {
             overlayNoRowsTemplate: '<span class="ag-overlay-loading-center">No rows to show</span>',
             platformWiseDomain : [],
             platformWiseDomainGUI : [],
-           
+
             automationCountView : false,
             automationCountViewGUI : false,
-           
             automationCountWithRangeView : false,
             automationCountData : [],
             automationCountDataGUI : [],
@@ -149,16 +148,16 @@ class ReleaseTestCase extends Component {
 
             startDate : tempDateStartAPI,
             endDate : tempDateEndAPI,
-           
+
             startDateToShow : tempDateStart,
             endDateToShow : tempDateEnd,
 
             startDateGUI : tempDateStartAPIGUI,
             endDateGUI : tempDateEndAPIGUI,
-            
+
             startDateToShowGUI : tempDateStartGUI,
             endDateToShowGUI : tempDateEndGUI,
-            
+
             globalDate : false
         }
     }
@@ -214,9 +213,8 @@ class ReleaseTestCase extends Component {
         }
         this.toggle();
     }
-    
+
     sunburstClick(node) {
-       
         if (alldomains.includes(node.data.name)) {
             this.setState({ doughnuts: getTCStatusForUISubDomains(this.props.selectedRelease, node.data.name), domainSelected: false })
             return true;
@@ -252,7 +250,8 @@ class ReleaseTestCase extends Component {
 
     getReleaseData = () =>{
         this.setState({allTestCaseStatus:[]})
-        let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
+        //let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
+        let url  = `/api/release_all_info/releaseName/${this.props.selectedRelease.ReleaseNumber}`
         axios.get(url).then(res=>{
             let domainData =[]
             for (const [key, value] of Object.entries(res.data.TcAggregate.domain)) {
@@ -273,18 +272,18 @@ class ReleaseTestCase extends Component {
                 }
                 domainData.push(arr);
             }
-            
             this.setState({allTestCaseStatus:domainData})
         },
         error => {
             console.log('Error Getting Release Data',error);
-        }) 
+        })
     }
-    
+
     getReleaseDataCLI = () =>{
         let domainList = []
         this.setState({allTestCaseStatusCLI:[]})
-        let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
+        //let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
+        let url  = `/api/release_all_info/releaseName/${this.props.selectedRelease.ReleaseNumber}`
         axios.get(url).then(res=>{
             let domainData =[]
             if(res.data.TcAggregate['domain-cli']){
@@ -307,19 +306,19 @@ class ReleaseTestCase extends Component {
                     domainData.push(arr);
                 }
             }
-            
             this.setState({
                 allTestCaseStatusCLI:domainData,
             })
         },
         error => {
             console.log('Error Getting Release Data',error);
-        }) 
+        })
     }
-    
+
     getReleaseDataGUI = () =>{
         this.setState({allTestCaseStatusGUI:[]})
-        let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
+        //let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
+        let url  = `/api/release_all_info/releaseName/${this.props.selectedRelease.ReleaseNumber}`
         axios.get(url).then(res=>{
             let domainData =[]
             if(res.data.TcAggregate['domain-gui']){
@@ -346,7 +345,7 @@ class ReleaseTestCase extends Component {
         },
         error => {
             console.log('Error Getting Release Data',error);
-        }) 
+        })
     }
 
     subDomainByDomain(domainName){
@@ -379,8 +378,6 @@ class ReleaseTestCase extends Component {
             })
 
         })
-
-        
     }
 
 
@@ -391,10 +388,9 @@ class ReleaseTestCase extends Component {
         ) : (
             this.state.allSubDomainwiseStatus.map((e, i) => {
             return (
-                        <tr key={i}> 
+                        <tr key={i}>
                             {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
                                 <a href='#' style={{color: 'green'}}>{e.Domain}</a>
-                               
                             </td> */}
                             <td>
                                 {e.subDomain}
@@ -404,7 +400,7 @@ class ReleaseTestCase extends Component {
                             <td>{e.autoBlocked + e.manualBlocked}</td>
                             <td>{e.NotTested}</td>
                             <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
-                        </tr>    
+                        </tr>
                 );
             })
         )
@@ -418,10 +414,9 @@ class ReleaseTestCase extends Component {
         ) : (
             this.state.allTestCaseStatus.map((e, i) => {
             return (
-                        <tr key={i}> 
+                        <tr key={i}>
                             {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
                                 <a href='#' style={{color: 'green'}}>{e.Domain}</a>
-                               
                             </td> */}
                             <td>
                                 {e.Domain}
@@ -431,20 +426,19 @@ class ReleaseTestCase extends Component {
                             <td>{e.autoBlocked + e.manualBlocked}</td>
                             <td>{e.NotTested}</td>
                             <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
-                        </tr>    
+                        </tr>
                 );
             })
         )
     }
 
     renderTableDataCLI  = () => {
-        
         return this.state.allTestCaseStatusCLI === 0 ? (
             <div>Loading...</div>
         ) : (
             this.state.allTestCaseStatusCLI.map((e, i) => {
             return (
-                        <tr key={i}> 
+                        <tr key={i}>
                             <td onClick={() => this.subDomainByDomain(e.Domain)}>
                                 <a href='#' style={{color: 'green'}}>{e.Domain}</a>
                             </td>
@@ -456,20 +450,19 @@ class ReleaseTestCase extends Component {
                             <td>{e.autoBlocked + e.manualBlocked}</td>
                             <td>{e.NotTested}</td>
                             <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
-                        </tr>    
+                        </tr>
                 );
             })
         )
     }
 
     renderTableDataGUI  = () => {
-        
         return this.state.allTestCaseStatusGUI === 0 ? (
             <div>Loading...</div>
         ) : (
             this.state.allTestCaseStatusGUI.map((e, i) => {
             return (
-                        <tr key={i}> 
+                        <tr key={i}>
                             {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
                                 <a href='#' style={{color: 'green'}}>{e.Domain}</a>
                             </td> */}
@@ -482,18 +475,15 @@ class ReleaseTestCase extends Component {
                             <td>{e.autoBlocked + e.manualBlocked}</td>
                             <td>{e.NotTested}</td>
                             <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
-                        </tr>    
-                ); 
+                        </tr>
+                );
             })
         )
-        
     }
 
     getAutomationCountDataWithRange = (startDate,endDate,intf) =>{
-        
         let tempList = []
         let tempListGUI = []
-        
         axios.get('/api/automation/',{
             params: {
                 startdate:startDate,
@@ -540,7 +530,6 @@ class ReleaseTestCase extends Component {
     }
 
     getTestCountDataWithRange = (startDate, endDate, intf) =>{
-        
         let tempList = []
         let tempListGUI = []
         if(intf === "CLI") {
@@ -553,7 +542,6 @@ class ReleaseTestCase extends Component {
             })
             .then(response=>{
                 let data = response.data
-                
                 let keys = Object.keys(data)
                 // keys.forEach(key =>{
                 //     let keysofkeys = Object.keys(data[key])
@@ -598,7 +586,6 @@ class ReleaseTestCase extends Component {
             })
             .then(response=>{
                 let data = response.data
-                
                 let keys = Object.keys(data)
                 // keys.forEach(key =>{
                 //     let keysofkeys = Object.keys(data[key])
@@ -628,13 +615,11 @@ class ReleaseTestCase extends Component {
                 this.setState({
                     testCountDataWithRangeForGUI : tempListGUI
                   })
-                
             })
             .catch(error=>{
                 console.log("Error",error)
             })
         }
-         
     }
 
 
@@ -656,7 +641,7 @@ class ReleaseTestCase extends Component {
 
                 })
             })
-            dataObj.map((item)=>{     
+            dataObj.map((item)=>{
             //response.data.Data.map((item)=>{
                 automation_perc = 0
                 if(item.Total_TCs > 0){
@@ -672,7 +657,6 @@ class ReleaseTestCase extends Component {
                     "Automated_TCs" : item.Automated_TCs,
                     "Automation_Perc" : automation_perc
                 })
-               
             })
               this.setState({
                 automationCountDataGUI : tempList
@@ -705,7 +689,6 @@ class ReleaseTestCase extends Component {
                     })
                 }
             })
-             
             this.setState({
                 platformWiseDomainGUI : tempListByDomain
             })
@@ -734,7 +717,7 @@ class ReleaseTestCase extends Component {
                 })
             })
             console.log(dataObj)
-            dataObj.map((item)=>{            
+            dataObj.map((item)=>{
             //response.data.Data.map((item)=>{
                     automation_perc = 0
                     if(item.Total_TCs > 0){
@@ -750,7 +733,6 @@ class ReleaseTestCase extends Component {
                         "Automated_TCs" : item.Automated_TCs,
                         "Automation_Perc" : automation_perc
                     })
-               
             })
               this.setState({
                 automationCountData : tempList
@@ -783,7 +765,6 @@ class ReleaseTestCase extends Component {
                     })
                 }
             })
-             
             this.setState({
                 platformWiseDomain : tempListByDomain
             })
@@ -799,7 +780,7 @@ class ReleaseTestCase extends Component {
         ) : (
             this.state.automationCountDataGUI.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td onClick={() => this.selectedPlatformNameGUI(e.Platform)}>
                             <a href='#' style={{color: 'green'}}>{e.Platform}</a>
                         </td>
@@ -813,8 +794,8 @@ class ReleaseTestCase extends Component {
                         <td>{e.Total_TCs}</td>
                         <td>{e.Automated_TCs}</td>
                         <td>{e.Automation_Perc.toFixed(0)}%</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
@@ -825,7 +806,7 @@ class ReleaseTestCase extends Component {
         ) : (
             this.state.platformWiseDomainGUI.map((e, i) => {
                 return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td>
                             {e.Domain}
                         </td>
@@ -836,8 +817,8 @@ class ReleaseTestCase extends Component {
                         <td>{e.Total_TCs}</td>
                         <td>{e.Automated_TCs}</td>
                         <td>{e.Automation_Perc.toFixed(0)}%</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
@@ -848,7 +829,7 @@ class ReleaseTestCase extends Component {
         ) : (
             this.state.automationCountData.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td onClick={() => this.selectedPlatformName(e.Platform)}>
                             <a href='#' style={{color: 'green'}}>{e.Platform}</a>
                         </td>
@@ -862,8 +843,8 @@ class ReleaseTestCase extends Component {
                         <td>{e.Total_TCs}</td>
                         <td>{e.Automated_TCs}</td>
                         <td>{e.Automation_Perc.toFixed(0)}%</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
@@ -874,7 +855,7 @@ class ReleaseTestCase extends Component {
         ) : (
             this.state.platformWiseDomain.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td>
                             {e.Domain}
                         </td>
@@ -885,8 +866,8 @@ class ReleaseTestCase extends Component {
                         <td>{e.Total_TCs}</td>
                         <td>{e.Automated_TCs}</td>
                         <td>{e.Automation_Perc.toFixed(0)}%</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
@@ -897,15 +878,15 @@ class ReleaseTestCase extends Component {
         ) : (
             this.state.automationCountDataWithRange.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td width="140px" height="50px">{e.DateRange}</td>
                         <td>{e.TotalCli}</td>
                         <td>{e.Increase_In_Total}</td>
                         <td>{e.AutomatedCli}</td>
                         <td>{e.Increase_In_Automation}</td>
                         <td>{e.Automation_Perc}%</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
@@ -916,71 +897,69 @@ class ReleaseTestCase extends Component {
         ) : (
             this.state.automationCountDataWithRangeForGUI.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td width="140px" height="50px">{e.DateRange}</td>
                         <td>{e.TotalGui}</td>
                         <td>{e.Increase_In_Total}</td>
-                        
                         <td>{e.AutomatedGui}</td>
                         <td>{e.Increase_In_Automation}</td>
-                        
                         <td>{e.Automation_Perc}%</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
 
     renderTableDataForTestCountWithRange = () =>{
         return this.state.testCountDataWithRange.length == 0 ? (
-            <tr> 
+            <tr>
                 Lodaing...
-            </tr>    
+            </tr>
         ) : (
             this.state.testCountDataWithRange.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td width="140px" height="50px">{e.Release}</td>
                         <td width="140px" height="50px">{e.Total}</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
 
     renderTableDataForTestCountWithRangeForGUI = () =>{
         return this.state.testCountDataWithRangeForGUI.length == 0 ? (
-            <tr> 
+            <tr>
                 Lodaing...
-            </tr> 
+            </tr>
         ) : (
             this.state.testCountDataWithRangeForGUI.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td width="140px" height="50px">{e.Release}</td>
                         <td width="140px" height="50px">{e.Total}</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
 
     renderTableDataForJiraBugData = () =>{
         return this.state.jiraBugData.length == 0 ? (
-            <tr> 
+            <tr>
                 Lodaing...
-            </tr> 
+            </tr>
         ) : (
             this.state.jiraBugData.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td width="140px" height="50px">{e.Release}</td>
                         <td width="140px" height="50px">{e.Total}</td>
                         <td width="140px" height="50px">{e.Close}</td>
                         <td width="140px" height="50px">{e.CustomerBug}</td>
                         <td width="140px" height="50px">{e.Open}</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
@@ -993,7 +972,7 @@ class ReleaseTestCase extends Component {
             this.globalDate = 1
         })
     }
-    
+
     selectedEndDate = (endDate) =>{
         tempDateEnd = endDate['EndDate']
         this.setState({
@@ -1009,7 +988,7 @@ class ReleaseTestCase extends Component {
             startDateGUI : tempDateStartGUI,
         })
     }
-    
+
     selectedEndDateGUI = (endDate) =>{
         tempDateEndGUI = endDate['EndDate1']
         this.setState({
@@ -1027,7 +1006,7 @@ class ReleaseTestCase extends Component {
             this.globalDate = 1
         })
     }
-    
+
     testSelectedEndDateCLI = (endDate) =>{
         ttempDateEnd = endDate['tEndDate']
         this.setState({
@@ -1045,13 +1024,12 @@ class ReleaseTestCase extends Component {
             tstartDateGUI : ttempDateStartGUI,
         })
     }
-    
+
     testSelectedEndDateGUI = (endDate) =>{
         ttempDateEndGUI = endDate['tEndDate1']
         this.setState({
             tendDateGUI : ttempDateEndGUI,
             testCountDataWithRangeForGUI : []
-            
         },()=>{
             //this.getTestCountDataWithRange(this.state.tstartDateGUI,this.state.tendDateGUI,'GUI');
             this.getTestCountDataWithRange(this.state.tstartDateGUI, this.state.tendDateGUI, 'GUI');
@@ -1089,7 +1067,6 @@ class ReleaseTestCase extends Component {
 
                             let totalurl = element[key][12]["markup"]
                             let totalBugCount = parseInt(totalurl.split(">")[1].split("<")[0],10)
-                                                     
                             output.push({
                                     "Release": element[key][0]["markup"],
                                     "Open": openBugCount + todoBugCount + inpgBugCount,
@@ -1104,9 +1081,8 @@ class ReleaseTestCase extends Component {
                 axios.get(`/rest/cbug`)
                 .then(res => {
                     let data = res.data.searchResultTotal.rows
-                    
                     let out = []
-                    data.forEach(element => {   
+                    data.forEach(element => {
                         let keyofelement = Object.keys(element)
                         if(keyofelement.length > 0){
                             let key = keyofelement[0]
@@ -1114,12 +1090,10 @@ class ReleaseTestCase extends Component {
                                 if(filter.length != 1 && filter[0] !== "2" && filter[0] !== "1" && filter[0] !== "0"){
                                     let totalurl = element[key][13]["markup"]
                                     let totalBugCount = parseInt(totalurl.split(">")[1].split("<")[0],10)
-        
                                     out.push({
                                             "Release": element[key][0]["markup"],
                                             "CustomerBug": totalBugCount,
                                             })
-                                   
                                 }
                         }
                     })
@@ -1134,7 +1108,6 @@ class ReleaseTestCase extends Component {
                 }).catch(error=>{
                     console.log("Error",error)
                     })
-           
         }).catch(error=>{
             console.log("Error",error)
             })
@@ -1142,13 +1115,13 @@ class ReleaseTestCase extends Component {
 
 
     render() {
-        let DATE1 = tempDateStart     
-        let DATE2 = tempDateEnd 
-        let DATE3 = tempDateStartGUI     
+        let DATE1 = tempDateStart
+        let DATE2 = tempDateEnd
+        let DATE3 = tempDateStartGUI
         let DATE4 = tempDateEndGUI
-        let DATE5 = ttempDateStart     
+        let DATE5 = ttempDateStart
         let DATE6 = ttempDateEnd
-        let DATE7 = ttempDateStartGUI     
+        let DATE7 = ttempDateStartGUI
         let DATE8 = ttempDateEndGUI
         return (
             <div>{
@@ -1171,7 +1144,6 @@ class ReleaseTestCase extends Component {
 
                                             <div className='rp-icon-button'><i className="fa fa-area-chart"></i></div>
                                             <span className='rp-app-table-title'>Test Case Status (CLI + GUI)</span>
-                                
                                         </div>
                                     </div>
                         </div>
@@ -1193,10 +1165,9 @@ class ReleaseTestCase extends Component {
                                     </Col>
                                     <Col xs="11" sm="11" md="8">
                                     {
-                                            this.state.domainSelected && 
+                                            this.state.domainSelected &&
                                             <div style={{textAlign:'center'}}>
                                                  <strong class="h4">{this.state.domainSelected}</strong>
-                                           
                                         </div>
                                         }
                                         <Row style={{ marginLeft: '2.5rem' }}>
@@ -1232,7 +1203,7 @@ class ReleaseTestCase extends Component {
                                                             <Col xs="12" sm="12" md="6" lg="6">
                                                                 <div className="chart-wrapper">
                                                                     <div class='row' style={{ padding: '10px', margin: 'auto' }}>
-                                                                        <Doughnut data={item.data} style={{ textAlign: 'center' }} 
+                                                                        <Doughnut data={item.data} style={{ textAlign: 'center' }}
                                                                             options = {{
                                                                                 legend: {
                                                                                     onClick: (e) => this.newLegendClickHandler(e)
@@ -1341,7 +1312,6 @@ class ReleaseTestCase extends Component {
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
                                             <div onClick={() => this.setState({ showTable: !this.state.showTable },()=>{this.getReleaseData();})} style={{ display: 'inlineBlock' }}>
-                                            
                                             {
                                                 !this.state.showTable &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1352,7 +1322,6 @@ class ReleaseTestCase extends Component {
                                             }
                                             <div className='rp-icon-button'></div>
                                             <span className='rp-app-table-title'>Test Case Status (CLI + GUI)</span>
-                                        
                                             </div>
                                         </div>
                                     </div>
@@ -1399,7 +1368,6 @@ class ReleaseTestCase extends Component {
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
                                             <div onClick={() => this.setState({ showTableCLI: !this.state.showTableCLI },()=>{this.getReleaseDataCLI();})} style={{ display: 'inlineBlock' }}>
-                                            
                                             {
                                                 !this.state.showTableCLI &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1410,7 +1378,6 @@ class ReleaseTestCase extends Component {
                                             }
                                             <div className='rp-icon-button'></div>
                                             <span className='rp-app-table-title'>Test Case Status (CLI)</span>
-                                        
                                             </div>
                                         </div>
                                     </div>
@@ -1534,7 +1501,6 @@ class ReleaseTestCase extends Component {
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
                                         <div onClick={() => this.setState({ automationCountView: !this.state.automationCountView },()=>{this.getAutomationCountData();})} style={{ display: 'inlineBlock' }}>
-                                        
                                         {
                                             !this.state.automationCountView &&
                                             <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1694,11 +1660,11 @@ class ReleaseTestCase extends Component {
                                 <div class="row"  style={{marginTop:'1rem'}}>
                                     <div class="col-md-3">
                                         From Date<Input  type="date" id="StartDate" value={DATE1} onChange={(e) => this.selectedStartDate({ StartDate: e.target.value })} ></Input>
-                                    </div> 
+                                    </div>
 
                                     <div class="col-md-3">
                                         To Date<Input  type="date" id="EndDate" value={DATE2} onChange={(e) => this.selectedEndDate({ EndDate: e.target.value })} />
-                                    </div> 
+                                    </div>
                                 </div>
                                 <Table>
                                     <tbody>

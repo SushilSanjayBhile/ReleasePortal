@@ -245,7 +245,6 @@ class ReleaseSummary extends Component {
             this.setState({
                 releaseData : newProps.selectedRelease
             })
-            
         }
     }
     componentDidMount() {
@@ -264,7 +263,7 @@ class ReleaseSummary extends Component {
             this.setState({tableApi: false})
             axios.get(`/api/release_all_info/releaseName/${this.props.selectedRelease.ReleaseNumber}`)
                 .then(res => {
-                    this.setState({release:res.data, tcSummary: {}, tableApi: true},() => {this.getTCForStatuss()})                   
+                    this.setState({release:res.data, tcSummary: {}, tableApi: true},() => {this.getTCForStatuss()})
                 }, err => {
                     console.log('err ', err);
                 });
@@ -274,7 +273,7 @@ class ReleaseSummary extends Component {
     }
 
     initialize(release,newReleaseData) {
-       
+
         let fixVersion = newReleaseData.fixVersion;
         this.reset();
         // let temp = release.ReleaseNumber;;
@@ -283,7 +282,6 @@ class ReleaseSummary extends Component {
         let maxResults = 0
         let totalBugs = []
 
-       
         if(temp === 'Spektra 2.4') {
             temp='2.4.0'
         }
@@ -332,7 +330,7 @@ class ReleaseSummary extends Component {
             });
 
         }
-        
+
         // Function to get list of all bugs
         // axios.get('/rest/bugs/total/' + temp)
         axios.get('/rest/bugs/total/' + fixVersion)
@@ -379,7 +377,6 @@ class ReleaseSummary extends Component {
 
     }
 
-   
     edit() {
         this.setState({ isEditing: true });
     }
@@ -417,9 +414,10 @@ class ReleaseSummary extends Component {
     popoverToggleGUI = () => this.setState({ popoverOpengui: !this.state.popoverOpengui});
     save() {
         let data = { ...this.props.selectedRelease, ...this.state.basic.updated, ...this.state.qaStrategy.updated }
+        console.log("data",data)
         let dates = [
             'TargetedReleaseDate', 'ActualReleaseDate', 'TargetedCodeFreezeDate',
-            'UpgradeTestingStartDate', 'QAStartDate', 'ActualCodeFreezeDate', 'TargetedQAStartDate'
+            'UpgradeTestingStartDate', 'QAStartDate', 'QAEndDate', 'ActualCodeFreezeDate', 'TargetedQAStartDate'
         ]
         let formattedDates = {};
 
@@ -431,7 +429,7 @@ class ReleaseSummary extends Component {
         })
         data = { ...data, ...formattedDates };
         let arrays = [
-            'ServerType', 'CardType', 'BuildNumberList', 'SetupsUsed', 'UpgradeMetrics', 'Customers', 'Engineers'
+            'ServerType', 'CardType', 'BuildNumberList', 'SetupsUsed', 'UpgradeMetrics', 'Customers', 'Engineers', 'BuList'
         ]
         let formattedArrays = {};
 
@@ -453,8 +451,7 @@ class ReleaseSummary extends Component {
         if (!data.QARateOfProgress) {
             data.QARateOfProgress = 0;
         }
-       
-        data.Priority = 'P0' // if not set then giving error to update basic info 
+        data.Priority = 'P0' // if not set then giving error to update basic info
         axios.put(`/api/release/${this.props.selectedRelease.ReleaseNumber}`, { ...data })
             .then(res => {
                 this.props.saveReleaseBasicInfo({ id: data.ReleaseNumber, data: data });
@@ -500,14 +497,11 @@ class ReleaseSummary extends Component {
         let visibleGUIP = { Total:0,Pass: 0, Skip: 0, Fail: 0, NotTested: 0 ,Blocked:0};
         if (this.state.release.TcAggregate.Priority) {
             p = { ...p, ...this.state.release.TcAggregate.Priority }
-            
         }
-        
         //let pGUI = {}
         if (this.state.release.TcAggregate.PriorityGui) {
             pGUI = { ...pGUI, ...this.state.release.TcAggregate.PriorityGui}
         }
-        
         if (this.state.selectedPriority) {
             this.state.selectedPriority.forEach(item => {
                 visibleP.Pass += p[item].Pass;
@@ -515,12 +509,8 @@ class ReleaseSummary extends Component {
                 visibleP.Fail += p[item].Fail;
                 visibleP.NotTested += p[item].NotTested;
                 visibleP.Blocked += p[item].Blocked;
-    
             })
         }
-    
-       
-    
         if(this.state.selectedPriority){
             //if (this.props.selectedRelease.ReleaseNumber == "DMC-3.0" || this.props.selectedRelease.ReleaseNumber == "DMC Master" ) {
                 this.state.selectedPriority.forEach(item => {
@@ -530,15 +520,12 @@ class ReleaseSummary extends Component {
                         visibleGUIP.Fail += pGUI[item].Fail;
                         visibleGUIP.NotTested += pGUI[item].NotTested;
                         visibleGUIP.Blocked += pGUI[item].Blocked;
-    
                     //}
-                   
                 })
             //}
         }
         let PriorityLabel = this.state.selectedPriority;
         let str = ""
-        
         if(this.props.selectedRelease.ReleaseNumber == "DCX-3.0"){
             str = "P0"
         }
@@ -550,7 +537,6 @@ class ReleaseSummary extends Component {
         let data = [{
             labels: ['Total', str],
             datasets: [
-            
             {
                 label: 'Pass',
                 backgroundColor: '#01D251',
@@ -588,12 +574,9 @@ class ReleaseSummary extends Component {
             },
             ]
         }];
-    
-    
         data.push({
             labels: ['Total', str],
             datasets: [
-           
             {
                 label: 'Pass',
                 backgroundColor: '#01D251',
@@ -629,10 +612,8 @@ class ReleaseSummary extends Component {
                 borderWidth: 1,
                 data: [this.state.release.TcAggregate.allGUI.Blocked, visibleGUIP.Blocked]
             },
-           
             ]
         })
-        
         if (this.props.selectedRelease.ReleaseNumber === '2.3.0') {
             data.push({
                 labels: [''],
@@ -701,7 +682,6 @@ class ReleaseSummary extends Component {
                 ]
             })
         }
-    
         const options = {
             legend: {
                 position: 'right',
@@ -712,7 +692,6 @@ class ReleaseSummary extends Component {
                 }
             },
         }
-        
         let total = [this.state.release.TcAggregate.all.All - (this.state.release.TcAggregate.all.NotApplicable + this.state.release.TcAggregate.all.Skip)];
         if (this.props.selectedRelease.ReleaseNumber === '2.3.0') {
             total.push(3876)
@@ -724,7 +703,6 @@ class ReleaseSummary extends Component {
         let tcSummaryy = {data,total,options,length}
         this.setState({tcSummary : tcSummaryy})
     }
-    
     render() {
         if(this.state.release.TcAggregate){
             var allGUI = this.state.release.TcAggregate.allGUI
@@ -749,7 +727,6 @@ class ReleaseSummary extends Component {
                     }
 
                 }
-                
             })
         }
 
@@ -766,13 +743,11 @@ class ReleaseSummary extends Component {
                     featuresStatusDict['Others'].total += 1;
 
                 }
-               
             })
         }
 
         let priorities = ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7'].map(item => ({ value: item, selected: this.state.selectedPriority && this.state.selectedPriority.includes(item) }));
         let multiselect = { 'Priorities': priorities, };
-            
         let tcSkipped = `CLI: ${this.props.tcStrategy ? this.props.tcStrategy.skipped : 0 } GUI: 0`;
         let tcNA = `CLI: ${this.props.tcStrategy ? this.props.tcStrategy.notApplicable : 0 } GUI: 0`;
         let tcAutomated = `CLI: ${this.props.tcStrategy ? this.props.tcStrategy.totalAutomated : 0 } GUI: 0`;
@@ -780,7 +755,6 @@ class ReleaseSummary extends Component {
         {
             return (
                 <div className="main-container">
-        
                     <Row>
                         <Col xs="12" sm="12" md="5" lg="5" className="rp-summary-tables">
                             {
@@ -817,6 +791,8 @@ class ReleaseSummary extends Component {
                                         [
                                             { key: 'Target Date', field: 'TargetedReleaseDate', value: this.props.selectedRelease.TargetedReleaseDate, type: 'date' },
                                             { key: 'Actual Date', field: 'ActualReleaseDate', value: this.props.selectedRelease.ActualReleaseDate, type: 'date' },
+                                            { key: 'Buisness Units', field: 'BuList', value: this.props.selectedRelease.BuList ? this.props.selectedRelease.BuList.join(',') : '' },
+                                            { key: 'Release Number', field: 'RelNum', value: this.props.selectedRelease.RelNum, type: 'text' },
                                             { key: 'Server Type Supported', field: 'ServerType', value: this.props.selectedRelease.ServerType ? this.props.selectedRelease.ServerType.join(',') : '' },
                                             { key: 'Card Type Supported', field: 'CardType', value: this.props.selectedRelease.CardType ? this.props.selectedRelease.CardType.join(',') : '' },
                                             { key: 'Intended Customers', field: 'Customers', value: this.props.selectedRelease.Customers ? this.props.selectedRelease.Customers.join(',') : '' },
@@ -898,7 +874,6 @@ class ReleaseSummary extends Component {
                                                 { key: 'Final Build Number', field: 'BuildNumber', value: this.props.selectedRelease.BuildNumber ? this.props.selectedRelease.BuildNumber : '' },
                                                 { key: 'UBoot Number', value: this.props.selectedRelease.UbootVersion, field: 'UbootVersion' },
                                                 { key: 'Docker Core RPM Number', value: this.props.selectedRelease.FinalDockerCore, field: 'FinalDockerCore' },
-                                                
                                             ].map((item, index) => {
                                                 return (
                                                     <tr>
@@ -941,7 +916,6 @@ class ReleaseSummary extends Component {
                                                 )
                                             })
                                         }
-                                    
                                     </tbody>
                                 </Table>
                             </Collapse>
@@ -1087,16 +1061,13 @@ class ReleaseSummary extends Component {
                                     {
                                         <tr>
                                             <td className='rp-app-table-key'>Test Cases (All)</td>
-                                        
                                             <td>
                                             <table>
                                             <tbody>
                                             <tr>
 
                                             <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.totalTests : 0}</span></td>
-                                            
                                             <td style={{ borderTop: '0px'}}><span>UI: {allGUI  ? allGUI.All : 0}</span></td>
-                                            
                                                 </tr>
                                             </tbody>
                                             </table>
@@ -1112,7 +1083,6 @@ class ReleaseSummary extends Component {
                                             <tr>
                                             <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.notApplicable : 0}</span></td>
                                             <td style={{ borderTop: '0px'}}><span>UI: {allGUI ? allGUI.NotApplicable : 0}</span></td>
-                                            
                                                 </tr>
                                             </tbody>
                                             </table>
@@ -1128,7 +1098,6 @@ class ReleaseSummary extends Component {
                                             <tr>
                                             <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {this.props.tcStrategy ? this.props.tcStrategy.skipped : 0}</span></td>
                                             <td style={{ borderTop: '0px'}}><span>UI: {allGUI ? allGUI.Skip : 0}</span></td>
-                                                
                                                 </tr>
                                             </tbody>
                                             </table>
@@ -1281,7 +1250,6 @@ class ReleaseSummary extends Component {
                                     }
                                 </tbody>
                             </Table>
-                            
                         </Col> */}
                         <Col xs="12" sm="12" md="5" lg="5" className="rp-summary-tables">
                             <div className='rp-app-table-header'>
@@ -1311,16 +1279,29 @@ class ReleaseSummary extends Component {
                                     {
                                         <tr>
                                             <td className='rp-app-table-key'>Test Cases (All)</td>
-                                        
                                             <td>
                                             <table>
                                             <tbody>
                                             <tr>
 
                                             <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {allCLI ? allCLI.All : 0}</span></td>
-                                            
                                             <td style={{ borderTop: '0px'}}><span>UI: {allGUI  ? allGUI.All : 0}</span></td>
-                                            
+
+                                                </tr>
+                                            </tbody>
+                                            </table>
+                                            </td>
+                                        </tr>
+                                    }
+                                    {
+                                        <tr>
+                                            <td className='rp-app-table-key'>Test Cases Applicable</td>
+                                            <td>
+                                            <table>
+                                            <tbody>
+                                            <tr>
+                                            <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {allCLI ? allCLI.All - allCLI.NotApplicable - allCLI.Skip : 0}</span></td>
+                                            <td style={{ borderTop: '0px'}}><span>UI: {allGUI ? allGUI.All - allGUI.NotApplicable - allGUI.Skip : 0}</span></td>
                                                 </tr>
                                             </tbody>
                                             </table>
@@ -1336,7 +1317,6 @@ class ReleaseSummary extends Component {
                                             <tr>
                                             <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {allCLI ? allCLI.NotApplicable : 0}</span></td>
                                             <td style={{ borderTop: '0px'}}><span>UI: {allGUI ? allGUI.NotApplicable : 0}</span></td>
-                                            
                                                 </tr>
                                             </tbody>
                                             </table>
@@ -1352,7 +1332,6 @@ class ReleaseSummary extends Component {
                                             <tr>
                                             <td style={{ borderTop: '0px', width: '7rem'}}><span>CLI: {allCLI ? allCLI.Skip : 0}</span></td>
                                             <td style={{ borderTop: '0px'}}><span>UI: {allGUI ? allGUI.Skip : 0}</span></td>
-                                                
                                                 </tr>
                                             </tbody>
                                             </table>
@@ -1392,6 +1371,7 @@ class ReleaseSummary extends Component {
                                     {
                                         [
                                             { key: 'QA Start Date', field: 'QAStartDate', value: this.props.selectedRelease.QAStartDate, type: 'date' },
+                                            { key: 'QA End Date', field: 'QAEndDate', value: this.props.selectedRelease.QAEndDate, type: 'date' },
                                             { key: 'Target Code Freeze Date', field: 'TargetedCodeFreezeDate', value: this.props.selectedRelease.TargetedCodeFreezeDate, type: 'date' },
 
                                         ].map((item, index) => {
@@ -1505,7 +1485,6 @@ class ReleaseSummary extends Component {
                                     }
                                 </tbody>
                             </Table>
-                            
                         </Col>
                         {/* <Col xs="12" sm="12" md="5" lg="5" className="rp-summary-tables">
                             <div className='rp-app-table-header'>
@@ -1515,7 +1494,6 @@ class ReleaseSummary extends Component {
                             </div>
                                 <div className="chart-wrapper" style={{ textAlign: "center" }}>
                                     <div class='row'>
-                                        
                                         <div class='col-md-6'>
                                             {
                                                 this.props.tcSummary &&
@@ -1534,14 +1512,12 @@ class ReleaseSummary extends Component {
                                                                     </span>
                                                 </div>
                                             }
-                                            
                                             <Link to={'/release/qastatus'}>
                                             <div>
                                                 <HorizontalBar height={180} data={this.props.tcSummary && this.props.tcSummary.data[0]} options={stackedBarChartOptions} label="2345"></HorizontalBar>
                                             </div>
                                             </Link>
                                             </div>
-                                        
                                         <div class='col-md-6'>
                                             {
                                                 this.props.tcSummary &&
@@ -1566,7 +1542,7 @@ class ReleaseSummary extends Component {
                                                 </div>
                                             </Link>
                                         </div>
-                                    </div>  
+                                    </div>
                                 </div>
 
                             <Table scroll responsive style={{ overflow: 'scroll', }}>
@@ -1581,7 +1557,6 @@ class ReleaseSummary extends Component {
 
                                                         <td className='rp-app-table-key'>{item.key}</td>
                                                         {
-                                                            
                                                             <td style={{ width: '10rem' }}>
 
                                                                 {item.value}
@@ -1652,7 +1627,6 @@ class ReleaseSummary extends Component {
                                 {
                                     this.state.tcSummary.length ?
                                     <div class='row'>
-                                    
                                         <div class='col-md-6'>
                                             {
                                                 this.state.tcSummary &&
@@ -1671,14 +1645,12 @@ class ReleaseSummary extends Component {
                                                                     </span>
                                                 </div>
                                             }
-                                            
                                             <Link to={'/release/qastatus'}>
                                             <div>
                                                 <HorizontalBar height={180} data={this.state.tcSummary.data[0] } options={stackedBarChartOptions} label="2345"></HorizontalBar>
                                             </div>
                                             </Link>
                                             </div>
-                                        
                                         <div class='col-md-6'>
                                             {
                                                 this.state.tcSummary &&
@@ -1706,7 +1678,6 @@ class ReleaseSummary extends Component {
                                     </div>: 0
                                 }
                                 </div>
-                                
 
                             <Table scroll responsive style={{ overflow: 'scroll', }}>
                                 <tbody>
@@ -1720,7 +1691,7 @@ class ReleaseSummary extends Component {
 
                                                         <td className='rp-app-table-key'>{item.key}</td>
                                                         {
-                                                            
+
                                                             <td style={{ width: '10rem' }}>
 
                                                                 {item.value}

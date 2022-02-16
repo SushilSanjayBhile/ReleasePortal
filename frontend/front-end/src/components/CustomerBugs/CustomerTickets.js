@@ -19,14 +19,14 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
 import { element } from 'prop-types';
 import { CSVLink } from 'react-csv';
-const devManager = {"Abhay Singh":["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde"],
+const devManager = {"Vivek Gupta":["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde"],
                           "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende"],
                           "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende"],
                           "Quentin Finck":["Quentin Finck"],
                           "Arvind Krishnan":["Arvind Krishnan"],
                           "Unclassified":["Unclassified"]
 };
-const Ulist = ["Abhay Singh", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde",
+const Ulist = ["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde",
                 "Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende",
                 "Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende",
                 "Quentin Finck", "Arvind Krishnan"]
@@ -593,7 +593,8 @@ class CustomerTickets extends Component {
                     let Product = params.data.Product
                     let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
                     if (Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra)%20AND%20priority%20%3D%20Lowest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra)%20AND%20priority%20%3D%20Lowest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/??jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra)%20AND%20(priority%20%3D%20Medium%20OR%20priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(Product != "Total"){
@@ -991,7 +992,7 @@ class CustomerTickets extends Component {
         let severityDictP1 = { Severity: "P1", Active: 0, Inactive: 0}, severityDictP2 = { Severity: "P2", Active: 0, Inactive: 0}, severityDictP3 = { Severity: "P3", Active: 0, Inactive: 0}, sevetiryDictTotal = {Severity: "Total", Active: 0, Inactive: 0}
         let customer = {"Unclassified": {P1: 0, P2: 0, P3: 0},}
         let product = {"Ultima Enterprise": {P1: 0, P2: 0, P3: 0,}, "Ultima Accelerator": {P1: 0, P2: 0, P3: 0,}, "Spektra": {P1: 0, P2: 0, P3: 0,}, "Unclassified": {P1: 0, P2: 0, P3: 0,}}
-        let devM = {"Abhay Singh":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Kshitij Gunjikar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
+        let devM = {"Vivek Gupta":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Kshitij Gunjikar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
                          "Naveen Seth":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Quentin Finck":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
                          "Arvind Krishnan":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
                          "Unclassified":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},}
@@ -1113,7 +1114,7 @@ class CustomerTickets extends Component {
                 }
                 else if(loLabel.includes("ultima-software")) {
                     temp.BU = "Ultima Enterprise"
-                    temp.BuManager = "Abhay Singh"
+                    temp.BuManager = "Vivek Gupta"
                     if(ue == false){
                         if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
                             product["Ultima Enterprise"]["P1"] = product["Ultima Enterprise"]["P1"] + 1
