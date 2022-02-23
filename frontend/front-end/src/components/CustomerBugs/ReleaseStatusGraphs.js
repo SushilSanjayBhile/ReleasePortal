@@ -23,6 +23,8 @@ class ReleaseStatusGraphs extends Component {
     allTCsToShow = [];
     allClosedDefectsToShow = [];
     lineweek = {};
+    filedWeeklyData = {};
+    closedWeeklyData = {};
     newOptions = {};
     cloOptions = {};
     xcord = [];
@@ -85,9 +87,20 @@ class ReleaseStatusGraphs extends Component {
             }
         }
         this.lineweek = {labels: [], datasets: []};
+        this.filedWeeklyData = {labels: [], datasets: []};
+        this.closedWeeklyData = {labels: [], datasets: []};
         for (let i = 0; i < this.xcord.length - 1 ; i = i + 2) {
-            let dlabel = `${new Date(this.xcord[i].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`;
+            // let dlabel = `${new Date(this.xcord[i].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`;
+            let dlabel = ''
+            //if ( i == 0 || i == this.xcord.length - 2 ){
+            //    dlabel = `${new Date(this.xcord[i].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`+'-'+`${new Date(this.xcord[i+1].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`;
+            //}
+            //else {
+            dlabel = `${new Date(this.xcord[i].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`;
+            //}
             this.lineweek["labels"].push(dlabel)
+            this.filedWeeklyData["labels"].push(dlabel)
+            this.closedWeeklyData["labels"].push(dlabel)
         }
     }
     cusgridOperations(enable) {
@@ -184,22 +197,77 @@ class ReleaseStatusGraphs extends Component {
             Filed: { data: [], backgroundColor: 'rgb(255, 99, 132)', },
             Closed: { data: [], backgroundColor: 'rgb(75, 192, 192)', },
         }
+        let filedWeekly = {
+            SEVP1: { data: [], backgroundColor: 'rgb(255, 99, 132)', },
+            "SEVP2+": { data: [], backgroundColor: 'rgb(75, 192, 192)', },
+            "Blocker": { data: [], backgroundColor: 'rgb(53, 162, 235)', },
+        }
+        let closedWeekly = {
+            SEVP1: { data: [], backgroundColor: 'rgb(255, 99, 132)', },
+            "SEVP2+": { data: [], backgroundColor: 'rgb(75, 192, 192)', },
+            "Blocker": { data: [], backgroundColor: 'rgb(53, 162, 235)', },
+        }
         for(let i = 0 ; i < this.xcord.length / 2; i++){
             week["Filed"]["data"].push(0)
             week["Closed"]["data"].push(0)
+            filedWeekly["SEVP1"]["data"].push(0)
+            filedWeekly["SEVP2+"]["data"].push(0)
+            filedWeekly["Blocker"]["data"].push(0)
+            closedWeekly["SEVP1"]["data"].push(0)
+            closedWeekly["SEVP2+"]["data"].push(0)
+            closedWeekly["Blocker"]["data"].push(0)
         }
          for(let i = 0; i < this.allTCsToShow.length; i++){
             num = this.calculateWeek(new Date(this.allTCsToShow[i]["fields"]["created"]))
-                week["Filed"]["data"][num] = week["Filed"]["data"][num] + 1
+            week["Filed"]["data"][num] = week["Filed"]["data"][num] + 1
+
+            this.allTCsToShow[i]["fields"]["labels"].some(label => {
+                let loLabel = label.toLowerCase()
+                if(loLabel.includes("blocker")) {
+                    filedWeekly["Blocker"]["data"][num] = filedWeekly["Blocker"]["data"][num] + 1
+                    return true;
+                }
+            })
+
+            if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
+                filedWeekly["SEVP1"]["data"][num] = filedWeekly["SEVP1"]["data"][num] + 1
+            }
+            else if(this.allTCsToShow[i]["fields"]["priority"]["name"] != "Highest"){
+                filedWeekly["SEVP2+"]["data"][num] = filedWeekly["SEVP2+"]["data"][num] + 1
+            }
+
         }
         for(let i = 0; i < this.allClosedDefectsToShow.length; i++){
             num = this.calculateWeek(new Date(this.allClosedDefectsToShow[i]["fields"]["updated"]))
             week["Closed"]["data"][num] = week["Closed"]["data"][num] + 1
+
+            this.allClosedDefectsToShow[i]["fields"]["labels"].some(label => {
+                let loLabel = label.toLowerCase()
+                if(loLabel.includes("blocker")) {
+                    closedWeekly["Blocker"]["data"][num] = closedWeekly["Blocker"]["data"][num] + 1
+                    return true;
+                }
+            })
+
+            if(this.allClosedDefectsToShow[i]["fields"]["priority"]["name"] == "Highest") {
+                closedWeekly["SEVP1"]["data"][num] = closedWeekly["SEVP1"]["data"][num] + 1
+            }
+            else if(this.allClosedDefectsToShow[i]["fields"]["priority"]["name"] != "Highest"){
+                closedWeekly["SEVP2+"]["data"][num] = closedWeekly["SEVP2+"]["data"][num] + 1
+            }
         }
         Object.keys(week).forEach(type => {
                 this.lineweek["datasets"].push({data: week[type]["data"], fill: false, lineTension: 0, label: type, borderColor: week[type]["backgroundColor"]})
         })
+        Object.keys(filedWeekly).forEach(type => {
+            this.filedWeeklyData["datasets"].push({data: filedWeekly[type]["data"], fill: false, lineTension: 0, label: type, borderColor: filedWeekly[type]["backgroundColor"]})
+        })
+        Object.keys(closedWeekly).forEach(type => {
+            this.closedWeeklyData["datasets"].push({data: closedWeekly[type]["data"], fill: false, lineTension: 0, label: type, borderColor: closedWeekly[type]["backgroundColor"]})
+        })
         this.lineweekNew = this.lineweek
+        this.filedWeeklyLine = this.filedWeeklyData
+        this.closedWeeklyLine = this.closedWeeklyData
         this.cusgridOperations(true);
     }
     render() {
@@ -234,14 +302,52 @@ class ReleaseStatusGraphs extends Component {
                                 <div class="col" style={{ width: '100%', height: '50%', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
-                                            <div style={{ width: '15rem', marginTop: '2.5rem', marginLeft: '1rem' }}>
-                                                    <span className='rp-app-table-title'>Defects Filed Vs Closed</span>
+                                            <div style={{ width: '20rem', marginTop: '2.5rem', marginLeft: '1rem' }}>
+                                                    <span className='rp-app-table-title'>Total Defects Filed Vs Closed</span>
                                             </div>
                                         </div>
                                     </div>
                                         {
                                             !this.state.isApiUnderProgress &&
                                             <Line data={this.lineweekNew}/>
+                                        }
+                                        {
+                                            this.state.isApiUnderProgress &&
+                                            <span className='rp-app-table-value'>Loading...</span>
+                                        }
+                                </div>
+                            </div >
+                            <div class="row">
+                                <div class="col" style={{ width: '100%', height: '50%', marginBottom: '6rem' }}>
+                                    <div class="test-header">
+                                        <div class="row">
+                                            <div style={{ width: '20rem', marginTop: '2.5rem', marginLeft: '1rem' }}>
+                                                    <span className='rp-app-table-title'>Defects Filed By Priority</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                        {
+                                            !this.state.isApiUnderProgress &&
+                                            <Line data={this.filedWeeklyLine}/>
+                                        }
+                                        {
+                                            this.state.isApiUnderProgress &&
+                                            <span className='rp-app-table-value'>Loading...</span>
+                                        }
+                                </div>
+                            </div >
+                            <div class="row">
+                                <div class="col" style={{ width: '100%', height: '50%', marginBottom: '6rem' }}>
+                                    <div class="test-header">
+                                        <div class="row">
+                                            <div style={{ width: '20rem', marginTop: '2.5rem', marginLeft: '1rem' }}>
+                                                    <span className='rp-app-table-title'>Defects Closed by Priority</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                        {
+                                            !this.state.isApiUnderProgress &&
+                                            <Line data={this.closedWeeklyLine}/>
                                         }
                                         {
                                             this.state.isApiUnderProgress &&

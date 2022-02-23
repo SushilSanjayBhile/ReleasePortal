@@ -248,6 +248,7 @@ class ReleaseSummary extends Component {
         }
     }
     componentDidMount() {
+        this.initialize(this.props.selectedRelease.ReleaseNumber, this.props.selectedRelease)
         axios.get(`/api/release_all_info/releaseName/${this.props.selectedRelease.ReleaseNumber}`)
                 .then(res => {
                     this.setState({release:res.data, tableApi: true},() => {this.getTCForStatuss()} )
@@ -261,6 +262,7 @@ class ReleaseSummary extends Component {
         //let release = this.props.selectedRelease.ReleaseNumber ? this.props.selectedRelease.ReleaseNumber : null
         if (prevProps.selectedRelease.ReleaseNumber !== this.props.selectedRelease.ReleaseNumber) {
             this.setState({tableApi: false})
+            this.initialize(this.props.selectedRelease.ReleaseNumber, this.props.selectedRelease)
             axios.get(`/api/release_all_info/releaseName/${this.props.selectedRelease.ReleaseNumber}`)
                 .then(res => {
                     this.setState({release:res.data, tcSummary: {}, tableApi: true},() => {this.getTCForStatuss()})
@@ -341,7 +343,7 @@ class ReleaseSummary extends Component {
                 let startAt = 0
 
                 for(let i = 0; i < totalCount ; i++){
-                    startAt = startAt + res.data.maxResults + 1
+                    startAt = startAt + res.data.maxResults
                     // let url = '/rest/bugs/totalCount/'  + temp + "/" + startAt
                     let url = '/rest/bugs/totalCount/'  + fixVersion + "/" + startAt
                     axios.get(url).then(res1=>{
@@ -350,7 +352,6 @@ class ReleaseSummary extends Component {
                         }
                     })
                 }
-
                 this.props.saveBugs({ data: { total: totalBugs.data.total, all: totalBugs.data }, id: release })
                 this.setState({ showBugs: true, cntr: 2 })
             }, err => {

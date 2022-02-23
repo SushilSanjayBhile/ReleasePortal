@@ -22,12 +22,12 @@ class Graphs extends Component {
     allClosedDefectsToShow = [];
     allPendingDefectsToShow = [];
     week = {};
-    lineweek = {};
+    //lineweek = {};
     newOptions = {};
     cloOptions = {};
     xcord = [];
     lastWeek = this.subDays(new Date(), new Date().getDay());
-    lastMonth = this.subDays(this.lastWeek, 27);
+    lastMonth = this.subDays(this.lastWeek, 83);
     constructor(props) {
         super(props);
         this.state = {
@@ -67,12 +67,19 @@ class Graphs extends Component {
     }
     calXCoordinate(currentdate) {
         this.xcord.push(this.lastMonth)
-        for(let i = 0; i < 5; i = i + 2){
+        // for(let i = 0; i < 5; i = i + 2){
+        //     this.xcord.push(this.getDate(this.addDays(this.xcord[i], 6)))
+        //     this.xcord.push(this.getDate(this.addDays(this.xcord[i], 7)))
+        // }
+        // this.xcord.push(this.getDate(this.addDays(this.xcord[6], 6)))
+        for(let i = 0; this.addDays(this.xcord[i], 7).getTime() <= new Date(this.lastWeek).getTime(); i = i + 2){
             this.xcord.push(this.getDate(this.addDays(this.xcord[i], 6)))
             this.xcord.push(this.getDate(this.addDays(this.xcord[i], 7)))
         }
-        this.xcord.push(this.getDate(this.addDays(this.xcord[6], 6)))
-        for(let i = 0; i < 8; i++){
+        if(new Date(this.lastWeek).getTime() > new Date(this.xcord[this.xcord.length - 1]).getTime()) {
+            this.xcord.push(this.lastWeek)
+        }
+        for(let i = 0; i < this.xcord.length; i++){
             if ( i%2 == 0){
                 this.xcord[i] = this.xcord[i] + "T00:00:00.000-0800"
             }
@@ -81,13 +88,19 @@ class Graphs extends Component {
             }
         }
         this.week = {New: { labels: [], datasets: [],}, Closed: { labels: [], datasets: [],}};
-        this.lineweek = {New: { labels: [], datasets: [],}, Closed: { labels: [], datasets: [],}};
+        //this.lineweek = {New: { labels: [], datasets: [],}, Closed: { labels: [], datasets: [],}};
         for (let i = 0; i < this.xcord.length ; i = i + 2) {
-            let dlabel = `${new Date(this.xcord[i].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`+'-'+`${new Date(this.xcord[i+1].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`;
+            let dlabel = ''
+            // if ( i == 0 || i == this.xcord.length - 2 ){
+            //     dlabel = `${new Date(this.xcord[i].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`+'-'+`${new Date(this.xcord[i+1].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`;
+            // }
+            //else {
+            dlabel = `${new Date(this.xcord[i].split("T")[0]).toLocaleDateString(undefined, { month: 'short',day: 'numeric'})}`;
+            //}
             this.week["New"]["labels"].push(dlabel)
             this.week["Closed"]["labels"].push(dlabel)
-            this.lineweek["New"]["labels"].push(dlabel)
-            this.lineweek["Closed"]["labels"].push(dlabel)
+            // this.lineweek["New"]["labels"].push(dlabel)
+            // this.lineweek["Closed"]["labels"].push(dlabel)
         }
         this.pie1 = {
             labels: [],
@@ -247,7 +260,7 @@ class Graphs extends Component {
     }
     calculateWeek(date){
         let dtime = date.getTime()
-        for(let i = 0; i < 7; i = i + 2) {
+        for(let i = 0; i < this.xcord.length - 1; i = i + 2) {
             if(dtime >= new Date(this.xcord[i]).getTime() && dtime <= new Date(this.xcord[i+1]).getTime()){
                 return  i / 2;
             }
@@ -265,8 +278,16 @@ class Graphs extends Component {
         let num = null;
         let bu = false;
         let week = {
-            New: { Customer:{ data: [0,0,0,0], backgroundColor: 'rgb(255, 99, 132)',}, SEVP1:{ data: [0,0,0,0], backgroundColor: 'rgb(75, 192, 192)',}, 'SEVP2+':{ data: [0,0,0,0], backgroundColor: 'rgb(53, 162, 235)',},},
-            Closed: { Customer:{ data: [0,0,0,0], backgroundColor: 'rgb(255, 99, 132)',}, SEVP1:{ data: [0,0,0,0], backgroundColor: 'rgb(75, 192, 192)',}, 'SEVP2+':{ data: [0,0,0,0], backgroundColor: 'rgb(53, 162, 235)',},},
+            New: { Customer:{ data: [], backgroundColor: 'rgb(255, 99, 132)',}, SEVP1:{ data: [], backgroundColor: 'rgb(75, 192, 192)',}, 'SEVP2+':{ data: [], backgroundColor: 'rgb(53, 162, 235)',},},
+            Closed: { Customer:{ data: [], backgroundColor: 'rgb(255, 99, 132)',}, SEVP1:{ data: [], backgroundColor: 'rgb(75, 192, 192)',}, 'SEVP2+':{ data: [], backgroundColor: 'rgb(53, 162, 235)',},},
+        }
+        for(let i = 0 ; i < this.xcord.length / 2; i++){
+            week["New"]["Customer"]["data"].push(0)
+            week["New"]["SEVP1"]["data"].push(0)
+            week["New"]["SEVP2+"]["data"].push(0)
+            week["Closed"]["Customer"]["data"].push(0)
+            week["Closed"]["SEVP1"]["data"].push(0)
+            week["Closed"]["SEVP2+"]["data"].push(0)
         }
         let pie1 = {
             Customer:{
@@ -387,7 +408,7 @@ class Graphs extends Component {
         Object.keys(week).forEach(type => {
             Object.keys(week[type]).forEach( ele => {
                 this.week[type]["datasets"].push({data: week[type][ele]["data"], label: ele, backgroundColor: week[type][ele]["backgroundColor"]})
-                this.lineweek[type]["datasets"].push({data: week[type][ele]["data"], fill: false, lineTension: 0, label: ele, borderColor: week[type][ele]["backgroundColor"]})
+                //this.lineweek[type]["datasets"].push({data: week[type][ele]["data"], fill: false, lineTension: 0, label: ele, borderColor: week[type][ele]["backgroundColor"]})
             })
         })
         Object.keys(pie1).forEach(key => {
@@ -402,8 +423,8 @@ class Graphs extends Component {
         })
         this.weekNew = this.week["New"]
         this.weekClo = this.week["Closed"]
-        this.lineweekNew = this.lineweek["New"]
-        this.lineweekClo = this.lineweek["Closed"]
+        // this.lineweekNew = this.lineweek["New"]
+        // this.lineweekClo = this.lineweek["Closed"]
         this.cusgridOperations(true);
     }
     render() {
@@ -443,22 +464,22 @@ class Graphs extends Component {
                                             </div>
                                         </div>
                                     </div>
-                                        {/* {
+                                        {
                                             !this.state.isApiUnderProgress &&
                                             <Bar options={this.newOptions} data={this.weekNew}/>
                                         }
                                         {
                                             this.state.isApiUnderProgress &&
                                             <span className='rp-app-table-value'>Loading...</span>
-                                        } */}
-                                        {
+                                        }
+                                        {/* {
                                             !this.state.isApiUnderProgress &&
                                             <Line data={this.lineweekNew}/>
                                         }
                                         {
                                             this.state.isApiUnderProgress &&
                                             <span className='rp-app-table-value'>Loading...</span>
-                                        }
+                                        } */}
                                 </div>
                             </div >
                             <div class="row">
@@ -470,22 +491,22 @@ class Graphs extends Component {
                                             </div>
                                         </div>
                                     </div>
-                                    {/* {
+                                    {
                                         !this.state.isApiUnderProgress &&
                                         <Bar options={this.cloOptions} data={this.weekClo}/>
                                     }
                                     {
                                         this.state.isApiUnderProgress &&
                                         <span className='rp-app-table-value'>Loading...</span>
-                                    } */}
-                                    {
+                                    }
+                                    {/* {
                                         !this.state.isApiUnderProgress &&
                                         <Line data={this.lineweekClo}/>
                                     }
                                     {
                                         this.state.isApiUnderProgress &&
                                         <span className='rp-app-table-value'>Loading...</span>
-                                    }
+                                    } */}
                                 </div>
                             </div >
                             <div class="row">

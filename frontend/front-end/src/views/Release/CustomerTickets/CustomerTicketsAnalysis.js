@@ -6,6 +6,7 @@ import axios from 'axios';
 import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../actions';
 import '../QaReport/QaAnalysis.scss'
 import CustomerTickets from '../../../components/CustomerBugs/CustomerTickets';
+import CustomerClosed from '../../../components/CustomerBugs/CustomerClosed';
 import PendingMajorRelease from '../../../components/CustomerBugs/PendingMajorRelease';
 import PendingPostRelease from '../../../components/CustomerBugs/PendingPostRelease';
 import NewClosedInQaTickets from '../../../components/CustomerBugs/NewClosedInQaTickets';
@@ -34,6 +35,9 @@ class CustomerTicketsAnalysis extends Component {
                         }
                         {
                             <Graphs></Graphs>
+                        }
+                        {
+                            <CustomerClosed></CustomerClosed>
                         }
                     </div >
                 }

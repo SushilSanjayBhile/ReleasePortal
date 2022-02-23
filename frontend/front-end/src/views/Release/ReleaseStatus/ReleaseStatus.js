@@ -42,7 +42,7 @@ class ReleaseStatus extends Component {
     }
     initialize() {
         if (!this.props.singleFeature.fields) {
-            if (this.props.feature && this.props.feature.issues) {
+            if (this.props.feature && this.props.feature.issues && this.props.feature.issues.length > 0) {
                 this.getFeatureDetails(this.props.feature.issues[0].self)
             }
         }
@@ -73,34 +73,54 @@ class ReleaseStatus extends Component {
             tempRelease="\"Spektra 3.0\""
             fixVersion = "\"" + fixVersion + "\""
             // axios.get('/rest/bugs/total/' + tempRelease)
-            axios.get('/rest/bugs/total/' + fixVersion)
-            .then(response => {
-                totalBugs = response;
-                maxResults = response.data.maxResults
-                totalCount = parseInt(response.data.total/response.data.maxResults)
-                let startAt = 0
+            if (!this.props.bug){
+                axios.get('/rest/bugs/total/' + fixVersion)
+                .then(response => {
+                    totalBugs = response;
+                    maxResults = response.data.maxResults
+                    totalCount = parseInt(response.data.total/response.data.maxResults)
+                    let startAt = 0
 
-                for(let i = 0; i < totalCount ; i++){
-                    startAt = startAt + response.data.maxResults + 1
-                    // let url = '/rest/bugs/totalCount/'  + tempRelease + "/" + startAt
-                    let url = '/rest/bugs/totalCount/'  + fixVersion + "/" + startAt
-                    axios.get(url).then(response1=>{
-                        for(let i = 0 ;i < response1['data']['issues'].length ;i++){
-                            totalBugs['data']['issues'].push(response1['data']['issues'][i])
+                    for(let i = 0; i < totalCount ; i++){
+                        startAt = startAt + response.data.maxResults
+                        // let url = '/rest/bugs/totalCount/'  + tempRelease + "/" + startAt
+                        let url = '/rest/bugs/totalCount/'  + fixVersion + "/" + startAt
+                        axios.get(url).then(response1=>{
+                            for(let i = 0 ;i < response1['data']['issues'].length ;i++){
+                                totalBugs['data']['issues'].push(response1['data']['issues'][i])
+                            }
+                        })
+                    }
+                    this.props.saveBugs({ data: { total: totalBugs.data.total, all: totalBugs.data }, id: release })
+                    this.setState({totalBugList:totalBugs.data},()=>{
+                        if(this.state.totalBugList){
+                            this.BlockedBugList(release)
+                        }else{
+                            console.log("coming in empty totalBugList")
                         }
                     })
-                }
-                this.setState({totalBugList:totalBugs.data},()=>{
-                    if(this.state.totalBugList){
-                        this.BlockedBugList(release)
-                     }else{
-                        console.log("coming in empty totalBugList")
-                     }
-                })
+                    axios.get('/rest/bugs/open/' + fixVersion)
+                    .then(res => {
+                        this.props.saveBugs({ data: { open: res.data.total }, id: release })
+                        //this.setState({ showBugs: true, cntr: 4 })
 
-            }, err => {
-                console.log('err ', err);
-            })
+                    }, err => {
+                        console.log('err ', err);
+                    })
+                    // axios.get('/rest/bugs/resolved/' + temp)
+                    axios.get('/rest/bugs/resolved/' + fixVersion)
+                    .then(res => {
+                        this.props.saveBugs({ data: { resolved: res.data.total }, id: release})
+                        //this.setState({ showBugs: true, cntr: 6 })
+
+                    }, err => {
+                        console.log('err ', err);
+                    })
+
+                    }, err => {
+                        console.log('err ', err);
+                    })
+            }
     }
     componentDidMount() {
         this.initialize();
@@ -108,7 +128,7 @@ class ReleaseStatus extends Component {
     componentWillReceiveProps(newProps) {
         if(this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
             this.props.history.push('/release/summary')
-            this.initialize();
+            //this.initialize();
         }
     }
 
@@ -200,20 +220,22 @@ class ReleaseStatus extends Component {
         if(this.props.bug.bug.issues){
             this.props.bug.bug.issues.forEach((eachBug)=>{
                 if(item == 'open'){
-                    if(eachBug.fields.status.name == 'Open' || eachBug.fields.status.name == 'To Do' || eachBug.fields.status.name == 'In Progress'){
+                    if(eachBug.fields.status.name == 'Open' || eachBug.fields.status.name == 'To Do' || eachBug.fields.status.name == 'In Progress' || eachBug.fields.status.name == 'Info'){
                         list.push(eachBug)
                     }
                 }
                 if(item == 'resolved'){
-                    if(eachBug.fields.status.name == 'Resolved' || eachBug.fields.status.name == 'Closed' ){
+                    if(eachBug.fields.status.name == 'Resolved' || eachBug.fields.status.name == 'Closed' || eachBug.fields.status.name == 'IN QA' ){
                         list.push(eachBug)
                     }
                 }
                 if(item == 'total'){
                     list.push(eachBug)
                 }
-                if(item == "others" && eachBug.fields.status.name != 'Open' && eachBug.fields.status.name != 'Resolved' && eachBug.fields.status.name != 'To Do' && eachBug.fields.status.name != 'In Progress' && eachBug.fields.status.name != 'Closed'){
-                    list.push(eachBug)
+                if(item == "others" ){
+                    if(eachBug.fields.status.name != 'Open' && eachBug.fields.status.name != 'Resolved' && eachBug.fields.status.name != 'To Do' && eachBug.fields.status.name != 'In Progress' && eachBug.fields.status.name != 'Closed' && eachBug.fields.status.name != 'Info' && eachBug.fields.status.name != 'IN QA'){
+                        list.push(eachBug)
+                    }
                 }
             })
             this.setState({BugsList:list})
@@ -734,12 +756,9 @@ const mapStateToProps = (state, ownProps) => ({
     feature: state.feature.all[state.release.current.id],
     bug: state.bug.all[state.release.current.id],
     singleFeature: state.feature.single,
-    statusPage: state.app.statusPage
+    statusPage: state.app.statusPage,
 })
-export default connect(mapStateToProps, { saveSingleFeature })(ReleaseStatus);
-
-
-
+export default connect(mapStateToProps, { saveSingleFeature, saveBugs })(ReleaseStatus);
 
 
 

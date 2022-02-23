@@ -136,6 +136,18 @@ class PendingMajorRelease extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+            'OpenDaysWithoutDueDate' : {
+                headerName: "Open Days Without Due Date", field: "OpenDaysWithoutDueDate", sortable: true, filter: true,
+                width: '150',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'DaysPassedDueDate' : {
+                headerName: "Days Passed Due Date", field: "DaysPassedDueDate", sortable: true, filter: true,
+                width: '150',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
             'ETA' : {
                 headerName: "Due Date", field: "ETA", sortable: true, filter: true,
                 width: '100',
@@ -497,10 +509,12 @@ class PendingMajorRelease extends Component {
                 bugColumnDefDictCR['DevManager'],
                 bugColumnDefDictCR['ReportedDate'],
                 bugColumnDefDictCR['OpenDays'],
+                bugColumnDefDictCR['OpenDaysWithoutDueDate'],
+                bugColumnDefDictCR['DaysPassedDueDate'],
                 bugColumnDefDictCR['Severity'],
                 bugColumnDefDictCR['BugNo'],
                 bugColumnDefDictCR['Summary'],
-                bugColumnDefDictCR['ETA'], 
+                bugColumnDefDictCR['ETA'],
                 bugColumnDefDictCR['ReportedBy'],
                 bugColumnDefDictCR['QAName'],
                 bugColumnDefDictCR['QAValidatedDate'],
@@ -722,6 +736,8 @@ class PendingMajorRelease extends Component {
                 QAName: this.allTCsToShow[i]["fields"]["creator"]["displayName"],
                 Developer: this.allTCsToShow[i]["fields"].assignee ? this.allTCsToShow[i]["fields"]["assignee"]["displayName"] : "NA",
                 OpenDays: 0,
+                OpenDaysWithoutDueDate: "NA",
+                DaysPassedDueDate: "NA",
                 ETA: this.allTCsToShow[i]["fields"]["duedate"] ? this.allTCsToShow[i]["fields"]["duedate"].split("T")[0] : "NA",
                 ReportedDate: this.allTCsToShow[i]["fields"]["created"].split("T")[0],
                 QAValidatedDate: "NA",
@@ -750,6 +766,7 @@ class PendingMajorRelease extends Component {
             }
             if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest"){
                 if(this.allTCsToShow[i]["fields"]["duedate"]) {
+                    temp.DaysPassedDueDate = 0
                     devM[manager]["WithDueDate"] = devM[manager]["WithDueDate"] + 1
                     if(!(QAs[developer] === '') && !dev[developer])
                     {
@@ -761,6 +778,12 @@ class PendingMajorRelease extends Component {
                     let duedate = new Date(this.allTCsToShow[i]["fields"]["duedate"])
                     let today = new Date()
                     if(today.getTime() > duedate.getTime()){
+                        let diff = today.getTime() - duedate.getTime()
+                        let res = Math.round(diff / MS_PER_DAY)
+                        temp.DaysPassedDueDate = res
+                        if(temp.DaysPassedDueDate == 0){
+                            temp.DaysPassedDueDate = 1
+                        }
                         devM[manager]["PassedDueDate"] = devM[manager]["PassedDueDate"] + 1
                         if(!(QAs[developer] === '')){
                             dev[developer]["PassedDueDate"] = dev[developer]["PassedDueDate"] + 1
@@ -768,6 +791,14 @@ class PendingMajorRelease extends Component {
                     }
                 }
                 else{
+                    let cdate = new Date(this.allTCsToShow[i]["fields"]["created"])
+                    let today = new Date()
+                    let diff = today.getTime() - cdate.getTime()
+                    let res = Math.round(diff / MS_PER_DAY)
+                    temp.OpenDaysWithoutDueDate = res
+                    if(temp.OpenDaysWithoutDueDate == 0){
+                        temp.OpenDaysWithoutDueDate = 1
+                    }
                     devM[manager]["WithOutDueDate"] = devM[manager]["WithOutDueDate"] + 1
                     if(!(QAs[developer] === '') && !dev[developer])
                     {
@@ -799,7 +830,7 @@ class PendingMajorRelease extends Component {
                     temp.BuManager = "Vivek Gupta"
                     if(ue == false){
                         if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                            product["Ultima Enterprise"]["Total"] = product["Ultima Enterprise"]["Total"] + 1                        
+                            product["Ultima Enterprise"]["Total"] = product["Ultima Enterprise"]["Total"] + 1
                         }
                         ue = true
                     }
@@ -813,13 +844,13 @@ class PendingMajorRelease extends Component {
                     if(ua == false){
                         ua = true
                         if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                            product["Ultima Accelerator"]["Total"] = product["Ultima Accelerator"]["Total"] + 1                        
+                            product["Ultima Accelerator"]["Total"] = product["Ultima Accelerator"]["Total"] + 1
                         }
                     }
                     else{
                         console.log(this.allTCsToShow[i].key)
                     }
-                    
+
                 }
                 else if(loLabel.includes("spektra")) {
                     temp.BU = "Spektra"
@@ -827,13 +858,13 @@ class PendingMajorRelease extends Component {
                     if(sp == false){
                         sp = true
                         if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                            product["Spektra"]["Total"] = product["Spektra"]["Total"] + 1                        
+                            product["Spektra"]["Total"] = product["Spektra"]["Total"] + 1
                         }
                     }
                     else{
                         console.log(this.allTCsToShow[i].key)
                     }
-                    
+
                 }
             })
             if (temp.BU == "NA"){

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {
-    Row, Col, Button, Collapse, Form, FormGroup, Label, Input, FormText 
+    Row, Col, Button, Collapse, Form, FormGroup, Label, Input, FormText
 } from 'reactstrap';
 import axios from 'axios';
 import { connect } from 'react-redux';
@@ -12,7 +12,6 @@ import { element } from 'prop-types';
 import  CheckBox  from '../../../components/TestCasesAll/CheckBox';
 let form = {}
 class UpdateE2EResult extends Component {
-    
     constructor(){
         super();
         this.state = {
@@ -26,7 +25,6 @@ class UpdateE2EResult extends Component {
             platforms: [],
             disable: true
         }
-       
     }
     componentDidMount() {
         let releaseInfoURL = `/api/release/infoAsc`;
@@ -38,7 +36,6 @@ class UpdateE2EResult extends Component {
               });
               this.setState({allReleases1:rel})
             }, error => {
-              
             });
       }
     getPlatform = (e) => {
@@ -51,7 +48,6 @@ class UpdateE2EResult extends Component {
               });
               this.setState({platforms:platform,disable:false})
             }, error => {
-              
             });
     }
     handleSubmit = (e) => {
@@ -80,7 +76,7 @@ class UpdateE2EResult extends Component {
             })
         })
     }
-    
+
     reset = () =>{
         this.setState({release:'', platform: '',platforms: []})
     }
