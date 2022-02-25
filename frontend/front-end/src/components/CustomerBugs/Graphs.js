@@ -367,7 +367,7 @@ class Graphs extends Component {
             let ue = false, ua = false, sp = false;
             this.allPendingDefectsToShow[i]["fields"]["labels"].forEach(label => {
                 let loLabel = label.toLowerCase()
-                if(loLabel.includes("customer-") || loLabel.includes("customer")) {
+                if(loLabel.includes("active")) {
                     if(increaseCusDCount){
                         pie1["Customer"]["data"] = pie1["Customer"]["data"] + 1
                         increaseCusDCount = false

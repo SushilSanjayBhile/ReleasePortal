@@ -131,30 +131,30 @@ class CustomerClosed extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            // 'OpenDays' : {
-            //     headerName: "Open Days", field: "OpenDays", sortable: true, filter: true,
-            //     width: '80',
-            //     editable: false,
-            //     cellClass: 'cell-wrap-text',
-            // },
+            'DaysToClose' : {
+                headerName: "Days To Close", field: "DaysToClose", sortable: true, filter: true,
+                width: '100',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
             'ETA' : {
                 headerName: "Due Date", field: "ETA", sortable: true, filter: true,
                 width: '100',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            // 'DaysPassedDueDate' : {
-            //     headerName: "Days Passed Due Date", field: "DaysPassedDueDate", sortable: true, filter: true,
-            //     width: '150',
-            //     editable: false,
-            //     cellClass: 'cell-wrap-text',
-            // },
-            'QAValidatedDate' : {
-                headerName: "QA Validated Date", field: "QAValidatedDate", sortable: true, filter: true,
+            'ClosedDate' : {
+                headerName: "Closed Date", field: "ClosedDate", sortable: true, filter: true,
                 width: '100',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+            // 'QAValidatedDate' : {
+            //     headerName: "QA Validated Date", field: "QAValidatedDate", sortable: true, filter: true,
+            //     width: '100',
+            //     editable: false,
+            //     cellClass: 'cell-wrap-text',
+            // },
             // 'Active' : {
             //     headerName: "Active", field: "Active", sortable: true, filter: true,
             //     width: '100',
@@ -766,15 +766,15 @@ class CustomerClosed extends Component {
                 bugColumnDefDictCR['Developer'],
                 bugColumnDefDictCR['DevManager'],
                 bugColumnDefDictCR['ReportedDate'],
-                // bugColumnDefDictCR['OpenDays'],
-                // bugColumnDefDictCR['DaysPassedDueDate'],
+                bugColumnDefDictCR['ClosedDate'],
+                bugColumnDefDictCR['DaysToClose'],
                 bugColumnDefDictCR['Severity'],
                 bugColumnDefDictCR['BugNo'],
                 bugColumnDefDictCR['Summary'],
                 bugColumnDefDictCR['ETA'],
                 bugColumnDefDictCR['ReportedBy'],
                 bugColumnDefDictCR['QAName'],
-                bugColumnDefDictCR['QAValidatedDate'],
+                //bugColumnDefDictCR['QAValidatedDate'],
                 //bugColumnDefDictCR['Active'],
             ],
             statusColumnCR:[
@@ -1018,11 +1018,11 @@ class CustomerClosed extends Component {
                 Severity: severity[this.allTCsToShow[i]["fields"]["priority"]["name"]],
                 QAName: this.allTCsToShow[i]["fields"]["creator"]["displayName"],
                 Developer: this.allTCsToShow[i]["fields"].assignee ? this.allTCsToShow[i]["fields"]["assignee"]["displayName"] : "NA",
-                //OpenDays: 0,
-                //DaysPassedDueDate: "NA",
+                DaysToClose: "NA",
+                ClosedDate: this.allTCsToShow[i]["fields"]["updated"] ? this.allTCsToShow[i]["fields"]["updated"].split("T")[0] : "NA",
                 ETA: this.allTCsToShow[i]["fields"]["duedate"] ? this.allTCsToShow[i]["fields"]["duedate"].split("T")[0] : "NA",
                 ReportedDate: this.allTCsToShow[i]["fields"]["created"].split("T")[0],
-                QAValidatedDate: "NA",
+                //QAValidatedDate: "NA",
                 DevManager: "NA",
                 //Active: "Yes",
             }
@@ -1039,6 +1039,7 @@ class CustomerClosed extends Component {
                     }
                 });
             })
+
             if(developer == "NA"){
                 console.log("No developer Name-",developer, temp.BugNo)
             }
@@ -1048,8 +1049,15 @@ class CustomerClosed extends Component {
             if(!QAs[temp.Developer] && !devDict[temp.Developer]){
                 devDict[temp.Developer] = ''
             }
+            if(this.allTCsToShow[i]["fields"]["updated"]){
+                 let diff = new Date(this.allTCsToShow[i]["fields"]["updated"]).getTime() - new Date(this.allTCsToShow[i]["fields"]["created"]).getTime()
+                let res = Math.round(diff / MS_PER_DAY)
+                temp.DaysToClose = res
+                if(temp.DaysToClose == 0){
+                    temp.DaysToClose = 1
+                }
+            }
             if(this.allTCsToShow[i]["fields"]["duedate"]) {
-                //temp.DaysPassedDueDate = 0
                 devM[manager]["WithDueDate"] = devM[manager]["WithDueDate"] + 1
                 if(!(QAs[developer] === '') && !dev[developer])
                 {
@@ -1061,12 +1069,6 @@ class CustomerClosed extends Component {
                 let duedate = new Date(this.allTCsToShow[i]["fields"]["duedate"])
                 let today = new Date()
                 if(today.getTime() > duedate.getTime()){
-                    // let diff = today.getTime() - duedate.getTime()
-                    // let res = Math.round(diff / MS_PER_DAY)
-                    // temp.DaysPassedDueDate = res
-                    // if(temp.DaysPassedDueDate == 0){
-                    //     temp.DaysPassedDueDate = 1
-                    // }
                     devM[manager]["PassedDueDate"] = devM[manager]["PassedDueDate"] + 1
                     if(!(QAs[developer] === '')){
                         dev[developer]["PassedDueDate"] = dev[developer]["PassedDueDate"] + 1
@@ -1114,19 +1116,6 @@ class CustomerClosed extends Component {
                             }
                         }
                     }
-                    // else {
-                    //     temp.Customer = "NA"
-                    //     console.log("No customer Name-",temp.BugNo)
-                    //     if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                    //         customer["NA"]["P1"] = customer["NA"]["P1"] + 1
-                    //     }
-                    //     else if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                    //         customer["NA"]["P2"] = customer["NA"]["P2"] + 1
-                    //     }
-                    //     else {
-                    //         customer["NA"]["P3"] = customer["NA"]["P3"] + 1
-                    //     }
-                    // }
                 }
                 else if(loLabel.includes("ultima-software")) {
                     temp.BU = "Ultima Enterprise"
@@ -1185,10 +1174,6 @@ class CustomerClosed extends Component {
                         console.log(this.allTCsToShow[i].key)
                     }
                 }
-                // else if(loLabel.includes("active")){
-                //     temp.Active = 'Yes'
-                //     activeFlag = true;
-                // }
             })
             if (temp.Customer == "NA"){
                 console.log("No customer Name-",temp.BugNo)
@@ -1214,51 +1199,15 @@ class CustomerClosed extends Component {
                 }
             }
             if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                //if(activeFlag){
                 severityDictP1.Active = severityDictP1.Active + 1
-                //}
-                //else{
-                //    severityDictP1.Inactive = severityDictP1.Inactive + 1
-                //}
             }
             else if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                //if(activeFlag){
                 severityDictP2.Active = severityDictP2.Active + 1
-                //}
-                //else{
-                //    severityDictP2.Inactive = severityDictP2.Inactive + 1
-                //}
             }
             else {
-                //if(activeFlag){
                 severityDictP3.Active = severityDictP3.Active + 1
-                //}
-                //else{
-                //   severityDictP3.Inactive = severityDictP3.Inactive + 1
-                //}
             }
 
-            // if(this.allTCsToShow[i]["fields"]["status"]["name"] === "Closed") {
-            //     let date1 = this.allTCsToShow[i]["fields"]["statuscategorychangedate"]
-            //     let date2 = this.allTCsToShow[i]["fields"]["created"]
-            //     temp.QAValidatedDate = this.allTCsToShow[i]["fields"]["statuscategorychangedate"].split("T")[0]
-            //     let diff = new Date(date1).getTime() - new Date(date2).getTime()
-            //     let res = Math.round(diff / MS_PER_DAY)
-            //     temp.OpenDays = res
-            //     if(temp.OpenDays == 0){
-            //         temp.OpenDays = 1
-            //     }
-            // }
-            // if(temp.OpenDays == 0) {
-            //     let date1 = new Date()
-            //     let date2 = this.allTCsToShow[i]["fields"]["created"]
-            //     let diff = date1.getTime() - new Date(date2).getTime()
-            //     let res = Math.round(diff / MS_PER_DAY)
-            //     temp.OpenDays = res
-            //     if(temp.OpenDays == 0){
-            //         temp.OpenDays = 1
-            //     }
-            // }
             if(temp.Severity != "P1" && temp.Severity != "P2"){
                 temp.Severity = "P3"
             }

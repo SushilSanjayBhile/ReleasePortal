@@ -143,8 +143,8 @@ class CustomerTickets extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            'OpenDaysWithoutDueDate' : {
-                headerName: "Open Days Without Due Date", field: "OpenDaysWithoutDueDate", sortable: true, filter: true,
+            'DaysWithoutDueDate' : {
+                headerName: "Days Without Due Date", field: "DaysWithoutDueDate", sortable: true, filter: true,
                 width: '150',
                 editable: false,
                 cellClass: 'cell-wrap-text',
@@ -775,7 +775,7 @@ class CustomerTickets extends Component {
                 bugColumnDefDictCR['DevManager'],
                 bugColumnDefDictCR['ReportedDate'],
                 bugColumnDefDictCR['OpenDays'],
-                bugColumnDefDictCR['OpenDaysWithoutDueDate'],
+                bugColumnDefDictCR['DaysWithoutDueDate'],
                 bugColumnDefDictCR['DaysPassedDueDate'],
                 bugColumnDefDictCR['Severity'],
                 bugColumnDefDictCR['BugNo'],
@@ -1028,7 +1028,7 @@ class CustomerTickets extends Component {
                 QAName: this.allTCsToShow[i]["fields"]["creator"]["displayName"],
                 Developer: this.allTCsToShow[i]["fields"].assignee ? this.allTCsToShow[i]["fields"]["assignee"]["displayName"] : "NA",
                 OpenDays: 0,
-                OpenDaysWithoutDueDate: "NA",
+                DaysWithoutDueDate: "NA",
                 DaysPassedDueDate: "NA",
                 ETA: this.allTCsToShow[i]["fields"]["duedate"] ? this.allTCsToShow[i]["fields"]["duedate"].split("T")[0] : "NA",
                 ReportedDate: this.allTCsToShow[i]["fields"]["created"].split("T")[0],
@@ -1088,9 +1088,9 @@ class CustomerTickets extends Component {
                 let today = new Date()
                 let diff = today.getTime() - cdate.getTime()
                 let res = Math.round(diff / MS_PER_DAY)
-                temp.OpenDaysWithoutDueDate = res
-                if(temp.OpenDaysWithoutDueDate == 0){
-                    temp.OpenDaysWithoutDueDate = 1
+                temp.DaysWithoutDueDate = res
+                if(temp.DaysWithoutDueDate == 0){
+                    temp.DaysWithoutDueDate = 1
                 }
                 devM[manager]["WithOutDueDate"] = devM[manager]["WithOutDueDate"] + 1
                 if(!(QAs[developer] === '') && !dev[developer])
