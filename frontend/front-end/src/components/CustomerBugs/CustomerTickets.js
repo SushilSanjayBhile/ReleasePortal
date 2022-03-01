@@ -42,6 +42,7 @@ class CustomerTickets extends Component {
     TicketsByProduct = [];
     TicketsByDevManager = [];
     TicketsByDeveloper = [];
+    AvgAgeBySeverity = [];
     maxResult= 0;
     ApplicableTcsCR = [];
     devList = [];
@@ -718,6 +719,32 @@ class CustomerTickets extends Component {
                 },
             },
         }
+        let avgAgeColumnDefDict = {
+            'Severity' : {
+                headerName: "Severity", field: "Severity", sortable: true, filter: true,
+                width: '150',
+                cellClass: 'cell-wrap-text',
+                editable: false,
+            },
+            // 'TotalBugs' : {
+            //     headerName: "Total Bugs", field: "TotalBugs", sortable: true, filter: true,
+            //     width: '150',
+            //     cellClass: 'cell-wrap-text',
+            //     editable: false,
+            // },
+            // 'TotalOpenDays' : {
+            //     headerName: "Total Open Days", field: "TotalOpenDays", sortable: true, filter: true,
+            //     width: '150',
+            //     cellClass: 'cell-wrap-text',
+            //     editable: false,
+            // },
+            'AvgOpenDays' : {
+                headerName: "Average Open Days", field: "AvgOpenDays", sortable: true, filter: true,
+                width: '150',
+                cellClass: 'cell-wrap-text',
+                editable: false,
+            },
+        }
 
         this.state = {
             selectedRows: 0,
@@ -726,6 +753,7 @@ class CustomerTickets extends Component {
             devmSelectedRows: 0,
             devSelectedRows: 0,
             bugSelectedRowsCR: 0,
+            avgSelectedRows: 0,
             buisnessUnitCR: null,
             customerCR: null,
             managerCR: null,
@@ -793,6 +821,12 @@ class CustomerTickets extends Component {
                 // {id:4,value:'P4', isChecked: false},
                 // {id:4,value:'P5', isChecked: false},
                 // {id:4,value:'P6', isChecked: false},
+            ],
+            avgAgeColumnDefs: [
+                avgAgeColumnDefDict['Severity'],
+                // avgAgeColumnDefDict['TotalBugs'],
+                // avgAgeColumnDefDict['TotalOpenDays'],
+                avgAgeColumnDefDict['AvgOpenDays'],
             ],
             defaultColDef: { resizable: true },
             modules: AllCommunityModules,
@@ -867,6 +901,9 @@ class CustomerTickets extends Component {
     onDevSelectionChanged = (event) => {
         this.setState({ devSelectedRows: event.api.getSelectedRows().length })
     }
+    onAvgOpenDaysSelectionChanged = (event) => {
+        this.setState({ avgSelectedRows: event.api.getSelectedRows().length })
+    }
     onGridReady = params => {
         this.gridApi = params.api;
         this.gridColumnApi = params.columnApi;
@@ -898,6 +935,15 @@ class CustomerTickets extends Component {
     onDevGridReady = params => {
         this.devGridApi = params.api;
         this.devGridColumnApi = params.columnApi;
+        // const sortModelCR = [
+        //     {colId: 'Developer', sort: 'asc'}
+        // ];
+        // this.devGridApi.setSortModel(sortModelCR);
+        params.api.sizeColumnsToFit();
+    };
+    onAvgOpenDaysGridReady = params => {
+        this.avgOpenDaysGridApi = params.api;
+        this.avgOpenDaysGridApiColumnApi = params.columnApi;
         // const sortModelCR = [
         //     {colId: 'Developer', sort: 'asc'}
         // ];
@@ -991,6 +1037,7 @@ class CustomerTickets extends Component {
         this.TicketsByProduct = []
         this.TicketsByDevManager = []
         this.TicketsByDeveloper = []
+        this.AvgAgeBySeverity = []
 
         this.ApplicableTcsCR = []
         this.bugsToShowCR = []
@@ -1005,7 +1052,7 @@ class CustomerTickets extends Component {
         const MS_PER_DAY = 1000 * 60 * 60 * 24
 
         //let severityDictP1 = { Severity: "P1", Active: 0, Inactive: 0}, severityDictP2 = { Severity: "P2", Active: 0, Inactive: 0}, severityDictP3 = { Severity: "P3", Active: 0, Inactive: 0}, sevetiryDictTotal = {Severity: "Total", Active: 0, Inactive: 0}
-        let severityDictP1 = { Severity: "P1", Active: 0}, severityDictP2 = { Severity: "P2", Active: 0}, severityDictP3 = { Severity: "P3", Active: 0}, sevetiryDictTotal = {Severity: "Total", Active: 0}
+        let severityDictP1 = { Severity: "P1", Active: 0, Age: 0}, severityDictP2 = { Severity: "P2", Active: 0, Age: 0}, severityDictP3 = { Severity: "P3", Active: 0, Age: 0}, severityDictTotal = {Severity: "Total", Active: 0, Age: 0}
 
         let customer = {"Unclassified": {P1: 0, P2: 0, P3: 0},}
         let product = {"Ultima Enterprise": {P1: 0, P2: 0, P3: 0,}, "Ultima Accelerator": {P1: 0, P2: 0, P3: 0,}, "Spektra": {P1: 0, P2: 0, P3: 0,}, "Unclassified": {P1: 0, P2: 0, P3: 0,}}
@@ -1231,42 +1278,6 @@ class CustomerTickets extends Component {
                     product["Unclassified"]["P3"] = product["Unclassified"]["P3"] + 1
                 }
             }
-            if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                //if(activeFlag){
-                severityDictP1.Active = severityDictP1.Active + 1
-                //}
-                //else{
-                //    severityDictP1.Inactive = severityDictP1.Inactive + 1
-                //}
-            }
-            else if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                //if(activeFlag){
-                severityDictP2.Active = severityDictP2.Active + 1
-                //}
-                //else{
-                //    severityDictP2.Inactive = severityDictP2.Inactive + 1
-                //}
-            }
-            else {
-                //if(activeFlag){
-                severityDictP3.Active = severityDictP3.Active + 1
-                //}
-                //else{
-                //   severityDictP3.Inactive = severityDictP3.Inactive + 1
-                //}
-            }
-
-            if(this.allTCsToShow[i]["fields"]["status"]["name"] === "Closed") {
-                let date1 = this.allTCsToShow[i]["fields"]["statuscategorychangedate"]
-                let date2 = this.allTCsToShow[i]["fields"]["created"]
-                temp.QAValidatedDate = this.allTCsToShow[i]["fields"]["statuscategorychangedate"].split("T")[0]
-                let diff = new Date(date1).getTime() - new Date(date2).getTime()
-                let res = Math.round(diff / MS_PER_DAY)
-                temp.OpenDays = res
-                if(temp.OpenDays == 0){
-                    temp.OpenDays = 1
-                }
-            }
             if(temp.OpenDays == 0) {
                 let date1 = new Date()
                 let date2 = this.allTCsToShow[i]["fields"]["created"]
@@ -1276,6 +1287,33 @@ class CustomerTickets extends Component {
                 if(temp.OpenDays == 0){
                     temp.OpenDays = 1
                 }
+            }
+            if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
+                //if(activeFlag){
+                severityDictP1.Active = severityDictP1.Active + 1
+                severityDictP1.Age = severityDictP1.Age + temp.OpenDays
+                //}
+                //else{
+                //    severityDictP1.Inactive = severityDictP1.Inactive + 1
+                //}
+            }
+            else if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
+                //if(activeFlag){
+                severityDictP2.Active = severityDictP2.Active + 1
+                severityDictP2.Age = severityDictP2.Age + temp.OpenDays
+                //}
+                //else{
+                //    severityDictP2.Inactive = severityDictP2.Inactive + 1
+                //}
+            }
+            else {
+                //if(activeFlag){
+                severityDictP3.Active = severityDictP3.Active + 1
+                severityDictP3.Age = severityDictP3.Age + temp.OpenDays
+                //}
+                //else{
+                //   severityDictP3.Inactive = severityDictP3.Inactive + 1
+                //}
             }
             if(temp.Severity != "P1" && temp.Severity != "P2"){
                 temp.Severity = "P3"
@@ -1339,9 +1377,15 @@ class CustomerTickets extends Component {
         })
         this.Sort(this.TicketsByDeveloper,"dev");
         this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, Total: detotal})
-        sevetiryDictTotal["Active"] = severityDictP1["Active"] + severityDictP2["Active"] + severityDictP3["Active"]
+        severityDictTotal["Active"] = severityDictP1["Active"] + severityDictP2["Active"] + severityDictP3["Active"]
+        severityDictTotal["Age"] = severityDictP1["Age"] + severityDictP2["Age"] + severityDictP3["Age"]
         //sevetiryDictTotal["Inactive"] = severityDictP1["Inactive"] + severityDictP2["Inactive"] + severityDictP3["Inactive"]
-        this.TicketsBySeverity.push(severityDictP1, severityDictP2, severityDictP3, sevetiryDictTotal)
+        let d1 = {Severity: severityDictP1["Severity"], TotalBugs: severityDictP1["Active"], TotalOpenDays: severityDictP1["Age"], AvgOpenDays: Math.round(severityDictP1["Age"] / severityDictP1["Active"])}
+        let d2 = {Severity: severityDictP2["Severity"], TotalBugs: severityDictP2["Active"], TotalOpenDays: severityDictP2["Age"], AvgOpenDays: Math.round(severityDictP2["Age"] / severityDictP2["Active"])}
+        let d3 = {Severity: severityDictP3["Severity"], TotalBugs: severityDictP3["Active"], TotalOpenDays: severityDictP3["Age"], AvgOpenDays: Math.round(severityDictP3["Age"] / severityDictP3["Active"])}
+        //let d4 = {Severity: severityDictTotal["Severity"], TotalBugs: severityDictTotal["Active"], TotalOpenDays: severityDictTotal["Age"], AvgOpenDays: Math.round(severityDictTotal["Age"] / severityDictTotal["Active"])}
+        this.AvgAgeBySeverity.push(d1, d2, d3)
+        this.TicketsBySeverity.push(severityDictP1, severityDictP2, severityDictP3, severityDictTotal)
         this.filterBugsCR(this.state.buisnessUnitCR, this.state.customerCR, this.state.managerCR, this.state.developerCR);
         //this.gridOperations(true);
     }
@@ -1553,6 +1597,9 @@ getData(){
     if(this.devGridApi){
         temp = temp + "Tickets-By-Developer\n" + this.devGridApi.getDataAsCsv({ allColumns: true, onlySelected: false}) + "\n";
     }
+    if(this.avgOpenDaysGridApi){
+        temp = temp + "AvgOpenDays-By-Severity\n" + this.avgOpenDaysGridApi.getDataAsCsv({ allColumns: true, onlySelected: false}) + "\n";
+    }
     if(this.bugGridApiCR){
         temp = temp + "Bug-List\n" + this.bugGridApiCR.getDataAsCsv({ allColumns: true, onlySelected: false}) + "\n";
     }
@@ -1606,6 +1653,15 @@ getData(){
                 this.devGridApi.showNoRowsOverlay();
             } else {
                 this.devGridApi.hideOverlay();
+            }
+        }
+        if (this.avgOpenDaysGridApi) {
+            if (this.state.isApiUnderProgress) {
+                this.avgOpenDaysGridApi.showLoadingOverlay();
+            } else if (this.AvgAgeBySeverity.length === 0) {
+                this.avgOpenDaysGridApi.showNoRowsOverlay();
+            } else {
+                this.avgOpenDaysGridApi.hideOverlay();
             }
         }
         if (this.bugGridApiCR) {
@@ -1948,6 +2004,66 @@ getData(){
                                             }
                                     </div>
                                 </div>
+                                <div class="col-sm-6" style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
+                                    <div class="test-header">
+                                        <div class="row">
+                                            <div style={{ width: '20rem', marginTop: '0.5rem', marginLeft: '1rem' }}>
+                                                    <span className='rp-app-table-title'>Average Open Days By Severity</span>
+                                            </div>
+                                            <div style={{ width: '5rem'}}>
+                                                <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={() => {
+                                                    if (this.avgOpenDaysGridApi) {
+                                                        this.avgOpenDaysGridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Customer_Tickets_Avg_Open_Days_By_Severity.csv" });
+                                                    }
+                                                }} >
+                                                    Download
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style={{ width: "100%", height: "100%" }}>
+                                        <div
+                                            id="avgGrid"
+                                            style={{
+                                                height: "100%",
+                                                width: "100%",
+                                            }}
+                                            className="ag-theme-balham"
+                                        >
+                                            <AgGridReact
+                                                suppressScrollOnNewData={true}
+                                                onSelectionChanged={(e) => this.onAvgOpenDaysSelectionChanged(e)}
+                                                rowStyle={{ alignItems: 'top' }}
+                                                enableCellTextSelection={true}
+                                                //onRowClicked={(e) => this.getTC(e)}
+                                                modules={this.state.modules}
+                                                columnDefs={this.state.avgAgeColumnDefs}
+                                                rowSelection='multiple'
+                                                getRowHeight={this.getRowHeight}
+                                                defaultColDef={this.state.defaultColDef}
+                                                //rowData={this.props.data}
+                                                rowData={this.AvgAgeBySeverity}
+                                                onGridReady={(params) => this.onAvgOpenDaysGridReady(params)}
+                                                //onCellEditingStarted={this.onCellEditingStarted}
+                                                frameworkComponents={this.state.frameworkComponents}
+                                                stopEditingWhenGridLosesFocus={true}
+                                                overlayLoadingTemplate={this.state.overlayLoadingTemplate}
+                                                overlayNoRowsTemplate={this.state.overlayNoRowsTemplate}
+                                                rowMultiSelectWithClick={true}
+                                            // onRowSelected={(params) => this.onRowSelected(params)}
+                                            // onCellFocused={(e) => this.onCellFocused(e)}
+                                            // suppressCopyRowsToClipboard = {true}
+                                            />
+                                        </div>
+                                    </div>
+                                        <div style={{ display: 'inline' }}>
+                                            {
+                                                <div style={{ display: 'inline' }}>
+                                                    <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {this.AvgAgeBySeverity.length}</span>
+                                                </div>
+                                            }
+                                    </div>
+                                </div>
                             </div >
                             <div>
                                 <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
@@ -1973,8 +2089,8 @@ getData(){
                                                 ))
                                             }
                                             <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
-                                                <Button disabled={this.state.isApiUnderProgressCR} id="PopoverAssign2CR1" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
-                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2CR1" id="PopoverAssignButton2CR1" toggle={() => this.popoverToggle2CR()} isOpen={this.state.popoverOpen2CR}>
+                                                <Button disabled={this.state.isApiUnderProgressCR} id="PopoverAssign2CR4" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
+                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2CR4" id="PopoverAssignButton2CR4" toggle={() => this.popoverToggle2CR()} isOpen={this.state.popoverOpen2CR}>
                                                     <PopoverBody>
                                                         <div>
                                                             <input type="checkbox" onClick={this.handleAllCheckedStatusTCsCR}  value="checkedall" /> Check / Uncheck All

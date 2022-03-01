@@ -243,7 +243,8 @@ class PendingForApprovalGUI extends Component {
 
 
     getTC(e) {
-        axios.get(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}/id/${e.TcID}/browsername/${e.BrowserName}`)
+        console.log("e",e)
+        axios.get(`/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}/id/${e.TcID}/browsername/${e.BrowserName}/cardType/${e.CardType}`)
             .then(res => {
                 this.props.saveSingleTestCase(res.data);
                 this.props.updateTCEdit({ ...res.data, errors: {}, original: res.data });

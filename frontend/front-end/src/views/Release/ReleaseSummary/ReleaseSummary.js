@@ -415,7 +415,6 @@ class ReleaseSummary extends Component {
     popoverToggleGUI = () => this.setState({ popoverOpengui: !this.state.popoverOpengui});
     save() {
         let data = { ...this.props.selectedRelease, ...this.state.basic.updated, ...this.state.qaStrategy.updated }
-        console.log("data",data)
         let dates = [
             'TargetedReleaseDate', 'ActualReleaseDate', 'TargetedCodeFreezeDate',
             'UpgradeTestingStartDate', 'QAStartDate', 'QAEndDate', 'ActualCodeFreezeDate', 'TargetedQAStartDate'
@@ -430,7 +429,7 @@ class ReleaseSummary extends Component {
         })
         data = { ...data, ...formattedDates };
         let arrays = [
-            'ServerType', 'CardType', 'BuildNumberList', 'SetupsUsed', 'UpgradeMetrics', 'Customers', 'Engineers', 'BuList'
+            'ServerType', 'CardType', 'BuildNumberList', 'SetupsUsed', 'UpgradeMetrics', 'Customers', 'Engineers', 'BuList', 'Runtime'
         ]
         let formattedArrays = {};
 
@@ -800,7 +799,8 @@ class ReleaseSummary extends Component {
                                             { key: 'Total Features', restrictEdit: true, field: 'Total Features', value: featuresCount },
                                             { key: 'Operating System', value: this.props.selectedRelease.FinalOS, field: 'FinalOS' },
                                             { key: 'Kubernetes', value: this.props.selectedRelease.KubernetesVersion , field: 'KubernetesVersion' },
-                                            { key: 'Docker', value: this.props.selectedRelease.DockerVersion , field: 'DockerVersion' },
+                                            //{ key: 'Docker', value: this.props.selectedRelease.DockerVersion , field: 'DockerVersion' },
+                                            { key: 'Runtime', field: 'Runtime', value: this.props.selectedRelease.Runtime ? this.props.selectedRelease.Runtime.join(',') : '' },
                                             { key: 'Helm', value: this.props.selectedRelease.HelmVersion , field: 'HelmVersion' },
                                             { key: 'fixVersion', value: this.props.selectedRelease.fixVersion , field: 'fixVersion' },
                                             { key: 'epicLink', value: this.props.selectedRelease.epicLink , field: 'epicLink' },
