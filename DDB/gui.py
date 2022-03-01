@@ -503,7 +503,6 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
         master = dmcMaster
 
     if request.method == "POST":
-
         flag = 0
         req = json.loads(request.body.decode("utf-8"))
         conflictFlag = False
@@ -523,7 +522,6 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 newData = json.loads(newData)
                 newData['CardType'] = card
                 fd = GuiInfoForm(newData)
-
                 if fd.is_valid():
                     data = fd.save(commit = False)
                     if "master" not in Release:
@@ -557,7 +555,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     newData = json.loads(newData)
                     newData['CardType'] = card
 
-                    fd = GuiInfoForm(req)
+                    fd = GuiInfoForm(newData)
 
                     if fd.is_valid():
                         data = fd.save(commit = False)
@@ -566,7 +564,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
 
                         if "Activity" in req:
                             AD = req['Activity']
-                        #GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
+                        GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], card, ReleaseMaster)
                     else:
                         print(fd.errors)
 
@@ -588,8 +586,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     newData = json.loads(newData)
                     newData['CardType'] = card
 
-                    fd = GuiInfoForm(req)
-
+                    fd = GuiInfoForm(newData)
                     if fd.is_valid():
                         data = fd.save(commit = False)
                         data.save(using = ReleaseMaster)
@@ -597,7 +594,7 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     
                         if "Activity" in req:
                             AD = req['Activity']
-                            #GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
+                            GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], card, ReleaseMaster)
                     else:
                         print(fd.errors)
 
