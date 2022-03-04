@@ -1380,9 +1380,9 @@ class CustomerTickets extends Component {
         severityDictTotal["Active"] = severityDictP1["Active"] + severityDictP2["Active"] + severityDictP3["Active"]
         severityDictTotal["Age"] = severityDictP1["Age"] + severityDictP2["Age"] + severityDictP3["Age"]
         //sevetiryDictTotal["Inactive"] = severityDictP1["Inactive"] + severityDictP2["Inactive"] + severityDictP3["Inactive"]
-        let d1 = {Severity: severityDictP1["Severity"], TotalBugs: severityDictP1["Active"], TotalOpenDays: severityDictP1["Age"], AvgOpenDays: Math.round(severityDictP1["Age"] / severityDictP1["Active"])}
-        let d2 = {Severity: severityDictP2["Severity"], TotalBugs: severityDictP2["Active"], TotalOpenDays: severityDictP2["Age"], AvgOpenDays: Math.round(severityDictP2["Age"] / severityDictP2["Active"])}
-        let d3 = {Severity: severityDictP3["Severity"], TotalBugs: severityDictP3["Active"], TotalOpenDays: severityDictP3["Age"], AvgOpenDays: Math.round(severityDictP3["Age"] / severityDictP3["Active"])}
+        let d1 = {Severity: severityDictP1["Severity"], TotalBugs: severityDictP1["Active"], TotalOpenDays: severityDictP1["Age"], AvgOpenDays: severityDictP1["Active"] == 0 ? 0 : Math.round(severityDictP1["Age"] / severityDictP1["Active"])}
+        let d2 = {Severity: severityDictP2["Severity"], TotalBugs: severityDictP2["Active"], TotalOpenDays: severityDictP2["Age"], AvgOpenDays: severityDictP2["Active"] == 0 ? 0 : Math.round(severityDictP2["Age"] / severityDictP2["Active"])}
+        let d3 = {Severity: severityDictP3["Severity"], TotalBugs: severityDictP3["Active"], TotalOpenDays: severityDictP3["Age"], AvgOpenDays: severityDictP3["Active"] == 0 ? 0 : Math.round(severityDictP3["Age"] / severityDictP3["Active"])}
         //let d4 = {Severity: severityDictTotal["Severity"], TotalBugs: severityDictTotal["Active"], TotalOpenDays: severityDictTotal["Age"], AvgOpenDays: Math.round(severityDictTotal["Age"] / severityDictTotal["Active"])}
         this.AvgAgeBySeverity.push(d1, d2, d3)
         this.TicketsBySeverity.push(severityDictP1, severityDictP2, severityDictP3, severityDictTotal)

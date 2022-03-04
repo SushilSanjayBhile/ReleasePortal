@@ -1057,8 +1057,8 @@ class PendingPostRelease extends Component {
         this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, Total: detotal})
         severityDictTotal["Total"] = severityDictP2["Total"] + severityDictP3["Total"]
         severityDictTotal["Age"] = severityDictP2["Age"] + severityDictP3["Age"]
-        let d2 = {Severity: severityDictP2["Severity"], TotalBugs: severityDictP2["Total"], TotalOpenDays: severityDictP2["Age"], AvgOpenDays: Math.round(severityDictP2["Age"] / severityDictP2["Total"])}
-        let d3 = {Severity: severityDictP3["Severity"], TotalBugs: severityDictP3["Total"], TotalOpenDays: severityDictP3["Age"], AvgOpenDays: Math.round(severityDictP3["Age"] / severityDictP3["Total"])}
+        let d2 = {Severity: severityDictP2["Severity"], TotalBugs: severityDictP2["Total"], TotalOpenDays: severityDictP2["Age"], AvgOpenDays: severityDictP2["Total"] == 0 ? 0 : Math.round(severityDictP2["Age"] / severityDictP2["Total"])}
+        let d3 = {Severity: severityDictP3["Severity"], TotalBugs: severityDictP3["Total"], TotalOpenDays: severityDictP3["Age"], AvgOpenDays: severityDictP3["Total"] == 0 ? 0 : Math.round(severityDictP3["Age"] / severityDictP3["Total"])}
         //let d4 = {Severity: severityDictTotal["Severity"], TotalBugs: severityDictTotal["Total"], TotalOpenDays: severityDictTotal["Age"], AvgOpenDays: Math.round(severityDictTotal["Age"] / severityDictTotal["Total"])}
         this.AvgAgeBySeverity.push(d2, d3)
         this.TicketsBySeverity.push(severityDictP2, severityDictP3, severityDictTotal)

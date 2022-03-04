@@ -980,7 +980,7 @@ class PendingMajorRelease extends Component {
         })
         this.Sort(this.TicketsByDeveloper,"dev");
         this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, Total: detotal})
-        let d1= {Severity: severityDictP1["Severity"], TotalBugs: severityDictP1["Total"], TotalOpenDays: severityDictP1["Age"], AvgOpenDays: Math.round(severityDictP1["Age"] / severityDictP1["Total"])}
+        let d1= {Severity: severityDictP1["Severity"], TotalBugs: severityDictP1["Total"], TotalOpenDays: severityDictP1["Age"], AvgOpenDays: severityDictP1["Total"] == 0 ? 0 : Math.round(severityDictP1["Age"] / severityDictP1["Total"])}
         this.AvgAgeBySeverity.push(d1)
         this.TicketsBySeverity.push(severityDictP1)
         this.filterBugsCR(this.state.buisnessUnitCR, this.state.customerCR, this.state.managerCR, this.state.developerCR);
