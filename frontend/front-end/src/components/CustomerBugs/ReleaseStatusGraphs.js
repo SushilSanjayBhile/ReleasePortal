@@ -143,37 +143,74 @@ class ReleaseStatusGraphs extends Component {
             }
             Promise.all(promises1).then(result => {
                 //this.getDefectsToShow();
-                this.getClosedDefects(sdate, edate)
+                this.getClosedDefects()
                 })
         }).catch(err => {
             //this.cusgridOperations(true);
         })
     }
-    getClosedDefects(sdate, edate){
-        let promises2 = []
-        axios.get(`/rest/ClosedDefectsCountByRelease`,{params: {"sdate": sdate,"edate": edate, "bu": this.buList, "fixVersion": this.relNum,}}).then(all => {
-            let MaxResult = all.data.total
-            for(let i = 0; i <= MaxResult; i=i+100){
-                promises2.push(axios.get(`/rest/ClosedDefectsByRelease`,{
-                    params: {
-                        "startAt": i,
-                        "sdate": sdate,
-                        "edate": edate,
-                        "bu": this.buList,
-                        "fixVersion": this.relNum,
-                    }
-                }).then(all => {
-                    this.allClosedDefectsToShow = [...this.allClosedDefectsToShow, ...all.data.issues];
-                }).catch(err => {
-                    //this.cgridOperations(true);
-                }))
-            }
-            Promise.all(promises2).then(result => {
-                this.getDefectsToShow();
-        })
-        }).catch(err => {
-            //this.cgridOperations(true);
-        })
+    // getClosedDefects(sdate, edate){
+    //     let promises2 = []
+    //     axios.get(`/rest/ClosedDefectsCountByRelease`,{params: {"sdate": sdate,"edate": edate, "bu": this.buList, "fixVersion": this.relNum,}}).then(all => {
+    //         let MaxResult = all.data.total
+    //         for(let i = 0; i <= MaxResult; i=i+100){
+    //             promises2.push(axios.get(`/rest/ClosedDefectsByRelease`,{
+    //                 params: {
+    //                     "startAt": i,
+    //                     "sdate": sdate,
+    //                     "edate": edate,
+    //                     "bu": this.buList,
+    //                     "fixVersion": this.relNum,
+    //                 }
+    //             }).then(all => {
+    //                 this.allClosedDefectsToShow = [...this.allClosedDefectsToShow, ...all.data.issues];
+    //             }).catch(err => {
+    //                 //this.cgridOperations(true);
+    //             }))
+    //         }
+    //         Promise.all(promises2).then(result => {
+    //             this.getDefectsToShow();
+    //     })
+    //     }).catch(err => {
+    //         //this.cgridOperations(true);
+    //     })
+    // }
+    getClosedDefects(){
+        let promises3 = []
+        let outerPromise = []
+        console.log(this.xcord)
+        for(let j = 0, k = 0; j < this.xcord.length; j = j + 2, k++){
+            outerPromise.push(axios.get(`/rest/ClosedDefectsCountByRelease`,{params: {"edate": this.xcord[j].split("T")[0],"sdate": this.xcord[j+1].split("T")[0], "bu": this.buList, "fixVersion": this.relNum,}}).then(all => {
+                let MaxResult = all.data.total
+                let templist = []
+                promises3 = []
+                for(let i = 0; i <= MaxResult; i=i+100){
+                    promises3.push(axios.get(`/rest/ClosedDefectsByRelease`,{
+                        params: {
+                            "startAt": i,
+                            "edate": this.xcord[j].split("T")[0],
+                            "sdate": this.xcord[j+1].split("T")[0],
+                            "bu": this.buList,
+                            "fixVersion": this.relNum,
+                        }
+                    }).then(all => {
+                        templist = [...templist, ...all.data.issues];
+                    }).catch(err => {
+                        //this.pgridOperations(true);
+                    }))
+                }
+                Promise.all(promises3).then(result => {
+                    this.allClosedDefectsToShow[k] = [...templist]
+                    })
+            }).catch(err => {
+                //this.pgridOperations(true);
+            }))
+        }
+        Promise.all(outerPromise).then(result => {
+            Promise.all(promises3).then(result => {
+                this.getDefectsToShow()
+            })
+            })
     }
     calculateWeek(date){
         let dtime = date.getTime()
@@ -237,23 +274,40 @@ class ReleaseStatusGraphs extends Component {
             }
 
         }
+        // for(let i = 0; i < this.allClosedDefectsToShow.length; i++){
+        //     num = this.calculateWeek(new Date(this.allClosedDefectsToShow[i]["fields"]["updated"]))
+        //     week["Closed"]["data"][num] = week["Closed"]["data"][num] + 1
+
+        //     this.allClosedDefectsToShow[i]["fields"]["labels"].some(label => {
+        //         let loLabel = label.toLowerCase()
+        //         if(loLabel.includes("blocker")) {
+        //             closedWeekly["Blocker"]["data"][num] = closedWeekly["Blocker"]["data"][num] + 1
+        //             return true;
+        //         }
+        //     })
+        //     if(this.allClosedDefectsToShow[i]["fields"]["priority"]["name"] == "Highest") {
+        //         closedWeekly["SEVP1"]["data"][num] = closedWeekly["SEVP1"]["data"][num] + 1
+        //     }
+        //     else if(this.allClosedDefectsToShow[i]["fields"]["priority"]["name"] != "Highest"){
+        //         closedWeekly["SEVP2+"]["data"][num] = closedWeekly["SEVP2+"]["data"][num] + 1
+        //     }
+        // }
         for(let i = 0; i < this.allClosedDefectsToShow.length; i++){
-            num = this.calculateWeek(new Date(this.allClosedDefectsToShow[i]["fields"]["updated"]))
-            week["Closed"]["data"][num] = week["Closed"]["data"][num] + 1
-
-            this.allClosedDefectsToShow[i]["fields"]["labels"].some(label => {
-                let loLabel = label.toLowerCase()
-                if(loLabel.includes("blocker")) {
-                    closedWeekly["Blocker"]["data"][num] = closedWeekly["Blocker"]["data"][num] + 1
-                    return true;
+            for(let j = 0; j < this.allClosedDefectsToShow[i].length; j++){
+                week["Closed"]["data"][i] = week["Closed"]["data"][i] + 1
+                this.allClosedDefectsToShow[i][j]["fields"]["labels"].some(label => {
+                    let loLabel = label.toLowerCase()
+                    if(loLabel.includes("blocker")) {
+                        closedWeekly["Blocker"]["data"][i] = closedWeekly["Blocker"]["data"][i] + 1
+                        return true;
+                    }
+                })
+                if(this.allClosedDefectsToShow[i][j]["fields"]["priority"]["name"] == "Highest") {
+                    closedWeekly["SEVP1"]["data"][i] = closedWeekly["SEVP1"]["data"][i] + 1
                 }
-            })
-
-            if(this.allClosedDefectsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                closedWeekly["SEVP1"]["data"][num] = closedWeekly["SEVP1"]["data"][num] + 1
-            }
-            else if(this.allClosedDefectsToShow[i]["fields"]["priority"]["name"] != "Highest"){
-                closedWeekly["SEVP2+"]["data"][num] = closedWeekly["SEVP2+"]["data"][num] + 1
+                else if(this.allClosedDefectsToShow[i][j]["fields"]["priority"]["name"] != "Highest"){
+                    closedWeekly["SEVP2+"]["data"][i] = closedWeekly["SEVP2+"]["data"][i] + 1
+                }
             }
         }
         Object.keys(week).forEach(type => {

@@ -22,14 +22,14 @@ import { CSVLink } from 'react-csv';
 const devManager = {"Vivek Gupta":["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde"],
                           "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende"],
                           "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende"],
-                          "Quentin Finck":["Quentin Finck"],
+                          "Quentin Finck":["Quentin Finck", "Abdul Zafar"],
                           "Arvind Krishnan":["Arvind Krishnan"],
                           "Unclassified":["Unclassified"]
 };
 const Ulist = ["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde",
                 "Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende",
                 "Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende",
-                "Quentin Finck", "Arvind Krishnan"]
+                "Quentin Finck", "Arvind Krishnan", "Abdul Zafar"]
 const QAs = {"Prachee Ahire":'', "Mukesh Shinde":'', "Chetan Noginahal":'', "Dinesh":'', "Rajat Gupta":'',
             "Shweta Burte":'', "Aditya Nilkanthwar":'', "Arati Jadhav":'', "Varsha Suryawanshi":'', "Priyanka Birajdar":'',
             "Ashutosh Das":'', "Yatish Devadiga":'', "Ketan Divekar":'', "Bharati Bhole":'', "Kiran Kothule":'', "Swapnil Sonawane":'',
@@ -46,7 +46,7 @@ class PendingMajorRelease extends Component {
     maxResult= 0;
     ApplicableTcsCR = [];
     devList = [];
-    cusList = [];
+    //cusList = [];
     manList = [];
     bugsToShowCR = [];
     constructor(props) {
@@ -89,12 +89,12 @@ class PendingMajorRelease extends Component {
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
-            'Customer' :  {
-                headerName: "Customer", field: "Customer", sortable: true, filter: true,
-                width: '100',
-                cellClass: 'cell-wrap-text',
-                editable: false,
-            },
+            // 'Customer' :  {
+            //     headerName: "Customer", field: "Customer", sortable: true, filter: true,
+            //     width: '100',
+            //     cellClass: 'cell-wrap-text',
+            //     editable: false,
+            // },
             'QAName' : {
                 headerName: "QA Name", field: "QAName", sortable: true, filter: true,
                 width: '90',
@@ -178,8 +178,8 @@ class PendingMajorRelease extends Component {
                     let keyData = params.data.Total;
                     let priority = params.data.Severity;
                     let priMap = {"P1": "Highest"}
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20%3D%20${priMap[priority]}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    return newLink;                         
+                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20%3D%20${priMap[priority]}%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                    return newLink;
                 },
             },
         }
@@ -224,7 +224,7 @@ class PendingMajorRelease extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -266,7 +266,7 @@ class PendingMajorRelease extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -308,13 +308,19 @@ class PendingMajorRelease extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
                         return keyData;
                     }
                 },
+            },
+            'AvgDaysWithoutDueDate' : {
+                headerName: "Average Days Without Due Date", field: "AvgDaysWithoutDueDate", sortable: true, filter: true,
+                width: '150',
+                cellClass: 'cell-wrap-text',
+                editable: false,
             },
             'Total' : {
                 headerName: "Total", field: "Total", sortable: true, filter: true,
@@ -350,7 +356,7 @@ class PendingMajorRelease extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20%3C%20now())%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -376,11 +382,11 @@ class PendingMajorRelease extends Component {
                     let Product = params.data.Product
                     let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
                     if (Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -405,7 +411,7 @@ class PendingMajorRelease extends Component {
                     let keyData = params.data.WithDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -422,7 +428,7 @@ class PendingMajorRelease extends Component {
                     let keyData = params.data.WithOutDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -439,13 +445,19 @@ class PendingMajorRelease extends Component {
                     let keyData = params.data.PassedDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
                         return keyData;
                     }
                 },
+            },
+            'AvgWithoutDueDate' : {
+                headerName: "Average Days Without Due Date", field: "AvgWithoutDueDate", sortable: true, filter: true,
+                width: '150',
+                cellClass: 'cell-wrap-text',
+                editable: false,
             },
             'Total' : {
                 headerName: "Total", field: "Total", sortable: true, filter: true,
@@ -456,7 +468,7 @@ class PendingMajorRelease extends Component {
                     let keyData = params.data.Total;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20%3C%20now())%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -520,6 +532,7 @@ class PendingMajorRelease extends Component {
                 devmColumnDefDict['WithDueDate'],
                 devmColumnDefDict['WithOutDueDate'],
                 devmColumnDefDict['PassedDueDate'],
+                devmColumnDefDict['AvgDaysWithoutDueDate'],
                 devmColumnDefDict['Total'],
             ],
             devColumnDefs: [
@@ -527,12 +540,13 @@ class PendingMajorRelease extends Component {
                 devColumnDefDict['WithDueDate'],
                 devColumnDefDict['WithOutDueDate'],
                 devColumnDefDict['PassedDueDate'],
+                devColumnDefDict['AvgWithoutDueDate'],
                 devColumnDefDict['Total'],
             ],
             bugColumnDefsCR: [
                 bugColumnDefDictCR['BU'],
                 bugColumnDefDictCR['BuManager'],
-                bugColumnDefDictCR['Customer'],
+                //bugColumnDefDictCR['Customer'],
                 bugColumnDefDictCR['Developer'],
                 bugColumnDefDictCR['DevManager'],
                 bugColumnDefDictCR['ReportedDate'],
@@ -682,10 +696,6 @@ class PendingMajorRelease extends Component {
             }
         }
     }
-    componentDidMount() {
-        this.ApplicableTcs = []
-        //setTimeout(() => this.getTcs(this.DateStart, this.DateEnd, this.startAt), 400);
-    }
     onSelectBUCR(bu) {
         if (bu === '') {
             bu = null;
@@ -693,13 +703,13 @@ class PendingMajorRelease extends Component {
         this.setState({buisnessUnitCR:bu})
         this.filterBugsCR(bu, this.state.customerCR, this.state.managerCR, this.state.developerCR);
     }
-    onSelectCustomerCR(cus) {
-        if (cus === '') {
-            cus = null;
-        }
-        this.setState({customerCR:cus})
-        this.filterBugsCR(this.state.buisnessUnitCR, cus, this.state.managerCR, this.state.developerCR);
-    }
+    // onSelectCustomerCR(cus) {
+    //     if (cus === '') {
+    //         cus = null;
+    //     }
+    //     this.setState({customerCR:cus})
+    //     this.filterBugsCR(this.state.buisnessUnitCR, cus, this.state.managerCR, this.state.developerCR);
+    // }
     onSelectManagerCR(man) {
         if (man === '') {
             man = null;
@@ -721,12 +731,13 @@ class PendingMajorRelease extends Component {
     getTcs(startAt) {
         this.gridOperations(false);
         let promises = []
-        axios.get(`/rest/AllOpenBugCountNoImprovement`).then(all => {
+        axios.get(`/rest/AllOpenBugCountNoImprovement`,{params: {flag: "P1"}}).then(all => {
             this.maxResult = all.data.total
             for(let i = 0; i <= this.maxResult; i=i+100){
                 promises.push(axios.get(`/rest/AllOpenBugsNoImprovement`,{
                     params: {
                         "startAt": i,
+                        "flag": "P1"
                     }
                 }).then(all => {
                     this.allTCsToShow = [...this.allTCsToShow, ...all.data.issues];
@@ -741,9 +752,6 @@ class PendingMajorRelease extends Component {
             this.gridOperations(true);
         })
     }
-    getPriorityCount(priority){
-
-    }
     getTcsToShow(){
         this.TicketsBySeverity = []
         this.TicketsByProduct = []
@@ -757,19 +765,18 @@ class PendingMajorRelease extends Component {
         this.devList = [];
         this.manList = [];
         let devDict = {};
-        let cusDict = {};
-        let severity = {"Highest":"P1","High":"P2","Medium":"P3","Low":"P4", "Lowest":"P5"}
+        //let cusDict = {};
+        let severity = {"Highest":"P1"}
         let today = new Date()
         today.setDate(today.getDate())
         today = today.toISOString().split("T")[0]
         const MS_PER_DAY = 1000 * 60 * 60 * 24
 
-        let severityDictP1 = { Severity: "P1", Total: 0, Age: 0}; //severityDictP2 = { Severity: "P2", Total: 0,}, severityDictP3 = { Severity: "P3", Total: 0,}, severityDictP4= { Severity: "P4", Total: 0,}, severityDictP5 = { Severity: "P5", Total: 0,}, severityDictP6 = {Severity: "P6", Total: 0,};
-        //let product = {"Ultima Enterprise": {P1: 0, P2: 0, P3: 0,}, "Ultima Accelerator": {P1: 0, P2: 0, P3: 0,}, "Spektra": {P1: 0, P2: 0, P3: 0,}}
+        let severityDictP1 = { Severity: "P1", Total: 0, Age: 0};
         let product = {"Ultima Enterprise": {Total: 0}, "Ultima Accelerator": {Total: 0}, "Spektra": {Total: 0}, "Unclassified": {Total: 0}}
-        let devM = {"Vivek Gupta":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Kshitij Gunjikar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
-                         "Naveen Seth":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Quentin Finck":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}, "Arvind Krishnan":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},
-                         "Unclassified":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0},}
+        let devM = {"Vivek Gupta":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Kshitij Gunjikar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},
+                         "Naveen Seth":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Quentin Finck":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Arvind Krishnan":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},
+                         "Unclassified":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},}
         let dev = {}
         for(let i = 0; i < this.allTCsToShow.length; i++){
 
@@ -778,7 +785,7 @@ class PendingMajorRelease extends Component {
                 ReportedBy: "QA",
                 BU: "NA",
                 BuManager: "NA",
-                Customer: "NA",
+                //Customer: "NA",
                 Summary: this.allTCsToShow[i]["fields"]["summary"],
                 Severity: severity[this.allTCsToShow[i]["fields"]["priority"]["name"]],
                 QAName: this.allTCsToShow[i]["fields"]["creator"]["displayName"],
@@ -812,74 +819,27 @@ class PendingMajorRelease extends Component {
             if(!QAs[temp.Developer] && !devDict[temp.Developer]){
                 devDict[temp.Developer] = ''
             }
-            if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest"){
-                if(this.allTCsToShow[i]["fields"]["duedate"]) {
-                    temp.DaysPassedDueDate = 0
-                    devM[manager]["WithDueDate"] = devM[manager]["WithDueDate"] + 1
-                    if(!(QAs[developer] === '') && !dev[developer])
-                    {
-                        dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}
-                    }
-                    if(!(QAs[developer] === '')){
-                        dev[developer]["WithDueDate"] = dev[developer]["WithDueDate"] + 1
-                    }
-                    let duedate = new Date(this.allTCsToShow[i]["fields"]["duedate"])
-                    let today = new Date()
-                    if(today.getTime() > duedate.getTime()){
-                        let diff = today.getTime() - duedate.getTime()
-                        let res = Math.round(diff / MS_PER_DAY)
-                        temp.DaysPassedDueDate = res
-                        if(temp.DaysPassedDueDate == 0){
-                            temp.DaysPassedDueDate = 1
-                        }
-                        devM[manager]["PassedDueDate"] = devM[manager]["PassedDueDate"] + 1
-                        if(!(QAs[developer] === '')){
-                            dev[developer]["PassedDueDate"] = dev[developer]["PassedDueDate"] + 1
-                        }
-                    }
-                }
-                else{
-                    let cdate = new Date(this.allTCsToShow[i]["fields"]["created"])
-                    let today = new Date()
-                    let diff = today.getTime() - cdate.getTime()
-                    let res = Math.round(diff / MS_PER_DAY)
-                    temp.DaysWithoutDueDate = res
-                    if(temp.DaysWithoutDueDate == 0){
-                        temp.DaysWithoutDueDate = 1
-                    }
-                    devM[manager]["WithOutDueDate"] = devM[manager]["WithOutDueDate"] + 1
-                    if(!(QAs[developer] === '') && !dev[developer])
-                    {
-                        dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}
-                    }
-                    if(!(QAs[developer] === '')){
-                        dev[developer]["WithOutDueDate"] = dev[developer]["WithOutDueDate"] + 1
-                    }
-                }
-            }
             let ue = false, ua = false, sp = false;
             this.allTCsToShow[i]["fields"]["labels"].forEach(label => {
                 let loLabel = label.toLowerCase()
-                if(loLabel.includes("customer-") || loLabel.includes("customer")) {
-                    temp.ReportedBy = "Support"
-                    let cusName = loLabel.split("-")
-                    if(cusName.length > 1) {
-                        temp.Customer = cusName[1]
-                        if(!cusDict[cusName[1]]){
-                            cusDict[cusName[1]] = ''
-                        }
-                    }
-                    else {
-                        temp.Customer = "NA"
-                    }
-                }
-                else if(loLabel.includes("ultima-software")) {
+                // if(loLabel.includes("customer-") || loLabel.includes("customer")) {
+                //     temp.ReportedBy = "Support"
+                //     let cusName = loLabel.split("-")
+                //     if(cusName.length > 1) {
+                //         temp.Customer = cusName[1]
+                //         if(!cusDict[cusName[1]]){
+                //             cusDict[cusName[1]] = ''
+                //         }
+                //     }
+                //     else {
+                //         temp.Customer = "NA"
+                //     }
+                // }
+                if(loLabel.includes("ultima-software")) {
                     temp.BU = "Ultima Enterprise"
                     temp.BuManager = "Vivek Gupta"
                     if(ue == false){
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                            product["Ultima Enterprise"]["Total"] = product["Ultima Enterprise"]["Total"] + 1
-                        }
+                        product["Ultima Enterprise"]["Total"] = product["Ultima Enterprise"]["Total"] + 1
                         ue = true
                     }
                     else{
@@ -891,9 +851,7 @@ class PendingMajorRelease extends Component {
                     temp.BuManager = "Naveen Seth"
                     if(ua == false){
                         ua = true
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                            product["Ultima Accelerator"]["Total"] = product["Ultima Accelerator"]["Total"] + 1
-                        }
+                        product["Ultima Accelerator"]["Total"] = product["Ultima Accelerator"]["Total"] + 1
                     }
                     else{
                         console.log(this.allTCsToShow[i].key)
@@ -905,21 +863,61 @@ class PendingMajorRelease extends Component {
                     temp.BuManager = "Kshitij Gunjikar"
                     if(sp == false){
                         sp = true
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                            product["Spektra"]["Total"] = product["Spektra"]["Total"] + 1
-                        }
+                        product["Spektra"]["Total"] = product["Spektra"]["Total"] + 1
                     }
                     else{
                         console.log(this.allTCsToShow[i].key)
                     }
-
                 }
             })
-            if (temp.BU == "NA"){
-                if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                    console.log("unclassified-",temp.BugNo)
-                    product["Unclassified"]["Total"] = product["Unclassified"]["Total"] + 1
+            if(this.allTCsToShow[i]["fields"]["duedate"]) {
+                temp.DaysPassedDueDate = 0
+                devM[manager]["WithDueDate"] = devM[manager]["WithDueDate"] + 1
+                if(!(QAs[developer] === '') && !dev[developer])
+                {
+                    dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithOutDueDate: 0}
                 }
+                if(!(QAs[developer] === '')){
+                    dev[developer]["WithDueDate"] = dev[developer]["WithDueDate"] + 1
+                }
+                let duedate = new Date(this.allTCsToShow[i]["fields"]["duedate"])
+                let today = new Date()
+                if(today.getTime() > duedate.getTime()){
+                    let diff = today.getTime() - duedate.getTime()
+                    let res = Math.round(diff / MS_PER_DAY)
+                    temp.DaysPassedDueDate = res
+                    if(temp.DaysPassedDueDate == 0){
+                        temp.DaysPassedDueDate = 1
+                    }
+                    devM[manager]["PassedDueDate"] = devM[manager]["PassedDueDate"] + 1
+                    if(!(QAs[developer] === '')){
+                        dev[developer]["PassedDueDate"] = dev[developer]["PassedDueDate"] + 1
+                    }
+                }
+            }
+            else{
+                let cdate = new Date(this.allTCsToShow[i]["fields"]["created"])
+                let today = new Date()
+                let diff = today.getTime() - cdate.getTime()
+                let res = Math.round(diff / MS_PER_DAY)
+                temp.DaysWithoutDueDate = res
+                if(temp.DaysWithoutDueDate == 0){
+                    temp.DaysWithoutDueDate = 1
+                }
+                devM[manager]["WithOutDueDate"] = devM[manager]["WithOutDueDate"] + 1
+                devM[manager]["DaysWithoutDueDate"] = devM[manager]["DaysWithoutDueDate"] + temp.DaysWithoutDueDate
+                if(!(QAs[developer] === '') && !dev[developer])
+                {
+                    dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithOutDueDate: 0}
+                }
+                if(!(QAs[developer] === '')){
+                    dev[developer]["WithOutDueDate"] = dev[developer]["WithOutDueDate"] + 1
+                    dev[developer]["DaysWithOutDueDate"] = dev[developer]["DaysWithOutDueDate"] + temp.DaysWithoutDueDate
+                }
+            }
+            if (temp.BU == "NA"){
+                console.log("unclassified-",temp.BugNo)
+                product["Unclassified"]["Total"] = product["Unclassified"]["Total"] + 1
             }
             if(temp.OpenDays == 0) {
                 let date1 = new Date()
@@ -931,17 +929,13 @@ class PendingMajorRelease extends Component {
                     temp.OpenDays = 1
                 }
             }
-            if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                severityDictP1.Total =severityDictP1.Total + 1
-                severityDictP1.Age = severityDictP1.Age + temp.OpenDays
-            }
-            if(temp.Severity == "P1"){
-                this.bugsToShowCR.push(temp)
-            }
+            severityDictP1.Total =severityDictP1.Total + 1
+            severityDictP1.Age = severityDictP1.Age + temp.OpenDays
+            this.bugsToShowCR.push(temp)
         }
-        Object.keys(cusDict).forEach(key => {
-            this.cusList.push(key)
-        })
+        // Object.keys(cusDict).forEach(key => {
+        //     this.cusList.push(key)
+        // })
         Object.keys(devDict).forEach(key => {
             this.devList.push(key)
         })
@@ -956,35 +950,38 @@ class PendingMajorRelease extends Component {
             }
         })
         this.TicketsByProduct.push({Product: "Total", Total: prtotal})
-        let wd = 0, wod = 0, pd = 0, dtotal = 0;
+        let wd = 0, wod = 0, pd = 0, avgm = 0, dtotal = 0;
         Object.keys(devM).forEach(key => {
             if(key != "NA"){
-                this.TicketsByDevManager.push({DevManager: key, WithDueDate: devM[key]["WithDueDate"], WithOutDueDate: devM[key]["WithOutDueDate"], PassedDueDate: devM[key]["PassedDueDate"], Total: devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"]})
+                let temp = devM[key]["WithOutDueDate"] == 0 ? 0 : Math.round(devM[key]["DaysWithoutDueDate"] / devM[key]["WithOutDueDate"])
+                this.TicketsByDevManager.push({DevManager: key, WithDueDate: devM[key]["WithDueDate"], WithOutDueDate: devM[key]["WithOutDueDate"], PassedDueDate: devM[key]["PassedDueDate"], AvgDaysWithoutDueDate: temp, Total: devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"]})
                 wd = wd + devM[key]["WithDueDate"];
                 wod = wod + devM[key]["WithOutDueDate"];
                 pd = pd + devM[key]["PassedDueDate"];
+                avgm = avgm + temp;
                 dtotal = dtotal + devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"];
             }
         })
         this.Sort(this.TicketsByDevManager, "devm");
-        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, Total: dtotal})
-        let dewd = 0, dewod = 0, depd = 0, detotal = 0;
+        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, AvgDaysWithoutDueDate: avgm, Total: dtotal})
+        let dewd = 0, dewod = 0, depd = 0, avgd = 0, detotal = 0;
         Object.keys(dev).forEach(key => {
             if(key != "NA"){
-                this.TicketsByDeveloper.push({Developer: key, WithDueDate: dev[key]["WithDueDate"], WithOutDueDate: dev[key]["WithOutDueDate"], PassedDueDate: dev[key]["PassedDueDate"], Total: dev[key]["WithDueDate"] + dev[key]["WithOutDueDate"]})
+                let temp = dev[key]["WithOutDueDate"] == 0 ? 0 : Math.round(dev[key]["DaysWithOutDueDate"] / dev[key]['WithOutDueDate'])
+                this.TicketsByDeveloper.push({Developer: key, WithDueDate: dev[key]["WithDueDate"], WithOutDueDate: dev[key]["WithOutDueDate"], PassedDueDate: dev[key]["PassedDueDate"], AvgWithoutDueDate: temp, Total: dev[key]["WithDueDate"] + dev[key]["WithOutDueDate"]})
                 dewd = dewd + dev[key]["WithDueDate"];
                 dewod = dewod + dev[key]["WithOutDueDate"];
                 depd = depd + dev[key]["PassedDueDate"];
+                avgd = avgd + temp
                 detotal = detotal + dev[key]["WithDueDate"] + dev[key]["WithOutDueDate"];
             }
         })
         this.Sort(this.TicketsByDeveloper,"dev");
-        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, Total: detotal})
+        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: avgd, Total: detotal})
         let d1= {Severity: severityDictP1["Severity"], TotalBugs: severityDictP1["Total"], TotalOpenDays: severityDictP1["Age"], AvgOpenDays: severityDictP1["Total"] == 0 ? 0 : Math.round(severityDictP1["Age"] / severityDictP1["Total"])}
         this.AvgAgeBySeverity.push(d1)
         this.TicketsBySeverity.push(severityDictP1)
         this.filterBugsCR(this.state.buisnessUnitCR, this.state.customerCR, this.state.managerCR, this.state.developerCR);
-        //this.gridOperations(true);
     }
     Sort(list, flag){
         let namelist = []
@@ -1261,7 +1258,7 @@ getData(){
                                                 <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                             }
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
-                                            <span className='rp-app-table-title'>Tickets Pending Major Release (Sev P1)</span>
+                                            <span className='rp-app-table-title'>Tickets Pending Major Release (Sev P1)(From 1 Jan 2020)</span>
                                             {/* {
                                                 this.state.tcOpen &&
                                                 <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
@@ -1591,7 +1588,7 @@ getData(){
                                             {
                                                 [
                                                     { style: { width: '8rem', marginLeft: '1rem' }, field: 'BU', onChange: (e) => this.onSelectBUCR(e), values: [{ value: '', text: 'Select Buisness Unit' }, ...(['Spektra', 'Ultima Accelerator', 'Ultima Enterprise', 'NA'].map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '8rem', marginLeft: '1rem' }, field: 'Customer', onChange: (e) => this.onSelectCustomerCR(e), values: [{ value: '', text: 'Select Customer' }, ...(this.cusList.map(each => ({ value: each, text: each })))] },
+                                                    //{ style: { width: '8rem', marginLeft: '1rem' }, field: 'Customer', onChange: (e) => this.onSelectCustomerCR(e), values: [{ value: '', text: 'Select Customer' }, ...(this.cusList.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '1rem' }, field: 'DevManager', onChange: (e) => this.onSelectManagerCR(e), values: [{ value: '', text: 'Select Dev Manager' }, ...(this.manList.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '1rem' }, field: 'Developer', onChange: (e) => this.onSelectDeveloperCR(e), values: [{ value: '', text: 'Select Developer' }, ...(this.devList.map(each => ({ value: each, text: each })))] },
                                                 ].map(item => (

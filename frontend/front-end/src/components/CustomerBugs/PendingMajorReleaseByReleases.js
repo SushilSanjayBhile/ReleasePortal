@@ -24,7 +24,7 @@ const devManager = {"Vivek Gupta":["Vivek Gupta", "Nikhil Temgire", "Samiksha Ba
                           "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende"],
                           "Quentin Finck":["Quentin Finck", "Abdul Zafar"],
                           "Arvind Krishnan":["Arvind Krishnan"],
-                          "Unclassified":["Unclassified"],
+                          "Unclassified":["Unclassified"]
 };
 const Ulist = ["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde",
                 "Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende",
@@ -34,8 +34,7 @@ const QAs = {"Prachee Ahire":'', "Mukesh Shinde":'', "Chetan Noginahal":'', "Din
             "Shweta Burte":'', "Aditya Nilkanthwar":'', "Arati Jadhav":'', "Varsha Suryawanshi":'', "Priyanka Birajdar":'',
             "Ashutosh Das":'', "Yatish Devadiga":'', "Ketan Divekar":'', "Bharati Bhole":'', "Kiran Kothule":'', "Swapnil Sonawane":'',
         }
-const OneJan = new Date("2022-01-01T00:00:00.000-0800").getTime();
-class PendingPostRelease extends Component {
+class PendingMajorReleaseByReleases extends Component {
     startAt = 0;
     isApiUnderProgress = false;
     allTCsToShow = [];
@@ -48,11 +47,13 @@ class PendingPostRelease extends Component {
     ApplicableTcsCR = [];
     devList = [];
     //cusList = [];
+    fixStr = '';
     manList = [];
     bugsToShowCR = [];
     constructor(props) {
         super(props);
         this.csvLink = React.createRef();
+        let scope = this;
         let bugColumnDefDictCR = {
             'BugNo' : {
                 headerName: "Bug No", field: "BugNo", sortable: true, filter: true,
@@ -178,20 +179,10 @@ class PendingPostRelease extends Component {
                 cellRenderer: function(params) {
                     let keyData = params.data.Total;
                     let priority = params.data.Severity;
-                    if(priority == "P2"){
-                        //link before showing bugs > 1Jan
-                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20in%20(High)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
-                    }
-                    else if(priority != "Total"){
-                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20in%20(Low%2CLowest%2CMedium)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
-                    }
-                    else{
-                        return keyData;
-                    }
+                    let priMap = {"P1": "Highest"}
+                    //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20%3D%20${priMap[priority]}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20AND%20priority%20%3D%20${priMap[priority]}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                    return newLink;
                 },
             },
         }
@@ -203,7 +194,7 @@ class PendingPostRelease extends Component {
                 editable: false,
             },
             'WithDueDate' : {
-                headerName: "With Due Date", field: "WithDueDate", sortable: true, filter: true,
+                headerName: "With due date", field: "WithDueDate", sortable: true, filter: true,
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
@@ -236,7 +227,7 @@ class PendingPostRelease extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -278,7 +269,7 @@ class PendingPostRelease extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -320,7 +311,7 @@ class PendingPostRelease extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20(${assignee})%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -368,7 +359,7 @@ class PendingPostRelease extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20(${assignee})%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -384,50 +375,6 @@ class PendingPostRelease extends Component {
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
-            'P2' : {
-                headerName: "P2", field: "P2", sortable: true, filter: true,
-                width: '150',
-                cellClass: 'cell-wrap-text',
-                editable: false,
-                cellRenderer: function(params) {
-                    let keyData = params.data.P2;
-                    let Product = params.data.Product
-                    let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
-                    if(Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20AND%20priority%20%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
-                    }
-                    else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
-                    }
-                    else{
-                        return keyData;
-                    }
-                },
-            },
-            'P3' : {
-                headerName: "P3", field: "P3", sortable: true, filter: true,
-                width: '150',
-                cellClass: 'cell-wrap-text',
-                editable: false,
-                cellRenderer: function(params) {
-                    let keyData = params.data.P3;
-                    let Product = params.data.Product
-                    let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
-                    if(Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20AND%20priority%20!%3D%20Highest%20AND%20priority%20!%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
-                    }
-                    else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20!%3D%20Highest%20AND%20priority%20!%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        return newLink;
-                    }
-                    else{
-                        return keyData;
-                    }
-                },
-            },
             'Total' : {
                 headerName: "Total", field: "Total", sortable: true, filter: true,
                 width: '150',
@@ -437,12 +384,12 @@ class PendingPostRelease extends Component {
                     let keyData = params.data.Total;
                     let Product = params.data.Product
                     let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
-                    if(Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                    if (Product == "Unclassified"){
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20%20AND%20priority%20%3D%20Highest%20AND%20labels%20not%20in%20(active)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20Highest%20AND%20labels%20not%20in%20(active)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -467,7 +414,7 @@ class PendingPostRelease extends Component {
                     let keyData = params.data.WithDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -484,7 +431,7 @@ class PendingPostRelease extends Component {
                     let keyData = params.data.WithOutDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -501,7 +448,7 @@ class PendingPostRelease extends Component {
                     let keyData = params.data.PassedDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -524,7 +471,7 @@ class PendingPostRelease extends Component {
                     let keyData = params.data.Total;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -581,8 +528,6 @@ class PendingPostRelease extends Component {
             ],
             proColumnDefs: [
                 proColumnDefDict['Product'],
-                proColumnDefDict['P2'],
-                proColumnDefDict['P3'],
                 proColumnDefDict['Total'],
             ],
             devmColumnDefs: [
@@ -619,14 +564,14 @@ class PendingPostRelease extends Component {
                 bugColumnDefDictCR['QAName'],
                 bugColumnDefDictCR['QAValidatedDate'],
             ],
-            statusColumnCR:[
-                {id:1,value:'P1', isChecked: false},
-                {id:2,value:'P2', isChecked: true},
-                {id:3,value:'P3', isChecked: true},
-                // {id:4,value:'P4', isChecked: false},
-                // {id:4,value:'P5', isChecked: false},
-                // {id:4,value:'P6', isChecked: false},
-            ],
+            // statusColumnCR:[
+            //     {id:1,value:'P1', isChecked: true},
+            //     {id:2,value:'P2', isChecked: true},
+            //     {id:3,value:'P3', isChecked: false},
+            //     {id:4,value:'P4', isChecked: false},
+            //     {id:4,value:'P5', isChecked: false},
+            //     {id:4,value:'P6', isChecked: false},
+            // ],
             avgAgeColumnDefs: [
                 avgAgeColumnDefDict['Severity'],
                 // avgAgeColumnDefDict['TotalBugs'],
@@ -644,10 +589,8 @@ class PendingPostRelease extends Component {
             },
         }
     }
+    // popoverToggleR = () => this.setState({ popoverOpenR: !this.state.popoverOpenR });
     popoverToggle2CR = () => this.setState({ popoverOpen2CR: !this.state.popoverOpen2CR });
-    popoverToggle1CR = () => this.setState({ popoverOpen1CR: !this.state.popoverOpen1CR });
-    popoverToggle1 = () => this.setState({ popoverOpen1: !this.state.popoverOpen1 });
-    popoverToggle2 = () => this.setState({ popoverOpen2: !this.state.popoverOpen2 });
     getRowHeight = (params) => {
         if (params.data && params.data.Description) {
             return 28 * (Math.floor(params.data.Description.length / 60) + 2);
@@ -786,16 +729,19 @@ class PendingPostRelease extends Component {
         this.filterBugsCR(this.state.buisnessUnitCR, this.state.customerCR, this.state.managerCR, this.state.developerCR)
         this.setState({ popoverOpen2CR: !this.state.popoverOpen2CR });
     }
-    getTcs(startAt) {
+    getTcs() {
+        this.props.parentCallbackP1("p1p");
         this.gridOperations(false);
         let promises = []
-        axios.get(`/rest/AllOpenBugCountNoImprovement`, {params: {flag: "P2"}}).then(all => {
+        this.allTCsToShow = []
+        axios.get(`/rest/AllOpenBugCountNoImprovement`,{params: {flag: "P1ByRelease", fixVersions: this.props.parentData}}).then(all => {
             this.maxResult = all.data.total
             for(let i = 0; i <= this.maxResult; i=i+100){
                 promises.push(axios.get(`/rest/AllOpenBugsNoImprovement`,{
                     params: {
                         "startAt": i,
-                        "flag": "P2"
+                        "flag": "P1ByRelease",
+                        "fixVersions": this.props.parentData,
                     }
                 }).then(all => {
                     this.allTCsToShow = [...this.allTCsToShow, ...all.data.issues];
@@ -824,20 +770,20 @@ class PendingPostRelease extends Component {
         this.manList = [];
         let devDict = {};
         //let cusDict = {};
-        let severity = {"High":"P2","Medium":"P3","Low":"P4", "Lowest":"P5"}
+        let severity = {"Highest":"P1"}
         let today = new Date()
         today.setDate(today.getDate())
         today = today.toISOString().split("T")[0]
         const MS_PER_DAY = 1000 * 60 * 60 * 24
 
-        let severityDictP2 = { Severity: "P2", Total: 0, Age: 0}, severityDictP3 = { Severity: "P3", Total: 0, Age: 0}, severityDictTotal = {Severity: "Total", Total: 0, Age: 0};
-        let product = {"Ultima Enterprise": {P2: 0, P3: 0,}, "Ultima Accelerator": {P2: 0, P3: 0,}, "Spektra": {P2: 0, P3: 0,}, "Unclassified": {P2: 0, P3: 0,}};
+        let severityDictP1 = { Severity: "P1", Total: 0, Age: 0};
+        let product = {"Ultima Enterprise": {Total: 0}, "Ultima Accelerator": {Total: 0}, "Spektra": {Total: 0}, "Unclassified": {Total: 0}}
         let devM = {"Vivek Gupta":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Kshitij Gunjikar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},
-                         "Naveen Seth":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Quentin Finck":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},
-                         "Arvind Krishnan":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},
+                         "Naveen Seth":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Quentin Finck":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Arvind Krishnan":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},
                          "Unclassified":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},}
         let dev = {}
         for(let i = 0; i < this.allTCsToShow.length; i++){
+
             let temp = {
                 BugNo: this.allTCsToShow[i].key,
                 ReportedBy: "QA",
@@ -897,12 +843,7 @@ class PendingPostRelease extends Component {
                     temp.BU = "Ultima Enterprise"
                     temp.BuManager = "Vivek Gupta"
                     if(ue == false){
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                            product["Ultima Enterprise"]["P2"] = product["Ultima Enterprise"]["P2"] + 1
-                        }
-                        else {
-                            product["Ultima Enterprise"]["P3"] = product["Ultima Enterprise"]["P3"] + 1
-                        }
+                        product["Ultima Enterprise"]["Total"] = product["Ultima Enterprise"]["Total"] + 1
                         ue = true
                     }
                     else{
@@ -914,36 +855,25 @@ class PendingPostRelease extends Component {
                     temp.BuManager = "Naveen Seth"
                     if(ua == false){
                         ua = true
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                            product["Ultima Accelerator"]["P2"] = product["Ultima Accelerator"]["P2"] + 1
-                        }
-                        else {
-                            product["Ultima Accelerator"]["P3"] = product["Ultima Accelerator"]["P3"] + 1
-                        }
+                        product["Ultima Accelerator"]["Total"] = product["Ultima Accelerator"]["Total"] + 1
                     }
                     else{
                         console.log(this.allTCsToShow[i].key)
                     }
 
                 }
-                else if(loLabel == "spektra") {
+                else if(loLabel.includes("spektra")) {
                     temp.BU = "Spektra"
                     temp.BuManager = "Kshitij Gunjikar"
                     if(sp == false){
                         sp = true
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                            product["Spektra"]["P2"] = product["Spektra"]["P2"] + 1
-                        }
-                        else{
-                            product["Spektra"]["P3"] = product["Spektra"]["P3"] + 1
-                        }
+                        product["Spektra"]["Total"] = product["Spektra"]["Total"] + 1
                     }
                     else{
                         console.log(this.allTCsToShow[i].key)
                     }
                 }
             })
-
             if(this.allTCsToShow[i]["fields"]["duedate"]) {
                 temp.DaysPassedDueDate = 0
                 devM[manager]["WithDueDate"] = devM[manager]["WithDueDate"] + 1
@@ -989,14 +919,9 @@ class PendingPostRelease extends Component {
                     dev[developer]["DaysWithOutDueDate"] = dev[developer]["DaysWithOutDueDate"] + temp.DaysWithoutDueDate
                 }
             }
-
             if (temp.BU == "NA"){
-                if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                    product["Unclassified"]["P2"] = product["Unclassified"]["P2"] + 1
-                }
-                else {
-                    product["Unclassified"]["P3"] = product["Unclassified"]["P3"] + 1
-                }
+                console.log("unclassified-",temp.BugNo)
+                product["Unclassified"]["Total"] = product["Unclassified"]["Total"] + 1
             }
             if(temp.OpenDays == 0) {
                 let date1 = new Date()
@@ -1008,17 +933,8 @@ class PendingPostRelease extends Component {
                     temp.OpenDays = 1
                 }
             }
-            if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                severityDictP2.Total =severityDictP2.Total + 1
-                severityDictP2.Age = severityDictP2.Age + temp.OpenDays
-            }
-            else {
-                severityDictP3.Total =severityDictP3.Total + 1
-                severityDictP3.Age = severityDictP3.Age + temp.OpenDays
-            }
-            if(temp.Severity != "P2"){
-                temp.Severity = "P3"
-            }
+            severityDictP1.Total =severityDictP1.Total + 1
+            severityDictP1.Age = severityDictP1.Age + temp.OpenDays
             this.bugsToShowCR.push(temp)
         }
         // Object.keys(cusDict).forEach(key => {
@@ -1030,16 +946,14 @@ class PendingPostRelease extends Component {
         Object.keys(devManager).forEach(key => {
             this.manList.push(key)
         })
-        let Pr2 = 0, Pr3 = 0, prtotal = 0;
+        let prtotal = 0;
         Object.keys(product).forEach(key => {
             if(key != "NA"){
-                this.TicketsByProduct.push({Product: key, P2: product[key]["P2"], P3: product[key]["P3"], Total: product[key]["P2"] + product[key]["P3"]});
-                Pr2 = Pr2 + product[key]["P2"];
-                Pr3 = Pr3 + product[key]["P3"];
-                prtotal = prtotal + product[key]["P2"] + product[key]["P3"];
+                this.TicketsByProduct.push({Product: key, Total: product[key]["Total"]})
+                prtotal = prtotal + product[key]["Total"];
             }
         })
-        this.TicketsByProduct.push({Product: "Total", P2: Pr2, P3: Pr3, Total: prtotal})
+        this.TicketsByProduct.push({Product: "Total", Total: prtotal})
         let wd = 0, wod = 0, pd = 0, avgm = 0, dtotal = 0;
         Object.keys(devM).forEach(key => {
             if(key != "NA"){
@@ -1068,13 +982,11 @@ class PendingPostRelease extends Component {
         })
         this.Sort(this.TicketsByDeveloper,"dev");
         this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: avgd, Total: detotal})
-        severityDictTotal["Total"] = severityDictP2["Total"] + severityDictP3["Total"]
-        severityDictTotal["Age"] = severityDictP2["Age"] + severityDictP3["Age"]
-        let d2 = {Severity: severityDictP2["Severity"], TotalBugs: severityDictP2["Total"], TotalOpenDays: severityDictP2["Age"], AvgOpenDays: severityDictP2["Total"] == 0 ? 0 : Math.round(severityDictP2["Age"] / severityDictP2["Total"])}
-        let d3 = {Severity: severityDictP3["Severity"], TotalBugs: severityDictP3["Total"], TotalOpenDays: severityDictP3["Age"], AvgOpenDays: severityDictP3["Total"] == 0 ? 0 : Math.round(severityDictP3["Age"] / severityDictP3["Total"])}
-        this.AvgAgeBySeverity.push(d2, d3)
-        this.TicketsBySeverity.push(severityDictP2, severityDictP3, severityDictTotal)
+        let d1= {Severity: severityDictP1["Severity"], TotalBugs: severityDictP1["Total"], TotalOpenDays: severityDictP1["Age"], AvgOpenDays: severityDictP1["Total"] == 0 ? 0 : Math.round(severityDictP1["Age"] / severityDictP1["Total"])}
+        this.AvgAgeBySeverity.push(d1)
+        this.TicketsBySeverity.push(severityDictP1)
         this.filterBugsCR(this.state.buisnessUnitCR, this.state.customerCR, this.state.managerCR, this.state.developerCR);
+        this.props.parentCallbackP1("p1c");
     }
     Sort(list, flag){
         let namelist = []
@@ -1237,19 +1149,6 @@ class PendingPostRelease extends Component {
                 }
             }
         }
-    let temp = []
-    let priority = {}
-    this.state.statusColumnCR.forEach(item => {
-        if(item.isChecked == true){
-            priority[item.value] = true
-        }
-    })
-    this.ApplicableTcsCR.forEach(bug => {
-        if(priority[bug["Severity"]] == true) {
-            temp.push(bug)
-        }
-    })
-    this.ApplicableTcsCR = temp
     this.gridOperations(true);
 }
 getData(){
@@ -1337,7 +1236,7 @@ getData(){
             <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => {this.setState({ tcOpen: !this.state.tcOpen }, () => {if(this.state.tcOpen){this.allTCsToShow = []; this.getTcs(this.DateStart, this.DateEnd, this.startAt);}})}}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => {this.setState({ tcOpen: !this.state.tcOpen }, () => {if(this.state.tcOpen){this.allTCsToShow = []; this.getTcs();}})}}>
                             <div class="row">
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
@@ -1351,17 +1250,10 @@ getData(){
                                                 <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                             }
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
-                                            <span className='rp-app-table-title'>Tickets Pending Post Release (Sev P2-P3)(From 1 Jan 2022)</span>
-                                            {/* {
-                                                this.state.tcOpen &&
-                                                <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
-                                                    <span className='rp-app-table-value'>Selected: {this.state.selectedRows}</span>
-                                                </div>
-                                            } */}
+                                            <span className='rp-app-table-title'>Dev P1 issues (From 1 Jan 2020)</span>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                         <Collapse isOpen={this.state.tcOpen}>
@@ -1369,13 +1261,13 @@ getData(){
                                 <div class="col-sm-6" style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
-                                            <div style={{ width: '15rem', marginTop: '0.5rem', marginLeft: '1rem' }}>
+                                            <div style={{ width: '15rem', marginTop: '1rem', marginLeft: '1rem' }}>
                                                     <span className='rp-app-table-title'>Tickets By Severity</span>
                                             </div>
                                             <div style={{ width: '5rem'}}>
                                                 <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.gridApi) {
-                                                        this.gridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Post_Pending_Tickets_by_Severity.csv" });
+                                                        this.gridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Major_Pending_Tickets_by_Severity.csv" });
                                                     }
                                                 }} >
                                                     Download
@@ -1435,7 +1327,7 @@ getData(){
                                             <div style={{ width: '5rem'}}>
                                                 <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.proGridApi) {
-                                                        this.proGridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Post_Pending_Tickets_by_Product.csv" });
+                                                        this.proGridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Major_Pending_Tickets_by_Product.csv" });
                                                     }
                                                 }} >
                                                     Download
@@ -1497,7 +1389,7 @@ getData(){
                                             <div style={{ width: '5rem'}}>
                                                 <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.devmGridApi) {
-                                                        this.devmGridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Post_Pending_Tickets_by_Dev_Manager.csv" });
+                                                        this.devmGridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Major_Pending_Tickets_by_Dev_Manager.csv" });
                                                     }
                                                 }} >
                                                     Download
@@ -1557,7 +1449,7 @@ getData(){
                                             <div style={{ width: '5rem'}}>
                                                 <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.devGridApi) {
-                                                        this.devGridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Post_Pending_Tickets_by_Developer.csv" });
+                                                        this.devGridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Major_Pending_Tickets_by_Developer.csv" });
                                                     }
                                                 }} >
                                                     Download
@@ -1610,7 +1502,7 @@ getData(){
                                 </div>
                             </div >
                             <div class="row">
-                                <div class="col-sm-6" style={{ width: '100%', height: '300px', marginBottom: '6rem' }}>
+                                <div class="col-sm-6" style={{ width: '100%', height: '200px', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
                                             <div style={{ width: '20rem', marginTop: '0.5rem', marginLeft: '1rem' }}>
@@ -1619,7 +1511,7 @@ getData(){
                                             <div style={{ width: '5rem'}}>
                                                 <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.avgOpenDaysGridApi) {
-                                                        this.avgOpenDaysGridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Post_Pending_Tickets_Avg_Open_Days_By_Severity.csv" });
+                                                        this.avgOpenDaysGridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Major_Pending_Tickets_Avg_Open_Days_By_Severity.csv" });
                                                     }
                                                 }} >
                                                     Download
@@ -1694,9 +1586,9 @@ getData(){
                                                     </div>
                                                 ))
                                             }
-                                            <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
-                                                <Button disabled={this.state.isApiUnderProgressCR} id="PopoverAssign2CR3" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
-                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2CR3" id="PopoverAssignButton2CR3" toggle={() => this.popoverToggle2CR()} isOpen={this.state.popoverOpen2CR}>
+                                            {/* <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
+                                                <Button disabled={this.state.isApiUnderProgressCR} id="PopoverAssign2CR" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
+                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2CR" id="PopoverAssignButton2CR" toggle={() => this.popoverToggle2CR()} isOpen={this.state.popoverOpen2CR}>
                                                     <PopoverBody>
                                                         <div>
                                                             <input type="checkbox" onClick={this.handleAllCheckedStatusTCsCR}  value="checkedall" /> Check / Uncheck All
@@ -1711,11 +1603,11 @@ getData(){
                                                         </div>
                                                     </PopoverBody>
                                                 </UncontrolledPopover>
-                                            </div>
+                                            </div> */}
                                             <div style={{ width: '5rem'}}>
                                                 <Button disabled={this.state.isApiUnderProgress} title="Only selected bugs will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.bugGridApiCR) {
-                                                        this.bugGridApiCR.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "AllPostPending_Bugs.csv" });
+                                                        this.bugGridApiCR.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "AllMajor_Bugs.csv" });
                                                     }
                                                 }} >
                                                     Download
@@ -1763,11 +1655,10 @@ getData(){
                                                 <div style={{ display: 'inline' }}>
                                                     <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {this.ApplicableTcsCR.length}</span>
                                                     <span style={{ marginLeft: '5rem' }} className='rp-app-table-value'>Selected: {this.state.bugSelectedRowsCR}</span>
-
                                                 </div>
                                             }
                                     </div>
-                                    <CSVLink style={{ textDecoration: 'none' }} data={this.state.sevstr} ref={this.csvLink} filename={'Tickets_Pending_Post_Release(SEV P2-P3).csv'} target="_blank"/>
+                                    <CSVLink style={{ textDecoration: 'none' }} data={this.state.sevstr} ref={this.csvLink} filename={'Tickets_Pending_Major_Release(SEV P1).csv'} target="_blank"/>
                                     <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
                                         <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={(e) => {this.getData()}} >
                                                 Download All
@@ -1782,4 +1673,4 @@ getData(){
         )
     }
 }
-export default (PendingPostRelease);
+export default (PendingMajorReleaseByReleases);

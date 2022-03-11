@@ -51,6 +51,7 @@ const ReleaseSanityResult = React.lazy(() => import('./views/Release/ReleaseSani
 //const teamwork = React.lazy(() => import('./views/TeamWorkComponent/TaskOverView'))
 const qawork = React.lazy(() => import('./views/Release/QaReport/QaAnalysis'))
 const customerTickets = React.lazy(() => import('./views/Release/CustomerTickets/CustomerTicketsAnalysis'))
+const DefectReportsByReleases = React.lazy(() => import('./views/Release/CustomerTickets/DefectReportsByReleases'))
 const MyTestMetrics = React.lazy(() => import('./views/Release/MyTestMetrics/MyTestMetrics'));
 const adminDashboard = React.lazy(() => import('./views/Release/adminDashboard/adminDashboard'));
 const adminDashboardGUI = React.lazy(() => import('./views/Release/adminDashboard/adminDashboardGUI'));
@@ -76,6 +77,7 @@ const routes = [
   //{ path: '/release/teamwork', name: 'teamwork', exact: true, component: teamwork },
   { path: '/release/qawork', name: 'qawork', exact: true, component: qawork },
   { path: '/release/defectReports', name: 'defectReports', exact: true, component: customerTickets },
+  { path: '/release/defectReportsByReleases', name: 'defectReportsByReleases', exact: true, component: DefectReportsByReleases },
   { path: '/release/mytestmatrics', name: 'MyTestMetrics', exact: true, component: MyTestMetrics },
   { path: '/release/adminDashboard', name: 'adminDashboard', exact: true, component: adminDashboard },
   { path: '/release/adminDashboardGUI', name: 'adminDashboardGUI', exact: true, component: adminDashboardGUI },

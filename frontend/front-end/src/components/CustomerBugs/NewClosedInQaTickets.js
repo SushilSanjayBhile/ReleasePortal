@@ -18,6 +18,7 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
 import { element } from 'prop-types';
 import { CSVLink } from 'react-csv';
+const OneJan = new Date("2022-01-01T00:00:00.000-0700").getTime();
 class NewClosedInQaTickets extends Component {
     isApiUnderProgress = false;
     disableShowButton = true;
@@ -68,18 +69,21 @@ class NewClosedInQaTickets extends Component {
                     label = encodeURIComponent(label);
                     if(defect == "New Defects"){
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20labels%20in%20(Customer)%20AND%20createdDate%20%3E%3D%20${self.cusDateStart}%20AND%20createdDate%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20labels%20in%20(${label})%20AND%20createdDate%20%3E%3D%20${self.cusDateStart}%20AND%20createdDate%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20labels%20in%20(${label})%20AND%20createdDate%20%3E%3D%20${self.cusDateStart}%20AND%20createdDate%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20labels%20in%20(active)%20AND%20created%20%3E%3D%20${self.cusDateStart}%20AND%20created%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(defect == "Defects Closed"){
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Closed)%20AND%20labels%20in%20(${label})%20AND%20updatedDate%20%3E%3D%20${self.cusDateStart}%20AND%20updatedDate%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(${label})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(${label})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(active)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
 
                         return newLink;
                     }
                     else {
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Resolved%2C%20%22IN%20QA%22)%20AND%20labels%20in%20(${label})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(${label})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(${label})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(active)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                 },
@@ -101,17 +105,21 @@ class NewClosedInQaTickets extends Component {
                     let keyData = params.data.Total;
                     let defect = params.data.Defects;
                     if(defect == "New Defects"){
-                        let newLink = `<a href=  https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20createdDate%20%3E%3D%20${self.cusDateStart}%20AND%20createdDate%20%3C%3D%20${self.cusDateEnd}%20AND%20priority%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        //let newLink = `<a href=  https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20createdDate%20%3E%3D%20${self.cusDateStart}%20AND%20createdDate%20%3C%3D%20${self.cusDateEnd}%20AND%20priority%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href=  https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20createdDate%20%3E%3D%20${self.cusDateStart}%20AND%20createdDate%20%3C%3D%20${self.cusDateEnd}%20AND%20priority%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+
                         return newLink;
                     }
                     else if(defect == "Defects Closed"){
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Closed)%20AND%20priority%20in%20(Highest)%20AND%20updatedDate%20%3E%3D%20${self.cusDateStart}%20AND%20updatedDate%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20priority%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20priority%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else {
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Resolved%2C%20%22IN%20QA%22)%20AND%20priority%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20priority%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20priority%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20priority%20in%20(Highest)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                 },
@@ -133,17 +141,20 @@ class NewClosedInQaTickets extends Component {
                     let keyData = params.data.Total;
                     let defect = params.data.Defects;
                     if(defect == "New Defects"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20createdDate%20%3E%3D%20${self.cusDateStart}%20AND%20createdDate%20%3C%3D%20${self.cusDateEnd}%20%20AND%20priority%20not%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20createdDate%20%3E%3D%20${self.cusDateStart}%20AND%20createdDate%20%3C%3D%20${self.cusDateEnd}%20%20AND%20priority%20not%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20createdDate%20%3E%3D%20${self.cusDateStart}%20AND%20createdDate%20%3C%3D%20${self.cusDateEnd}%20%20AND%20priority%20not%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(defect == "Defects Closed"){
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Closed)%20AND%20priority%20not%20in%20(Highest)%20AND%20updatedDate%20%3E%3D%20${self.cusDateStart}%20AND%20updatedDate%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20priority%20not%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20priority%20not%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else {
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Resolved%2C%20%22IN%20QA%22)%20AND%20priority%20not%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20priority%20not%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20priority%20not%20in%20(Highest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                 },
@@ -239,7 +250,7 @@ class NewClosedInQaTickets extends Component {
         this.allTCsToShow = [];
         this.allClosedDefectsToShow = [];
         this.allPendingDefectsToShow = [];
-        axios.get(`/rest/NewDefectsCount`,{params: {"sdate": sdate,"edate": edate,"flag": "no",}}).then(all => {
+        axios.get(`/rest/NewDefectsCount`,{params: {"sdate": sdate,"edate": edate,}}).then(all => {
             let MaxResult = all.data.total
             for(let i = 0; i <= MaxResult; i=i+100){
                 promises1.push(axios.get(`/rest/NewDefects`,{
@@ -247,7 +258,6 @@ class NewClosedInQaTickets extends Component {
                         "startAt": i,
                         "sdate": sdate,
                         "edate": edate,
-                        "flag": "no",
                     }
                 }).then(all => {
                     this.allTCsToShow = [...this.allTCsToShow, ...all.data.issues];
@@ -281,12 +291,7 @@ class NewClosedInQaTickets extends Component {
                 }))
             }
             Promise.all(promises2).then(result => {
-                //if(callPDefect == true){
                 this.getPendingDefects(sdate, edate);
-                //}
-                // else{
-                //     this.getDefectsToShow();
-                // }
         })
         }).catch(err => {
             //this.cgridOperations(true);
@@ -332,7 +337,8 @@ class NewClosedInQaTickets extends Component {
             let increaseCusDCount = true
             this.allTCsToShow[i]["fields"]["labels"].some(label => {
                 let loLabel = label.toLowerCase()
-                if(loLabel.includes("customer-") || loLabel.includes("customer")) {
+                //if(loLabel.includes("customer-") || loLabel.includes("customer")) {
+                if(loLabel.includes("active")) {
                     if(increaseCusDCount){
                         custDefectCount["New Defects"] = custDefectCount["New Defects"] + 1
                         increaseCusDCount = false
@@ -345,18 +351,21 @@ class NewClosedInQaTickets extends Component {
                     }
                 }
             })
-            if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                pendingMDefectCount["New Defects"] = pendingMDefectCount["New Defects"] + 1
-            }
-            else if(this.allTCsToShow[i]["fields"]["priority"]["name"] != "Highest"){
-                pendingPDefectCount["New Defects"] = pendingPDefectCount["New Defects"] + 1
+            if(increaseCusDCount){
+                if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
+                    pendingMDefectCount["New Defects"] = pendingMDefectCount["New Defects"] + 1
+                }
+                else if(this.allTCsToShow[i]["fields"]["priority"]["name"] != "Highest"){
+                    pendingPDefectCount["New Defects"] = pendingPDefectCount["New Defects"] + 1
+                }
             }
         }
         for(let i = 0; i < this.allClosedDefectsToShow.length; i++){
             let increaseCusDCount = true
             this.allClosedDefectsToShow[i]["fields"]["labels"].some(label => {
                 let loLabel = label.toLowerCase()
-                if(loLabel.includes("customer-") || loLabel.includes("customer")) {
+                //if(loLabel.includes("customer-") || loLabel.includes("customer")) {
+                if(loLabel.includes("active")) {
                     if(increaseCusDCount){
                         custDefectCount["Defects Closed"] = custDefectCount["Defects Closed"] + 1
                         increaseCusDCount = false
@@ -369,18 +378,21 @@ class NewClosedInQaTickets extends Component {
                     }
                 }
             })
-            if(this.allClosedDefectsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                pendingMDefectCount["Defects Closed"] = pendingMDefectCount["Defects Closed"] + 1
-            }
-            else if(this.allClosedDefectsToShow[i]["fields"]["priority"]["name"] != "Highest"){
-                pendingPDefectCount["Defects Closed"] = pendingPDefectCount["Defects Closed"] + 1
+            if(increaseCusDCount && new Date(this.allClosedDefectsToShow[i]["fields"]["created"]).getTime() >= OneJan){
+                if(this.allClosedDefectsToShow[i]["fields"]["priority"]["name"] == "Highest") {
+                    pendingMDefectCount["Defects Closed"] = pendingMDefectCount["Defects Closed"] + 1
+                }
+                else if(this.allClosedDefectsToShow[i]["fields"]["priority"]["name"] != "Highest"){
+                    pendingPDefectCount["Defects Closed"] = pendingPDefectCount["Defects Closed"] + 1
+                }
             }
         }
         for(let i = 0; i < this.allPendingDefectsToShow.length; i++){
             let increaseCusDCount = true
             this.allPendingDefectsToShow[i]["fields"]["labels"].some(label => {
                 let loLabel = label.toLowerCase()
-                if(loLabel.includes("customer-") || loLabel.includes("customer")) {
+//                if(loLabel.includes("customer-") || loLabel.includes("customer")) {
+                if(loLabel.includes("active")) {
                     if(increaseCusDCount){
                         custDefectCount["Defects Pending Verification"] = custDefectCount["Defects Pending Verification"] + 1
                         increaseCusDCount = false
@@ -393,11 +405,13 @@ class NewClosedInQaTickets extends Component {
                     }
                 }
             })
-            if(this.allPendingDefectsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                pendingMDefectCount["Defects Pending Verification"] = pendingMDefectCount["Defects Pending Verification"] + 1
-            }
-            else if(this.allPendingDefectsToShow[i]["fields"]["priority"]["name"] != "Highest"){
-                pendingPDefectCount["Defects Pending Verification"] = pendingPDefectCount["Defects Pending Verification"] + 1
+            if(increaseCusDCount && new Date(this.allPendingDefectsToShow[i]["fields"]["created"]).getTime() >= OneJan){
+                if(this.allPendingDefectsToShow[i]["fields"]["priority"]["name"] == "Highest") {
+                    pendingMDefectCount["Defects Pending Verification"] = pendingMDefectCount["Defects Pending Verification"] + 1
+                }
+                else if(this.allPendingDefectsToShow[i]["fields"]["priority"]["name"] != "Highest"){
+                    pendingPDefectCount["Defects Pending Verification"] = pendingPDefectCount["Defects Pending Verification"] + 1
+                }
             }
         }
         Object.keys(custDefectCount).forEach(key => {

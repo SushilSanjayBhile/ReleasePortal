@@ -49,8 +49,8 @@ export default {
     // {
     //   name: 'Jenkins Build',
     //   url: 'http://172.16.1.30:8080/view/3.0.0/',
-    //   attributes: { target: '_blank' }, 
-    //   icon: 'fa fa-server'    
+    //   attributes: { target: '_blank' },
+    //   icon: 'fa fa-server'
     // },
     // {
     //   name: 'Settings',
@@ -70,6 +70,11 @@ export default {
     {
       name: 'Defect Reports',
       url: '/release/defectReports',
+      icon: 'fa fa-bars',
+    },
+    {
+      name: 'Current Defect Reports',
+      url: '/release/defectReportsByReleases',
       icon: 'fa fa-bars',
     },
     {
