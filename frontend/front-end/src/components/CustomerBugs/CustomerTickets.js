@@ -1381,8 +1381,10 @@ class CustomerTickets extends Component {
                 dtotal = dtotal + devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"];
             }
         })
+        let len = 0;
         this.Sort(this.TicketsByDevManager, "devm");
-        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, AvgDaysWithoutDueDate: avgm, Total: dtotal})
+        len = this.TicketsByDevManager.length
+        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, AvgDaysWithoutDueDate: len == 0 ? 0 : Math.round(avgm/len), Total: dtotal})
         let dewd = 0, dewod = 0, depd = 0, avgd = 0, detotal = 0;
         Object.keys(dev).forEach(key => {
             if(key != "NA"){
@@ -1396,7 +1398,8 @@ class CustomerTickets extends Component {
             }
         })
         this.Sort(this.TicketsByDeveloper,"dev");
-        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: avgd, Total: detotal})
+        len  = this.TicketsByDeveloper.length
+        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: len == 0 ? 0 : Math.round(avgd/len), Total: detotal})
         severityDictTotal["Active"] = severityDictP1["Active"] + severityDictP2["Active"] + severityDictP3["Active"]
         severityDictTotal["Age"] = severityDictP1["Age"] + severityDictP2["Age"] + severityDictP3["Age"]
         //sevetiryDictTotal["Inactive"] = severityDictP1["Inactive"] + severityDictP2["Inactive"] + severityDictP3["Inactive"]

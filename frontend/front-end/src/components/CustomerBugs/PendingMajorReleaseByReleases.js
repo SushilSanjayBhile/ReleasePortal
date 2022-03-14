@@ -53,7 +53,7 @@ class PendingMajorReleaseByReleases extends Component {
     constructor(props) {
         super(props);
         this.csvLink = React.createRef();
-        let scope = this;
+        let scope = this.props
         let bugColumnDefDictCR = {
             'BugNo' : {
                 headerName: "Bug No", field: "BugNo", sortable: true, filter: true,
@@ -181,7 +181,7 @@ class PendingMajorReleaseByReleases extends Component {
                     let priority = params.data.Severity;
                     let priMap = {"P1": "Highest"}
                     //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20%3D%20${priMap[priority]}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20AND%20priority%20%3D%20${priMap[priority]}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                    let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20AND%20priority%20%3D%20${priMap[priority]}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                     return newLink;
                 },
             },
@@ -227,7 +227,7 @@ class PendingMajorReleaseByReleases extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -269,7 +269,7 @@ class PendingMajorReleaseByReleases extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -311,7 +311,7 @@ class PendingMajorReleaseByReleases extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -359,7 +359,7 @@ class PendingMajorReleaseByReleases extends Component {
                             }
                         }
                         assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20(${assignee})%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -385,11 +385,11 @@ class PendingMajorReleaseByReleases extends Component {
                     let Product = params.data.Product
                     let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
                     if (Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20%20AND%20priority%20%3D%20Highest%20AND%20labels%20not%20in%20(active)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20%20AND%20priority%20%3D%20Highest%20AND%20labels%20not%20in%20(active)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20Highest%20AND%20labels%20not%20in%20(active)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20Highest%20AND%20labels%20not%20in%20(active)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -414,7 +414,7 @@ class PendingMajorReleaseByReleases extends Component {
                     let keyData = params.data.WithDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -431,7 +431,7 @@ class PendingMajorReleaseByReleases extends Component {
                     let keyData = params.data.WithOutDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -448,7 +448,7 @@ class PendingMajorReleaseByReleases extends Component {
                     let keyData = params.data.PassedDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -471,7 +471,7 @@ class PendingMajorReleaseByReleases extends Component {
                     let keyData = params.data.Total;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.fixStr)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(scope.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -966,8 +966,10 @@ class PendingMajorReleaseByReleases extends Component {
                 dtotal = dtotal + devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"];
             }
         })
+        let len = 0;
         this.Sort(this.TicketsByDevManager, "devm");
-        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, AvgDaysWithoutDueDate: avgm, Total: dtotal})
+        len = this.TicketsByDevManager.length
+        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, AvgDaysWithoutDueDate: len == 0 ? 0 : Math.round(avgm/len), Total: dtotal})
         let dewd = 0, dewod = 0, depd = 0, avgd = 0, detotal = 0;
         Object.keys(dev).forEach(key => {
             if(key != "NA"){
@@ -981,7 +983,8 @@ class PendingMajorReleaseByReleases extends Component {
             }
         })
         this.Sort(this.TicketsByDeveloper,"dev");
-        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: avgd, Total: detotal})
+        len  = this.TicketsByDeveloper.length
+        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: len == 0 ? 0 : Math.round(avgd/len), Total: detotal})
         let d1= {Severity: severityDictP1["Severity"], TotalBugs: severityDictP1["Total"], TotalOpenDays: severityDictP1["Age"], AvgOpenDays: severityDictP1["Total"] == 0 ? 0 : Math.round(severityDictP1["Age"] / severityDictP1["Total"])}
         this.AvgAgeBySeverity.push(d1)
         this.TicketsBySeverity.push(severityDictP1)
@@ -1250,7 +1253,7 @@ getData(){
                                                 <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                             }
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
-                                            <span className='rp-app-table-title'>Dev P1 issues (From 1 Jan 2020)</span>
+                                            <span className='rp-app-table-title'>Dev P1 issues (From 1 Jan 2022)</span>
                                         </div>
                                     </div>
                                 </div>

@@ -1052,8 +1052,10 @@ class PendingPostRelease extends Component {
                 dtotal = dtotal + devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"];
             }
         })
+        let len = 0;
         this.Sort(this.TicketsByDevManager, "devm");
-        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, AvgDaysWithoutDueDate: avgm, Total: dtotal})
+        len = this.TicketsByDevManager.length
+        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, AvgDaysWithoutDueDate: len == 0 ? 0 : Math.round(avgm/len), Total: dtotal})
         let dewd = 0, dewod = 0, depd = 0, avgd = 0, detotal = 0;
         Object.keys(dev).forEach(key => {
             if(key != "NA"){
@@ -1067,7 +1069,8 @@ class PendingPostRelease extends Component {
             }
         })
         this.Sort(this.TicketsByDeveloper,"dev");
-        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: avgd, Total: detotal})
+        len  = this.TicketsByDeveloper.length
+        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: len == 0 ? 0 : Math.round(avgd/len), Total: detotal})
         severityDictTotal["Total"] = severityDictP2["Total"] + severityDictP3["Total"]
         severityDictTotal["Age"] = severityDictP2["Age"] + severityDictP3["Age"]
         let d2 = {Severity: severityDictP2["Severity"], TotalBugs: severityDictP2["Total"], TotalOpenDays: severityDictP2["Age"], AvgOpenDays: severityDictP2["Total"] == 0 ? 0 : Math.round(severityDictP2["Age"] / severityDictP2["Total"])}
@@ -1351,7 +1354,7 @@ getData(){
                                                 <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                             }
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
-                                            <span className='rp-app-table-title'>Tickets Pending Post Release (Sev P2-P3)(From 1 Jan 2022)</span>
+                                            <span className='rp-app-table-title'>Dev P2+ Issues (From 1 Jan 2022)</span>
                                             {/* {
                                                 this.state.tcOpen &&
                                                 <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
