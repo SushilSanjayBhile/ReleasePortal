@@ -998,15 +998,19 @@ class CustomerClosed extends Component {
     //     this.filterBugs(this.state.buisnessUnit)
     //     this.setState({ popoverOpen2: !this.state.popoverOpen2 });
     // }
-    getTcs(startAt) {
+    getTcs() {
         this.gridOperations(false);
         let promises = []
-        axios.get(`/rest/AllCustomerClosedBugCountNoImprovement`).then(all => {
+        let tdate = new Date()
+        tdate.setDate(tdate.getDate());
+        tdate = tdate.toISOString().split("T")[0];
+        axios.get(`/rest/AllCustomerClosedBugCountNoImprovement`,{params: {edate : tdate,}}).then(all => {
             this.maxResult = all.data.total
             for(let i = 0; i <= this.maxResult; i=i+100){
                 promises.push(axios.get(`/rest/AllCustomerClosedBugsNoImprovement`,{
                     params: {
                         "startAt": i,
+                        "edate": tdate,
                     }
                 }).then(all => {
                     this.allTCsToShow = [...this.allTCsToShow, ...all.data.issues];
@@ -1640,14 +1644,14 @@ getData(){
                                                 <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                             }
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
-                                            <span className='rp-app-table-title'>Customer Closed Tickets</span>
+                                            <span className='rp-app-table-title'>All Closed Tickets (From 1 Jan 2022)</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <Collapse isOpen={this.state.tcOpen}>
-                            <div class="row">
+                            {/* <div class="row">
                                 <div class="col-sm-6" style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
@@ -2013,7 +2017,7 @@ getData(){
                                             }
                                     </div>
                                 </div>
-                            </div >
+                            </div > */}
                             <div>
                                 <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                     <div class="test-header">
@@ -2058,7 +2062,7 @@ getData(){
                                             <div style={{ width: '5rem'}}>
                                                 <Button disabled={this.state.isApiUnderProgress} title="Only selected bugs will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.bugGridApiCR) {
-                                                        this.bugGridApiCR.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "Customer_Bugs.csv" });
+                                                        this.bugGridApiCR.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "All_Closed_Tickets_From(1 Jan 2022).csv" });
                                                     }
                                                 }} >
                                                     Download
@@ -2109,7 +2113,7 @@ getData(){
                                                 </div>
                                             }
                                     </div>
-                                    <CSVLink style={{ textDecoration: 'none' }} data={this.state.sevstr} ref={this.csvLink} filename={'Customer_Tickets.csv'} target="_blank"/>
+                                    <CSVLink style={{ textDecoration: 'none' }} data={this.state.sevstr} ref={this.csvLink} filename={'All_Closed_Tickets_From(1 Jan 2022).csv'} target="_blank"/>
                                     <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
                                         <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={(e) => {this.getData()}} >
                                                 Download All

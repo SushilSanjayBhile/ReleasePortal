@@ -414,7 +414,8 @@ var totalBugsStr = `/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%
 }, err => { });
 
 app.use('/rest/AllCustomerClosedBugCountNoImprovement', (req, res) => {
-    var totalBugsStr = `/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Closed)%20AND%20labels%20%3D%20customer%20ORDER%20BY%20created%20DESC&maxResults=0`
+//var totalBugsStr = `/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Closed)%20AND%20labels%20%3D%20customer%20ORDER%20BY%20created%20DESC&maxResults=0`
+var totalBugsStr = `/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%222022-01-01%22%2C%20%22${req.query.edate}%22)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=0`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {
             loginJIRA().then(function () {
@@ -434,7 +435,8 @@ app.use('/rest/AllCustomerClosedBugCountNoImprovement', (req, res) => {
 }, err => { });
 
 app.use('/rest/AllCustomerClosedBugsNoImprovement', (req, res) => {
-    var totalBugsStr = `/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Closed)%20AND%20labels%20%3D%20customer%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+    //var totalBugsStr = `/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Closed)%20AND%20labels%20%3D%20customer%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+    var totalBugsStr = `/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%222022-01-01%22%2C%20%22${req.query.edate}%22)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {
             loginJIRA().then(function () {
