@@ -24,6 +24,7 @@ import datetime
 from datetime import timedelta
 from django.utils import timezone
 from .forms import LogForm
+from .new import rootRelease
 
 # Third party softwares / libraries
 import gzip, copy, psycopg2
@@ -38,6 +39,29 @@ from dp import settings
 # GLOBAL VARIABLES
 statusList = ['Pass', 'Fail', 'Skip', 'Blocked']
 
+
+@csrf_exempt
+def FIXVERSION(request):
+    if request.method == "GET":
+        data = RELEASES.objects.all().values('fixVList').using('universal').get(ReleaseNumber = rootRelease)
+        return HttpResponse(json.dumps(data))
+    elif request.method == "PUT":
+        try:
+            req = json.loads(request.body.decode("utf-8"))
+            tdata  = RELEASES.objects.using('universal').get(ReleaseNumber = rootRelease)
+            serializer = RELEASE_SERIALIZER(tdata)
+            serData = json.dumps(serializer.data)
+
+            for i in req['fixVList']:
+                if i['value'] in tdata.fixVList and i['isChecked'] == False:
+                    tdata.fixVList.remove(i['value'])
+                    tdata.save()
+                if i['value'] not in tdata.fixVList and i['isChecked'] == True:
+                    tdata.fixVList.append(i['value'])
+                    tdata.save()
+            return HttpResponse(" UPDATED SUCCESSFULLY", status = 200)
+        except:
+            return HttpResponse("SOME ERROR OCCURED", status = 400)
 
 def createDB(release):
     con = psycopg2.connect(dbname='postgres',

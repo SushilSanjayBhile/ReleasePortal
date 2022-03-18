@@ -3,7 +3,7 @@ from .views import (TCSTATUSGETPOSTVIEW, USER_INFO_GET_POST_VIEW,
         USER_INFO_SPECIFIC_BY_ID, USER_INFO_SPECIFIC_BY_NAME, LOG, RESULT_LOGS, RESULT_LOGS_GUI,
         GETSETUPWISETCINFO, RELEASEINFO, GETPLATFORMWISETCINFO, RELEASEINFOPOST,
         GETPLATFORMANDSETUPWISETCINFO, TCAGGREGATE, DOMAINWISETCSTATUS, DOMAINWISETCINFO, USER_LOGIN_VIEW,DOMAINWISERELEASEINFO,
-        GUITCSTATUSGETPOSTVIEW, createDB, AddDomainSubDomain, RELEASEWISE_CLI_PLATFORM,RELEASEWISE_GUI_PLATFORM, TCAGGREGATE_DASHBOARD,getPlatformWiseDomainSubdomain, IMPORT_TCs)
+        GUITCSTATUSGETPOSTVIEW, createDB, AddDomainSubDomain, RELEASEWISE_CLI_PLATFORM,RELEASEWISE_GUI_PLATFORM, TCAGGREGATE_DASHBOARD,getPlatformWiseDomainSubdomain, IMPORT_TCs, FIXVERSION)
 from .sanityViews import SANITY_VIEW
 from .defaultViews import DEFAULT_DOMAIN_GET_POST_VIEW, DEFAULT_SUBDOMAIN_GET_POST_VIEW
 
@@ -131,5 +131,6 @@ urlpatterns = [
     path('duptcgui', duplicate_tcs_gui),
     path('tcupdategui/<str:Release>', MULTIPLE_TC_UPDATION_GUI),
     path('release_all_info/releaseName/<str:Release>', TCAGGREGATE_DASHBOARD),
-    path('execute/<str:release>/<str:platform>/<str:fileName>',update_data)
+    path('execute/<str:release>/<str:platform>/<str:fileName>',update_data),
+    path('fixVersionsGetPut', FIXVERSION),
 ]

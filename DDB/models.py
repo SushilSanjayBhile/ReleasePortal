@@ -321,6 +321,7 @@ class RELEASES(models.Model):
     Runtime = ArrayField(models.CharField(max_length = 50, blank = True), blank = True, default = list)
     HelmVersion = models.TextField(blank = True, null = True)
     fixVersion = models.TextField(blank = True, null = True, default = 'UNKNOWN')
+    fixVList = ArrayField(models.CharField(max_length = 50, blank = True), blank = True, default = list)
     epicLink = models.TextField(blank = True, null = True, default = 'UNKNOWN')
     #ParentReleaseNumber = models.CharField(max_length = 50, blank = False, primary_key = True)
     ParentRelease = models.CharField(max_length = 50, blank = False, default = "master")
