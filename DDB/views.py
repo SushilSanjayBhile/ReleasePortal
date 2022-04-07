@@ -336,14 +336,14 @@ def platform_wise_domain_subdomain_cli_dict1(cliTcInfo, platformsCli):
             if platform not in pwddcli:
                 pwddcli[platform] = {}
 
-            domainCliTcInfo = cliTcInfo.filter(CardType__contains = platform).values("Domain").distinct()
+            domainCliTcInfo = cliTcInfo.filter(CardType = platform).values("Domain").distinct()
             for domain in domainCliTcInfo:
                 domain = domain["Domain"]
                 if domain not in pwddcli[platform]:
                     pwddcli[platform][domain] = []
 
                 #subDomainCliTcInfo = domainCliTcInfo.all().values("SubDomain").distinct()
-                subDomainCliTcInfo = domainCliTcInfo.filter(Domain__contains = domain).values("SubDomain").distinct()
+                subDomainCliTcInfo = domainCliTcInfo.filter(Domain = domain).values("SubDomain").distinct()
                 for subdomain in subDomainCliTcInfo:
                     subdomain = subdomain["SubDomain"]
                     if subdomain not in pwddcli[platform][domain]:
@@ -362,14 +362,14 @@ def platform_wise_domain_subdomain_gui_dict1(guiTcInfo, platformsGui):
             if platform not in pwddgui:
                 pwddgui[platform] = {}
 
-            domainGuiTcInfo = guiTcInfo.filter(CardType__contains = platform).values("Domain").distinct()
+            domainGuiTcInfo = guiTcInfo.filter(CardType = platform).values("Domain").distinct()
             for domain in domainGuiTcInfo:
                 domain = domain["Domain"]
                 if domain not in pwddgui[platform]:
                     pwddgui[platform][domain] = []
 
                 #subDomainCliTcInfo = domainCliTcInfo.all().values("SubDomain").distinct()
-                subDomainGuiTcInfo = domainGuiTcInfo.filter(Domain__contains = domain).values("SubDomain").distinct()
+                subDomainGuiTcInfo = domainGuiTcInfo.filter(Domain = domain).values("SubDomain").distinct()
                 for subdomain in subDomainGuiTcInfo:
                     subdomain = subdomain["SubDomain"]
                     if subdomain not in pwddgui[platform][domain]:
@@ -379,51 +379,47 @@ def platform_wise_domain_subdomain_gui_dict1(guiTcInfo, platformsGui):
 
 def platform_wise_domain_subdomain_cli_dict(cliTcInfo):
     pwddcli = {}
-    platformsCli = cliTcInfo.values('Platform').distinct()
+    platformsCli = cliTcInfo.values('CardType').distinct()
     for p in platformsCli:
-        platform = p["Platform"]
+        platform = p["CardType"]
 
         if len(platform) > 0:
-            for p in platform:
-                if p not in pwddcli:
-                    pwddcli[p] = {}
+            if platform not in pwddcli:
+                pwddcli[platform] = {}
 
-                domainCliTcInfo = cliTcInfo.filter(Platform__contains = [p]).values("Domain").distinct()
-                for domain in domainCliTcInfo:
-                    domain = domain["Domain"]
-                    if domain not in pwddcli[p]:
-                        pwddcli[p][domain] = []
+            domainCliTcInfo = cliTcInfo.filter(CardType = platform).values("Domain").distinct()
+            for domain in domainCliTcInfo:
+                domain = domain["Domain"]
+                if domain not in pwddcli[platform]:
+                    pwddcli[platform][domain] = []
 
-                    #subDomainCliTcInfo = domainCliTcInfo.all().values("SubDomain").distinct()
-                    subDomainCliTcInfo = domainCliTcInfo.filter(Domain__contains = domain).values("SubDomain").distinct()
-                    for subdomain in subDomainCliTcInfo:
-                        subdomain = subdomain["SubDomain"]
-                        if subdomain not in pwddcli[p][domain]:
-                            pwddcli[p][domain].append(subdomain)
+                subDomainCliTcInfo = domainCliTcInfo.filter(Domain = domain).values("SubDomain").distinct()
+                for subdomain in subDomainCliTcInfo:
+                    subdomain = subdomain["SubDomain"]
+                    if subdomain not in pwddcli[platform][domain]:
+                        pwddcli[platform][domain].append(subdomain)
     return pwddcli
 def platform_wise_domain_subdomain_gui_dict(guiTcInfo):
     pwddgui = {}
-    platformsGui = guiTcInfo.values('Platform').distinct()
+    platformsGui = guiTcInfo.values('CardType').distinct()
     for p in platformsGui:
-        platform = p["Platform"]
+        platform = p["CardType"]
 
         if len(platform) > 0:
-            for p in platform:
-                if p not in pwddgui:
-                    pwddgui[p] = {}
+            if platform not in pwddgui:
+                pwddgui[platform] = {}
 
-                domainGuiTcInfo = guiTcInfo.filter(Platform__contains = [p]).values("Domain").distinct()
-                for domain in domainGuiTcInfo:
-                    domain = domain["Domain"]
-                    if domain not in pwddgui[p]:
-                        pwddgui[p][domain] = []
+            domainGuiTcInfo = guiTcInfo.filter(CardType = platform).values("Domain").distinct()
+            for domain in domainGuiTcInfo:
+                domain = domain["Domain"]
+                if domain not in pwddgui[platform]:
+                    pwddgui[platform][domain] = []
 
-                    #subDomainGuiTcInfo = domainGuiTcInfo.all().values("SubDomain").distinct()
-                    subDomainGuiTcInfo = domainGuiTcInfo.filter(Domain__contains = domain).values("SubDomain").distinct()
-                    for subdomain in subDomainGuiTcInfo:
-                        subdomain = subdomain["SubDomain"]
-                        if subdomain not in pwddgui[p][domain]:
-                            pwddgui[p][domain].append(subdomain)
+                subDomainGuiTcInfo = domainGuiTcInfo.filter(Domain = domain).values("SubDomain").distinct()
+                for subdomain in subDomainGuiTcInfo:
+                    subdomain = subdomain["SubDomain"]
+                    if subdomain not in pwddgui[platform][domain]:
+                        pwddgui[platform][domain].append(subdomain)
 
     return pwddgui
 def domain_cli_aggreggation(cliTcInfo, cliStatus):
