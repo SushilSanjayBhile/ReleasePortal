@@ -43,9 +43,9 @@ class ImportTCsGui extends Component {
       }
 
     getPlatform = (e) => {
-        if (this.state.froRelease !== ''){
+        if (this.state.froRelease != ''){
         let iface = "GUI"
-          axios.get(`/api/getPlatformWiseDomainSubdomain/${this.state.froRelease}/${iface}`)
+          axios.get(`/api/getPlatformWiseDomainSubdomain/${this.state.froRelease}/${iface}/`)
             .then(res => {
               this.setState({platforms:res.data, platform:'', importTc:[]})
             }, error => {

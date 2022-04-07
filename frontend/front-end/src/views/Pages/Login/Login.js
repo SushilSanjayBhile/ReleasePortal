@@ -131,8 +131,8 @@ class Login extends Component {
                       // <div>Please wait while Google Auth is loading...</div>
                         //this.state.googleAuthLoaded &&
                         <div style={{ textAlign: 'center' }}>
-                         <Input type="email" name="email" id = 'email' placeholder="Enter Email"  onChange={this.handleChange} />
-                         <Input type="text" name="name" id = 'name' placeholder="Enter User Name"  onChange={this.handleChange} />
+                         <Input type="email" name="email" id = 'email' placeholder="abc@diamanti.com" onChange={this.handleChange} />
+                         <Input type="text" name="name" id = 'name' placeholder="<first name> <last name>" onChange={this.handleChange} />
                          <Button disabled={this.state.isApiUnderProgress} title="Login" size="md" className="rp-rb-save-btn" onClick={() => {
                           if (this.state.name && this.state.email) {
                             let dict = {"profileObj":{name: this.state.name, email: this.state.email}}

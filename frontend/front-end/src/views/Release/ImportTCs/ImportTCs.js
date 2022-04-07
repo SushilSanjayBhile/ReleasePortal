@@ -45,8 +45,8 @@ class ImportTCs extends Component {
 
     getPlatform = (e) => {
         let iface = "CLI"
-        if (this.state.froRelease !== ''){
-          axios.get(`/api/getPlatformWiseDomainSubdomain/${this.state.froRelease}/${iface}`)
+        if (this.state.froRelease != ''){
+          axios.get(`/api/getPlatformWiseDomainSubdomain/${this.state.froRelease}/${iface}/`)
             .then(res => {
               this.setState({platforms:res.data, platform:'', importTc:[]})
             }, error => {
