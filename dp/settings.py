@@ -86,6 +86,14 @@ DATABASES = {
         'HOST': hostName,
         'PORT': portNumber,
         },
+    'OCP-Master': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'OCP-Master',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'Ultima-Ent-3.3.2': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'Ultima-Ent-3.3.2',
