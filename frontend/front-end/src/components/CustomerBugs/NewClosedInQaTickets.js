@@ -70,20 +70,20 @@ class NewClosedInQaTickets extends Component {
                     if(defect == "New Defects"){
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20labels%20in%20(Customer)%20AND%20createdDate%20%3E%3D%20${self.cusDateStart}%20AND%20createdDate%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20labels%20in%20(${label})%20AND%20createdDate%20%3E%3D%20${self.cusDateStart}%20AND%20createdDate%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20labels%20in%20(active)%20AND%20created%20%3E%3D%20${self.cusDateStart}%20AND%20created%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20labels%20in%20(active%2C%20Customer)%20AND%20created%20%3E%3D%20${self.cusDateStart}%20AND%20created%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(defect == "Defects Closed"){
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Closed)%20AND%20labels%20in%20(${label})%20AND%20updatedDate%20%3E%3D%20${self.cusDateStart}%20AND%20updatedDate%20%3C%3D%20${self.cusDateEnd}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(${label})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(active)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20changed%20from%20%22In%20Progress%22%20to%20%22In%20QA%22%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(active%2C%20Customer)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
 
                         return newLink;
                     }
                     else {
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Resolved%2C%20%22IN%20QA%22)%20AND%20labels%20in%20(${label})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(${label})%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(active)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20was%20in%20(%22In%20QA%22)%20during%20(%22${self.cusDateStart}%22%2C%20%22${self.cusDateEnd}%22)%20AND%20labels%20in%20(active%2C%20Customer)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                 },
@@ -337,8 +337,7 @@ class NewClosedInQaTickets extends Component {
             let increaseCusDCount = true
             this.allTCsToShow[i]["fields"]["labels"].some(label => {
                 let loLabel = label.toLowerCase()
-                //if(loLabel.includes("customer-") || loLabel.includes("customer")) {
-                if(loLabel.includes("active")) {
+                if(loLabel.includes("customer-") || loLabel.includes("customer") || loLabel.includes("active")) {
                     if(increaseCusDCount){
                         custDefectCount["New Defects"] = custDefectCount["New Defects"] + 1
                         increaseCusDCount = false
@@ -364,8 +363,7 @@ class NewClosedInQaTickets extends Component {
             let increaseCusDCount = true
             this.allClosedDefectsToShow[i]["fields"]["labels"].some(label => {
                 let loLabel = label.toLowerCase()
-                //if(loLabel.includes("customer-") || loLabel.includes("customer")) {
-                if(loLabel.includes("active")) {
+                if(loLabel.includes("customer-") || loLabel.includes("customer") || loLabel.includes("active")) {
                     if(increaseCusDCount){
                         custDefectCount["Defects Closed"] = custDefectCount["Defects Closed"] + 1
                         increaseCusDCount = false
@@ -391,8 +389,7 @@ class NewClosedInQaTickets extends Component {
             let increaseCusDCount = true
             this.allPendingDefectsToShow[i]["fields"]["labels"].some(label => {
                 let loLabel = label.toLowerCase()
-//                if(loLabel.includes("customer-") || loLabel.includes("customer")) {
-                if(loLabel.includes("active")) {
+                if(loLabel.includes("customer-") || loLabel.includes("customer") || loLabel.includes("active")) {
                     if(increaseCusDCount){
                         custDefectCount["Defects Pending Verification"] = custDefectCount["Defects Pending Verification"] + 1
                         increaseCusDCount = false

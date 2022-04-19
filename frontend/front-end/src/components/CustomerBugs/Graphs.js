@@ -404,7 +404,7 @@ class Graphs extends Component {
             num = this.calculateWeek(new Date(this.allTCsToShow[i]["fields"]["created"]))
             this.allTCsToShow[i]["fields"]["labels"].some(label => {
                 let loLabel = label.toLowerCase()
-                if(loLabel.includes("active")) {
+                if(loLabel.includes("customer-") || loLabel.includes("customer") || loLabel.includes("active")) {
                     if(increaseCusDCount){
                         week["customer"]["Filed"]["data"][num] = week["customer"]["Filed"]["data"][num] + 1
                         increaseCusDCount = false
@@ -446,7 +446,7 @@ class Graphs extends Component {
                 let increaseCusDCount = true
                 this.allClosedDefectsToShow[i][j]["fields"]["labels"].some(label => {
                     let loLabel = label.toLowerCase()
-                    if(loLabel.includes("active")) {
+                    if(loLabel.includes("customer-") || loLabel.includes("customer") || loLabel.includes("active")) {
                         if(increaseCusDCount){
                             week["customer"]["Closed"]["data"][i] = week["customer"]["Closed"]["data"][i] + 1
                             increaseCusDCount = false
@@ -471,7 +471,7 @@ class Graphs extends Component {
                 let increaseCusDCount = true
                 this.allPendingDefectsToShowBar[i][j]["fields"]["labels"].some(label => {
                     let loLabel = label.toLowerCase()
-                    if(loLabel.includes("active")) {
+                    if(loLabel.includes("customer-") || loLabel.includes("customer") || loLabel.includes("active")) {
                         if(increaseCusDCount){
                             week["Pending"]["Customer"]["data"][i] = week["Pending"]["Customer"]["data"][i] + 1
                             increaseCusDCount = false
@@ -500,7 +500,7 @@ class Graphs extends Component {
             let ue = false, ua = false, sp = false;
             this.allPendingDefectsToShow[i]["fields"]["labels"].forEach(label => {
                 let loLabel = label.toLowerCase()
-                if(loLabel.includes("active")) {
+                if(loLabel.includes("customer-") || loLabel.includes("customer") || loLabel.includes("active")) {
                     if(increaseCusDCount){
                         pie1["Customer"]["data"] = pie1["Customer"]["data"] + 1
                         increaseCusDCount = false
