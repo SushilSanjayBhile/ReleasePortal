@@ -432,7 +432,8 @@ def WHOLE_TC_INFO(request, Release):
         if Priority != 'None':
             infodata = infodata.filter(Priority = Priority)
         if WorkingStatus != 'None':
-            infodata = infodata.filter(stateUserMapping__icontains = WorkingStatus)
+            if WorkingStatus == "CREATED":
+                infodata = infodata.filter(stateUserMapping__icontains = WorkingStatus)
         if  Assignee != 'None':
             infodata = infodata.filter(Assignee = Assignee)
 
