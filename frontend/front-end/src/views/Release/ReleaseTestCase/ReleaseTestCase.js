@@ -433,50 +433,142 @@ class ReleaseTestCase extends Component {
     }
 
     renderTableDataCLI  = () => {
+        let total = 0, passTotal = 0, failTotal = 0, blockTotal = 0 , notTestedTotal = 0;
         return this.state.allTestCaseStatusCLI === 0 ? (
             <div>Loading...</div>
         ) : (
             this.state.allTestCaseStatusCLI.map((e, i) => {
-            return (
-                        <tr key={i}>
-                            <td onClick={() => this.subDomainByDomain(e.Domain)}>
-                                <a href='#' style={{color: 'green'}}>{e.Domain}</a>
-                            </td>
-                            {/* <td>
-                                {e.Domain}
-                            </td> */}
-                            <td>{e.autoPass + e.manualPass}</td>
-                            <td>{e.autoFail + e.manualFail}</td>
-                            <td>{e.autoBlocked + e.manualBlocked}</td>
-                            <td>{e.NotTested}</td>
-                            <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
-                        </tr>
-                );
-            })
-        )
+                let temp = e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested;
+                total = total + temp;
+                passTotal = passTotal + e.autoPass + e.manualPass
+                failTotal = failTotal + e.autoFail + e.manualFail
+                blockTotal = blockTotal + e.autoBlocked + e.manualBlocked
+                notTestedTotal = notTestedTotal + e.NotTested
+                if ( i == this.state.allTestCaseStatusCLI.length - 1){
+                    if (temp > 0) {
+                        return ([
+                            <tr key={i}>
+                                <td onClick={() => this.subDomainByDomain(e.Domain)}>
+                                    <a href='#' style={{color: 'green'}}>{e.Domain}</a>
+                                </td>
+                                {/* <td>
+                                    {e.Domain}
+                                </td> */}
+                                <td>{e.autoPass + e.manualPass}</td>
+                                <td>{e.autoFail + e.manualFail}</td>
+                                <td>{e.autoBlocked + e.manualBlocked}</td>
+                                <td>{e.NotTested}</td>
+                                <td>{temp}</td>
+                            </tr>,
+                            <tr key={i}>
+                                <td>Total</td>
+                                <td>{passTotal} ({Math.round((passTotal / total) * 100)}%)</td>
+                                <td>{failTotal} ({Math.round((failTotal / total) * 100)}%)</td>
+                                <td>{blockTotal} ({Math.round((blockTotal / total) * 100)}%)</td>
+                                <td>{notTestedTotal} ({Math.round((notTestedTotal / total) * 100)}%)</td>
+                                <td>{total}</td>
+                            </tr>
+                        ]);
+                    }
+                    else {
+                        return (
+                            <tr key={i}>
+                                <td>Total</td>
+                                <td>{passTotal} ({Math.round((passTotal / total) * 100)}%)</td>
+                                <td>{failTotal} ({Math.round((failTotal / total) * 100)}%)</td>
+                                <td>{blockTotal} ({Math.round((blockTotal / total) * 100)}%)</td>
+                                <td>{notTestedTotal} ({Math.round((notTestedTotal / total) * 100)}%)</td>
+                                <td>{total}</td>
+                            </tr>
+                        )
+                    }
+                }
+                else {
+                    return (
+                            <tr key={i}>
+                                <td onClick={() => this.subDomainByDomain(e.Domain)}>
+                                    <a href='#' style={{color: 'green'}}>{e.Domain}</a>
+                                </td>
+                                {/* <td>
+                                    {e.Domain}
+                                </td> */}
+                                <td>{e.autoPass + e.manualPass}</td>
+                                <td>{e.autoFail + e.manualFail}</td>
+                                <td>{e.autoBlocked + e.manualBlocked}</td>
+                                <td>{e.NotTested}</td>
+                                <td>{temp}</td>
+                            </tr>
+                            );
+                        }
+                    }
+                )
+            )
     }
 
     renderTableDataGUI  = () => {
+        let total = 0, passTotal = 0, failTotal = 0, blockTotal = 0 , notTestedTotal = 0;
         return this.state.allTestCaseStatusGUI === 0 ? (
             <div>Loading...</div>
         ) : (
             this.state.allTestCaseStatusGUI.map((e, i) => {
-            return (
-                        <tr key={i}>
-                            {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
-                                <a href='#' style={{color: 'green'}}>{e.Domain}</a>
-                            </td> */}
+                let temp = e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested;
+                total = total + temp;
+                passTotal = passTotal + e.autoPass + e.manualPass
+                failTotal = failTotal + e.autoFail + e.manualFail
+                blockTotal = blockTotal + e.autoBlocked + e.manualBlocked
+                notTestedTotal = notTestedTotal + e.NotTested
+                if ( i == this.state.allTestCaseStatusGUI.length - 1){
+                    if (temp > 0) {
+                        return ([
+                            <tr key={i}>
+                                <td>
+                                    {e.Domain}
+                                </td>
+                                <td>{e.autoPass + e.manualPass}</td>
+                                <td>{e.autoFail + e.manualFail}</td>
+                                <td>{e.autoBlocked + e.manualBlocked}</td>
+                                <td>{e.NotTested}</td>
+                                <td>{temp}</td>
+                            </tr>,
+                            <tr key={i}>
+                                <td>Total</td>
+                                <td>{passTotal} ({Math.round((passTotal / total) * 100)}%)</td>
+                                <td>{failTotal} ({Math.round((failTotal / total) * 100)}%)</td>
+                                <td>{blockTotal} ({Math.round((blockTotal / total) * 100)}%)</td>
+                                <td>{notTestedTotal} ({Math.round((notTestedTotal / total) * 100)}%)</td>
+                                <td>{total}</td>
+                            </tr>
+                        ]);
+                    }
+                    else {
+                        return (
+                            <tr key={i}>
+                                <td>Total</td>
+                                <td>{passTotal} ({Math.round(passTotal / total) * 100}%)</td>
+                                <td>{failTotal} ({Math.round(failTotal / total) * 100}%)</td>
+                                <td>{blockTotal} ({Math.round(blockTotal / total) * 100}%)</td>
+                                <td>{notTestedTotal} ({Math.round(notTestedTotal / total) * 100}%)</td>
+                                <td>{total}</td>
+                            </tr>
+                        )
+                    }
+                }
+                return (
+                            <tr key={i}>
+                                {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
+                                    <a href='#' style={{color: 'green'}}>{e.Domain}</a>
+                                </td> */}
 
-                            <td>
-                                {e.Domain}
-                            </td>
-                            <td>{e.autoPass + e.manualPass}</td>
-                            <td>{e.autoFail + e.manualFail}</td>
-                            <td>{e.autoBlocked + e.manualBlocked}</td>
-                            <td>{e.NotTested}</td>
-                            <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
-                        </tr>
-                );
+                                <td>
+                                    {e.Domain}
+                                </td>
+                                <td>{e.autoPass + e.manualPass}</td>
+                                <td>{e.autoFail + e.manualFail}</td>
+                                <td>{e.autoBlocked + e.manualBlocked}</td>
+                                <td>{e.NotTested}</td>
+                                <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
+                            </tr>
+                    );
             })
         )
     }
