@@ -484,23 +484,26 @@ class ReleaseTestCase extends Component {
                     }
                 }
                 else {
-                    return (
-                            <tr key={i}>
-                                <td onClick={() => this.subDomainByDomain(e.Domain)}>
-                                    <a href='#' style={{color: 'green'}}>{e.Domain}</a>
-                                </td>
-                                {/* <td>
-                                    {e.Domain}
-                                </td> */}
-                                <td>{e.autoPass + e.manualPass}</td>
-                                <td>{e.autoFail + e.manualFail}</td>
-                                <td>{e.autoBlocked + e.manualBlocked}</td>
-                                <td>{e.NotTested}</td>
-                                <td>{temp}</td>
-                            </tr>
+                    if(temp > 0)
+                    {
+                        return (
+                                <tr key={i}>
+                                    <td onClick={() => this.subDomainByDomain(e.Domain)}>
+                                        <a href='#' style={{color: 'green'}}>{e.Domain}</a>
+                                    </td>
+                                    {/* <td>
+                                        {e.Domain}
+                                    </td> */}
+                                    <td>{e.autoPass + e.manualPass}</td>
+                                    <td>{e.autoFail + e.manualFail}</td>
+                                    <td>{e.autoBlocked + e.manualBlocked}</td>
+                                    <td>{e.NotTested}</td>
+                                    <td>{temp}</td>
+                                </tr>
                             );
                         }
                     }
+                }
                 )
             )
     }
@@ -553,22 +556,26 @@ class ReleaseTestCase extends Component {
                         )
                     }
                 }
-                return (
-                            <tr key={i}>
-                                {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
-                                    <a href='#' style={{color: 'green'}}>{e.Domain}</a>
-                                </td> */}
+                else {
+                    if (temp > 0){
+                        return (
+                                <tr key={i}>
+                                    {/* <td onClick={() => this.selectedDomainName(e.Domain)}>
+                                        <a href='#' style={{color: 'green'}}>{e.Domain}</a>
+                                    </td> */}
 
-                                <td>
-                                    {e.Domain}
-                                </td>
-                                <td>{e.autoPass + e.manualPass}</td>
-                                <td>{e.autoFail + e.manualFail}</td>
-                                <td>{e.autoBlocked + e.manualBlocked}</td>
-                                <td>{e.NotTested}</td>
-                                <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
-                            </tr>
-                    );
+                                    <td>
+                                        {e.Domain}
+                                    </td>
+                                    <td>{e.autoPass + e.manualPass}</td>
+                                    <td>{e.autoFail + e.manualFail}</td>
+                                    <td>{e.autoBlocked + e.manualBlocked}</td>
+                                    <td>{e.NotTested}</td>
+                                    <td>{e.autoPass + e.manualPass + e.autoFail + e.manualFail + e.autoBlocked + e.manualBlocked + e.NotTested}</td>
+                                </tr>
+                            );
+                        }
+                    }
             })
         )
     }

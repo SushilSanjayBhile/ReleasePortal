@@ -78,6 +78,12 @@ class ReleaseStatusGraphs extends Component {
         if(new Date(this.lastWeek).getTime() > new Date(this.xcord[this.xcord.length - 1]).getTime()) {
             this.xcord.push(this.lastWeek)
         }
+        else if(new Date(this.lastWeek).getTime() == new Date(this.xcord[this.xcord.length - 1]).getTime()) {
+            if (this.xcord.length > 1){
+                let poped = this.xcord.pop()
+                this.xcord[this.xcord.length - 1] = poped
+            }
+        }
         for(let i = 0; i < this.xcord.length; i++){
             if ( i%2 == 0){
                 this.xcord[i] = this.xcord[i] + "T00:00:00.000-0800"
