@@ -209,7 +209,7 @@ class GraphsByReleases extends Component {
             outerPromise.push(axios.get(`/rest/ClosedDefectsCount`,{params: {"edate": this.xcord[j].split("T")[0],"sdate": this.xcord[j+1].split("T")[0]},"flag": "graphR", fixVersions: this.props.parentData}).then(all => {
                 let MaxResult = all.data.total
                 let templist = []
-                promises3 = []
+                //promises3 = []
                 for(let i = 0; i <= MaxResult; i=i+100){
                     promises3.push(axios.get(`/rest/ClosedDefects`,{
                         params: {
@@ -245,7 +245,7 @@ class GraphsByReleases extends Component {
             outerPromise.push(axios.get(`/rest/PendingDefectsCount`,{params: {"edate": this.xcord[j].split("T")[0],"sdate": this.xcord[j+1].split("T")[0], "flag": "R", fixVersions: this.props.parentData,}}).then(all => {
                 let MaxResult = all.data.total
                 let templist = []
-                promises3 = []
+                //promises3 = []
                 for(let i = 0; i <= MaxResult; i=i+100){
                     promises3.push(axios.get(`/rest/PendingDefects`,{
                         params: {

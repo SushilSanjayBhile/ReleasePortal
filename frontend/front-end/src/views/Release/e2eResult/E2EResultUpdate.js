@@ -66,7 +66,7 @@ class UpdateE2EResult extends Component {
         zip.generateAsync({type: "blob", compression: "DEFLATE",compressionOptions: {
            level: 9,
        }}).then(content => {data.append('file', content);
-            axios.post(`/api/execute/${this.state.release}/${this.state.platform}/${this.state.file.name}`,data)
+            axios.post(`/api/execute/${this.state.release}/${this.state.platform}/${this.state.file.name}/${this.props.currentUser.email}`,data)
                 .then(response=>{
                 this.setState({output:response.data})
                 this.reset();

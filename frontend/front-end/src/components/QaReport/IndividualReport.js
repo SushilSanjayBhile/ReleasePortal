@@ -57,6 +57,11 @@ class IndividualReport extends Component {
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
+            'Tasks' : {
+                headerName: "Tasks Completed", field: "Tasks", sortable: true, filter: true,
+                cellClass: 'cell-wrap-text',
+                editable: false,
+            },
         }
 
         this.state = {
@@ -72,6 +77,7 @@ class IndividualReport extends Component {
                 columnDefDict['Executed'],
                 columnDefDict['Automated'],
                 columnDefDict['Filed'],
+                columnDefDict['Tasks'],
             ],
             defaultColDef: { resizable: true },
             modules: AllCommunityModules,
@@ -129,7 +135,7 @@ class IndividualReport extends Component {
     getTcs(startDate, endDate) {
         this.gridOperations(false);
         axios.get('/api/qaReport/',{
-            params: {   
+            params: {
                 startdate:startDate,
                 enddate :endDate
             },
@@ -139,7 +145,7 @@ class IndividualReport extends Component {
             let promises = []
             axios.get(`/api/userinfo`).then(res => {
                 res.data.forEach(user => {
-                    if ((user["role"] === "QA" || user["role"] === "ADMIN") && user["email"] !== "sshukla@diamanti.com" && user["email"] !== "sshende@diamanti.com" && user["email"] !== "sushil@diamanti.com" && user["email"] !== "rahul@diamanti.com") {
+                    if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "yatish@diamanti.com" || user["email"] == "bharati@diamanti.com" || user["email"] == "kdivekar@diamanti.com"))) {
                         QAs[user["email"]] ? list.push({email: user["email"],Name:user["name"], Executed: QAs[user["email"]].exec, Automated: QAs[user["email"]].auto, Filed: 0}) :
                         list.push({email: user["email"],Name:user["name"], Executed:0, Automated:0, Filed: 0});
                     }
@@ -149,10 +155,18 @@ class IndividualReport extends Component {
                         params: {
                             "sdate": startDate,
                             "edate": endDate,
-                            "qaMail": user["email"], 
-                            "startAt": this.startAt,
+                            "qaMail": user["email"],
                         }}).then(resp => {
                             user["Filed"] = resp.data.total
+                        })
+                    );
+                    promises.push(axios.get(`/rest/tasksByQA`,{
+                        params: {
+                            "sdate": startDate,
+                            "edate": endDate,
+                            "qaMail": user["email"],
+                        }}).then(resp => {
+                            user["Tasks"] = resp.data.total
                         })
                     );
                 })

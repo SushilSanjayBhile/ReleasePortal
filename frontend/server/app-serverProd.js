@@ -926,6 +926,26 @@ app.use('/rest/bugsByQA', (req, res) => {
     })
 }, err => { });
 
+app.use('/rest/tasksByQA', (req, res) => {
+    var totalBugsStr = `?jql=assignee%20in%20(%22${req.query.qaMail}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task%2C%20Subtask)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${req.query.sdate}%22%2C%20%22${req.query.edate}%22)%20ORDER%20BY%20created%20DESC&maxResults=0`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+    if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
+
 // GET ALL TCs of this release
 // app.get('/api/tcinfo/:release', (req, res) => {
 //     console.log('called')
