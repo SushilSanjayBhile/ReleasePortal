@@ -9,6 +9,24 @@ import PendingPostReleaseByReleases from '../../../components/CustomerBugs/Pendi
 import GraphsByReleases from '../../../components/CustomerBugs/GraphsByReleases';
 import  CheckBox  from '../../../components/TestCasesAll/CheckBox';
 import './popover.scss';
+const devManager = {"Vivek Gupta":["Vivek Gupta", "Rajat Gupta", "Samiksha Bagmar", "Sunil Barhate", "Pravinkumar", "Mayur Shinde", "Swapnil Shende", "Yatish Devadiga", "Ketan Divekar"],
+                          "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar"],
+                          "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende"],
+                          "Quentin Finck":["Quentin Finck", "Chetan Noginahal", "Raghunandan Sahoo"],
+                          "Arvind Krishnan":["Arvind Krishnan"],
+                          "Yatish Devadiga":["Bharati Bhole", "Aditya Nilkanthwar", "Shweta Burte", "Rahul Pawar", "Ashutosh Das"],
+                          "Ketan Divekar":["Varsha Suryawanshi", "Arati Jadhav", "Bhakti Gholap", "Priyanka Birajdar", "Mukesh Shinde", "Rakshitha Umesh"],
+                          "Jaganathan Jeyapaul":["Jaganathan Jeyapaul","David Taylor"],
+                          "David Taylor":["Randy Watler", "Jay Eno", "Josh Taylor", "Chris Aakre", "Doniphan Pattison"],
+                          "Unclassified":["Unclassified"]
+};
+const Ulist = ["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Mayur Shinde", "Pravinkumar",
+                "Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende",
+                "Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende",
+                "Quentin Finck", "Arvind Krishnan", "Abdul Zafar", "Jaganathan Jeyapaul"]
+const QAs = {"Prachee Ahire":'', "Mukesh Shinde":'', "Chetan Noginahal":'', "Dinesh":'', "Rajat Gupta":'',
+"Shweta Burte":'', "Aditya Nilkanthwar":'', "Arati Jadhav":'', "Varsha Suryawanshi":'', "Priyanka Birajdar":'',
+"Ashutosh Das":'', "Yatish Devadiga":'', "Ketan Divekar":'', "Bharati Bhole":'', "Rahul Pawar":'', "Bhakti Gholap":'', "Rakshitha Umesh": ''}
 class DefectReportsByRelease extends Component {
     constructor(props) {
         super(props);
@@ -147,7 +165,6 @@ class DefectReportsByRelease extends Component {
          else return false;
      }
     render() {
-        console.log("tshisssssss", this.state.tcOpenP1)
         if(this.state.loading == false){
             return (
                 <div>
@@ -179,10 +196,10 @@ class DefectReportsByRelease extends Component {
                                 <br></br>
                                 <br></br>
                                     {
-                                        <PendingMajorReleaseByReleases parentData = {this.state.fixStr} parentCallbackP1 = {this.callbackFunction}/>
+                                        <PendingMajorReleaseByReleases QAs = {QAs} Ulist = {Ulist} devManager = {devManager} parentData = {this.state.fixStr} parentCallbackP1 = {this.callbackFunction}/>
                                     }
                                     {
-                                        <PendingPostReleaseByReleases parentData = {this.state.fixStr} parentCallbackP2 = {this.callbackFunction}/>
+                                        <PendingPostReleaseByReleases QAs = {QAs} Ulist = {Ulist} devManager = {devManager} parentData = {this.state.fixStr} parentCallbackP2 = {this.callbackFunction}/>
                                     }
                                     {
                                         <GraphsByReleases parentData = {this.state.fixStr} parentCallbackG = {this.callbackFunction}/>

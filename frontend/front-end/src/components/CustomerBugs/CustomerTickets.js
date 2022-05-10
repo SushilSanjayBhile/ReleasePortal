@@ -19,20 +19,6 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
 import { element } from 'prop-types';
 import { CSVLink } from 'react-csv';
-const devManager = {"Vivek Gupta":["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde"],
-                          "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende"],
-                          "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende"],
-                          "Quentin Finck":["Quentin Finck", "Abdul Zafar"],
-                          "Arvind Krishnan":["Arvind Krishnan"],
-                          "Unclassified":["Unclassified"]
-};
-const Ulist = ["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde",
-                "Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende",
-                "Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende",
-                "Quentin Finck", "Arvind Krishnan", "Abdul Zafar"]
-const QAs = {"Prachee Ahire":'', "Mukesh Shinde":'', "Chetan Noginahal":'', "Dinesh":'', "Rajat Gupta":'',
-"Shweta Burte":'', "Aditya Nilkanthwar":'', "Arati Jadhav":'', "Varsha Suryawanshi":'', "Priyanka Birajdar":'',
-"Ashutosh Das":'', "Yatish Devadiga":'', "Ketan Divekar":'', "Bharati Bhole":'', "Kiran Kothule":'', "Swapnil Sonawane":''}
 class CustomerTickets extends Component {
     startAt = 0;
     isApiUnderProgress = false;
@@ -52,13 +38,12 @@ class CustomerTickets extends Component {
     constructor(props) {
         super(props);
         this.csvLink = React.createRef();
-        let self = this
         let bugColumnDefDictCR = {
             'BugNo' : {
                 headerName: "Bug No", field: "BugNo", sortable: true, filter: true,
                 editable: false,
                 width: '130',
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.BugNo;
                     let newLink = `<a href= https://diamanti.atlassian.net/browse/${keyData} target= "_blank">${keyData}</a>`;
                     return newLink;
@@ -181,7 +166,7 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.Active;
                     let priority = params.data.Severity;
                     if(priority == "P3"){
@@ -203,7 +188,7 @@ class CustomerTickets extends Component {
             //     width: '200',
             //     cellClass: 'cell-wrap-text',
             //     editable: false,
-            //     cellRenderer: function(params) {
+            //     cellRenderer: (params) => {
             //         let keyData = params.data.Inactive;
             //         let priority = params.data.Severity;
             //         if(priority == "P3"){
@@ -233,24 +218,22 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.P1;
                     let customer = params.data.Customer
                     if(customer != "Total"){
                         let label = ` AND labels not in (`
-                        if(self.cusList.length == 0){
+                        if(this.cusList.length == 0){
                             label = '';
                         }
                         else{
-                            for(let i = 0; i < self.cusList.length - 1; i++){
-                                label = label + `"customer-${self.cusList[i]}", `;
+                            for(let i = 0; i < this.cusList.length - 1; i++){
+                                label = label + `"customer-${this.cusList[i]}", `;
                             }
-                            label = label + `"customer-${self.cusList[self.cusList.length -1]}") `;
+                            label = label + `"customer-${this.cusList[this.cusList.length -1]}") `;
                             label = encodeURIComponent(label);
                         }
                         if (customer == "Unclassified"){
-                            //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                            //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
@@ -269,23 +252,22 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.P2;
                     let customer = params.data.Customer
                     if(customer != "Total"){
                         let label = ` AND labels not in (`
-                        if(self.cusList.length == 0){
+                        if(this.cusList.length == 0){
                             label = '';
                         }
                         else{
-                            for(let i = 0; i < self.cusList.length - 1; i++){
-                                label = label + `"customer-${self.cusList[i]}", `;
+                            for(let i = 0; i < this.cusList.length - 1; i++){
+                                label = label + `"customer-${this.cusList[i]}", `;
                             }
-                            label = label + `"customer-${self.cusList[self.cusList.length -1]}") `;
+                            label = label + `"customer-${this.cusList[this.cusList.length -1]}") `;
                             label = encodeURIComponent(label);
                         }
                         if (customer == "Unclassified"){
-                            //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
@@ -304,23 +286,22 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.P3;
                     let customer = params.data.Customer
                     if(customer != "Total"){
                         let label = ` AND labels not in (`
-                        if(self.cusList.length == 0){
+                        if(this.cusList.length == 0){
                             label = '';
                         }
                         else{
-                            for(let i = 0; i < self.cusList.length - 1; i++){
-                                label = label + `"customer-${self.cusList[i]}", `;
+                            for(let i = 0; i < this.cusList.length - 1; i++){
+                                label = label + `"customer-${this.cusList[i]}", `;
                             }
-                            label = label + `"customer-${self.cusList[self.cusList.length -1]}") `;
+                            label = label + `"customer-${this.cusList[this.cusList.length -1]}") `;
                             label = encodeURIComponent(label);
                         }
                         if (customer == "Unclassified"){
-                            //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
@@ -339,23 +320,22 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.Total;
                     let customer = params.data.Customer
                     if(customer != "Total"){
                         let label = ` AND labels not in (`
-                        if(self.cusList.length == 0){
+                        if(this.cusList.length == 0){
                             label = '';
                         }
                         else{
-                            for(let i = 0; i < self.cusList.length - 1; i++){
-                                label = label + `"customer-${self.cusList[i]}", `;
+                            for(let i = 0; i < this.cusList.length - 1; i++){
+                                label = label + `"customer-${this.cusList[i]}", `;
                             }
-                            label = label + `"customer-${self.cusList[self.cusList.length -1]}") `;
+                            label = label + `"customer-${this.cusList[this.cusList.length -1]}") `;
                             label = encodeURIComponent(label);
                         }
                         if (customer == "Unclassified"){
-                            //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
@@ -382,21 +362,21 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.WithDueDate;
                     let Manager = params.data.DevManager;
                     let assignee = '';
-                    let list = devManager[Manager];
+                    let list = this.props.devManager[Manager];
                     if(Manager != "Total"){
                         if (Manager == "Unclassified"){
-                            if(Ulist.length == 1){
-                                assignee = `assignee!="${Ulist[0]}"`;
+                            if(this.props.Ulist.length == 1){
+                                assignee = `assignee!="${this.props.Ulist[0]}"`;
                             }
                             else{
-                                for(let i = 0; i < Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
                                 }
-                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
                             }
                         }
                         else {
@@ -424,21 +404,21 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.WithOutDueDate;
                     let Manager = params.data.DevManager;
                     let assignee = '';
-                    let list = devManager[Manager];
+                    let list = this.props.devManager[Manager];
                     if(Manager != "Total"){
                         if (Manager == "Unclassified"){
-                            if(Ulist.length == 1){
-                                assignee = `assignee!="${Ulist[0]}"`;
+                            if(this.props.Ulist.length == 1){
+                                assignee = `assignee!="${this.props.Ulist[0]}"`;
                             }
                             else{
-                                for(let i = 0; i < Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
                                 }
-                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
                             }
                         }
                         else {
@@ -466,21 +446,21 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.PassedDueDate;
                     let Manager = params.data.DevManager;
                     let assignee = '';
-                    let list = devManager[Manager];
+                    let list = this.props.devManager[Manager];
                     if(Manager != "Total"){
                         if (Manager == "Unclassified"){
-                            if(Ulist.length == 1){
-                                assignee = `assignee!="${Ulist[0]}"`;
+                            if(this.props.Ulist.length == 1){
+                                assignee = `assignee!="${this.props.Ulist[0]}"`;
                             }
                             else{
-                                for(let i = 0; i < Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
                                 }
-                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
                             }
                         }
                         else {
@@ -514,21 +494,21 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.Total;
                     let Manager = params.data.DevManager;
                     let assignee = '';
-                    let list = devManager[Manager];
+                    let list = this.props.devManager[Manager];
                     if(Manager != "Total"){
                         if (Manager == "Unclassified"){
-                            if(Ulist.length == 1){
-                                assignee = `assignee!="${Ulist[0]}"`;
+                            if(this.props.Ulist.length == 1){
+                                assignee = `assignee!="${this.props.Ulist[0]}"`;
                             }
                             else{
-                                for(let i = 0; i < Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
                                 }
-                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
                             }
                         }
                         else {
@@ -564,7 +544,7 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.P1;
                     let Product = params.data.Product
                     let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
@@ -586,7 +566,7 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.P2;
                     let Product = params.data.Product
                     let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
@@ -608,12 +588,11 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.P3;
                     let Product = params.data.Product
                     let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
                     if (Product == "Unclassified"){
-                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra)%20AND%20priority%20%3D%20Lowest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20active%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra)%20AND%20(priority%20%3D%20Medium%20OR%20priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
@@ -631,7 +610,7 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.Total;
                     let Product = params.data.Product
                     let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
@@ -661,7 +640,7 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.WithDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
@@ -678,7 +657,7 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.WithOutDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
@@ -695,7 +674,7 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.PassedDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
@@ -718,7 +697,7 @@ class CustomerTickets extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.Total;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
@@ -1010,17 +989,6 @@ class CustomerTickets extends Component {
         this.filterBugsCR(this.state.buisnessUnitCR, this.state.customerCR, this.state.managerCR, this.state.developerCR)
         this.setState({ popoverOpen2CR: !this.state.popoverOpen2CR });
     }
-    // onSelectBU(bu) {
-    //     if (bu === '') {
-    //         bu = null;
-    //     }
-    //     this.setState({buisnessUnit:bu})
-    //     this.filterBugs(bu);
-    // }
-    // showSelectedTCs = () =>{
-    //     this.filterBugs(this.state.buisnessUnit)
-    //     this.setState({ popoverOpen2: !this.state.popoverOpen2 });
-    // }
     getTcs(startAt) {
         this.gridOperations(false);
         let promises = []
@@ -1070,10 +1038,10 @@ class CustomerTickets extends Component {
 
         let customer = {"Unclassified": {P1: 0, P2: 0, P3: 0},}
         let product = {"Ultima Enterprise": {P1: 0, P2: 0, P3: 0,}, "Ultima Accelerator": {P1: 0, P2: 0, P3: 0,}, "Spektra": {P1: 0, P2: 0, P3: 0,}, "Unclassified": {P1: 0, P2: 0, P3: 0,}}
-        let devM = {"Vivek Gupta":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Kshitij Gunjikar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},
-                         "Naveen Seth":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Quentin Finck":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},
-                         "Arvind Krishnan":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},
-                         "Unclassified":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},}
+        let devM = {}
+        Object.keys(this.props.devManager).forEach(key => {
+            devM[key] = { WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0 }
+        })
         let dev = {}
         //let activeFlag = false
         for(let i = 0; i < this.allTCsToShow.length; i++){
@@ -1099,11 +1067,11 @@ class CustomerTickets extends Component {
             }
 
             let developer = this.allTCsToShow[i]["fields"].assignee ? this.allTCsToShow[i]["fields"]["assignee"]["displayName"] : "NA"
-            let devKeys = Object.keys(devManager)
+            let devKeys = Object.keys(this.props.devManager)
             let manager = "Unclassified"
             //activeFlag = false
             devKeys.some(key => {
-                devManager[key].some(value => {
+                this.props.devManager[key].some(value => {
                     if(developer === value){
                         manager = key
                         temp.DevManager = key
@@ -1116,17 +1084,17 @@ class CustomerTickets extends Component {
             if(manager == "Unclassified"){
                 console.log("No manager Name-",developer, temp.BugNo)
             }
-            if(!QAs[temp.Developer] && !devDict[temp.Developer]){
+            if(!this.props.QAs[temp.Developer] && !devDict[temp.Developer]){
                 devDict[temp.Developer] = ''
             }
             if(this.allTCsToShow[i]["fields"]["duedate"]) {
                 temp.DaysPassedDueDate = 0
                 devM[manager]["WithDueDate"] = devM[manager]["WithDueDate"] + 1
-                if(!(QAs[developer] === '') && !dev[developer])
+                if(!(this.props.QAs[developer] === '') && !dev[developer])
                 {
                     dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithOutDueDate: 0}
                 }
-                if(!(QAs[developer] === '')){
+                if(!(this.props.QAs[developer] === '')){
                     dev[developer]["WithDueDate"] = dev[developer]["WithDueDate"] + 1
                 }
                 let duedate = new Date(this.allTCsToShow[i]["fields"]["duedate"])
@@ -1139,7 +1107,7 @@ class CustomerTickets extends Component {
                         temp.DaysPassedDueDate = 1
                     }
                     devM[manager]["PassedDueDate"] = devM[manager]["PassedDueDate"] + 1
-                    if(!(QAs[developer] === '')){
+                    if(!(this.props.QAs[developer] === '')){
                         dev[developer]["PassedDueDate"] = dev[developer]["PassedDueDate"] + 1
                     }
                 }
@@ -1155,11 +1123,11 @@ class CustomerTickets extends Component {
                 }
                 devM[manager]["WithOutDueDate"] = devM[manager]["WithOutDueDate"] + 1
                 devM[manager]["DaysWithoutDueDate"] = devM[manager]["DaysWithoutDueDate"] + temp.DaysWithoutDueDate
-                if(!(QAs[developer] === '') && !dev[developer])
+                if(!(this.props.QAs[developer] === '') && !dev[developer])
                 {
                     dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithOutDueDate: 0}
                 }
-                if(!(QAs[developer] === '')){
+                if(!(this.props.QAs[developer] === '')){
                     dev[developer]["WithOutDueDate"] = dev[developer]["WithOutDueDate"] + 1
                     dev[developer]["DaysWithOutDueDate"] = dev[developer]["DaysWithOutDueDate"] + temp.DaysWithoutDueDate
                 }
@@ -1355,7 +1323,7 @@ class CustomerTickets extends Component {
         Object.keys(devDict).forEach(key => {
             this.devList.push(key)
         })
-        Object.keys(devManager).forEach(key => {
+        Object.keys(this.props.devManager).forEach(key => {
             this.manList.push(key)
         })
         let Pr1 = 0, Pr2 = 0, Pr3 = 0, prtotal = 0;

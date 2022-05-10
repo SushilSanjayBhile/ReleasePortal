@@ -19,21 +19,6 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
 import { element } from 'prop-types';
 import { CSVLink } from 'react-csv';
-const devManager = {"Vivek Gupta":["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde"],
-                          "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende"],
-                          "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende"],
-                          "Quentin Finck":["Quentin Finck", "Abdul Zafar"],
-                          "Arvind Krishnan":["Arvind Krishnan"],
-                          "Unclassified":["Unclassified"]
-};
-const Ulist = ["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Madhav Buddhi", "Mayur Shinde",
-                "Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende",
-                "Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende",
-                "Quentin Finck", "Arvind Krishnan", "Abdul Zafar"]
-const QAs = {"Prachee Ahire":'', "Mukesh Shinde":'', "Chetan Noginahal":'', "Dinesh":'', "Rajat Gupta":'',
-            "Shweta Burte":'', "Aditya Nilkanthwar":'', "Arati Jadhav":'', "Varsha Suryawanshi":'', "Priyanka Birajdar":'',
-            "Ashutosh Das":'', "Yatish Devadiga":'', "Ketan Divekar":'', "Bharati Bhole":'', "Kiran Kothule":'', "Swapnil Sonawane":'',
-        }
 class PendingMajorRelease extends Component {
     startAt = 0;
     isApiUnderProgress = false;
@@ -57,7 +42,7 @@ class PendingMajorRelease extends Component {
                 headerName: "Bug No", field: "BugNo", sortable: true, filter: true,
                 editable: false,
                 width: '130',
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.BugNo;
                     let newLink = `<a href= https://diamanti.atlassian.net/browse/${keyData} target= "_blank">${keyData}</a>`;
                     return newLink;
@@ -174,7 +159,7 @@ class PendingMajorRelease extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.Total;
                     let priority = params.data.Severity;
                     let priMap = {"P1": "Highest"}
@@ -195,21 +180,21 @@ class PendingMajorRelease extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.WithDueDate;
                     let Manager = params.data.DevManager;
                     let assignee = '';
-                    let list = devManager[Manager];
+                    let list = this.props.devManager[Manager];
                     if(Manager != "Total"){
                         if (Manager == "Unclassified"){
-                            if(Ulist.length == 1){
-                                assignee = `assignee!="${Ulist[0]}"`;
+                            if(this.props.Ulist.length == 1){
+                                assignee = `assignee!="${this.props.Ulist[0]}"`;
                             }
                             else{
-                                for(let i = 0; i < Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
                                 }
-                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
                             }
                         }
                         else{
@@ -237,21 +222,21 @@ class PendingMajorRelease extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.WithOutDueDate;
                     let Manager = params.data.DevManager;
-                    let list = devManager[Manager];
+                    let list = this.props.devManager[Manager];
                     let assignee = '';
                     if(Manager != "Total"){
                         if (Manager == "Unclassified"){
-                            if(Ulist.length == 1){
-                                assignee = `assignee!="${Ulist[0]}"`;
+                            if(this.props.Ulist.length == 1){
+                                assignee = `assignee!="${this.props.Ulist[0]}"`;
                             }
                             else{
-                                for(let i = 0; i < Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
                                 }
-                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
                             }
                         }
                         else{
@@ -279,21 +264,21 @@ class PendingMajorRelease extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.PassedDueDate;
                     let Manager = params.data.DevManager;
-                    let list = devManager[Manager];
+                    let list = this.props.devManager[Manager];
                     let assignee = '';
                     if(Manager != "Total"){
                         if (Manager == "Unclassified"){
-                            if(Ulist.length == 1){
-                                assignee = `assignee!="${Ulist[0]}"`;
+                            if(this.props.Ulist.length == 1){
+                                assignee = `assignee!="${this.props.Ulist[0]}"`;
                             }
                             else{
-                                for(let i = 0; i < Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
                                 }
-                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
                             }
                         }
                         else{
@@ -327,21 +312,21 @@ class PendingMajorRelease extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.Total;
                     let Manager = params.data.DevManager;
-                    let list = devManager[Manager];
+                    let list = this.props.devManager[Manager];
                     let assignee = '';
                     if(Manager != "Total"){
                         if (Manager == "Unclassified"){
-                            if(Ulist.length == 1){
-                                assignee = `assignee!="${Ulist[0]}"`;
+                            if(this.props.Ulist.length == 1){
+                                assignee = `assignee!="${this.props.Ulist[0]}"`;
                             }
                             else{
-                                for(let i = 0; i < Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${Ulist[i]}" AND `;
+                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
+                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
                                 }
-                                assignee = assignee + `assignee!="${Ulist[Ulist.length -1]}"`;
+                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
                             }
                         }
                         else{
@@ -377,7 +362,7 @@ class PendingMajorRelease extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.Total;
                     let Product = params.data.Product
                     let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
@@ -407,7 +392,7 @@ class PendingMajorRelease extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.WithDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
@@ -424,7 +409,7 @@ class PendingMajorRelease extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.WithOutDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
@@ -441,7 +426,7 @@ class PendingMajorRelease extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.PassedDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
@@ -464,7 +449,7 @@ class PendingMajorRelease extends Component {
                 width: '150',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-                cellRenderer: function(params) {
+                cellRenderer: (params) => {
                     let keyData = params.data.Total;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
@@ -774,9 +759,10 @@ class PendingMajorRelease extends Component {
 
         let severityDictP1 = { Severity: "P1", Total: 0, Age: 0};
         let product = {"Ultima Enterprise": {Total: 0}, "Ultima Accelerator": {Total: 0}, "Spektra": {Total: 0}, "Unclassified": {Total: 0}}
-        let devM = {"Vivek Gupta":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Kshitij Gunjikar":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},
-                         "Naveen Seth":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Quentin Finck":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0}, "Arvind Krishnan":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},
-                         "Unclassified":{WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0},}
+        let devM = {}
+        Object.keys(this.props.devManager).forEach(key => {
+            devM[key] = { WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0 }
+        })
         let dev = {}
         for(let i = 0; i < this.allTCsToShow.length; i++){
 
@@ -800,10 +786,10 @@ class PendingMajorRelease extends Component {
             }
 
             let developer = this.allTCsToShow[i]["fields"].assignee ? this.allTCsToShow[i]["fields"]["assignee"]["displayName"] : "NA"
-            let devKeys = Object.keys(devManager)
+            let devKeys = Object.keys(this.props.devManager)
             let manager = "Unclassified"
             devKeys.some(key => {
-                devManager[key].some(value => {
+                this.props.devManager[key].some(value => {
                     if(developer === value){
                         manager = key
                         temp.DevManager = key
@@ -816,7 +802,7 @@ class PendingMajorRelease extends Component {
             if(manager == "Unclassified"){
                 console.log("No manager Name-",developer, temp.BugNo)
             }
-            if(!QAs[temp.Developer] && !devDict[temp.Developer]){
+            if(!this.props.QAs[temp.Developer] && !devDict[temp.Developer]){
                 devDict[temp.Developer] = ''
             }
             let ue = false, ua = false, sp = false;
@@ -873,11 +859,11 @@ class PendingMajorRelease extends Component {
             if(this.allTCsToShow[i]["fields"]["duedate"]) {
                 temp.DaysPassedDueDate = 0
                 devM[manager]["WithDueDate"] = devM[manager]["WithDueDate"] + 1
-                if(!(QAs[developer] === '') && !dev[developer])
+                if(!(this.props.QAs[developer] === '') && !dev[developer])
                 {
                     dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithOutDueDate: 0}
                 }
-                if(!(QAs[developer] === '')){
+                if(!(this.props.QAs[developer] === '')){
                     dev[developer]["WithDueDate"] = dev[developer]["WithDueDate"] + 1
                 }
                 let duedate = new Date(this.allTCsToShow[i]["fields"]["duedate"])
@@ -890,7 +876,7 @@ class PendingMajorRelease extends Component {
                         temp.DaysPassedDueDate = 1
                     }
                     devM[manager]["PassedDueDate"] = devM[manager]["PassedDueDate"] + 1
-                    if(!(QAs[developer] === '')){
+                    if(!(this.props.QAs[developer] === '')){
                         dev[developer]["PassedDueDate"] = dev[developer]["PassedDueDate"] + 1
                     }
                 }
@@ -906,11 +892,11 @@ class PendingMajorRelease extends Component {
                 }
                 devM[manager]["WithOutDueDate"] = devM[manager]["WithOutDueDate"] + 1
                 devM[manager]["DaysWithoutDueDate"] = devM[manager]["DaysWithoutDueDate"] + temp.DaysWithoutDueDate
-                if(!(QAs[developer] === '') && !dev[developer])
+                if(!(this.props.QAs[developer] === '') && !dev[developer])
                 {
                     dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithOutDueDate: 0}
                 }
-                if(!(QAs[developer] === '')){
+                if(!(this.props.QAs[developer] === '')){
                     dev[developer]["WithOutDueDate"] = dev[developer]["WithOutDueDate"] + 1
                     dev[developer]["DaysWithOutDueDate"] = dev[developer]["DaysWithOutDueDate"] + temp.DaysWithoutDueDate
                 }
@@ -939,7 +925,7 @@ class PendingMajorRelease extends Component {
         Object.keys(devDict).forEach(key => {
             this.devList.push(key)
         })
-        Object.keys(devManager).forEach(key => {
+        Object.keys(this.props.devManager).forEach(key => {
             this.manList.push(key)
         })
         let prtotal = 0;

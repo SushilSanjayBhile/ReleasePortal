@@ -184,12 +184,11 @@ class ReleaseStatusGraphs extends Component {
     getClosedDefects(){
         let promises3 = []
         let outerPromise = []
-        console.log(this.xcord)
         for(let j = 0, k = 0; j < this.xcord.length; j = j + 2, k++){
             outerPromise.push(axios.get(`/rest/ClosedDefectsCountByRelease`,{params: {"edate": this.xcord[j].split("T")[0],"sdate": this.xcord[j+1].split("T")[0], "bu": this.buList, "fixVersion": this.relNum,}}).then(all => {
                 let MaxResult = all.data.total
                 let templist = []
-                promises3 = []
+                //promises3 = []
                 for(let i = 0; i <= MaxResult; i=i+100){
                     promises3.push(axios.get(`/rest/ClosedDefectsByRelease`,{
                         params: {
