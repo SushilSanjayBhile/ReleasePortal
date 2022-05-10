@@ -703,21 +703,22 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             # UPDATE ROOTRELEASE
             #Release = rootRelease
             #data = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], CardType = req["CardType"])
-            data = TC_INFO_GUI.objects.using(rootRelease).filter(TcID = req['TcID'])
-            dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
-            for data in dataSer.data:
-                #print("rootrelease data",data)
-                updatedData = data
-                for row in req:
-                    #print("rootrelease row",row)
-                    if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
-                        updatedData[row] = req[row]
-                d = TC_INFO_GUI.objects.using(rootRelease).get(id = updatedData["id"])
-                dat = TC_INFO_GUI_SERIALIZER(d)
-                updateGuiTcInfo(d, updatedData, rootRelease)
-                if "Activity" in req:
-                    AD = req['Activity']
-                    GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], updatedData["id"], rootRelease)
+            if Release != rootRelease:
+                data = TC_INFO_GUI.objects.using(rootRelease).filter(TcID = req['TcID'])
+                dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)
+                for data in dataSer.data:
+                    #print("rootrelease data",data)
+                    updatedData = data
+                    for row in req:
+                        #print("rootrelease row",row)
+                        if "CardType" not in row and "TcID" not in row and "BrowserName" not in row and req[row] != "undefined":
+                            updatedData[row] = req[row]
+                    d = TC_INFO_GUI.objects.using(rootRelease).get(id = updatedData["id"])
+                    dat = TC_INFO_GUI_SERIALIZER(d)
+                    updateGuiTcInfo(d, updatedData, rootRelease)
+                    if "Activity" in req:
+                        AD = req['Activity']
+                        GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], updatedData["id"], rootRelease)
 
         return HttpResponse("SUCCESSFULLY UPDATED")
 

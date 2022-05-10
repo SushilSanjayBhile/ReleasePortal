@@ -19,12 +19,12 @@ def getQAReport(request):
         outputGui = {}
         output = RESULT_LOGS(releases, start_date, end_date)
 
-        for key in output:
-            output[key]["auto"] = len(output[key]["auto"])
+        #for key in output:
+        #    output[key]["auto"] = len(output[key]["auto"])
         outputGui = RESULT_LOGS_GUI(releases, start_date, end_date)
 
-        for key in outputGui:
-            outputGui[key]["auto"] = len(outputGui[key]["auto"])
+        #for key in outputGui:
+        #    outputGui[key]["auto"] = len(outputGui[key]["auto"])
 
         for key in output:
             if key in outputGui:
@@ -51,21 +51,21 @@ def RESULT_LOGS(Release, sdate, edate):
                         if "status added" in log["LogData"].lower():
                                 if log["UserName"] not in user:
                                     user[log["UserName"]] = {}
-                                    user[log["UserName"]]["auto"] = set()
+                                    user[log["UserName"]]["auto"] = 0
                                     user[log["UserName"]]["exec"] = 1
                                 else:
                                     user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
 
                         try:
-                            logdata = json.loads(logdata)
-                            if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
-                                if log["UserName"] not in user:
-                                    user[log["UserName"]] = {}
-                                    user[log["UserName"]]["auto"] = set()
-                                    user[log["UserName"]]["auto"].add(log["TcID"])
-                                    user[log["UserName"]]["exec"] = 0
-                                else:
-                                    user[log["UserName"]]["auto"].add(log["TcID"])
+                            if rel["ReleaseNumber"] == "DCX-DMC-Master":
+                                logdata = json.loads(logdata)
+                                if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
+                                    if log["UserName"] not in user:
+                                        user[log["UserName"]] = {}
+                                        user[log["UserName"]]["auto"] = 1
+                                        user[log["UserName"]]["exec"] = 0
+                                    else:
+                                        user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
                         except:
                             pass
             except:
@@ -86,21 +86,20 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
                         if "status added" in log["LogData"].lower():
                             if log["UserName"] not in user:
                                 user[log["UserName"]] = {}
-                                user[log["UserName"]]["auto"] = set()
+                                user[log["UserName"]]["auto"] = 0
                                 user[log["UserName"]]["exec"] = 1
                             else:
                                 user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
                         try:
-                            logdata = json.loads(logdata)
-                            if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
-                                tcid = log["URL"].split("/")[5]
-                                if log["UserName"] not in user:
-                                    user[log["UserName"]] = {}
-                                    user[log["UserName"]]["auto"] = set()
-                                    user[log["UserName"]]["auto"].add(tcid)
-                                    user[log["UserName"]]["exec"] = 0
-                                else:
-                                    user[log["UserName"]]["auto"].add(tcid)
+                            if rel["ReleaseNumber"] == "DCX-DMC-Master":
+                                logdata = json.loads(logdata)
+                                if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
+                                    if log["UserName"] not in user:
+                                        user[log["UserName"]] = {}
+                                        user[log["UserName"]]["auto"] = 1
+                                        user[log["UserName"]]["exec"] = 0
+                                    else:
+                                        user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
                         except:
                             pass
             except:

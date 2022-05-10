@@ -3,7 +3,7 @@ from logging import getLogger
 from dao.parse import get_greped_lines_and_directory_build_name
 from utils.constants import (
 			grep_words, pass_status, fail_status, logging, file_handler,
-			show_flag, console_handler, drive_directory, drive_sub_directory
+			show_flag, console_handler, drive_directory, drive_sub_directory, email
 			)
 
 from utils.parse_utils import ( 
@@ -121,6 +121,7 @@ def parse_log_file(filename) :
     resultDict['drive_dir_name'] = drive_dir_name
     resultDict['build_name'] = build_name
     resultDict['drive_sub_directory'] = drive_sub_directory
+    resultDict['email'] = email
 
     if show_flag == 'true' :
         logger.info("Passed TCs :{1}{0}\n".format('\n\t'.join(passed_tc_name), '\n\t'))

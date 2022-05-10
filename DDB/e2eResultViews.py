@@ -21,7 +21,7 @@ from psycopg2 import sql
 import json, datetime, os, time
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from .latestStatusUpdate import latestResultUpdateFunction        
-
+from .tcinfo import GenerateLogData
 errorTCs = []
 sucessTCs = []
 
@@ -29,7 +29,7 @@ passCount = 0
 failCount = 0
 skipCount = 0
 
-def updateStatusFunc(domain, subdomain, tcid, tcname, build, result, cardtype, Release):
+def updateStatusFunc(domain, subdomain, tcid, tcname, build, result, cardtype, Release, email):
     statusDict = {}
     global errorTCs, sucessTCs
     global passCount, failCount, skipCount
@@ -53,6 +53,10 @@ def updateStatusFunc(domain, subdomain, tcid, tcname, build, result, cardtype, R
         data = fd.save(commit = False)
         data.save(using = Release)
         sucessTCs.append(tcid)
+        if result.lower() != "skip" and cardtype != "NOT FOUND":
+            logData = "Status Added: Build: "+ build +", Result: "+ result +", TestedOn: , CardType: "+ cardtype
+            url = "/api/tcinfoput/"+Release+"/id/"+tcid+"/card/"+cardtype
+            GenerateLogData(email, "POST", url, logData, tcid, cardtype, Release)
     else:
         errorTCs.append(tcid)
 
@@ -73,6 +77,11 @@ def e2eResultUpdate(request):
 
         Release = req["drive_dir_name"]
         #print(Release)
+
+        if 'email' in req:
+            email = req['email']
+        else:
+            email = "jenkins@diamanti.com"
 
         if 'drive_sub_directory' in req:
             CardType = req['drive_sub_directory']
@@ -143,16 +152,16 @@ def e2eResultUpdate(request):
                     singleTc = TC_INFO.objects.using(Release).filter(TcID = tc).get(CardType= CardType)
                     serializer = TC_INFO_SERIALIZER(singleTc)
                 
-                    updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Pass", CardType, Release)
+                    updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Pass", CardType, Release, email)
 
                 except:
                     try:
                         singleTc = TC_INFO.objects.using(Release).get(TcID = tc)
                         serializer = TC_INFO_SERIALIZER(singleTc)
-                        updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Pass", CardType, Release)
+                        updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Pass", CardType, Release, email)
 
                     except:
-                        updateStatusFunc("NOT FOUND", "NOT FOUND", tc, "NOT FOUND", build, "Pass", "NOT FOUND", Release)
+                        updateStatusFunc("NOT FOUND", "NOT FOUND", tc, "NOT FOUND", build, "Pass", "NOT FOUND", Release, email)
                         #errorTCs.append(tc)
 
             for tc in req['fail_id_list']:
@@ -161,17 +170,17 @@ def e2eResultUpdate(request):
                     singleTc = TC_INFO.objects.using(Release).filter(TcID = tc).get(CardType= CardType)
                     serializer = TC_INFO_SERIALIZER(singleTc)
                 
-                    updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Fail", CardType, Release)
+                    updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Fail", CardType, Release, email)
 
                 except:
                     try:
                         singleTc = TC_INFO.objects.using(Release).get(TcID = tc)
                         serializer = TC_INFO_SERIALIZER(singleTc)
                 
-                        updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Fail", CardType, Release)
+                        updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Fail", CardType, Release, email)
 
                     except:
-                        updateStatusFunc("NOT FOUND", "NOT FOUND", tc, "NOT FOUND", build, "Fail", "NOT FOUND", Release)
+                        updateStatusFunc("NOT FOUND", "NOT FOUND", tc, "NOT FOUND", build, "Fail", "NOT FOUND", Release, email)
                         #errorTCs.append(tc)
 
             for tc in req['skipped_id_list']:
@@ -180,17 +189,17 @@ def e2eResultUpdate(request):
                     singleTc = TC_INFO.objects.using(Release).filter(TcID = tc).get(CardType= CardType)
                     serializer = TC_INFO_SERIALIZER(singleTc)
                 
-                    updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Skip", CardType, Release)
+                    updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Skip", CardType, Release, email)
 
                 except:
                     try:
                         singleTc = TC_INFO.objects.using(Release).filter(TcID = tc).get(CardType= CardType)
                         serializer = TC_INFO_SERIALIZER(singleTc)
                 
-                        updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Skip", CardType, Release)
+                        updateStatusFunc(serializer.data['Domain'], serializer.data['SubDomain'], serializer.data['TcID'], serializer.data['TcName'], build, "Skip", CardType, Release, email)
 
                     except:
-                        updateStatusFunc("NOT FOUND", "NOT FOUND", tc, "NOT FOUND", build, "Skip", "NOT FOUND", Release)
+                        updateStatusFunc("NOT FOUND", "NOT FOUND", tc, "NOT FOUND", build, "Skip", "NOT FOUND", Release, email)
                         #errorTCs.append(tc)
 
         #latestResultUpdateFunction(Release)

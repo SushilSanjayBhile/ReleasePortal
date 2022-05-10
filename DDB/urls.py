@@ -131,6 +131,6 @@ urlpatterns = [
     path('duptcgui', duplicate_tcs_gui),
     path('tcupdategui/<str:Release>', MULTIPLE_TC_UPDATION_GUI),
     path('release_all_info/releaseName/<str:Release>', TCAGGREGATE_DASHBOARD),
-    path('execute/<str:release>/<str:platform>/<str:fileName>',update_data),
+    path('execute/<str:release>/<str:platform>/<str:fileName><str:email>',update_data),
     path('fixVersionsGetPut', FIXVERSION),
 ]

@@ -1243,31 +1243,32 @@ def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
 
         # code to update tc in dmc-dcx-master release
         #Release = rootRelease
-        data = TC_INFO.objects.using(rootRelease).filter(TcID = id)
-        serializer = TC_INFO_SERIALIZER(data, many = True)
+        if Release != rootRelease:
+            data = TC_INFO.objects.using(rootRelease).filter(TcID = id)
+            serializer = TC_INFO_SERIALIZER(data, many = True)
 
-        for d in serializer.data:
-            singleData = TC_INFO.objects.using(rootRelease).get(id= d['id'])
-            singleSerializer = TC_INFO_SERIALIZER(singleData)
+            for d in serializer.data:
+                singleData = TC_INFO.objects.using(rootRelease).get(id= d['id'])
+                singleSerializer = TC_INFO_SERIALIZER(singleData)
 
-            updatedData = singleSerializer.data
+                updatedData = singleSerializer.data
 
-            for key in req:
-                if key == "NewTcID":
-                    verifyData = TC_INFO.objects.using(rootRelease).filter(TcID = req['NewTcID']).filter(CardType = d['CardType'])
-                    if len(verifyData) > 0:
-                        errRecords.append(req)
-                        continue
-                    updatedData['TcID'] = req['NewTcID']
-                elif key != "Activity":
-                    updatedData[key] = req[key]
+                for key in req:
+                    if key == "NewTcID":
+                        verifyData = TC_INFO.objects.using(rootRelease).filter(TcID = req['NewTcID']).filter(CardType = d['CardType'])
+                        if len(verifyData) > 0:
+                            errRecords.append(req)
+                            continue
+                        updatedData['TcID'] = req['NewTcID']
+                    elif key != "Activity":
+                        updatedData[key] = req[key]
 
-            res = updateData(updatedData, singleData, rootRelease)
-            if res == 0:
-                errRecords.append(req)
-            elif "Activity" in req:
-                AD = req['Activity']
-                GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], d['CardType'], rootRelease)
+                res = updateData(updatedData, singleData, rootRelease)
+                if res == 0:
+                    errRecords.append(req)
+                elif "Activity" in req:
+                    AD = req['Activity']
+                    GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], d['CardType'], rootRelease)
 
         if len(errRecords) > 0:
             return JsonResponse({'Conflict': errRecords}, status = 409)

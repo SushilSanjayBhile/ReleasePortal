@@ -30,6 +30,7 @@ with open(config_file_path, 'r') as file_obj :
     drive_directory = data['drive_dir_name']
     drive_sub_directory = data['drive_sub_dir_name']
     show_flag = data['show_flag']
+    email = data['email']
 
 # Logging Configuration
 logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)

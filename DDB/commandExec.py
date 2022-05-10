@@ -7,7 +7,7 @@ import shutil
 from threading import Thread
 FILE_UPLOAD_DIR = '/home/'
 @csrf_exempt
-def update_data(request, release, platform, fileName):
+def update_data(request, release, platform, fileName, email):
     if request.method == "POST":
         try:
             filepath = ''
@@ -17,7 +17,7 @@ def update_data(request, release, platform, fileName):
             unzip = subprocess.Popen(["unzip", "-d", FILE_UPLOAD_DIR, filepath],stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out, err = unzip.communicate()
             unzip.wait()
-            com = subprocess.Popen(["/portal/app/finalapp/non_jenkins_user_update_sheets.sh", "-f", FILE_UPLOAD_DIR + fileName, "-d", release, "-s", platform],stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            com = subprocess.Popen(["/portal/app/finalapp/non_jenkins_user_update_sheets.sh", "-f", FILE_UPLOAD_DIR + fileName, "-d", release, "-s", platform, "-e", email],stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             
             output, errors = com.communicate()
             com.wait()

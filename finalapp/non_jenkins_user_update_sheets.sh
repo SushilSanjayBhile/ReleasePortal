@@ -15,6 +15,7 @@ show_flag=false
 log_file_path=""
 google_drive_dir=""
 google_sub_dir=""
+email=""
 
 set -x
 
@@ -51,7 +52,9 @@ while [ "$1" != "" ]; do
 	-s	)	shift
 		google_sub_dir=$1
 		;;
-
+	-e	)	shift
+		email=$1
+		;;
 	-help	)	usage
 	    	exit 1
 	    	;;
@@ -77,7 +80,7 @@ jq '.log_file_path = $path' --arg path $log_file_path $config_file_path > tmp_co
 jq '.drive_dir_name = $name' --arg name $google_drive_dir $config_file_path > tmp_config.json && mv tmp_config.json $config_file_path
 jq '.drive_sub_dir_name = $name' --arg name $google_sub_dir $config_file_path > tmp_config.json && mv tmp_config.json $config_file_path
 jq '.show_flag = $flag' --arg flag $show_flag $config_file_path > tmp_config.json && mv tmp_config.json $config_file_path
-
+jq '.email = $email' --arg email $email $config_file_path > tmp_config.json && mv tmp_config.json $config_file_path
 
 # Invoking the python script
 entrypoint=$script_path/update_google_sheets.py
