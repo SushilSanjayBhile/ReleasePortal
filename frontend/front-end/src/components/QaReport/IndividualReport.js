@@ -28,17 +28,9 @@ class IndividualReport extends Component {
         super(props);
         let columnDefDict = {
             'Name' : {
-                headerCheckboxSelection: (params) => {
-                  if (this.gridApi) {
-                      this.setState({ selectedRows: this.gridApi.getSelectedRows().length })
-                  }
-                  return true;
-                },
-                headerCheckboxSelectionFilteredOnly: true,
-                checkboxSelection: true,
                 headerName: "Name", field: "Name", sortable: true, filter: true,
                 editable: false,
-                width: '500',
+                width: '250',
             },
             'Executed' : {
                 headerName: "TCs Executed", field: "Executed", sortable: true, filter: true,
@@ -56,11 +48,31 @@ class IndividualReport extends Component {
                 headerName: "Bug Filed", field: "Filed", sortable: true, filter: true,
                 cellClass: 'cell-wrap-text',
                 editable: false,
+                cellRenderer: (params) => {
+                    let sdet = params.data.Name
+                    sdet = encodeURIComponent(sdet)
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(SPEK%2C%20DWS%2C%20%22Automation%20and%20Validation%22)%20AND%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20createdDate%20%3E%3D%20${this.DateStart}%20AND%20createdDate%20%3C%3D%20${this.DateEnd}%20AND%20creator%20%3D%20%22${sdet}%22%20%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Filed}</a>`;
+                },
             },
             'Tasks' : {
                 headerName: "Tasks Completed", field: "Tasks", sortable: true, filter: true,
                 cellClass: 'cell-wrap-text',
                 editable: false,
+                cellRenderer: (params) => {
+                    let sdet = params.data.Name
+                    sdet = encodeURIComponent(sdet)
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task%2C%20Subtask)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Tasks}</a>`;
+                },
+            },
+            'NonTCTasks' : {
+                headerName: "Non TC Testing Tasks", field: "NonTCTasks", sortable: true, filter: true,
+                cellClass: 'cell-wrap-text',
+                editable: false,
+                cellRenderer: (params) => {
+                    let sdet = params.data.Name
+                    sdet = encodeURIComponent(sdet)
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task%2C%20Subtask)AND%20%22Epic%20Link%22%20in%20(DWS-8723%2C%20DWS-8722%2C%20OPS-91%2C%20OPS-90)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.NonTCTasks}</a>`;
+                },
             },
         }
 
@@ -78,6 +90,7 @@ class IndividualReport extends Component {
                 columnDefDict['Automated'],
                 columnDefDict['Filed'],
                 columnDefDict['Tasks'],
+                columnDefDict['NonTCTasks'],
             ],
             defaultColDef: { resizable: true },
             modules: AllCommunityModules,
@@ -114,6 +127,10 @@ class IndividualReport extends Component {
     onGridReady = params => {
         this.gridApi = params.api;
         this.gridColumnApi = params.columnApi;
+         const sortModelCR = [
+            {colId: 'Name', sort: 'asc'}
+        ];
+        this.gridApi.setSortModel(sortModelCR);
         params.api.sizeColumnsToFit();
     };
     gridOperations(enable) {
@@ -145,7 +162,7 @@ class IndividualReport extends Component {
             let promises = []
             axios.get(`/api/userinfo`).then(res => {
                 res.data.forEach(user => {
-                    if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "yatish@diamanti.com" || user["email"] == "bharati@diamanti.com" || user["email"] == "kdivekar@diamanti.com"))) {
+                    if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "yatish@diamanti.com" || user["email"] == "bharati@diamanti.com" || user["email"] == "kdivekar@diamanti.com" || user["email"] == "ajadhav@diamanti.com"))) {
                         QAs[user["email"]] ? list.push({email: user["email"],Name:user["name"], Executed: QAs[user["email"]].exec, Automated: QAs[user["email"]].auto, Filed: 0}) :
                         list.push({email: user["email"],Name:user["name"], Executed:0, Automated:0, Filed: 0});
                     }
@@ -165,8 +182,19 @@ class IndividualReport extends Component {
                             "sdate": startDate,
                             "edate": endDate,
                             "qaMail": user["email"],
+                            "nonTCTask": false,
                         }}).then(resp => {
                             user["Tasks"] = resp.data.total
+                        })
+                    );
+                    promises.push(axios.get(`/rest/tasksByQA`,{
+                        params: {
+                            "sdate": startDate,
+                            "edate": endDate,
+                            "qaMail": user["email"],
+                            "nonTCTask": true,
+                        }}).then(resp => {
+                            user["NonTCTasks"] = resp.data.total
                         })
                     );
                 })
@@ -226,12 +254,6 @@ class IndividualReport extends Component {
                                             }
                                             <div className='rp-icon-button'><i className="fa fa-leaf"></i></div>
                                             <span className='rp-app-table-title'>SDET REPORT</span>
-                                            {
-                                                this.state.tcOpen &&
-                                                <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '1.5rem' }}>
-                                                    <span className='rp-app-table-value'>Selected: {this.state.selectedRows}</span>
-                                                </div>
-                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -250,14 +272,9 @@ class IndividualReport extends Component {
                                                 To Date<Input  type="date" id="EndDate" value={DATE2} onChange={(e) => this.endDate({ EndDate: e.target.value })} />
                                             </div>
                                             <div style={{ width: '5rem', marginLeft: '1rem' }}>
-                                                <Button disabled={this.state.isApiUnderProgress} title="Only selected records will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
+                                                <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.gridApi) {
-                                                        let selected = this.gridApi.getSelectedRows().length;
-                                                        if (!selected) {
-                                                            alert('Only selected records will be downloaded');
-                                                            return
-                                                        }
-                                                        this.gridApi.exportDataAsCsv({ allColumns: true, onlySelected: true });
+                                                        this.gridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "SDET Report.csv"});
                                                     }
                                                 }} >
                                                     Download

@@ -5,12 +5,7 @@ import { getCurrentRelease } from '../../../reducers/release.reducer';
 import axios from 'axios';
 import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../actions';
 import './QaAnalysis.scss'
-import CustomerBugs from '../../../components/CustomerBugs/CustomerBugs';
 import IndividualReport from '../../../components/QaReport/IndividualReport';
-import CustomerReport from '../../../components/CustomerBugs/CustomerReport';
-import ManagerReport from '../../../components/CustomerBugs/ManagerReport';
-import ClosedBugReport from '../../../components/CustomerBugs/ClosedBugReport';
-import DeveloperReport from '../../../components/CustomerBugs/DeveloperReport';
 function daysInThisMonth() {
     var now = new Date();
     return new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
@@ -71,7 +66,7 @@ class QaAnalysis extends Component {
             addTC: {},
             width: window.screen.availWidth > 1700 ? 500 : 380,
             domainSelected: false,
-   
+
             automationCountWithRangeView : false,
 
             automationCountDataWithRange : [],
@@ -80,7 +75,7 @@ class QaAnalysis extends Component {
             testCountDataWithRangeForGUI : [],
             jiraBugData: [],
             startDate : tempDateStartAPI,
-            endDate : tempDateEndAPI,         
+            endDate : tempDateEndAPI,
             globalDate : false
         }
     }
@@ -129,10 +124,10 @@ class QaAnalysis extends Component {
         }
     }
 
-    getAutomationCountDataWithRange = (startDate,endDate,intf) =>{ 
+    getAutomationCountDataWithRange = (startDate,endDate,intf) =>{
         let tempList = []
         let tempListGUI = []
-        
+
         axios.get('/api/automation/',{
             params: {
                 startdate:startDate,
@@ -142,7 +137,6 @@ class QaAnalysis extends Component {
         .then(response=>{
             let data = response.data
             data.map((item)=>{
-                console.log("automation dateRange data",item)
                 tempList.push({
                     "AutomatedCli": item.AutomatedCli,
                     "DateRange": item.DateRange,
@@ -178,7 +172,7 @@ class QaAnalysis extends Component {
         })
     }
 
-    getTestCountDataWithRange = (startDate, endDate, intf) =>{   
+    getTestCountDataWithRange = (startDate, endDate, intf) =>{
         let tempList = []
         let tempListGUI = []
         if(intf === "CLI") {
@@ -191,7 +185,6 @@ class QaAnalysis extends Component {
             })
             .then(response=>{
                 let data = response.data
-                
                 let keys = Object.keys(data)
                 keys.forEach(key =>{
                     if(data[key] != 0){
@@ -225,7 +218,6 @@ class QaAnalysis extends Component {
             })
             .then(response=>{
                 let data = response.data
-                
                 let keys = Object.keys(data)
                 keys.forEach(key =>{
                     if(data[key] != 0){
@@ -244,13 +236,11 @@ class QaAnalysis extends Component {
                 this.setState({
                     testCountDataWithRangeForGUI : tempListGUI
                   })
-                
             })
             .catch(error=>{
                 console.log("Error",error)
             })
         }
-         
     }
 
     renderTableDataForAutomationCountWithRange = () =>{
@@ -259,15 +249,15 @@ class QaAnalysis extends Component {
         ) : (
             this.state.automationCountDataWithRange.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td width="140px" height="50px">{e.DateRange}</td>
                         <td>{e.TotalCli}</td>
                         <td>{e.Increase_In_Total}</td>
                         <td>{e.AutomatedCli}</td>
                         <td>{e.Increase_In_Automation}</td>
                         <td>{e.Automation_Perc}%</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
@@ -278,71 +268,69 @@ class QaAnalysis extends Component {
         ) : (
             this.state.automationCountDataWithRangeForGUI.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td width="140px" height="50px">{e.DateRange}</td>
                         <td>{e.TotalGui}</td>
                         <td>{e.Increase_In_Total}</td>
-                        
                         <td>{e.AutomatedGui}</td>
                         <td>{e.Increase_In_Automation}</td>
-                        
                         <td>{e.Automation_Perc}%</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
 
     renderTableDataForTestCountWithRange = () =>{
         return this.state.testCountDataWithRange.length == 0 ? (
-            <tr> 
+            <tr>
                 Lodaing...
-            </tr>    
+            </tr>
         ) : (
             this.state.testCountDataWithRange.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td width="140px" height="50px">{e.Release}</td>
                         <td width="140px" height="50px">{e.Total}</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
 
     renderTableDataForTestCountWithRangeForGUI = () =>{
         return this.state.testCountDataWithRangeForGUI.length == 0 ? (
-            <tr> 
+            <tr>
                 Lodaing...
-            </tr> 
+            </tr>
         ) : (
             this.state.testCountDataWithRangeForGUI.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td width="140px" height="50px">{e.Release}</td>
                         <td width="140px" height="50px">{e.Total}</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
 
     renderTableDataForJiraBugData = () =>{
         return this.state.jiraBugData.length == 0 ? (
-            <tr> 
+            <tr>
                 Lodaing...
-            </tr> 
+            </tr>
         ) : (
             this.state.jiraBugData.map((e, i) => {
             return (
-                    <tr key={i}> 
+                    <tr key={i}>
                         <td width="140px" height="50px">{e.Release}</td>
                         <td width="140px" height="50px">{e.Total}</td>
                         <td width="140px" height="50px">{e.Close}</td>
                         <td width="140px" height="50px">{e.CustomerBug}</td>
                         <td width="140px" height="50px">{e.Open}</td>
-                    </tr>    
-                ); 
+                    </tr>
+                );
             })
         )
     }
@@ -355,7 +343,7 @@ class QaAnalysis extends Component {
             this.globalDate = 1
         })
     }
-    
+
     selectedEndDate = (endDate) =>{
         tempDateEnd = endDate['EndDate']
         this.setState({
@@ -371,7 +359,7 @@ class QaAnalysis extends Component {
             startDateGUI : tempDateStartGUI,
         })
     }
-    
+
     selectedEndDateGUI = (endDate) =>{
         tempDateEndGUI = endDate['EndDate1']
         this.setState({
@@ -389,7 +377,7 @@ class QaAnalysis extends Component {
             this.globalDate = 1
         })
     }
-    
+
     testSelectedEndDateCLI = (endDate) =>{
         ttempDateEnd = endDate['tEndDate']
         this.setState({
@@ -407,13 +395,12 @@ class QaAnalysis extends Component {
             tstartDateGUI : ttempDateStartGUI,
         })
     }
-    
+
     testSelectedEndDateGUI = (endDate) =>{
         ttempDateEndGUI = endDate['tEndDate1']
         this.setState({
             tendDateGUI : ttempDateEndGUI,
             testCountDataWithRangeForGUI : []
-            
         },()=>{
             //this.getTestCountDataWithRange(this.state.tstartDateGUI,this.state.tendDateGUI,'GUI');
             this.getTestCountDataWithRange(this.state.tstartDateGUI, this.state.tendDateGUI, 'GUI');
@@ -422,8 +409,38 @@ class QaAnalysis extends Component {
 
     getdata(){
         let output = []
+        let titleMap = {}
         axios.get(`/rest/jira/bugdata`)
         .then(res => {
+            let title = res.data.firstRow.cells
+            title.forEach((markup, idx) => {
+                let split = markup["markup"].split(">")[1]
+                if (split){
+                    let tag = split.split("<")[0]
+                    switch(tag) {
+                        case "Open":
+                            titleMap["Open"] = idx + 1
+                            break;
+                        case "In Progress":
+                            titleMap["In Progress"] = idx + 1
+                            break;
+                        case "Resolved":
+                            titleMap["Resolved"] = idx + 1
+                            break;
+                        case "Closed":
+                            titleMap["Closed"] = idx + 1
+                            break;
+                        case "IN QA":
+                            titleMap["IN QA"] = idx + 1
+                            break;
+                        case "To Do":
+                            titleMap["To Do"] = idx + 1
+                            break;
+                        default:
+                      }
+                }
+            })
+            titleMap["Total"] = title.length
             let data = res.data.rows
             data.forEach(element => {
                 let keyofelement = Object.keys(element)
@@ -431,27 +448,27 @@ class QaAnalysis extends Component {
                     let key = keyofelement[0]
                     let filter = element[key][0]["markup"].split(".")
                         if(filter.length > 1 && filter[0] !== "2" && filter[0] !== "1" && filter[0] !== "0"){
-                            let openurl = element[key][1]["markup"]
+                            let openurl = element[key][titleMap["Open"]]["markup"]
                             let openBugCount = parseInt(openurl.split(">")[1].split("<")[0],10)
 
-                            let todourl = element[key][5]["markup"]
+                            let todourl = element[key][titleMap["To Do"]]["markup"]
                             let todoBugCount = parseInt(todourl.split(">")[1].split("<")[0],10)
 
-                            let inpgurl = element[key][2]["markup"]
+                            let inpgurl = element[key][titleMap["In Progress"]]["markup"]
                             let inpgBugCount = parseInt(inpgurl.split(">")[1].split("<")[0],10)
 
-                            let closeurl = element[key][4]["markup"]
+                            let closeurl = element[key][titleMap["Closed"]]["markup"]
                             let closeBugCount = parseInt(closeurl.split(">")[1].split("<")[0],10)
 
-                            let resurl = element[key][3]["markup"]
+                            let resurl = element[key][titleMap["Resolved"]]["markup"]
                             let resBugCount = parseInt(resurl.split(">")[1].split("<")[0],10)
 
-                            let inqaurl = element[key][11]["markup"]
+                            let inqaurl = element[key][titleMap["IN QA"]]["markup"]
                             let inqaBugCount = parseInt(inqaurl.split(">")[1].split("<")[0],10)
 
-                            let totalurl = element[key][12]["markup"]
+                            let totalurl = element[key][titleMap["Total"]]["markup"]
                             let totalBugCount = parseInt(totalurl.split(">")[1].split("<")[0],10)
-                                                     
+
                             output.push({
                                     "Release": element[key][0]["markup"],
                                     "Open": openBugCount + todoBugCount + inpgBugCount,
@@ -466,22 +483,20 @@ class QaAnalysis extends Component {
                 axios.get(`/rest/cbug`)
                 .then(res => {
                     let data = res.data.searchResultTotal.rows
-                    
                     let out = []
-                    data.forEach(element => {   
+                    data.forEach(element => {
                         let keyofelement = Object.keys(element)
                         if(keyofelement.length > 0){
                             let key = keyofelement[0]
+                            let total = element[key].length - 1
                             let filter = element[key][0]["markup"].split(".")
                                 if(filter.length != 1 && filter[0] !== "2" && filter[0] !== "1" && filter[0] !== "0"){
-                                    let totalurl = element[key][13]["markup"]
+                                    let totalurl = element[key][total]["markup"]
                                     let totalBugCount = parseInt(totalurl.split(">")[1].split("<")[0],10)
-        
                                     out.push({
                                             "Release": element[key][0]["markup"],
                                             "CustomerBug": totalBugCount,
                                             })
-                                   
                                 }
                         }
                     })
@@ -496,7 +511,6 @@ class QaAnalysis extends Component {
                 }).catch(error=>{
                     console.log("Error",error)
                     })
-           
         }).catch(error=>{
             console.log("Error",error)
             })
@@ -504,18 +518,18 @@ class QaAnalysis extends Component {
 
 
     render() {
-        let DATE1 = tempDateStart     
-        let DATE2 = tempDateEnd 
-        let DATE3 = tempDateStartGUI     
+        let DATE1 = tempDateStart
+        let DATE2 = tempDateEnd
+        let DATE3 = tempDateStartGUI
         let DATE4 = tempDateEndGUI
-        let DATE5 = ttempDateStart     
+        let DATE5 = ttempDateStart
         let DATE6 = ttempDateEnd
-        let DATE7 = ttempDateStartGUI     
+        let DATE7 = ttempDateStartGUI
         let DATE8 = ttempDateEndGUI
         return (
             <div>
             {
-            this.props.currentUser && this.props.currentUser.isAdmin &&
+            this.props.currentUser &&
             <div>
                 <div>
                     <Row>
@@ -525,7 +539,6 @@ class QaAnalysis extends Component {
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
                                             <div onClick={() => this.setState({ automationCountWithRangeView: !this.state.automationCountWithRangeView },()=>{this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');})} style={{ display: 'inlineBlock' }}>
-                                            
                                             {
                                                 !this.state.automationCountWithRangeView &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -536,25 +549,22 @@ class QaAnalysis extends Component {
                                             }
                                             <div className='rp-icon-button'></div>
                                             <span className='rp-app-table-title'>CLI Weekly Automation Progress</span>
-                                        
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
                             <Collapse isOpen={this.state.automationCountWithRangeView}>
                                 <Row>
-                                    
                                     <div style={{ marginRight: '4rem' ,marginLeft: '4rem', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
                                         <div class="row"  style={{marginTop:'1rem'}}>
                                             <div class="col-md-3">
                                                 From Date<Input  type="date" id="StartDate" value={DATE1} onChange={(e) => this.selectedStartDate({ StartDate: e.target.value })} ></Input>
-                                            </div> 
+                                            </div>
 
                                             <div class="col-md-3">
                                                 To Date<Input  type="date" id="EndDate" value={DATE2} onChange={(e) => this.selectedEndDate({ EndDate: e.target.value })} />
-                                            </div> 
+                                            </div>
                                         </div>
                                         <Table>
                                             <tbody>
@@ -582,7 +592,6 @@ class QaAnalysis extends Component {
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
                                             <div onClick={() => this.setState({ automationCountWithRangeViewForGUI: !this.state.automationCountWithRangeViewForGUI },()=>{this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');})} style={{ display: 'inlineBlock' }}>
-                                            
                                             {
                                                 !this.state.automationCountWithRangeViewForGUI &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -593,25 +602,22 @@ class QaAnalysis extends Component {
                                             }
                                             <div className='rp-icon-button'></div>
                                             <span className='rp-app-table-title'>GUI Weekly Automation Progress</span>
-                                        
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
                             <Collapse isOpen={this.state.automationCountWithRangeViewForGUI}>
                                 <Row>
                                     <div style={{ marginRight: '4rem' ,marginLeft: '4rem', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
                                         <div class="row"  style={{marginTop:'1rem'}}>
                                             <div class="col-md-3">
                                                 From Date<Input  type="date" id="StartDate1" value={DATE3} onChange={(e) => this.selectedStartDateGUI({ StartDate1: e.target.value })} ></Input>
-                                            </div> 
+                                            </div>
 
                                             <div class="col-md-3">
                                                 To Date<Input  type="date" id="EndDate1" value={DATE4} onChange={(e) => this.selectedEndDateGUI({ EndDate1: e.target.value })} />
-                                            </div>         
-                                            
+                                            </div>
                                         </div>
                                         <Table>
                                             <tbody>
@@ -638,7 +644,6 @@ class QaAnalysis extends Component {
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
                                             <div onClick={() => this.setState({ jiraDataView: !this.state.jiraDataView },()=>{this.getdata();})} style={{ display: 'inlineBlock' }}>
-                                            
                                             {
                                                 !this.state.jiraDataView &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -649,13 +654,11 @@ class QaAnalysis extends Component {
                                             }
                                             <div className='rp-icon-button'></div>
                                             <span className='rp-app-table-title'>Bug Analysis</span>
-                                        
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
                             <Collapse isOpen={this.state.jiraDataView}>
                                 <Row>
                                     <div style={{ marginRight: '8rem' ,marginLeft: '4rem', width:'650px', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
@@ -666,9 +669,8 @@ class QaAnalysis extends Component {
                                                 <th width="140px" height="50px" ><b>Resolved</b></th>
                                                 <th width="140px" height="50px" ><b>Customer Bugs</b></th>
                                                 <th width="140px" height="50px" ><b>Still Open</b></th>
-                                                
                                                     {
-                                                        this.state.jiraBugData ? this.renderTableDataForJiraBugData() :null 
+                                                        this.state.jiraBugData ? this.renderTableDataForJiraBugData() :null
                                                     }
                                             </tbody>
                                         </Table>
@@ -684,7 +686,6 @@ class QaAnalysis extends Component {
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
                                             <div onClick={() => this.setState({ testCountWithRangeView: !this.state.testCountWithRangeView },()=>{this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');})} style={{ display: 'inlineBlock' }}>
-                                            
                                             {
                                                 !this.state.testCountWithRangeView &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -695,25 +696,22 @@ class QaAnalysis extends Component {
                                             }
                                             <div className='rp-icon-button'></div>
                                             <span className='rp-app-table-title'>CLI Test case report</span>
-                                        
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
                             <Collapse isOpen={this.state.testCountWithRangeView}>
                                 <Row>
                                     <div style={{ marginRight: '8rem' ,marginLeft: '4rem', width:'650px', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
                                         <div class="row"  style={{marginTop:'1rem'}}>
                                             <div class="col-md-3">
                                                 From Date<Input  type="date" id="tStartDate" value={DATE5} onChange={(e) => this.testSelectedStartDateCLI({ tStartDate: e.target.value })} ></Input>
-                                            </div> 
+                                            </div>
 
                                             <div class="col-md-3">
                                                 To Date<Input  type="date" id="tEndDate" value={DATE6} onChange={(e) => this.testSelectedEndDateCLI({ tEndDate: e.target.value })} />
-                                            </div>         
-                                            
+                                            </div>
                                         </div>
                                         <Table>
                                             <tbody>
@@ -737,7 +735,6 @@ class QaAnalysis extends Component {
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
                                             <div onClick={() => this.setState({ testCountWithRangeViewForGUI: !this.state.testCountWithRangeViewForGUI },()=>{this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');})} style={{ display: 'inlineBlock' }}>
-                                            
                                             {
                                                 !this.state.testCountWithRangeViewForGUI &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -759,11 +756,11 @@ class QaAnalysis extends Component {
                                         <div class="row"  style={{marginTop:'1rem'}}>
                                             <div class="col-md-3">
                                                 From Date<Input  type="date" id="tStartDate1" value={DATE7} onChange={(e) => this.testSelectedStartDateGUI({ tStartDate1: e.target.value })} ></Input>
-                                            </div> 
+                                            </div>
 
                                             <div class="col-md-3">
                                                 To Date<Input  type="date" id="tEndDate1" value={DATE8} onChange={(e) => this.testSelectedEndDateGUI({ tEndDate1: e.target.value })} />
-                                            </div>         
+                                            </div>
                                         </div>
                                         <Table>
                                             <tbody>
@@ -782,19 +779,7 @@ class QaAnalysis extends Component {
                     </Row>
                 </div>
                 {
-                    <CustomerBugs></CustomerBugs>
-                }
-                {
                     <IndividualReport></IndividualReport>
-                }
-                {
-                    <CustomerReport></CustomerReport>
-                }
-                {
-                    <ManagerReport></ManagerReport>
-                }
-                {
-                    <ClosedBugReport></ClosedBugReport>
                 }
                 < Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                     <ModalHeader eader toggle={() => this.toggle()}>Confirmation</ModalHeader>
@@ -807,12 +792,6 @@ class QaAnalysis extends Component {
                     </ModalFooter>
                 </Modal>
             </div >
-            }
-            {
-                this.props.currentUser && !this.props.currentUser.isAdmin &&
-                <div class="container" style={{ 'margin-top': '1rem' }}>
-                    <h5>You are not allowed to view this page.</h5>
-                </div>
             }
             </div>
         )

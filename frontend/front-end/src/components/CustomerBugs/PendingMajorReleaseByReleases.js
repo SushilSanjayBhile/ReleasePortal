@@ -805,7 +805,7 @@ class PendingMajorReleaseByReleases extends Component {
             if(manager == "Unclassified"){
                 console.log("No manager Name-",developer, temp.BugNo)
             }
-            if(!this.props.QAs[temp.Developer] && !devDict[temp.Developer]){
+            if(!devDict[temp.Developer]){
                 devDict[temp.Developer] = ''
             }
             let ue = false, ua = false, sp = false;
@@ -835,7 +835,7 @@ class PendingMajorReleaseByReleases extends Component {
                         console.log(this.allTCsToShow[i].key)
                     }
                 }
-                else if(loLabel.includes("ultima")) {
+                else if(loLabel == "ultima") {
                     temp.BU = "Ultima Accelerator"
                     temp.BuManager = "Naveen Seth"
                     if(ua == false){
@@ -862,11 +862,12 @@ class PendingMajorReleaseByReleases extends Component {
             if(this.allTCsToShow[i]["fields"]["duedate"]) {
                 temp.DaysPassedDueDate = 0
                 devM[manager]["WithDueDate"] = devM[manager]["WithDueDate"] + 1
-                if(!(this.props.QAs[developer] === '') && !dev[developer])
+                if(!dev[developer])
                 {
                     dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithOutDueDate: 0}
+                    dev[developer]["WithDueDate"] = dev[developer]["WithDueDate"] + 1
                 }
-                if(!(this.props.QAs[developer] === '')){
+                else {
                     dev[developer]["WithDueDate"] = dev[developer]["WithDueDate"] + 1
                 }
                 let duedate = new Date(this.allTCsToShow[i]["fields"]["duedate"])
@@ -879,9 +880,7 @@ class PendingMajorReleaseByReleases extends Component {
                         temp.DaysPassedDueDate = 1
                     }
                     devM[manager]["PassedDueDate"] = devM[manager]["PassedDueDate"] + 1
-                    if(!(this.props.QAs[developer] === '')){
-                        dev[developer]["PassedDueDate"] = dev[developer]["PassedDueDate"] + 1
-                    }
+                    dev[developer]["PassedDueDate"] = dev[developer]["PassedDueDate"] + 1
                 }
             }
             else{
@@ -895,11 +894,13 @@ class PendingMajorReleaseByReleases extends Component {
                 }
                 devM[manager]["WithOutDueDate"] = devM[manager]["WithOutDueDate"] + 1
                 devM[manager]["DaysWithoutDueDate"] = devM[manager]["DaysWithoutDueDate"] + temp.DaysWithoutDueDate
-                if(!(this.props.QAs[developer] === '') && !dev[developer])
+                if(!dev[developer])
                 {
                     dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithOutDueDate: 0}
+                    dev[developer]["WithOutDueDate"] = dev[developer]["WithOutDueDate"] + 1
+                    dev[developer]["DaysWithOutDueDate"] = dev[developer]["DaysWithOutDueDate"] + temp.DaysWithoutDueDate
                 }
-                if(!(this.props.QAs[developer] === '')){
+                else {
                     dev[developer]["WithOutDueDate"] = dev[developer]["WithOutDueDate"] + 1
                     dev[developer]["DaysWithOutDueDate"] = dev[developer]["DaysWithOutDueDate"] + temp.DaysWithoutDueDate
                 }

@@ -12,21 +12,20 @@ import './popover.scss';
 const devManager = {"Vivek Gupta":["Vivek Gupta", "Rajat Gupta", "Samiksha Bagmar", "Sunil Barhate", "Pravinkumar", "Mayur Shinde", "Swapnil Shende", "Yatish Devadiga", "Ketan Divekar"],
                           "Kshitij Gunjikar":["Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar"],
                           "Naveen Seth":["Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende"],
-                          "Quentin Finck":["Quentin Finck", "Chetan Noginahal", "Raghunandan Sahoo"],
+                          "Quentin Finck":["Quentin Finck", "Chetan Noginahal", "Raghunandan Sahoo", "Kedar Kulkarni", "Vishal Mukherjee"],
                           "Arvind Krishnan":["Arvind Krishnan"],
                           "Yatish Devadiga":["Bharati Bhole", "Aditya Nilkanthwar", "Shweta Burte", "Rahul Pawar", "Ashutosh Das"],
                           "Ketan Divekar":["Varsha Suryawanshi", "Arati Jadhav", "Bhakti Gholap", "Priyanka Birajdar", "Mukesh Shinde", "Rakshitha Umesh"],
-                          "Jaganathan Jeyapaul":["Jaganathan Jeyapaul","David Taylor"],
+                          "Jaganathan Jeyapaul":["Jaganathan Jeyapaul","David Taylor", "Renu Gadgil"],
                           "David Taylor":["Randy Watler", "Jay Eno", "Josh Taylor", "Chris Aakre", "Doniphan Pattison"],
                           "Unclassified":["Unclassified"]
 };
 const Ulist = ["Vivek Gupta", "Nikhil Temgire", "Samiksha Bagmar", "Sunil Barhate", "Mayur Shinde", "Pravinkumar",
                 "Kshitij Gunjikar","Kiran Zarekar", "Sushil Bhile", "Sourabh Shukla", "Joel Wu","Abhijeet Chavan", "Narendra Raigar", "Swapnil Shende",
                 "Naveen Seth","Tanya Singh", "Alex Bahel", "Dinesh Radhakrishnan", "Diksha Tambe", "Rahul Soman", "Vinod Lohar", "Atirek Goyal", "Rajesh Borundia", "Sandeep Zende",
-                "Quentin Finck", "Arvind Krishnan", "Abdul Zafar", "Jaganathan Jeyapaul"]
-const QAs = {"Prachee Ahire":'', "Mukesh Shinde":'', "Chetan Noginahal":'', "Dinesh":'', "Rajat Gupta":'',
-"Shweta Burte":'', "Aditya Nilkanthwar":'', "Arati Jadhav":'', "Varsha Suryawanshi":'', "Priyanka Birajdar":'',
-"Ashutosh Das":'', "Yatish Devadiga":'', "Ketan Divekar":'', "Bharati Bhole":'', "Rahul Pawar":'', "Bhakti Gholap":'', "Rakshitha Umesh": ''}
+                "Quentin Finck", "Arvind Krishnan", "Abdul Zafar", "Jaganathan Jeyapaul", "Kedar Kulkarni", "Vishal Mukherjee", "Renu Gadgil", "Mukesh Shinde", "Chetan Noginahal", "Dinesh", "Rajat Gupta",
+                "Shweta Burte", "Aditya Nilkanthwar", "Arati Jadhav", "Varsha Suryawanshi", "Priyanka Birajdar",
+                "Ashutosh Das", "Yatish Devadiga", "Ketan Divekar", "Bharati Bhole", "Rahul Pawar", "Bhakti Gholap", "Rakshitha Umesh"]
 class DefectReportsByRelease extends Component {
     constructor(props) {
         super(props);
@@ -196,10 +195,10 @@ class DefectReportsByRelease extends Component {
                                 <br></br>
                                 <br></br>
                                     {
-                                        <PendingMajorReleaseByReleases QAs = {QAs} Ulist = {Ulist} devManager = {devManager} parentData = {this.state.fixStr} parentCallbackP1 = {this.callbackFunction}/>
+                                        <PendingMajorReleaseByReleases Ulist = {Ulist} devManager = {devManager} parentData = {this.state.fixStr} parentCallbackP1 = {this.callbackFunction}/>
                                     }
                                     {
-                                        <PendingPostReleaseByReleases QAs = {QAs} Ulist = {Ulist} devManager = {devManager} parentData = {this.state.fixStr} parentCallbackP2 = {this.callbackFunction}/>
+                                        <PendingPostReleaseByReleases Ulist = {Ulist} devManager = {devManager} parentData = {this.state.fixStr} parentCallbackP2 = {this.callbackFunction}/>
                                     }
                                     {
                                         <GraphsByReleases parentData = {this.state.fixStr} parentCallbackG = {this.callbackFunction}/>

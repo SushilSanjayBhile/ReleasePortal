@@ -1083,7 +1083,7 @@ class CustomerClosed extends Component {
             if(manager == "Unclassified"){
                 console.log("No manager Name-",developer, temp.BugNo)
             }
-            if(!this.props.QAs[temp.Developer] && !devDict[temp.Developer]){
+            if(!devDict[temp.Developer]){
                 devDict[temp.Developer] = ''
             }
             if(this.allTCsToShow[i]["fields"]["updated"]){
@@ -1096,29 +1096,29 @@ class CustomerClosed extends Component {
             }
             if(this.allTCsToShow[i]["fields"]["duedate"]) {
                 devM[manager]["WithDueDate"] = devM[manager]["WithDueDate"] + 1
-                if(!(this.props.QAs[developer] === '') && !dev[developer])
+                if(!dev[developer])
                 {
                     dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}
+                    dev[developer]["WithDueDate"] = dev[developer]["WithDueDate"] + 1
                 }
-                if(!(this.props.QAs[developer] === '')){
+                else {
                     dev[developer]["WithDueDate"] = dev[developer]["WithDueDate"] + 1
                 }
                 let duedate = new Date(this.allTCsToShow[i]["fields"]["duedate"])
                 let today = new Date()
                 if(today.getTime() > duedate.getTime()){
                     devM[manager]["PassedDueDate"] = devM[manager]["PassedDueDate"] + 1
-                    if(!(this.props.QAs[developer] === '')){
-                        dev[developer]["PassedDueDate"] = dev[developer]["PassedDueDate"] + 1
-                    }
+                    dev[developer]["PassedDueDate"] = dev[developer]["PassedDueDate"] + 1
                 }
             }
             else{
                 devM[manager]["WithOutDueDate"] = devM[manager]["WithOutDueDate"] + 1
-                if(!(this.props.QAs[developer] === '') && !dev[developer])
+                if(!dev[developer])
                 {
                     dev[developer] = {WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0}
+                    dev[developer]["WithOutDueDate"] = dev[developer]["WithOutDueDate"] + 1
                 }
-                if(!(this.props.QAs[developer] === '')){
+                else {
                     dev[developer]["WithOutDueDate"] = dev[developer]["WithOutDueDate"] + 1
                 }
             }
