@@ -685,7 +685,7 @@ class QaAnalysis extends Component {
                                 <div class="row">
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
-                                            <div onClick={() => this.setState({ testCountWithRangeView: !this.state.testCountWithRangeView },()=>{this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');})} style={{ display: 'inlineBlock' }}>
+                                            <div onClick={() => this.setState({ testCountWithRangeView: !this.state.testCountWithRangeView },()=> {if(this.state.testCountWithRangeView){this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');}})} style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.testCountWithRangeView &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -734,7 +734,7 @@ class QaAnalysis extends Component {
                                 <div class="row">
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
-                                            <div onClick={() => this.setState({ testCountWithRangeViewForGUI: !this.state.testCountWithRangeViewForGUI },()=>{this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');})} style={{ display: 'inlineBlock' }}>
+                                            <div onClick={() => this.setState({ testCountWithRangeViewForGUI: !this.state.testCountWithRangeViewForGUI },()=>{if(this.state.testCountWithRangeView){this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');}})} style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.testCountWithRangeViewForGUI &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>

@@ -61,7 +61,7 @@ class IndividualReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.Name
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task%2C%20Subtask)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Tasks}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task%2C%20Subtask)%20AND%20%22Epic%20Link%22%20not%20in%20(DWS-8723%2C%20DWS-8722%2C%20OPS-91%2C%20OPS-90)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Tasks}</a>`;
                 },
             },
             'NonTCTasks' : {
@@ -150,6 +150,7 @@ class IndividualReport extends Component {
         //setTimeout(() => this.getTcs(this.DateStart, this.DateEnd), 400);
     }
     getTcs(startDate, endDate) {
+        this.state.disableShowButton = true;
         this.gridOperations(false);
         axios.get('/api/qaReport/',{
             params: {
@@ -182,7 +183,7 @@ class IndividualReport extends Component {
                             "sdate": startDate,
                             "edate": endDate,
                             "qaMail": user["email"],
-                            "nonTCTask": false,
+                            "nonTCTask": "false",
                         }}).then(resp => {
                             user["Tasks"] = resp.data.total
                         })
@@ -192,7 +193,7 @@ class IndividualReport extends Component {
                             "sdate": startDate,
                             "edate": endDate,
                             "qaMail": user["email"],
-                            "nonTCTask": true,
+                            "nonTCTask": "true",
                         }}).then(resp => {
                             user["NonTCTasks"] = resp.data.total
                         })
@@ -220,7 +221,8 @@ class IndividualReport extends Component {
         this.setState({
             endDate : this.DateEnd
         },()=>{
-            this.getTcs(this.state.startDate, this.state.endDate);
+            this.setState({disableShowButton : false})
+            //this.getTcs(this.state.startDate, this.state.endDate);
         })
     }
     render() {
@@ -239,7 +241,7 @@ class IndividualReport extends Component {
             <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => {this.setState({ tcOpen: !this.state.tcOpen });this.getTcs(this.DateStart, this.DateEnd)}}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => {this.setState({ tcOpen: !this.state.tcOpen }, () => {if(this.state.tcOpen){this.getTcs(this.DateStart, this.DateEnd)}});}}>
                             <div class="row">
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
@@ -270,6 +272,11 @@ class IndividualReport extends Component {
                                             </div>
                                             <div class="col-md-3">
                                                 To Date<Input  type="date" id="EndDate" value={DATE2} onChange={(e) => this.endDate({ EndDate: e.target.value })} />
+                                            </div>
+                                            <div class="col-md-3" style={{marginTop: '1rem'}}>
+                                                <Button disabled={ this.state.disableShowButton } size="md" className="rp-rb-save-btn" onClick={(e) => {this.getTcs(this.DateStart, this.DateEnd);}} >
+                                                    Show
+                                                </Button>
                                             </div>
                                             <div style={{ width: '5rem', marginLeft: '1rem' }}>
                                                 <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={() => {
