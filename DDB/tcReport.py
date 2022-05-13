@@ -124,7 +124,7 @@ def RESULT_LOGS(Release, sdate, edate):
         serializer = LOG_SERIALIZER(data, many = True)
         count = 0
         for log in serializer.data:
-            if "status" in log["LogData"].lower():
+            if "status added" in log["LogData"].lower():
                 user = log["UserName"]
                 if user == "":
                     continue
@@ -143,7 +143,7 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
         serializer = GUI_LOGS_SERIALIZER(data, many = True)
         count = 0
         for log in serializer.data:
-            if "status" in log["LogData"].lower():
+            if "status added" in log["LogData"].lower():
                 user = log["UserName"]
                 if user == "":
                     continue
