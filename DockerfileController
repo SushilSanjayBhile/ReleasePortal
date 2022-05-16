@@ -2,7 +2,7 @@
 FROM ubuntu:18.04
 
 # Maintainer of diamanti release portal docker image
-MAINTAINER sushil bhile <sushilmaxbhile@gmail.com>
+LABEL authors="sshende@diamanti.com,sushil@diamanti.com,ajadhav@diamanti.com"
 
 # Package updation
 RUN apt update
@@ -38,18 +38,10 @@ RUN apt install python3-dateutil -y
 # Copying app
 COPY app/ /portal/app/
 RUN mkdir /portal/log/
-#COPY gitconfig ~/.gitconfig
-#COPY finalapp/ /portal/app/finalapp
 
 # Requirement installation for backend
-#COPY app/requirementsController.txt /portal/app/
 RUN pip3 install -r /portal/app/requirementsController.txt --ignore-installed
-#COPY dockerfiles/ /portal/dockerfiles/
-#COPY k8sconfigfiles/ /portal/k8sconfigfiles/
-#COPY scripts/ /portal/scripts/
 ENV PYTHONUNBUFFERED=0
 
 # Start postgres service and our controller app
-#ENTRYPOINT ls / && /bin/bash
 ENTRYPOINT python3 /portal/app/manage.py runserver 0:8000 && bash
-
