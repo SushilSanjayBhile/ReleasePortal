@@ -1,0 +1,16 @@
+{
+   "apiVersion": "v1",
+   "kind": "PersistentVolumeClaim",
+   "metadata": {
+      "name": "release-pvc"
+   },
+   "spec": {
+      "resources": {
+         "requests": {
+            "storage": "500Gi"
+         }
+      },
+      "accessModes": ["ReadWriteOnce"],
+      "storageClassName": "release-sc-high"
+   }
+}
