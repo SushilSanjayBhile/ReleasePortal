@@ -1,0 +1,47 @@
+# Image to be used for Diamanti Release Portal
+FROM ubuntu:18.04
+
+# Maintainer of diamanti release portal docker image
+LABEL authors="sshende@diamanti.com,sushil@diamanti.com,ajadhav@diamanti.com"
+
+# Package updation
+RUN apt update
+
+# Apt package installation
+RUN apt install sudo -y
+RUN apt install vim -y
+RUN apt install python3.10 -y
+RUN apt install python3-pip -y
+RUN apt install python3-psycopg2 -y
+RUN apt install curl -y
+RUN apt install jq -y
+RUN pip3 install requests
+RUN pip3 install oauth2client
+RUN pip3 install google-api-python-client
+RUN pip3 install gspread
+RUN pip3 install setuptools_rust
+RUN pip3 install --upgrade pip
+RUN python3 -m pip install pyOpenSSL --ignore-installed
+RUN pip3 install django-cors-headers
+RUN apt install wget -y
+RUN apt install openssh-client -y
+RUN apt install git -y
+RUN apt install tmux -y
+RUN ssh-keygen -t ed25519 -C "sushilmaxbhile@gmail.com" -f /root/.ssh/id_ed25519  -q -N """"
+
+# Postgres installation
+ENV TZ=Asia/Kolkata
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt install postgresql postgresql-contrib -y
+RUN apt install python3-dateutil -y
+
+# Copying app
+COPY app/ /portal/app/
+RUN mkdir /portal/log/
+
+# Requirement installation for backend
+RUN pip3 install -r /portal/app/requirementsController.txt --ignore-installed
+ENV PYTHONUNBUFFERED=0
+
+# Start postgres service and our controller app
+ENTRYPOINT python3 /portal/app/manage.py runserver 0:8000 && bash

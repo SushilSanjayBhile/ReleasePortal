@@ -1,0 +1,43 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: backupcronjob       # CHANGE THIS VALUE
+  namespace: qa-portal       # CHANGE THIS VALUE
+spec:
+  schedule: "0 */6 * * *"	# CHANGE THIS VALUE
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          serviceAccountName: qa-backup       # CHANGE THIS VALUE
+          affinity:
+            podAntiAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: diamanti.com/app
+                    operator: In
+                    values: ["backupcontroller"]  # Ensures only 1 backcontroller runs in the cluster
+                topologyKey: beta.kubernetes.io/os
+          containers:
+          - args:
+            - -virtualIP=172.16.19.76        # CHANGE THIS VALUE: Virtual IP address of the cluster
+            - -sourcePVC=release-pvc        # CHANGE THIS VALUE: PVC to take a backup of associated volume
+            - -pvcNamespace=qa-portal        # CHANGE THIS VALUE: Namespace
+            - -backupPlugin=tar                    # Backup plugin type
+            - -pluginArgs={"server":"172.16.0.25","path":"\/dws_nas_scratch\/release-portal-backup","mountOptions":"nfsvers=3"}        # CHANGE THIS VALUE: path
+            - -pluginOptions=["-cvp","--selinux","--acls","--xattrs"] # Backup plugin options
+            - -compressed=true                     # Flag to enable/disable compression
+            - -maxNumSnapshots=10        # CHANGE THIS VALUE: Maximum number of snapshots that can exist for the PVC
+            - -numDaysToKeep=30        # CHANGE THIS VALUE: Maximum number of backups that can exist on NFS server
+            - -snapshotPromoter=snapshot-promoter  # Storage class for creating volume from a snapshot
+            - -activeVolumesOnly=true              # Flag to backup attached volumes only
+            - -cpuResource=100m                    # CPU resource for backup agent
+            - -memoryResource=100Mi                # Memory resource for backup agent
+            - -maxConcurrentJobs=10                # Max concurrent backup agents
+            name: backupjob-release-pvc        # CHANGE THIS VALUE
+            image: diamanti/backupcontroller:v2.3.0.1
+          restartPolicy: Never

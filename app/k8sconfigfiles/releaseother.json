@@ -1,0 +1,68 @@
+{
+    "apiVersion": "apps/v1",
+    "kind": "Deployment",
+    "metadata": {
+        "labels": {
+            "app": "universal"
+        },
+        "name": "diamantiuniversalportal"
+    },
+    "spec": {
+        "replicas": 1,
+        "selector": {
+            "matchLabels": {
+                "app": "universal"
+             }
+        },
+        "template": {
+            "metadata": {
+                "labels": {
+                    "app": "universal"
+                },
+                "name": "universal"
+            },
+            "spec": {
+                "containers": [
+                    {
+                        "image": "sushilmax93/releasepostgres:dbimage7",
+                        "name": "db",
+                        "tty": true,
+                        "resources": {
+                            "requests": {
+                                "cpu": "12000m",
+                                "memory": "16Gi"
+                            }
+                        },
+                        "volumeMounts": [
+                            {
+                                "mountPath": "/data",
+                                "name": "release-pvc"
+                            }
+                        ]
+                    },
+                    {
+                        "image": "sushilmax93/releasefinal:stable55",
+                        "imagePullPolicy": "Always",
+                        "name": "controller",
+                        "tty": true,
+                        "resources": {
+                            "requests": {
+                                "cpu": "8000m",
+                                "memory": "16Gi"
+                            }
+                        }
+                    }
+                ],
+                "restartPolicy": "Always",
+	        "volumes": [
+	            {
+	                "persistentVolumeClaim": {
+	                    "claimName": "release-pvc"
+	                },
+	                "name": "release-pvc"
+	            }
+	        ]
+            }
+        }
+    }
+}

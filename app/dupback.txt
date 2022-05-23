@@ -1,0 +1,99 @@
+Already in DB:- master : PVC_Local-2.1 : StoragePVC : Local : BOS
+master : PVC_Local-2.1 : StoragePVC : Local : ['BOS']
+
+Already in DB:- master : N_HostNetwork-3.0 : NetworkTestCases : Host Network : BOS
+master : N_HostNetwork-3.0 : NetworkTestCases : Host Network : ['BOS']
+
+Already in DB:- master : N_Negative-1.0 : NetworkTestCases : Negative Scenarios : BOS
+master : N_Negative-1.0 : NetworkTestCases : Standard Scenarios : ['BOS']
+
+Already in DB:- master : N_Negative-1.1 : NetworkTestCases : Negative Scenarios : BOS
+master : N_Negative-1.1 : NetworkTestCases : Standard Scenarios : ['BOS']
+
+Already in DB:- master : N_Negative-1.2 : NetworkTestCases : Negative Scenarios : BOS
+master : N_Negative-1.2 : NetworkTestCases : Standard Scenarios : ['BOS']
+
+Already in DB:- master : S_iscsi-2.0 : Storage-Tests : iSCSI : BOS
+master : S_iscsi-2.0 : Storage-Tests : iSCSI : ['BOS']
+
+Already in DB:- master : S_Migrate : Storage-Tests : Migration : BOS
+master : S_Migrate : Storage-Tests : Migration : ['BOS']
+
+Already in DB:- master : L3Storage_1.0 : Storage-Tests : Sheet3 : BOS
+master : L3Storage_1.0 : Storage-Tests : Sheet3 : ['BOS']
+
+Already in DB:- master : L3Storage_1.1 : Storage-Tests : Sheet3 : BOS
+master : L3Storage_1.1 : Storage-Tests : Sheet3 : ['BOS']
+
+Already in DB:- master : PVC_Local-2.1 : StoragePVC : Local : NYNJ
+master : PVC_Local-2.1 : StoragePVC : Local : ['NYNJ']
+
+Already in DB:- master : S_iscsi-2.0 : Storage-Tests : iSCSI : NYNJ
+master : S_iscsi-2.0 : Storage-Tests : iSCSI : ['NYNJ']
+
+Already in DB:- master : S_Migrate : Storage-Tests : Migration : NYNJ
+master : S_Migrate : Storage-Tests : Migration : ['NYNJ']
+
+Already in DB:- master : S_VolumeEncryption-1.20 : Storage-Tests : VolumeEncryption : NYNJ
+master : S_VolumeEncryption-1.20 : Storage-Tests : VolumeEncryption : ['NYNJ']
+
+Already in DB:- master : L3Storage_1.0 : Storage-Tests : L3 Storage : NYNJ
+master : L3Storage_1.0 : Storage-Tests : L3 Storage : ['NYNJ']
+
+Already in DB:- master : L3Storage_1.1 : Storage-Tests : L3 Storage : NYNJ
+master : L3Storage_1.1 : Storage-Tests : L3 Storage : ['NYNJ']
+
+Already in DB:- master : M_PVolume-1.2 : ManagementTestcases : Management : COMMON
+master : M_PVolume-1.2 : ManagementTestcases : Management : ['COMMON']
+
+Already in DB:- master : Rbac_WAuth-1.0 : Rbac : Remote User on Windows LDAP : COMMON
+master : Rbac_WAuth-1.0 : Rbac : Remote User on Windows LDAP : ['COMMON']
+
+Already in DB:- master : Rbac : Rbac : Remote User Group : COMMON
+master : Rbac : Rbac : Remote User Group : ['COMMON']
+
+Already in DB:- master : Rbac : Rbac : Remote User Group : COMMON
+master : Rbac : Rbac : Remote User Group : ['COMMON']
+
+Already in DB:- master : Rbac : Rbac : Remote User Group : COMMON
+master : Rbac : Rbac : Remote User Group : ['COMMON']
+
+Already in DB:- master : Rbac : Rbac : Remote User Group : COMMON
+master : Rbac : Rbac : Remote User Group : ['COMMON']
+
+Already in DB:- master : Rbac_Domain : Rbac : Remote User Group : COMMON
+master : Rbac_Domain : Rbac : Remote User Group : ['COMMON']
+
+Already in DB:- master : Rbac_Domain : Rbac : Remote User Group : COMMON
+master : Rbac_Domain : Rbac : Remote User Group : ['COMMON']
+
+Already in DB:- master : Rbac_Domain : Rbac : Remote User Group : COMMON
+master : Rbac_Domain : Rbac : Remote User Group : ['COMMON']
+
+Already in DB:- master : Rbac_Negative : Rbac : Remote User Group : COMMON
+master : Rbac_Negative : Rbac : Remote User Group : ['COMMON']
+
+Already in DB:- master : Rbac_Negative : Rbac : Remote User Group : COMMON
+master : Rbac_Negative : Rbac : Remote User Group : ['COMMON']
+
+Already in DB:- master : Rbac_Negative : Rbac : Remote User Group : COMMON
+master : Rbac_Negative : Rbac : Remote User Group : ['COMMON']
+
+Already in DB:- master : Rbac_Negative : Rbac : Remote User Group : COMMON
+master : Rbac_Negative : Rbac : Remote User Group : ['COMMON']
+
+Already in DB:- master : Rbac_LAuth-1.0 : Rbac : Remote User on Linux LDAP : COMMON
+master : Rbac_LAuth-1.0 : Rbac : Remote User on Linux LDAP : ['COMMON']
+
+Already in DB:- master : Upgrade_Helm-1.1 : HelmTestCases : Upgrade helm to v2.12.3 : COMMON
+master : Upgrade_Helm-1.1 : HelmTestCases : Upgrade helm to v2.12.3 : ['COMMON']
+
+Already in DB:- master : MZ_ClusterCreate-1.6 : MultizoneCluster : Management : COMMON
+master : MZ_ClusterCreate-1.6 : MultizoneCluster : Management : ['COMMON']
+
+Already in DB:- master : MZ_ZoneCapability_AZ-1.1 : MultizoneCluster : Zone Capability : COMMON
+master : MZ_ZoneCapability_AZ-1.1 : MultizoneCluster : Zone Capability : ['COMMON']
+
+Already in DB:- master : MZ_ZoneCapability_AZ-1.2 : MultizoneCluster : Zone Capability : COMMON
+master : MZ_ZoneCapability_AZ-1.2 : MultizoneCluster : Zone Capability : ['COMMON']
+
