@@ -130,11 +130,11 @@ class UpdateE2EResult extends Component {
                                                     User Role
                                                 </Label> */}
                                                 <div>
-                                                   <Col>  
-                                                    <input type="file" id="file" onChange={this.handleChange} /> 
+                                                   <Col>
+                                                    <input type="file" id="file" onChange={this.handleChange} />
                                                     </Col>
                                                     {/* <Button outline color="success" id = 'Upload file' onClick={this.handleSubmit} > Upload File </Button> */}
-                                                </div> 
+                                                </div>
                                         </FormGroup>
                                    </Row>
 
@@ -171,7 +171,6 @@ class UpdateE2EResult extends Component {
                                         </Row>
                                         </FormGroup>
                                     </Col>
-                                    
                                     <Button outline color="success" id = 'submit' disabled={this.state.disable} onClick={this.handleSubmit} > Submit </Button>
                                 </Form>
                                 <div>
@@ -181,7 +180,7 @@ class UpdateE2EResult extends Component {
                                             <ul>
                                                 {Object.keys(this.state.output).map((key, value) => <li key={value}>{key} : {this.state.output[key]}</li>)}
                                             </ul>
-                                        </div>  
+                                        </div>
                                         :null
                                     }
 

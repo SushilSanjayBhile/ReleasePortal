@@ -98,7 +98,6 @@ class TestCasesAll extends Component {
                 //    values: ['BOS', 'NYNJ', 'COMMON'],
                 //    multiple: true
                 //}
-
             },
             'Build' :  {
                 headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
@@ -307,7 +306,7 @@ class TestCasesAll extends Component {
    //Priority Based Filter functions
     handleAllCheckedTCs = (event) => {
         let tableColumnsTcs = this.state.tableColumnsTcs
-        tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked) 
+        tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({tableColumnsTcs: tableColumnsTcs})
 
     }
@@ -338,7 +337,7 @@ class TestCasesAll extends Component {
     //Status Based Filter functions
     handleAllCheckedStatusTCs = (event) => {
         let statusColumn = this.state.statusColumn
-        statusColumn.forEach(columnName => columnName.isChecked = event.target.checked) 
+        statusColumn.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({statusColumn: statusColumn})
     }
 
@@ -354,7 +353,7 @@ class TestCasesAll extends Component {
     //column based filter functions
     handleAllChecked = (event) => {
         let tableColumns = this.state.tableColumns
-        tableColumns.forEach(columnName => columnName.isChecked = event.target.checked) 
+        tableColumns.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({tableColumns: tableColumns})
 
     }

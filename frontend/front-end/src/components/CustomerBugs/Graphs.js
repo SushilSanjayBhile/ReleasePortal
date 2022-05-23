@@ -16,6 +16,7 @@ import SelectionEditor from '../TestCasesAll/selectionEditor';
 import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Bar, Line, Pie} from 'react-chartjs-2';
+import {projectsList, rgb} from "../../constants";
 const OneJan = new Date("2022-01-01T00:00:00.000-0700").getTime();
 class Graphs extends Component {
     isApiUnderProgress = false;
@@ -381,24 +382,14 @@ class Graphs extends Component {
                 backgroundColor: 'rgb(53, 162, 235)',
             },
         }
-        let proPie = {
-            Spektra:{
+        let proPie = {}
+        projectsList.forEach((item, indx) => {
+            proPie[item] = {
                 data: 0,
-                backgroundColor: 'rgb(255, 99, 132)',
-            },
-            Ultima:{
-                data: 0,
-                backgroundColor: 'rgb(75, 192, 192)',
-            },
-            "Ultima-Software":{
-                data: 0,
-                backgroundColor: 'rgb(53, 162, 235)',
-            },
-            "Unclassified":{
-                data: 0,
-                backgroundColor: 'rgb(255, 159, 64)',
-            },
-        }
+                backgroundColor: rgb[indx],
+            }
+        })
+        proPie["Unclassified"] = {data: 0, backgroundColor: rgb[rgb.length -1]}
         for(let i = 0; i < this.allTCsToShow.length; i++){
             let increaseCusDCount = true
             num = this.calculateWeek(new Date(this.allTCsToShow[i]["fields"]["created"]))
@@ -493,11 +484,14 @@ class Graphs extends Component {
         }
         for(let i = 0; i < this.allPendingDefectsToShow.length; i++){
             let increaseCusDCount = true;
-            bu = true;
             if(new Date(this.allPendingDefectsToShow[i]["fields"]["created"]).getTime() >= OneJan){
-                bu = false;
+                try{
+                    proPie[this.allPendingDefectsToShow[i]["fields"]["project"]["key"]]["data"] = proPie[this.allPendingDefectsToShow[i]["fields"]["project"]["key"]]["data"] + 1
+                }
+                catch{
+                    proPie["Unclassified"]["data"] = proPie["Unclassified"]["data"] + 1
+                }
             }
-            let ue = false, ua = false, sp = false;
             this.allPendingDefectsToShow[i]["fields"]["labels"].forEach(label => {
                 let loLabel = label.toLowerCase()
                 if(loLabel.includes("customer-") || loLabel.includes("customer") || loLabel.includes("active")) {
@@ -506,33 +500,7 @@ class Graphs extends Component {
                         increaseCusDCount = false
                     }
                 }
-                else if (bu == false){
-                    if(loLabel.includes("ultima-software")) {
-                        if(ue == false){
-                            proPie['Ultima-Software']["data"] =  proPie['Ultima-Software']["data"] + 1
-                            ue = true
-                            bu = true
-                        }
-                    }
-                    else if(loLabel.includes("ultima")) {
-                        if(ua == false){
-                            proPie["Ultima"]["data"] = proPie["Ultima"]["data"] + 1
-                            ua = true
-                            bu = true
-                        }
-                    }
-                    else if(loLabel == "spektra") {
-                        if(sp == false){
-                            proPie["Spektra"]["data"] = proPie["Spektra"]["data"] + 1
-                            sp = true
-                            bu = true
-                        }
-                    }
-                }
             })
-            if (!bu){
-                proPie["Unclassified"]["data"] = proPie["Unclassified"]["data"] + 1
-            }
             if(increaseCusDCount){
                 if(new Date(this.allPendingDefectsToShow[i]["fields"]["created"]).getTime() >= OneJan){
                     if(this.allPendingDefectsToShow[i]["fields"]["priority"]["name"] == "Highest") {

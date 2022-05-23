@@ -17,6 +17,7 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Bar, Line, Pie} from 'react-chartjs-2';
 import  CheckBox  from '../TestCasesAll/CheckBox';
+import {projectsList, rgb} from "../../constants";
 const OneJan = new Date("2022-01-01T00:00:00.000-0700").getTime();
 class GraphsByReleases extends Component {
     isApiUnderProgress = false;
@@ -324,14 +325,12 @@ class GraphsByReleases extends Component {
             datasets: [ { data: [], backgroundColor: []}],
         };
         let num = null;
-        let bu = false;
         let week = {
             Pending: {"Dev P1":{ data: [], backgroundColor: 'rgb(75, 192, 192)',}, "Dev P2+":{ data: [], backgroundColor: 'rgb(53, 162, 235)',},},
             sevp1: { Filed:{ data: [], backgroundColor: 'rgb(255, 99, 132)',}, Closed:{ data: [], backgroundColor: 'rgb(75, 192, 192)',},},
             "sevp2+": { Filed:{ data: [], backgroundColor: 'rgb(255, 99, 132)',}, Closed:{ data: [], backgroundColor: 'rgb(75, 192, 192)',},},
         }
         for(let i = 0 ; i < this.xcord.length / 2; i++){
-            //week["Pending"]["Customer"]["data"].push(0)
             week["Pending"]["Dev P1"]["data"].push(0)
             week["Pending"]["Dev P2+"]["data"].push(0)
             week["sevp1"]["Filed"]["data"].push(0)
@@ -340,10 +339,6 @@ class GraphsByReleases extends Component {
             week["sevp2+"]["Closed"]["data"].push(0)
         }
         let pie1 = {
-            // Customer:{
-            //     data: 0,
-            //     backgroundColor: 'rgb(255, 99, 132)',
-            // },
             "Dev P1":{
                 data: 0,
                 backgroundColor: 'rgb(75, 192, 192)',
@@ -353,24 +348,14 @@ class GraphsByReleases extends Component {
                 backgroundColor: 'rgb(53, 162, 235)',
             },
         }
-        let proPie = {
-            Spektra:{
+        let proPie = {}
+        projectsList.forEach((item, indx) => {
+            proPie[item] = {
                 data: 0,
-                backgroundColor: 'rgb(255, 99, 132)',
-            },
-            Ultima:{
-                data: 0,
-                backgroundColor: 'rgb(75, 192, 192)',
-            },
-            "Ultima-Software":{
-                data: 0,
-                backgroundColor: 'rgb(53, 162, 235)',
-            },
-            "Unclassified":{
-                data: 0,
-                backgroundColor: 'rgb(255, 159, 64)',
-            },
-        }
+                backgroundColor: rgb[indx],
+            }
+        })
+        proPie["Unclassified"] = {data: 0, backgroundColor: rgb[rgb.length -1]}
         for(let i = 0; i < this.allTCsToShow.length; i++){
             let increaseCusDCount = true
             num = this.calculateWeek(new Date(this.allTCsToShow[i]["fields"]["created"]))
@@ -406,33 +391,10 @@ class GraphsByReleases extends Component {
             }
         }
         for(let i = 0; i < this.allPendingDefectsToShow.length; i++){
-            bu = false;
-            let ue = false, ua = false, sp = false;
-            this.allPendingDefectsToShow[i]["fields"]["labels"].forEach(label => {
-                let loLabel = label.toLowerCase()
-                if(loLabel.includes("ultima-software")) {
-                    if(ue == false){
-                        proPie['Ultima-Software']["data"] =  proPie['Ultima-Software']["data"] + 1
-                        ue = true
-                        bu = true
-                    }
-                }
-                else if(loLabel.includes("ultima")) {
-                    if(ua == false){
-                        proPie["Ultima"]["data"] = proPie["Ultima"]["data"] + 1
-                        ua = true
-                        bu = true
-                    }
-                }
-                else if(loLabel == "spektra") {
-                    if(sp == false){
-                        proPie["Spektra"]["data"] = proPie["Spektra"]["data"] + 1
-                        sp = true
-                        bu = true
-                    }
-                }
-            })
-            if (!bu){
+            try{
+                proPie[this.allPendingDefectsToShow[i]["fields"]["project"]["key"]]["data"] = proPie[this.allPendingDefectsToShow[i]["fields"]["project"]["key"]]["data"] + 1
+            }
+            catch{
                 proPie["Unclassified"]["data"] = proPie["Unclassified"]["data"] + 1
             }
             if(new Date(this.allPendingDefectsToShow[i]["fields"]["created"]).getTime() >= OneJan){
@@ -470,7 +432,6 @@ class GraphsByReleases extends Component {
             this.proPie.datasets[0].data.push(proPie[key]["data"])
             this.proPie.datasets[0].backgroundColor.push(proPie[key]["backgroundColor"])
         })
-        //this.weekCust = this.week["customer"]
         this.weekSevp1 = this.week["sevp1"]
         this.weekSevp2 = this.week["sevp2+"]
         this.weekPen = this.week["Pending"]

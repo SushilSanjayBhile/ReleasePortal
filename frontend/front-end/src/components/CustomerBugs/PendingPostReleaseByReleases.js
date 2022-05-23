@@ -19,6 +19,7 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
 import { element } from 'prop-types';
 import { CSVLink } from 'react-csv';
+import {projects, projectToManagerMap, projectsList, devManagers} from "../../constants";
 const OneJan = new Date("2022-01-01T00:00:00.000-0800").getTime();
 class PendingPostReleaseByReleases extends Component {
     startAt = 0;
@@ -32,7 +33,6 @@ class PendingPostReleaseByReleases extends Component {
     maxResult= 0;
     ApplicableTcsCR = [];
     devList = [];
-    //cusList = [];
     fixStr = '';
     manList = [];
     bugsToShowCR = [];
@@ -76,12 +76,6 @@ class PendingPostReleaseByReleases extends Component {
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
-            // 'Customer' :  {
-            //     headerName: "Customer", field: "Customer", sortable: true, filter: true,
-            //     width: '100',
-            //     cellClass: 'cell-wrap-text',
-            //     editable: false,
-            // },
             'QAName' : {
                 headerName: "QA Name", field: "QAName", sortable: true, filter: true,
                 width: '90',
@@ -105,12 +99,6 @@ class PendingPostReleaseByReleases extends Component {
                 width: '90',
                 cellClass: 'cell-wrap-text',
                 editable: false,
-            },
-            'BuManager' :  {
-                headerName: "Bu Manager", field: "BuManager", sortable: true, filter: true,
-                width: '90',
-                editable: false,
-                cellClass: 'cell-wrap-text',
             },
             'ReportedDate' : {
                 headerName: "Reported Date", field: "ReportedDate", sortable: true, filter: true,
@@ -165,14 +153,11 @@ class PendingPostReleaseByReleases extends Component {
                     let keyData = params.data.Total;
                     let priority = params.data.Severity;
                     if(priority == "P2"){
-                        //link before showing bugs > 1Jan
-                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20in%20(High)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20in%20(High)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(priority != "Total"){
-                        //let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20in%20(Low%2CLowest%2CMedium)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20in%20(Low%2CLowest%2CMedium)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -196,34 +181,21 @@ class PendingPostReleaseByReleases extends Component {
                 cellRenderer: (params) => {
                     let keyData = params.data.WithDueDate;
                     let Manager = params.data.DevManager;
-                    let assignee = '';
-                    //let list = devManager[Manager];
                     let list = this.props.devManager[Manager];
                     if(Manager != "Total"){
-                        if (Manager == "Unclassified"){
-                            if(this.props.Ulist.length == 1){
-                                assignee = `assignee!="${this.props.Ulist[0]}"`;
+                        let proj = ''
+                        let newLink = ''
+                        if (Manager != 'Unclassified'){
+                            for (let i = 0; i < projectToManagerMap[Manager].length -1; i++){
+                                proj = proj + projectToManagerMap[Manager][i] + '\, '
                             }
-                            else{
-                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
-                                }
-                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
-                            }
+                            proj = proj + projectToManagerMap[Manager][projectToManagerMap[Manager].length - 1]
+                            proj = encodeURIComponent(proj);
+                                newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         }
-                        else{
-                            if(list.length == 1){
-                                assignee = `assignee="${list[0]}"`;
-                            }
-                            else{
-                                for(let i = 0; i < list.length - 1; i++){
-                                    assignee = assignee + `assignee="${list[i]}" OR `;
-                                }
-                                assignee = assignee + `assignee="${list[list.length -1]}"`;
-                            }
+                        else {
+                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         }
-                        assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20(${assignee})%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -239,34 +211,21 @@ class PendingPostReleaseByReleases extends Component {
                 cellRenderer: (params) => {
                     let keyData = params.data.WithOutDueDate;
                     let Manager = params.data.DevManager;
-                    //let list = devManager[Manager];
                     let list = this.props.devManager[Manager];
-                    let assignee = '';
                     if(Manager != "Total"){
-                        if (Manager == "Unclassified"){
-                            if(this.props.Ulist.length == 1){
-                                assignee = `assignee!="${this.props.Ulist[0]}"`;
+                        let proj = ''
+                        let newLink = ''
+                        if (Manager != 'Unclassified'){
+                            for (let i = 0; i < projectToManagerMap[Manager].length -1; i++){
+                                proj = proj + projectToManagerMap[Manager][i] + '\, '
                             }
-                            else{
-                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
-                                }
-                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
+                            proj = proj + projectToManagerMap[Manager][projectToManagerMap[Manager].length - 1]
+                            proj = encodeURIComponent(proj);
+                                newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             }
+                        else {
+                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         }
-                        else{
-                            if(list.length == 1){
-                                assignee = `assignee="${list[0]}"`;
-                            }
-                            else{
-                                for(let i = 0; i < list.length - 1; i++){
-                                    assignee = assignee + `assignee="${list[i]}" OR `;
-                                }
-                                assignee = assignee + `assignee="${list[list.length -1]}"`;
-                            }
-                        }
-                        assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20(${assignee})%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -282,33 +241,20 @@ class PendingPostReleaseByReleases extends Component {
                 cellRenderer: (params) => {
                     let keyData = params.data.PassedDueDate;
                     let Manager = params.data.DevManager;
-                    let list = this.props.devManager[Manager];
-                    let assignee = '';
                     if(Manager != "Total"){
-                        if (Manager == "Unclassified"){
-                            if(this.props.Ulist.length == 1){
-                                assignee = `assignee!="${this.props.Ulist[0]}"`;
+                        let proj = ''
+                        let newLink = ''
+                        if (Manager != 'Unclassified'){
+                            for (let i = 0; i < projectToManagerMap[Manager].length -1; i++){
+                                proj = proj + projectToManagerMap[Manager][i] + '\, '
                             }
-                            else{
-                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
-                                }
-                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
+                            proj = proj + projectToManagerMap[Manager][projectToManagerMap[Manager].length - 1]
+                            proj = encodeURIComponent(proj);
+                                newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             }
+                        else {
+                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         }
-                        else{
-                            if(list.length == 1){
-                                assignee = `assignee="${list[0]}"`;
-                            }
-                            else{
-                                for(let i = 0; i < list.length - 1; i++){
-                                    assignee = assignee + `assignee="${list[i]}" OR `;
-                                }
-                                assignee = assignee + `assignee="${list[list.length -1]}"`;
-                            }
-                        }
-                        assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%3C%20now()%20AND%20(${assignee})%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -330,33 +276,20 @@ class PendingPostReleaseByReleases extends Component {
                 cellRenderer: (params) => {
                     let keyData = params.data.Total;
                     let Manager = params.data.DevManager;
-                    let list = this.props.devManager[Manager];
-                    let assignee = '';
                     if(Manager != "Total"){
-                        if (Manager == "Unclassified"){
-                            if(this.props.Ulist.length == 1){
-                                assignee = `assignee!="${this.props.Ulist[0]}"`;
+                        let proj = ''
+                        let newLink = ''
+                        if (Manager != 'Unclassified'){
+                            for (let i = 0; i < projectToManagerMap[Manager].length -1; i++){
+                                proj = proj + projectToManagerMap[Manager][i] + '\, '
                             }
-                            else{
-                                for(let i = 0; i < this.props.Ulist.length - 1; i++){
-                                    assignee = assignee + `assignee!="${this.props.Ulist[i]}" AND `;
-                                }
-                                assignee = assignee + `assignee!="${this.props.Ulist[this.props.Ulist.length -1]}"`;
-                            }
+                            proj = proj + projectToManagerMap[Manager][projectToManagerMap[Manager].length - 1]
+                            proj = encodeURIComponent(proj);
+                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20empty)%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         }
-                        else{
-                            if(list.length == 1){
-                                assignee = `assignee="${list[0]}"`;
-                            }
-                            else{
-                                for(let i = 0; i < list.length - 1; i++){
-                                    assignee = assignee + `assignee="${list[i]}" OR `;
-                                }
-                                assignee = assignee + `assignee="${list[list.length -1]}"`;
-                            }
+                        else {
+                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20empty)%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         }
-                        assignee = encodeURIComponent(assignee);
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20empty)%20AND%20(${assignee})%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -380,13 +313,12 @@ class PendingPostReleaseByReleases extends Component {
                 cellRenderer: (params) => {
                     let keyData = params.data.P2;
                     let Product = params.data.Product
-                    let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
-                    if(Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20AND%20priority%20%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                    if (Product == "Unclassified"){
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${Product})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -402,13 +334,12 @@ class PendingPostReleaseByReleases extends Component {
                 cellRenderer: (params) => {
                     let keyData = params.data.P3;
                     let Product = params.data.Product
-                    let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
-                    if(Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20AND%20priority%20!%3D%20Highest%20AND%20priority%20!%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                    if (Product == "Unclassified"){
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20!%3D%20Highest%20AND%20priority%20!%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20!%3D%20Highest%20AND%20priority%20!%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${Product})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20!%3D%20Highest%20AND%20priority%20!%3D%20High%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -424,13 +355,12 @@ class PendingPostReleaseByReleases extends Component {
                 cellRenderer: (params) => {
                     let keyData = params.data.Total;
                     let Product = params.data.Product
-                    let proMap = {"Ultima Accelerator": "ultima", "Ultima Enterprise":"ultima-software", "Spektra":"spektra"}
-                    if(Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels!%3Dultima%20AND%20labels!%3Dultima-software%20AND%20labels!%3Dspektra%20OR%20labels%20is%20EMPTY)%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                    if (Product == "Unclassified"){
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20${proMap[Product]}%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${Product})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -455,7 +385,7 @@ class PendingPostReleaseByReleases extends Component {
                     let keyData = params.data.WithDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -472,7 +402,7 @@ class PendingPostReleaseByReleases extends Component {
                     let keyData = params.data.WithOutDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -489,7 +419,7 @@ class PendingPostReleaseByReleases extends Component {
                     let keyData = params.data.PassedDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -512,7 +442,7 @@ class PendingPostReleaseByReleases extends Component {
                     let keyData = params.data.Total;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(DWS%2C%20SPEK)%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20empty)%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20empty)%20AND%20assignee%20%3D%20%22${dev}%22%20AND%20priority%20!%3D%20Highest%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20fixVersion%20in%20(${encodeURIComponent(this.props.parentData)})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -528,18 +458,6 @@ class PendingPostReleaseByReleases extends Component {
                 cellClass: 'cell-wrap-text',
                 editable: false,
             },
-            // 'TotalBugs' : {
-            //     headerName: "Total Bugs", field: "TotalBugs", sortable: true, filter: true,
-            //     width: '150',
-            //     cellClass: 'cell-wrap-text',
-            //     editable: false,
-            // },
-            // 'TotalOpenDays' : {
-            //     headerName: "Total Open Days", field: "TotalOpenDays", sortable: true, filter: true,
-            //     width: '150',
-            //     cellClass: 'cell-wrap-text',
-            //     editable: false,
-            // },
             'AvgOpenDays' : {
                 headerName: "Average Open Days", field: "AvgOpenDays", sortable: true, filter: true,
                 width: '150',
@@ -591,8 +509,6 @@ class PendingPostReleaseByReleases extends Component {
             ],
             bugColumnDefsCR: [
                 bugColumnDefDictCR['BU'],
-                bugColumnDefDictCR['BuManager'],
-                //bugColumnDefDictCR['Customer'],
                 bugColumnDefDictCR['Developer'],
                 bugColumnDefDictCR['DevManager'],
                 bugColumnDefDictCR['ReportedDate'],
@@ -611,14 +527,9 @@ class PendingPostReleaseByReleases extends Component {
                 {id:1,value:'P1', isChecked: false},
                 {id:2,value:'P2', isChecked: true},
                 {id:3,value:'P3', isChecked: true},
-                // {id:4,value:'P4', isChecked: false},
-                // {id:4,value:'P5', isChecked: false},
-                // {id:4,value:'P6', isChecked: false},
             ],
             avgAgeColumnDefs: [
                 avgAgeColumnDefDict['Severity'],
-                // avgAgeColumnDefDict['TotalBugs'],
-                // avgAgeColumnDefDict['TotalOpenDays'],
                 avgAgeColumnDefDict['AvgOpenDays'],
             ],
             defaultColDef: { resizable: true },
@@ -811,7 +722,6 @@ class PendingPostReleaseByReleases extends Component {
         this.devList = [];
         this.manList = [];
         let devDict = {};
-        //let cusDict = {};
         let severity = {"High":"P2","Medium":"P3","Low":"P4", "Lowest":"P5"}
         let today = new Date()
         today.setDate(today.getDate())
@@ -819,19 +729,20 @@ class PendingPostReleaseByReleases extends Component {
         const MS_PER_DAY = 1000 * 60 * 60 * 24
 
         let severityDictP2 = { Severity: "P2", Total: 0, Age: 0}, severityDictP3 = { Severity: "P3", Total: 0, Age: 0}, severityDictTotal = {Severity: "Total", Total: 0, Age: 0};
-        let product = {"Ultima Enterprise": {P2: 0, P3: 0,}, "Ultima Accelerator": {P2: 0, P3: 0,}, "Spektra": {P2: 0, P3: 0,}, "Unclassified": {P2: 0, P3: 0,}};
+        let product = {"Unclassified": {P2: 0, P3: 0,}};
         let devM = {}
-        Object.keys(this.props.devManager).forEach(key => {
-            devM[key] = { WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0 }
-        })
         let dev = {}
+        projectsList.forEach(item => {
+            product[item] = {P2: 0, P3: 0,}
+        })
+        devManagers.forEach(item => {
+            devM[item] = { WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0 }
+        })
         for(let i = 0; i < this.allTCsToShow.length; i++){
             let temp = {
                 BugNo: this.allTCsToShow[i].key,
                 ReportedBy: "QA",
-                BU: "NA",
-                BuManager: "NA",
-                //Customer: "NA",
+                BU: this.allTCsToShow[i]["fields"]["project"]["key"],
                 Summary: this.allTCsToShow[i]["fields"]["summary"],
                 Severity: severity[this.allTCsToShow[i]["fields"]["priority"]["name"]],
                 QAName: this.allTCsToShow[i]["fields"]["creator"]["displayName"],
@@ -842,20 +753,20 @@ class PendingPostReleaseByReleases extends Component {
                 ETA: this.allTCsToShow[i]["fields"]["duedate"] ? this.allTCsToShow[i]["fields"]["duedate"].split("T")[0] : "NA",
                 ReportedDate: this.allTCsToShow[i]["fields"]["created"].split("T")[0],
                 QAValidatedDate: "NA",
-                DevManager: "NA",
+                DevManager: "Unclassified",
             }
 
             let developer = this.allTCsToShow[i]["fields"].assignee ? this.allTCsToShow[i]["fields"]["assignee"]["displayName"] : "NA"
-            let devKeys = Object.keys(this.props.devManager)
+            let project = this.allTCsToShow[i]["fields"]["project"]["key"]
             let manager = "Unclassified"
-            devKeys.some(key => {
-                this.props.devManager[key].some(value => {
-                    if(developer === value){
+            Object.keys(projectToManagerMap).some(key => {
+                projectToManagerMap[key].some(value => {
+                    if(project == value){
                         manager = key
-                        temp.DevManager = key
                     }
                 });
             })
+            temp.DevManager = manager
             if(developer == "NA"){
                 console.log("No developer Name-",developer, temp.BugNo)
             }
@@ -865,59 +776,23 @@ class PendingPostReleaseByReleases extends Component {
             if(!devDict[temp.Developer]){
                 devDict[temp.Developer] = ''
             }
-            let ue = false, ua = false, sp = false;
-            this.allTCsToShow[i]["fields"]["labels"].forEach(label => {
-                let loLabel = label.toLowerCase()
-                if(loLabel.includes("ultima-software")) {
-                    temp.BU = "Ultima Enterprise"
-                    temp.BuManager = "Vivek Gupta"
-                    if(ue == false){
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                            product["Ultima Enterprise"]["P2"] = product["Ultima Enterprise"]["P2"] + 1
-                        }
-                        else {
-                            product["Ultima Enterprise"]["P3"] = product["Ultima Enterprise"]["P3"] + 1
-                        }
-                        ue = true
-                    }
-                    else{
-                        console.log(this.allTCsToShow[i].key)
-                    }
-                }
-                else if(loLabel == "ultima") {
-                    temp.BU = "Ultima Accelerator"
-                    temp.BuManager = "Naveen Seth"
-                    if(ua == false){
-                        ua = true
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                            product["Ultima Accelerator"]["P2"] = product["Ultima Accelerator"]["P2"] + 1
-                        }
-                        else {
-                            product["Ultima Accelerator"]["P3"] = product["Ultima Accelerator"]["P3"] + 1
-                        }
-                    }
-                    else{
-                        console.log(this.allTCsToShow[i].key)
-                    }
 
+            if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
+                try {
+                    product[project]["P2"] = product[project]["P2"] + 1
                 }
-                else if(loLabel == "spektra") {
-                    temp.BU = "Spektra"
-                    temp.BuManager = "Kshitij Gunjikar"
-                    if(sp == false){
-                        sp = true
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                            product["Spektra"]["P2"] = product["Spektra"]["P2"] + 1
-                        }
-                        else{
-                            product["Spektra"]["P3"] = product["Spektra"]["P3"] + 1
-                        }
-                    }
-                    else{
-                        console.log(this.allTCsToShow[i].key)
-                    }
+                catch{
+                    product["Unclassified"]["P2"] = product["Unclassified"]["P2"] + 1
                 }
-            })
+            }
+            else {
+                try {
+                    product[project]["P3"] = product[project]["P3"] + 1
+                }
+                catch{
+                    product["Unclassified"]["P3"] = product["Unclassified"]["P3"] + 1
+                }
+            }
 
             if(this.allTCsToShow[i]["fields"]["duedate"]) {
                 temp.DaysPassedDueDate = 0
@@ -997,14 +872,8 @@ class PendingPostReleaseByReleases extends Component {
             }
             this.bugsToShowCR.push(temp)
         }
-        // Object.keys(cusDict).forEach(key => {
-        //     this.cusList.push(key)
-        // })
         Object.keys(devDict).forEach(key => {
             this.devList.push(key)
-        })
-        Object.keys(this.props.devManager).forEach(key => {
-            this.manList.push(key)
         })
         let Pr2 = 0, Pr3 = 0, prtotal = 0;
         Object.keys(product).forEach(key => {
@@ -1678,9 +1547,8 @@ getData(){
                                             </div>
                                             {
                                                 [
-                                                    { style: { width: '8rem', marginLeft: '1rem' }, field: 'BU', onChange: (e) => this.onSelectBUCR(e), values: [{ value: '', text: 'Select Buisness Unit' }, ...(['Spektra', 'Ultima Accelerator', 'Ultima Enterprise', 'NA'].map(each => ({ value: each, text: each })))] },
-                                                    //{ style: { width: '8rem', marginLeft: '1rem' }, field: 'Customer', onChange: (e) => this.onSelectCustomerCR(e), values: [{ value: '', text: 'Select Customer' }, ...(this.cusList.map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '8rem', marginLeft: '1rem' }, field: 'DevManager', onChange: (e) => this.onSelectManagerCR(e), values: [{ value: '', text: 'Select Dev Manager' }, ...(this.manList.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '1rem' }, field: 'BU', onChange: (e) => this.onSelectBUCR(e), values: [{ value: '', text: 'Select Buisness Unit' }, ...(projectsList.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '1rem' }, field: 'DevManager', onChange: (e) => this.onSelectManagerCR(e), values: [{ value: '', text: 'Select Dev Manager' }, ...(devManagers.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '1rem' }, field: 'Developer', onChange: (e) => this.onSelectDeveloperCR(e), values: [{ value: '', text: 'Select Developer' }, ...(this.devList.map(each => ({ value: each, text: each })))] },
                                                 ].map(item => (
                                                     <div style={item.style}>

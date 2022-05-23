@@ -19,6 +19,7 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
 import { element } from 'prop-types';
 import { CSVLink } from 'react-csv';
+import {projectToManagerMap, projectsList, devManagers} from "../../constants";
 class CustomerClosed extends Component {
     startAt = 0;
     isApiUnderProgress = false;
@@ -1036,20 +1037,21 @@ class CustomerClosed extends Component {
         let severityDictP1 = { Severity: "P1", Active: 0, Age: 0}, severityDictP2 = { Severity: "P2", Active: 0, Age: 0}, severityDictP3 = { Severity: "P3", Active: 0, Age: 0}, severityDictTotal = {Severity: "Total", Active: 0, Age: 0}
 
         let customer = {"Unclassified": {P1: 0, P2: 0, P3: 0},}
-        let product = {"Ultima Enterprise": {P1: 0, P2: 0, P3: 0,}, "Ultima Accelerator": {P1: 0, P2: 0, P3: 0,}, "Spektra": {P1: 0, P2: 0, P3: 0,}, "Unclassified": {P1: 0, P2: 0, P3: 0,}}
+        let product = {"Unclassified": {P1: 0, P2: 0, P3: 0,}}
         let devM = {}
-        Object.keys(this.props.devManager).forEach(key => {
-            devM[key] = { WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0 }
-        })
         let dev = {}
-        //let activeFlag = false
+        projectsList.forEach(item => {
+            product[item] = {P1: 0, P2: 0, P3: 0,}
+        })
+        devManagers.forEach(item => {
+            devM[item] = { WithDueDate: 0, WithOutDueDate: 0, PassedDueDate: 0, DaysWithoutDueDate: 0 }
+        })
         for(let i = 0; i < this.allTCsToShow.length; i++){
 
             let temp = {
                 BugNo: this.allTCsToShow[i].key,
                 ReportedBy: "QA",
-                BU: "NA",
-                BuManager: "NA",
+                BU: this.allTCsToShow[i]["fields"]["project"]["key"],
                 Customer: "NA",
                 Summary: this.allTCsToShow[i]["fields"]["summary"],
                 Severity: severity[this.allTCsToShow[i]["fields"]["priority"]["name"]],
@@ -1060,22 +1062,21 @@ class CustomerClosed extends Component {
                 ETA: this.allTCsToShow[i]["fields"]["duedate"] ? this.allTCsToShow[i]["fields"]["duedate"].split("T")[0] : "NA",
                 ReportedDate: this.allTCsToShow[i]["fields"]["created"].split("T")[0],
                 //QAValidatedDate: "NA",
-                DevManager: "NA",
+                DevManager: "Unclassified",
                 //Active: "Yes",
             }
 
             let developer = this.allTCsToShow[i]["fields"].assignee ? this.allTCsToShow[i]["fields"]["assignee"]["displayName"] : "NA"
-            let devKeys = Object.keys(this.props.devManager)
+            let project = this.allTCsToShow[i]["fields"]["project"]["key"]
             let manager = "Unclassified"
-            //activeFlag = false
-            devKeys.some(key => {
-                this.props.devManager[key].some(value => {
-                    if(developer === value){
+            Object.keys(projectToManagerMap).some(key => {
+                projectToManagerMap[key].some(value => {
+                    if(project == value){
                         manager = key
-                        temp.DevManager = key
                     }
                 });
             })
+            temp.DevManager = manager
 
             if(developer == "NA"){
                 console.log("No developer Name-",developer, temp.BugNo)
@@ -1154,64 +1155,31 @@ class CustomerClosed extends Component {
                         }
                     }
                 }
-                else if(loLabel.includes("ultima-software")) {
-                    temp.BU = "Ultima Enterprise"
-                    temp.BuManager = "Vivek Gupta"
-                    if(ue == false){
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                            product["Ultima Enterprise"]["P1"] = product["Ultima Enterprise"]["P1"] + 1
-                        }
-                        else if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                            product["Ultima Enterprise"]["P2"] = product["Ultima Enterprise"]["P2"] + 1
-                        }
-                        else {
-                            product["Ultima Enterprise"]["P3"] = product["Ultima Enterprise"]["P3"] + 1
-                        }
-                        ue = true
-                    }
-                    else{
-                        console.log(this.allTCsToShow[i].key)
-                    }
-                }
-                else if(loLabel.includes("ultima")) {
-                    temp.BU = "Ultima Accelerator"
-                    temp.BuManager = "Naveen Seth"
-                    if(ua == false){
-                        ua = true
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                            product["Ultima Accelerator"]["P1"] = product["Ultima Accelerator"]["P1"] + 1
-                        }
-                        else if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                            product["Ultima Accelerator"]["P2"] = product["Ultima Accelerator"]["P2"] + 1
-                        }
-                        else {
-                            product["Ultima Accelerator"]["P3"] = product["Ultima Accelerator"]["P3"] + 1
-                        }
-                    }
-                    else{
-                        console.log(this.allTCsToShow[i].key)
-                    }
-                }
-                else if(loLabel.includes("spektra")) {
-                    temp.BU = "Spektra"
-                    temp.BuManager = "Kshitij Gunjikar"
-                    if(sp == false){
-                        sp = true
-                        if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
-                            product["Spektra"]["P1"] = product["Spektra"]["P1"] + 1
-                        }
-                        else if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
-                            product["Spektra"]["P2"] = product["Spektra"]["P2"] + 1
-                        }
-                        else {
-                            product["Spektra"]["P3"] = product["Spektra"]["P3"] + 1
-                        }
-                    }
-                    else{
-                        console.log(this.allTCsToShow[i].key)
-                    }
-                }
             })
+            if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
+                try {
+                    product[project]["P1"] = product[project]["P1"] + 1
+                }
+                catch{
+                    product["Unclassified"]["P1"] = product["Unclassified"]["P1"] + 1
+                }
+            }
+            else if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "High") {
+                try {
+                    product[project]["P2"] = product[project]["P2"] + 1
+                }
+                catch{
+                    product["Unclassified"]["P2"] = product["Unclassified"]["P2"] + 1
+                }
+            }
+            else {
+                try {
+                    product[project]["P3"] = product[project]["P3"] + 1
+                }
+                catch{
+                    product["Unclassified"]["P3"] = product["Unclassified"]["P3"] + 1
+                }
+            }
             if (temp.Customer == "NA"){
                 console.log("No customer Name-",temp.BugNo)
                 if(this.allTCsToShow[i]["fields"]["priority"]["name"] == "Highest") {
@@ -1271,9 +1239,6 @@ class CustomerClosed extends Component {
         this.TicketsByCustomer.push({Customer: "Total", P1: P1, P2: P2, P3: P3, Total: total})
         Object.keys(devDict).forEach(key => {
             this.devList.push(key)
-        })
-        Object.keys(this.props.devManager).forEach(key => {
-            this.manList.push(key)
         })
         let Pr1 = 0, Pr2 = 0, Pr3 = 0, prtotal = 0;
         Object.keys(product).forEach(key => {
@@ -2013,9 +1978,9 @@ getData(){
                                             </div>
                                             {
                                                 [
-                                                    { style: { width: '8rem', marginLeft: '1rem' }, field: 'BU', onChange: (e) => this.onSelectBUCR(e), values: [{ value: '', text: 'Select Buisness Unit' }, ...(['Spektra', 'Ultima Accelerator', 'Ultima Enterprise', 'NA'].map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '1rem' }, field: 'BU', onChange: (e) => this.onSelectBUCR(e), values: [{ value: '', text: 'Select Buisness Unit' }, ...(projectsList.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '1rem' }, field: 'Customer', onChange: (e) => this.onSelectCustomerCR(e), values: [{ value: '', text: 'Select Customer' }, ...(this.cusList.map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '8rem', marginLeft: '1rem' }, field: 'DevManager', onChange: (e) => this.onSelectManagerCR(e), values: [{ value: '', text: 'Select Dev Manager' }, ...(this.manList.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '1rem' }, field: 'DevManager', onChange: (e) => this.onSelectManagerCR(e), values: [{ value: '', text: 'Select Dev Manager' }, ...(devManagers.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '1rem' }, field: 'Developer', onChange: (e) => this.onSelectDeveloperCR(e), values: [{ value: '', text: 'Select Developer' }, ...(this.devList.map(each => ({ value: each, text: each })))] },
                                                 ].map(item => (
                                                     <div style={item.style}>

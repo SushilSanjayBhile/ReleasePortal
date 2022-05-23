@@ -558,3 +558,19 @@ export const tcTypes = {
     'MPFAPPROVAL': { type: 'MPFAPPROVAL', title: 'My TCs Pending for Approval', roles: [roles.ADMIN.title, roles.QA.title, roles.DEVELOPER.title] },
 }
 
+//if need to add new project in projectList add one more color before last color in rgb which is used to show the pie charts.
+//Last Color is used for Unclassified project.
+//also add the new in string of projects and projectsQA variable in app-server.js and app-serverProd.js
+export const projectsList = ["DWS", "SPEK", "OPS", "GW", "UA", "UE"];
+export const rgb = ['rgb(255, 99, 132)', 'rgb(75, 192, 192)', 'rgb(53, 162, 235)', 'rgb(255, 159, 64)', 'rgb(0, 250, 154)', 'rgb(0, 206, 209)', 'rgb(139, 0, 139)'];
+export const devManagers = ["Rahul Soman", "David Taylor", "Vivek Gupta", "Unclassified"]
+let devProj = ''
+let autoValProj = ''
+for (let i = 0; i < projectsList.length -1; i++){
+    devProj = devProj + projectsList[i] + '\, '
+}
+devProj = devProj + projectsList[projectsList.length - 1]
+autoValProj = devProj + '\, ' + '\"Automation and Validation\"'
+export const projects = encodeURIComponent(devProj)
+export const projectQA = encodeURIComponent(autoValProj)
+export const projectToManagerMap = {"Rahul Soman": ["UA", "DWS"], "David Taylor": ["GW", "SPEK"], "Vivek Gupta": ["UE", "OPS"]}

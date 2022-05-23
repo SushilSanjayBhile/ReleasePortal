@@ -16,6 +16,7 @@ import MoodRenderer from "../TestCasesAll/moodRenderer";
 import NumericEditor from "../TestCasesAll/numericEditor";
 import SelectionEditor from '../TestCasesAll/selectionEditor';
 import DatePickerEditor from '../TestCasesAll/datePickerEditor';
+import { projectQA } from '../../constants';
 class IndividualReport extends Component {
     isApiUnderProgress = false;
     ApplicableTcs = [];
@@ -51,7 +52,7 @@ class IndividualReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.Name
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(SPEK%2C%20DWS%2C%20%22Automation%20and%20Validation%22)%20AND%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20createdDate%20%3E%3D%20${this.DateStart}%20AND%20createdDate%20%3C%3D%20${this.DateEnd}%20AND%20creator%20%3D%20%22${sdet}%22%20%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Filed}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projectQA})%20AND%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20createdDate%20%3E%3D%20${this.DateStart}%20AND%20createdDate%20%3C%3D%20${this.DateEnd}%20AND%20creator%20%3D%20%22${sdet}%22%20%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Filed}</a>`;
                 },
             },
             'Tasks' : {
