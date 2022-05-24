@@ -81,7 +81,6 @@ class AssignToUserGUI extends Component {
                 values: this.props.users.map(item => item.name)
             }
         },
-          
           'Description': {
               headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               width: '520',
@@ -90,7 +89,6 @@ class AssignToUserGUI extends Component {
           },
           'CardType' : {
               headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
@@ -100,7 +98,6 @@ class AssignToUserGUI extends Component {
           },
           'Build' :  {
               headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
@@ -108,10 +105,8 @@ class AssignToUserGUI extends Component {
                   multiple: true
               }
           },
-          
           'Status' : {
               headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
@@ -130,11 +125,10 @@ class AssignToUserGUI extends Component {
         },
           'Priority' :  {
               headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
-          }, 
+          },
           'Assignee' : {
               headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
               cellClass: 'cell-wrap-text',
-        
               cellEditor: 'selectionEditor',
               cellEditorParams: {
                   values: this.props.users.map(item => item.name)
@@ -159,13 +153,13 @@ class AssignToUserGUI extends Component {
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-          'Steps' : { 
+          'Steps' : {
               headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               width: '180',
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-          'Notes' : { 
+          'Notes' : {
                 headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
@@ -220,7 +214,6 @@ class AssignToUserGUI extends Component {
                 {id: 16, value: "applicable", isChecked: false},
 
               ],
-              
             columnDefs: [
                 columnDefDict['TcID'],
                 columnDefDict['Scenario'],
@@ -235,7 +228,6 @@ class AssignToUserGUI extends Component {
                 columnDefDict['Assignee'],
                 columnDefDict['Notes'],
             ],
-            
             defaultColDef: { resizable: true },
 
             e2eColumnDefs: [{
@@ -281,7 +273,7 @@ class AssignToUserGUI extends Component {
     //Priority Based filter functions
     handleAllCheckedTCs = (event) => {
         let tableColumnsTcs = this.state.tableColumnsTcs
-        tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked) 
+        tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({tableColumnsTcs: tableColumnsTcs})
     }
 
@@ -303,7 +295,7 @@ class AssignToUserGUI extends Component {
     //Status Based Filter functions
     handleAllCheckedStatusTCs = (event) => {
         let statusColumn = this.state.statusColumn
-        statusColumn.forEach(columnName => columnName.isChecked = event.target.checked) 
+        statusColumn.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({statusColumn: statusColumn})
     }
 
@@ -319,7 +311,7 @@ class AssignToUserGUI extends Component {
     //column based filter functions
     handleAllChecked = (event) => {
         let tableColumns = this.state.tableColumns
-        tableColumns.forEach(columnName => columnName.isChecked = event.target.checked) 
+        tableColumns.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({tableColumns: tableColumns})
     }
 
@@ -360,7 +352,6 @@ class AssignToUserGUI extends Component {
             editable: false,
             cellClass: 'cell-wrap-text',
         },
-       
         'Manual Assignee' : {
             headerName: "Manual Assignee ", field: "stateUserMapping.Manual Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell,
             cellClass: 'cell-wrap-text',
@@ -369,7 +360,6 @@ class AssignToUserGUI extends Component {
                 values: this.props.users.map(item => item.name)
             }
         },
-          
           'Description': {
               headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               width: '520',
@@ -378,7 +368,6 @@ class AssignToUserGUI extends Component {
           },
           'CardType' : {
               headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
@@ -388,7 +377,6 @@ class AssignToUserGUI extends Component {
           },
           'Build' :  {
               headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
@@ -396,10 +384,8 @@ class AssignToUserGUI extends Component {
                   multiple: true
               }
           },
-          
           'Status' : {
               headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
@@ -418,11 +404,10 @@ class AssignToUserGUI extends Component {
         },
           'Priority' :  {
               headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
-          }, 
+          },
           'Assignee' : {
               headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
               cellClass: 'cell-wrap-text',
-        
               cellEditor: 'selectionEditor',
               cellEditorParams: {
                   values: this.props.users.map(item => item.name)
@@ -447,13 +432,13 @@ class AssignToUserGUI extends Component {
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-          'Steps' : { 
+          'Steps' : {
               headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               width: '180',
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-          'Notes' : { 
+          'Notes' : {
                 headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
@@ -466,7 +451,7 @@ class AssignToUserGUI extends Component {
                 cellClass: 'cell-wrap-text',
             },
         }
-        
+
         let tableColumns = this.state.tableColumns;
         let selectedColumns = []
         tableColumns.forEach(columnName => {
@@ -568,7 +553,7 @@ class AssignToUserGUI extends Component {
             }
         }
     }
-   
+
     onRowSelected = (params) => {
         if (this.gridApi) {
             if (params.column && params.column.colId !== "TcID") {
@@ -611,19 +596,18 @@ class AssignToUserGUI extends Component {
         }
     }
     componentDidMount() {
-        setTimeout(() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain), 400);
-        if (this.props.user &&
-            (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
-                this.props.user.role === 'ENGG')) {
-            // this.setState({ tcOpen: true })
-        }
-        axios.get('/api/userinfo/')
-        .then(response=>{
-            
-        })
-        .catch(err=>{
-            console.log("error",err)
-        })
+        // setTimeout(() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain), 400);
+        // if (this.props.user &&
+        //     (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
+        //         this.props.user.role === 'ENGG')) {
+        //     // this.setState({ tcOpen: true })
+        // }
+        // axios.get('/api/userinfo/')
+        // .then(response=>{
+        // })
+        // .catch(err=>{
+        //     console.log("error",err)
+        // })
     }
     componentWillReceiveProps(newProps) {
         if (this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
@@ -781,7 +765,6 @@ class AssignToUserGUI extends Component {
         if (!this.props.selectedRelease.ReleaseNumber) {
             return;
         }
-       
         this.gridOperations(false);
         let url = `/api/tcinfogui/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/browsername/${data.BrowserName}`
         axios.get(url)
@@ -834,9 +817,9 @@ class AssignToUserGUI extends Component {
         this.state.tableColumnsTcs.forEach(item=>{
             if(item.isChecked == true){
                 str1 = str1 + item.value + ","
-                console.log("item",item.value,str1) 
+                console.log("item",item.value,str1)
 
-            } 
+            }
         })
         if(!all){
             url += ('&applicable=' + str1);
@@ -852,18 +835,14 @@ class AssignToUserGUI extends Component {
             user = this.props.user.email
         }
         url += ('&Assignee=' + user)
-
-        
         axios.get(url)
             .then(all => {
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
                 this.allTCsToShow = all.data;
                 this.getTcsToShow(release,updateRelease)
-                
                 // this.saveLocalMultipleTC({ data: showTc, id: release }, false, updateRelease)
                 // this.gridOperations(true);
-                
             }).catch(err => {
                 this.saveLocalMultipleTC({ data: [], id: release }, true, updateRelease);
                 this.gridOperations(true);
@@ -876,7 +855,6 @@ class AssignToUserGUI extends Component {
     }
 
     getTcsToShow(release,updateRelease){
-       
         let showTc = []
         let skipTcs = []
         let NATcs = []
@@ -884,7 +862,7 @@ class AssignToUserGUI extends Component {
         let skipCount = 0;
         let NACount = 0;
         let applicableCount = 0;
-       
+
         for(let i = 0; i < this.allTCsToShow.length; i++){
             if(this.allTCsToShow[i].Priority == 'Skip' ){
                 skipCount+=1
@@ -899,20 +877,19 @@ class AssignToUserGUI extends Component {
                 ApplicableTcs.push(this.allTCsToShow[i])
             }
         }
-        
+
         showTc = []
         this.state.tableColumnsTcs.forEach(item=>{
-           
             if(item.isChecked == true  && item.value == 'Show Skip'){
                 skipTcs.forEach(skipTC=>{
                     showTc.push(skipTC)
                 })
-            } 
+            }
             if(item.isChecked == true && item.value == 'Show Not Applicable' ){
                 NATcs.forEach(NATC=>{
                     showTc.push(NATC)
                 })
-            } 
+            }
             if(item.isChecked == true && item.value == 'Applicable' ){
                 ApplicableTcs.forEach(applicableTC=>{
                     showTc.push(applicableTC)
@@ -925,7 +902,7 @@ class AssignToUserGUI extends Component {
         this.state.statusColumn.forEach(item=>{
 
             showTc.forEach(tcItem=>{
-               
+
                 if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
                     statusFlag = 1
                     showTc1.push(tcItem)
@@ -948,7 +925,7 @@ class AssignToUserGUI extends Component {
             })
         })
         if(statusFlag == 0){
-            showTc1 = showTc; 
+            showTc1 = showTc;
         }
         this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
         this.gridOperations(true);
@@ -996,7 +973,6 @@ class AssignToUserGUI extends Component {
                     LogData: ``,
                     "RequestType": 'PUT',
                     "URL": `/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`,
-                   
                 }
             };
             ['Priority', 'Assignee', 'WorkingStatus'].map(each => {
@@ -1046,7 +1022,6 @@ class AssignToUserGUI extends Component {
             items.push(pushable);
 
         })
-       
         if (items.length === 0 && statusItems.length === 0) {
             return;
         }
@@ -1066,14 +1041,13 @@ class AssignToUserGUI extends Component {
                 if (items.length > 0) {
                     this.saveMultipleTcInfo(items)
                 } else {
-                    this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);   
+                    this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);
                 }
             }, error => {
                 this.gridOperations(true);
                 flag = 2
                 // alert('Failed To Update TC Status');
             });
-       
         if(flag == 1){
             alert('Tc Status updated Successfully');
         }
@@ -1081,7 +1055,6 @@ class AssignToUserGUI extends Component {
         if(flag == 2){
             alert('Failed To Update TC Status');
         }
-       
     }
 
 
@@ -1169,10 +1142,8 @@ class AssignToUserGUI extends Component {
 
         if (this.props.testcaseEdit.CurrentStatus === 'Pass' || this.props.testcaseEdit.CurrentStatus === 'Fail' || this.props.testcaseEdit.CurrentStatus == 'Blocked' || this.props.testcaseEdit.CurrentStatus == 'Unblocked'||  this.props.testcaseEdit.Bugs) {
             this.saveSingleTCStatus(data);
-            
         } else {
             this.saveSingleTCInfo(data);
-            
         }
         // this.toggle();
     }
@@ -1191,7 +1162,6 @@ class AssignToUserGUI extends Component {
         status.TcID = this.props.tcDetails.TcID;
         status.BrowserName = this.props.tcDetails.BrowserName;
         if (this.props.testcaseEdit.CurrentStatus !== 'Fail' && this.props.testcaseEdit.CurrentStatus !== 'Pass'  && this.props.testcaseEdit.CurrentStatus !== 'Blocked'  && this.props.testcaseEdit.CurrentStatus !== 'Unblocked') {
-            
             let statusList = this.props.testcaseEdit.StatusList;
             if(statusList && statusList.length>0) {
                 statusList = statusList[statusList.length-1];
@@ -1383,16 +1353,11 @@ class AssignToUserGUI extends Component {
             <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ tcOpen: !this.state.tcOpen })}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ tcOpen: !this.state.tcOpen }, () => { if(this.state.tcOpen){this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain)}})}>
                             <div class="row">
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
-                                    <div onClick={() => {
-                                            if (!this.state.tcOpen) {
-                                                this.getTcs();
-                                            }
-                                            this.setState({ tcOpen: !this.state.tcOpen })
-                                        }} style={{ display: 'inlineBlock' }}>
+                                    <div style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.tcOpen &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1410,7 +1375,6 @@ class AssignToUserGUI extends Component {
                                                     <span className='rp-app-table-value'>Selected: {this.state.selectedRows}</span>
                                                 </div>
                                             }
-                                        
                                         </div>
                                     </div>
                                 </div>
@@ -1447,8 +1411,8 @@ class AssignToUserGUI extends Component {
                                                 <Button disabled={this.state.isApiUnderProgress} id="getall" onClick={() => this.getAlltcs()} type="button">All</Button>
                                             </div>
                                             <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
-                                                <Button id="PopoverAssign2" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
-                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2" id="PopoverAssignButton2" toggle={() => this.popoverToggle2()} isOpen={this.state.popoverOpen2}>
+                                                <Button id="PopoverAssignToUserGui2" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
+                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignToUserGui2" id="PopoverAssignToUserGuiButton2" toggle={() => this.popoverToggle2()} isOpen={this.state.popoverOpen2}>
                                                     <PopoverBody>
                                                         <div>
                                                             <input type="checkbox" onClick={this.handleAllCheckedTCs}  value="checkedall" /> Check / Uncheck All
@@ -1475,9 +1439,9 @@ class AssignToUserGUI extends Component {
                                                 </UncontrolledPopover>
                                             </div>
                                             <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
-                                                <Button id="PopoverAssign1" type="button"><i class="fa fa-columns" aria-hidden="true"></i>
+                                                <Button id="PopoverAssignToUserGui1" type="button"><i class="fa fa-columns" aria-hidden="true"></i>
                                                     </Button>
-                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign1" id="PopoverAssignButton1" toggle={() => this.popoverToggle1()} isOpen={this.state.popoverOpen1}>
+                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignToUserGui1" id="PopoverAssignToUserGuiButton1" toggle={() => this.popoverToggle1()} isOpen={this.state.popoverOpen1}>
                                                     <PopoverBody>
                                                         <div>
                                                             <input type="checkbox" onClick={this.handleAllChecked}  value="checkedall" /> Check / Uncheck All
@@ -1498,7 +1462,7 @@ class AssignToUserGUI extends Component {
                                                 <div style={{ width: '8rem', marginLeft: '0.5rem' }}>
                                                     <span>
                                                         <Button disabled={this.state.isApiUnderProgress} id="PopoverAssignApplyMultipleManualGUI" type="button">Apply Multiple</Button>
-                                                        <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignApplyMultipleManualGUI" id="PopoverAssignApplyMultipleManualGUI" toggle={() => this.popoverToggle()} isOpen={this.state.popoverOpen}>
+                                                        <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignApplyMultipleManualGUI" id="PopoverAssignApplyMultipleManualGUIButton " toggle={() => this.popoverToggle()} isOpen={this.state.popoverOpen}>
                                                             <PopoverBody>
                                                                 {
                                                                     [
@@ -1541,7 +1505,6 @@ class AssignToUserGUI extends Component {
                                                                                     })
                                                                                 }
                                                                                 this.setState({ multi: { ...this.state.multi, Priority: e.target.value } })
-                                                                                
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="select" id={`select_Priority`} >
                                                                             {
@@ -1562,7 +1525,6 @@ class AssignToUserGUI extends Component {
                                                                                     })
                                                                                 }
                                                                                 this.setState({ multi: { ...this.state.multi, OS: e.target.value } })
-                                                                                
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="select" id={`select_OS`} >
                                                                             {
@@ -1629,7 +1591,6 @@ class AssignToUserGUI extends Component {
                                                                                     </Label> */}
                                                                                     <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Bugs} onChange={(e) => {
                                                                                         this.isAnyChanged = true;
-                                                                                        
                                                                                         let selectedRows = this.gridApi.getSelectedRows();
                                                                                         if (e.target.value && e.target.value !== '') {
                                                                                             selectedRows.forEach(item => {
@@ -1690,7 +1651,7 @@ class AssignToUserGUI extends Component {
                                     </div>
                                     <div style={{ width: "100%", height: "100%" }}>
                                         <div
-                                            id="myAllGrid"
+                                            id="assignToUserGuiGrid"
                                             style={{
                                                 height: "100%",
                                                 width: "100%",
@@ -1839,7 +1800,7 @@ class AssignToUserGUI extends Component {
                                                     <div style={{ width: '100%', height: '300px', marginBottom: '3rem' }}>
                                                         <div style={{ width: "100%", height: "100%" }}>
                                                             <div
-                                                                id="e2eGrid"
+                                                                id="e2eGridGui"
                                                                 style={{
                                                                     height: "100%",
                                                                     width: "100%",
@@ -1868,7 +1829,7 @@ class AssignToUserGUI extends Component {
                                                     <div style={{ width: '100%', height: '250px', marginBottom: '3rem' }}>
                                                         <div style={{ width: "100%", height: "100%" }}>
                                                             <div
-                                                                id="activityGrid"
+                                                                id="activityGridGui"
                                                                 style={{
                                                                     height: "100%",
                                                                     width: "100%",

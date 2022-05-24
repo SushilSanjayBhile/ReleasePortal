@@ -564,6 +564,7 @@ export const tcTypes = {
 export const projectsList = ["DWS", "SPEK", "OPS", "GW", "UA", "UE"];
 export const rgb = ['rgb(255, 99, 132)', 'rgb(75, 192, 192)', 'rgb(53, 162, 235)', 'rgb(255, 159, 64)', 'rgb(0, 250, 154)', 'rgb(0, 206, 209)', 'rgb(139, 0, 139)'];
 export const devManagers = ["Rahul Soman", "David Taylor", "Vivek Gupta", "Unclassified"]
+export const status = encodeURIComponent("Duplicate\, \"In Progress\"\, Info\, Open\, \"To Do\"\, Backlog")
 let devProj = ''
 let autoValProj = ''
 for (let i = 0; i < projectsList.length -1; i++){

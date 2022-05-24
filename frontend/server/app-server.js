@@ -16,8 +16,9 @@ let users = jsonfile.readFileSync('./users.json');
 let allTcs = jsonfile.readFileSync('./tcCompleteSort.json');
 let initTC = jsonfile.readFileSync('./initTC.json');
 let selectedTC = jsonfile.readFileSync('./initSelect.json');
-const projects = 'DWS%2C%20SPEK%2C%20OPS%2C%20GW%2C%20UA%2C%20UE'
-const projectQA = 'DWS%2C%20SPEK%2C%20OPS%2C%20GW%2C%20UA%2C%20UE%2C%20%22Automation%20and%20Validation%22'
+const projects = encodeURIComponent("DWS\, SPEK\, OPS\, GW\, UA\, UE")
+const projectQA = encodeURIComponent("DWS\, SPEK\, OPS\, GW\, UA\, UE\, \"Automation and Validation\"")
+const status = encodeURIComponent("Duplicate\, \"In Progress\"\, Info\, Open\, \"To Do\"\, Backlog")
 
 // assignedTCs['2.3.0'] = { "ADMIN": Object.keys(allTcs['2.3.0']) }
 let statusOptions = jsonfile.readFileSync('./constants.json');
@@ -351,7 +352,7 @@ app.use('/rest/AllCustomerBugs', (req, res) => {
 }, err => { });
 
 app.use('/rest/AllCustomerBugCountNoImprovement', (req, res) => {
-    var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20active%20ORDER%20BY%20created%20DESC&maxResults=0`
+    var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20active%20ORDER%20BY%20created%20DESC&maxResults=0`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {
             loginJIRA().then(function () {
@@ -371,7 +372,7 @@ app.use('/rest/AllCustomerBugCountNoImprovement', (req, res) => {
 }, err => { });
 
 app.use('/rest/AllCustomerBugsNoImprovement', (req, res) => {
-    var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20active%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+    var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20active%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {
             loginJIRA().then(function () {
@@ -471,25 +472,25 @@ app.use('/rest/AllOpenBugs', (req, res) => {
 }, err => { });
 app.use('/rest/AllOpenBugCountNoImprovement', (req, res) => {
     if(req.query.flag == "P1"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=0`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=0`
     }
     else if(req.query.flag == "P1ByRelease"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=0`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=0`
     }
     else if(req.query.flag == "P2"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=0`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=0`
     }
     else if(req.query.flag == "P2ByRelease"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=0`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=0`
     }
     else if(req.query.flag == "pie"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=0`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=0`
     }
     else if(req.query.flag == "R") {
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20ORDER%20BY%20created%20DESC&maxResults=0`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20ORDER%20BY%20created%20DESC&maxResults=0`
     }
     else {
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20ORDER%20BY%20created%20DESC&maxResults=0`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20ORDER%20BY%20created%20DESC&maxResults=0`
     }
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {
@@ -510,25 +511,25 @@ app.use('/rest/AllOpenBugCountNoImprovement', (req, res) => {
 }, err => { });
 app.use('/rest/AllOpenBugsNoImprovement', (req, res) => {
     if(req.query.flag == "P1"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     }
     else if(req.query.flag == "P1ByRelease"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     }
     else if(req.query.flag == "P2"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     }
     else if(req.query.flag == "P2ByRelease"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     }
     else if(req.query.flag == "pie"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     }
     else if(req.query.flag == "R") {
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     }
     else {
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%20%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     }
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {

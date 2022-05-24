@@ -697,7 +697,7 @@ class UNAPPROVEDTC extends Component {
                                     </div>
                                     <div style={{ width: "100%", height: "100%" }}>
                                         <div
-                                            id="myGrid"
+                                            id="unapprovedTCGrid"
                                             style={{
                                                 height: "100%",
                                                 width: "100%",

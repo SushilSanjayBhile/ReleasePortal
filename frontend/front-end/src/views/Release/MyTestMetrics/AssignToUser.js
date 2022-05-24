@@ -48,6 +48,9 @@ class AssignToUser extends Component {
     isAnyChanged = false;
     isBlockedOrFailed = false;
     allTCsToShow = []
+    tcHolder = [];
+    ApplicableTcs = [];
+    platformList = [];
     constructor(props) {
         super(props);
         let columnDefDict = {
@@ -99,7 +102,6 @@ class AssignToUser extends Component {
             //         values: this.props.users.map(item => item.name)
             //     }
             // },
-          
             'Description': {
                 headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '520',
@@ -107,18 +109,17 @@ class AssignToUser extends Component {
                 cellClass: 'cell-wrap-text',
             },
             'CardType' : {
-                headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-            
-                cellEditor: 'selectionEditor',
+                headerName: "Platform", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '180',
+                //cellEditor: 'selectionEditor',
                 cellClass: 'cell-wrap-text',
-                cellEditorParams: {
-                    values: ['BOS', 'NYNJ', 'COMMON'],
-                    multiple: true
-                }
+                editable: false,
+                //cellEditorParams: {
+                //    values: ['BOS', 'NYNJ', 'COMMON'],
+                //    multiple: true
+                //}
             },
             'Build' :  {
                 headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-            
                 cellEditor: 'selectionEditor',
                 cellClass: 'cell-wrap-text',
                 cellEditorParams: {
@@ -126,10 +127,9 @@ class AssignToUser extends Component {
                     multiple: true
                 }
             },
-            
+
             'Status' : {
                 headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-            
                 cellEditor: 'selectionEditor',
                 cellClass: 'cell-wrap-text',
                 cellEditorParams: {
@@ -148,11 +148,10 @@ class AssignToUser extends Component {
             },
             'Priority' :  {
                 headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
-            }, 
+            },
             'Assignee' : {
                 headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
                 cellClass: 'cell-wrap-text',
-            
                 cellEditor: 'selectionEditor',
                 cellEditorParams: {
                     values: this.props.users.map(item => item.name)
@@ -177,13 +176,13 @@ class AssignToUser extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            'Steps' : { 
+            'Steps' : {
                 headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-          'Notes' : { 
+          'Notes' : {
                 headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
@@ -196,7 +195,7 @@ class AssignToUser extends Component {
                 cellClass: 'cell-wrap-text',
             },
         }
-        
+
         this.state = {
 
             updateCounter: 1,
@@ -207,10 +206,10 @@ class AssignToUser extends Component {
             rowSelect: false,
             isEditing: false,
             delete: false,
-    
+
             tableColumnsTcs: [
-                {id: 1, value: "Show Skip", isChecked: false},
-                {id: 2, value: "Show Not Applicable", isChecked: false},
+                {id: 1, value: "Skip", isChecked: false},
+                {id: 2, value: "NA", isChecked: false},
                 {id: 3, value: "Applicable", isChecked: true},
             ],
 
@@ -226,7 +225,7 @@ class AssignToUser extends Component {
                 {id: 1, value: "TcID", isChecked: false},
                 {id: 2, value: "Scenario", isChecked: false},
                 {id: 3, value: "Description", isChecked: false},
-                {id: 4, value: "CardType", isChecked: false},
+                {id: 4, value: "Platform", isChecked: false},
                 {id: 5, value: "Build", isChecked: false},
                 {id: 6, value: "Status", isChecked: false},
                 {id: 7, value: "Bug", isChecked: false},
@@ -240,9 +239,10 @@ class AssignToUser extends Component {
                 {id: 15, value: "OS", isChecked: false},
                 {id: 16, value: "applicable", isChecked: false},
               ],
-              
+
             columnDefs: [
                 columnDefDict['TcID'],
+                columnDefDict['CardType'],
                 columnDefDict['Scenario'],
                 columnDefDict['Description'],
                 columnDefDict['Steps'],
@@ -260,7 +260,7 @@ class AssignToUser extends Component {
                 // columnDefDict['Notes'],
 
             ],
-            
+
             defaultColDef: { resizable: true },
 
             e2eColumnDefs: [{
@@ -270,6 +270,9 @@ class AssignToUser extends Component {
             },
             {
                 headerName: "Result", field: "Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+            },
+            {
+                headerName: "Tested On", field: "TestedOn", sortable: true, filter: true, cellClass: 'cell-wrap-text',
             },
             {
                 headerName: "Bugs", field: "Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
@@ -308,7 +311,7 @@ class AssignToUser extends Component {
    //Priority Based Filter functions
     handleAllCheckedTCs = (event) => {
         let tableColumnsTcs = this.state.tableColumnsTcs
-        tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked) 
+        tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({tableColumnsTcs: tableColumnsTcs})
     }
 
@@ -320,9 +323,21 @@ class AssignToUser extends Component {
         })
         this.setState({tableColumnsTcs: tableColumnsTcs})
     }
-   
-    showSelectedTCs = () =>{
+
+    showSelectedTCsOld = () =>{
         this.getTcsToShow(this.props.selectedRelease.ReleaseNumber , true);
+        this.setState({ popoverOpen2: !this.state.popoverOpen2 });
+    }
+
+    showSelectedTCs = () =>{
+        if (!this.state.platform){
+            this.getTcsToShow(this.props.selectedRelease.ReleaseNumber , true);
+            this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority);
+        }
+        else{
+            this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber,true);
+            this.getTcs(false, this.state.CardType, this.state.platform, null, null, null);
+        }
         this.setState({ popoverOpen2: !this.state.popoverOpen2 });
     }
 
@@ -330,7 +345,7 @@ class AssignToUser extends Component {
     //Status Based Filter functions
     handleAllCheckedStatusTCs = (event) => {
         let statusColumn = this.state.statusColumn
-        statusColumn.forEach(columnName => columnName.isChecked = event.target.checked) 
+        statusColumn.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({statusColumn: statusColumn})
     }
 
@@ -346,7 +361,7 @@ class AssignToUser extends Component {
     //column based filter functions
     handleAllChecked = (event) => {
         let tableColumns = this.state.tableColumns
-        tableColumns.forEach(columnName => columnName.isChecked = event.target.checked) 
+        tableColumns.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({tableColumns: tableColumns})
 
     }
@@ -412,7 +427,6 @@ class AssignToUser extends Component {
         //         values: this.props.users.map(item => item.name)
         //     }
         // },
-          
           'Description': {
               headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               width: '520',
@@ -420,18 +434,18 @@ class AssignToUser extends Component {
               cellClass: 'cell-wrap-text',
           },
           'CardType' : {
-              headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
-              cellEditor: 'selectionEditor',
-              cellClass: 'cell-wrap-text',
-              cellEditorParams: {
-                  values: ['BOS', 'NYNJ', 'COMMON'],
-                  multiple: true
-              }
+            headerName: "Platform", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '180',
+
+            //cellEditor: 'selectionEditor',
+            cellClass: 'cell-wrap-text',
+            editable: false
+            // cellEditorParams: {
+            //     values: ['BOS', 'NYNJ', 'COMMON'],
+            //     multiple: true
+            // }
           },
           'Build' :  {
               headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
@@ -441,11 +455,26 @@ class AssignToUser extends Component {
           },
           'Status' : {
               headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
                   values: ['COMPLETED', 'NOT_COMPLETED']
+                  //                     </ModalFooter>
+                  //                 </Modal>
+                  //             </div >
+                  //         )
+                  //     }
+                  // }
+                  // const mapStateToProps = (state, ownProps) => ({
+                  //     user: state.auth.currentUser,
+                  //     users: state.user && state.user.users ? state.user.users.map(item => item.name) : [],
+                  //     selectedRelease: getCurrentRelease(state, state.release.current.id),
+                  //     data: state.testcase.all[state.release.current.id],
+                  //     tcDetails: state.testcase.testcaseDetail,
+                  //     tcStrategy: getTCForStrategy(state, state.release.current.id),
+                  //     testcaseEdit: state.testcase.testcaseEdit
+                  // })
+                  // export default connect(mapStateToProps, { saveTestCase, getCurrentRelease, saveSingleTestCase, updateTCEdit, saveReleaseBasicInfo })(AssignToUser);
               }
           },
           'Bug' : {
@@ -460,11 +489,10 @@ class AssignToUser extends Component {
         },
           'Priority' :  {
               headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
-          }, 
+          },
           'Assignee' : {
               headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
               cellClass: 'cell-wrap-text',
-        
               cellEditor: 'selectionEditor',
               cellEditorParams: {
                   values: this.props.users.map(item => item.name)
@@ -489,13 +517,13 @@ class AssignToUser extends Component {
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-          'Steps' : { 
+          'Steps' : {
               headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               width: '180',
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-          'Notes' : { 
+          'Notes' : {
             headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
             width: '180',
             editable: false,
@@ -508,17 +536,26 @@ class AssignToUser extends Component {
             cellClass: 'cell-wrap-text',
         },
         }
-        
+
         let tableColumns = this.state.tableColumns;
         let selectedColumns = []
+        tableColumns.map(columnName => {
+            if (columnName.value == "Platform"){
+                columnName.value = "CardType"
+            }
+        })
         tableColumns.forEach(columnName => {
             if (columnName.isChecked == true){
                 selectedColumns.push(columnDefDict1[columnName.value])
             }
         })
-
         this.setState({columnDefs:selectedColumns});
         this.setState({ popoverOpen1: !this.state.popoverOpen1 });
+        tableColumns.map(columnName => {
+            if (columnName.value == "CardType"){
+                columnName.value = "Platform"
+            }
+        })
     }
 
     getRowHeight = (params) => {
@@ -597,7 +634,6 @@ class AssignToUser extends Component {
             if (this.editedRows[`${params.TcID}_${params.CardType}`][field]) {
                 this.editedRows[`${params.TcID}_${params.CardType}`][field] =
                     { ...this.editedRows[`${params.TcID}_${params.CardType}`][field], oldValue: params[field], newValue: value }
-                   
             } else {
             this.editedRows[`${params.TcID}_${params.CardType}`] =
                 { ...this.editedRows[`${params.TcID}_${params.CardType}`], [field]: { oldValue: params[field], originalValue: params[field], newValue: value } }
@@ -611,9 +647,9 @@ class AssignToUser extends Component {
             }
         }
     }
-    
+
     onRowSelected = (params) => {
-       
+
         if (this.gridApi) {
             if (params.column && params.column.colId !== "TcID") {
                 return false
@@ -628,7 +664,7 @@ class AssignToUser extends Component {
         if (this.pageNumber < 0) {
             this.pageNumber = 0;
         }
-        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, this.state.priority);
+        this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.priority);
     }
     onSelectionChanged = (event) => {
         this.setState({ selectedRows: event.api.getSelectedRows().length })
@@ -655,18 +691,19 @@ class AssignToUser extends Component {
         }
     }
     componentDidMount() {
-        setTimeout(() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain), 400);
-        if (this.props.user &&
-            (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
-                this.props.user.role === 'ENGG')) {
-            // this.setState({ tcOpen: true })
-        }
-        axios.get('/api/userinfo/')
-        .then(response=>{
-        })
-        .catch(err=>{
-            console.log("error",err)
-        })
+        //console.log("In componet did mount mtc")
+        // setTimeout(() => this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain), 400);
+        // if (this.props.user &&
+        //     (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
+        //         this.props.user.role === 'ENGG')) {
+        //     // this.setState({ tcOpen: true })
+        // }
+        // axios.get('/api/userinfo/')
+        // .then(response=>{
+        // })
+        // .catch(err=>{
+        //     console.log("error",err)
+        // })
     }
     componentWillReceiveProps(newProps) {
         if (this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
@@ -674,10 +711,10 @@ class AssignToUser extends Component {
             this.isAnyChanged = false;
             this.isBlockedOrFailed = false;
             this.setState({
-                rowSelect: false, CardType: '', domain: '', subDomain: '', Priority: '',
+                rowSelect: false, CardType: '', platfrom: '', domain: '', subDomain: '', Priority: '',
                 isEditing: false
             })
-            setTimeout(() => this.getTcs(null, null, null, null, null, newProps.selectedRelease.ReleaseNumber), 400);
+            setTimeout(() => this.getTcs(true, null, null, null, null, null, null, newProps.selectedRelease.ReleaseNumber), 400);
         }
     }
 
@@ -689,15 +726,29 @@ class AssignToUser extends Component {
     }
 
     // SELECTION BOX
+    onSelectPlatform(platform) {
+        if (platform === '') {
+            platform = null;
+        } else {
+            //this.getTcByPlatform(platform);
+        }
+        //this.getTcByPlatform(platform);
+
+        // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
+        this.setState({ platform: platform, domain: '', subDomain: ''});
+        this.getTcs(false, this.state.CardType, platform, '', '', this.state.Priority);
+    }
+
     onSelectDomain(domain) {
         if (domain === '') {
             domain = null;
         } else {
-            this.getTcByDomain(domain);
+            //this.getTcByDomain(domain);
         }
         // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
         this.setState({ domain: domain, subDomain: '' });
-        this.getTcs(this.state.CardType, domain, '', this.state.Priority);
+        //this.getTcs(this.state.CardType, domain, '', this.state.Priority);
+        this.getTcsToShowMod(this.state.platform, domain, '', this.state.Priority, this.props.selectedRelease.ReleaseNumber);
     }
     onSelectSubDomain(subDomain) {
         if (subDomain === '') {
@@ -705,7 +756,8 @@ class AssignToUser extends Component {
         }
         // let data = this.filterData({ Domain: this.state.domain, SubDomain: subDomain, CardType: this.state.CardType })
         this.setState({ subDomain: subDomain });
-        this.getTcs(this.state.CardType, this.state.domain, subDomain, this.state.Priority);
+        //this.getTcs(this.state.CardType, this.state.domain, subDomain, this.state.Priority);
+        this.getTcsToShowMod(this.state.platform, this.state.domain, subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
     }
     onSelectCardType(cardType) {
         if (cardType === '') {
@@ -713,7 +765,8 @@ class AssignToUser extends Component {
         }
         //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ CardType: cardType });
-        this.getTcs(cardType, this.state.domain, this.state.subDomain, this.state.Priority);
+        //this.getTcs(cardType, this.state.domain, this.state.subDomain, this.state.Priority);
+        this.getTcs(cardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
     }
     onSelectPriority(priority) {
         if (priority === '') {
@@ -721,7 +774,8 @@ class AssignToUser extends Component {
         }
         //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ Priority: priority });
-        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, priority);
+        //this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, priority);
+        this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, priority, this.props.selectedRelease.ReleaseNumber);
     }
 
     // // RELEASE
@@ -824,7 +878,7 @@ class AssignToUser extends Component {
         if (!this.props.selectedRelease.ReleaseNumber) {
             return;
         }
-        
+
         this.gridOperations(false);
         axios.get(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${data.CardType}`)
             .then(res => {
@@ -853,11 +907,12 @@ class AssignToUser extends Component {
                 this.gridOperations(true);
             })
     }
-    getTcs(CardType, domain, subDomain, priority, all, selectedRelease, updateRelease) {
+    getTcs(flag, CardType, platform, domain, subDomain, priority, all, selectedRelease, updateRelease) {
         let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
         if (!release) {
             return;
         }
+        CardType = platform
         this.gridOperations(false);
         let startingIndex = this.pageNumber * this.rows;
         let url = `/api/wholetcinfo/${release}?index=${startingIndex}&count=${this.rows}`;
@@ -865,7 +920,7 @@ class AssignToUser extends Component {
             // url = `/api/wholetcinfo/${release}`;
             url = `/api/wholetcinfo/${release}?`;
         }
-        if (CardType || domain || subDomain || priority) {
+        if (platform || CardType || domain || subDomain || priority) {
             url = `/api/wholetcinfo/${release}?`;
             if (CardType) url += ('&CardType=' + CardType);
             if (domain) url += ('&Domain=' + domain);
@@ -877,12 +932,11 @@ class AssignToUser extends Component {
         this.state.tableColumnsTcs.forEach(item=>{
             if(item.isChecked == true){
                 str1 = str1 + item.value + ","
-
-            } 
+            }
         })
-        if(!all){
-            url += ('&applicable=' + str1);
-        }
+        //if(!all){
+        url += ('&applicable=' + str1);
+        //}
 
         url += ('&WorkingStatus=' + 'Manual Assignee')
 
@@ -900,9 +954,14 @@ class AssignToUser extends Component {
             .then(all => {
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
-                
+
                 this.allTCsToShow = all.data;
-                this.getTcsToShow(release,updateRelease)
+                if(flag || !this.state.platform){
+                    this.getTcsToShow(release,updateRelease)
+                }
+                if (this.state.platform){
+                    this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
+                }
 
             }).catch(err => {
                 this.saveLocalMultipleTC({ data: [], id: release }, true, updateRelease);
@@ -910,18 +969,17 @@ class AssignToUser extends Component {
             })
     }
     getAlltcs() {
-        this.setState({ loading: true, domain: '', subDomain: '', CardType: '', Priority: '' })
+        this.setState({ loading: true, platform:'', domain: '', subDomain: '', CardType: '', Priority: '' })
         this.saveLocalMultipleTC({ data: [], id: this.props.selectedRelease.ReleaseNumber }, true);
-        this.getTcs(null, null, null, null, true);
+        this.getTcs(true, null, null, null, null, null, true);
     }
 
-    getTcsToShow(release,updateRelease){
+    getTcsToShowOld(release,updateRelease){
 
         let showTc = []
         let skipTcs = []
         let NATcs = []
         let ApplicableTcs = []
-        
         for(let i = 0; i < this.allTCsToShow.length; i++){
             if(this.allTCsToShow[i].Priority == 'Skip' ){
                 skipTcs.push(this.allTCsToShow[i])
@@ -939,12 +997,12 @@ class AssignToUser extends Component {
                 skipTcs.forEach(skipTC=>{
                     showTc.push(skipTC)
                 })
-            } 
+            }
             if(item.isChecked == true && item.value == 'Show Not Applicable' ){
                 NATcs.forEach(NATC=>{
                     showTc.push(NATC)
                 })
-            } 
+            }
             if(item.isChecked == true && item.value == 'Applicable' ){
                 ApplicableTcs.forEach(applicableTC=>{
                     showTc.push(applicableTC)
@@ -956,7 +1014,7 @@ class AssignToUser extends Component {
         this.state.statusColumn.forEach(item=>{
 
             showTc.forEach(tcItem=>{
-               
+
                 if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
                     statusFlag = 1
                     showTc1.push(tcItem)
@@ -979,9 +1037,120 @@ class AssignToUser extends Component {
             })
         })
         if(statusFlag == 0){
-            showTc1 = showTc; 
+            showTc1 = showTc;
         }
 
+        this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
+        this.gridOperations(true);
+    }
+
+    getTcsToShow(release,updateRelease){
+
+        let showTc = []
+        this.ApplicableTcs = []
+        showTc = []
+        showTc = this.allTCsToShow
+        let showTc1 = []
+        let statusFlag = 0
+        this.state.statusColumn.forEach(item=>{
+
+            showTc.forEach(tcItem=>{
+                if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Fail' && tcItem.CurrentStatus.Result == 'Fail'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Block' && tcItem.CurrentStatus.Result == 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Not Tested' && tcItem.CurrentStatus.Result != 'Pass' && tcItem.CurrentStatus.Result != 'Fail' && tcItem.CurrentStatus.Result != 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+            })
+        })
+        if(statusFlag == 0){
+            showTc1 = showTc;
+        }
+        this.ApplicableTcs = showTc1
+        this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
+        this.gridOperations(true);
+    }
+
+    getTcsToShowMod(platform, domain, subdomain, priority, release, updateRelease){
+        //this.gridOperations(false);
+        this.tcHolder = []
+            if(platform) {
+              this.tcHolder = [...this.allTCsToShow]
+            }
+            if(domain){
+                let TcByDomain = []
+                for (let i = 0 ; i < this.tcHolder.length; i++) {
+                    if(this.tcHolder[i].Domain === domain ){
+                        TcByDomain.push(this.tcHolder[i])
+                    }
+                }
+                this.tcHolder = [...TcByDomain]
+            }
+            if(subdomain){
+                let TcBySubdomain = []
+                for (let i = 0 ; i < this.tcHolder.length; i++) {
+                    if(this.tcHolder[i].SubDomain === subdomain ){
+                        TcBySubdomain.push(this.tcHolder[i])
+                    }
+                }
+                this.tcHolder = [...TcBySubdomain]
+            }
+            if(priority){
+                let tem = []
+                for (let i = 0 ; i < this.tcHolder.length; i++) {
+                    if(this.tcHolder[i].Priority === priority ){
+                        tem.push(this.tcHolder[i])
+                    }
+                }
+                this.tcHolder = [...tem]
+            }
+        let showTc = []
+        this.ApplicableTcs = []
+        showTc = []
+        showTc = this.tcHolder
+        let showTc1 = []
+        let statusFlag = 0
+        this.state.statusColumn.forEach(item=>{
+
+            showTc.forEach(tcItem=>{
+                if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Fail' && tcItem.CurrentStatus.Result == 'Fail'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Block' && tcItem.CurrentStatus.Result == 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Not Tested' && tcItem.CurrentStatus.Result != 'Pass' && tcItem.CurrentStatus.Result != 'Fail' && tcItem.CurrentStatus.Result != 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+            })
+        })
+        if(statusFlag == 0){
+            showTc1 = showTc;
+        }
+        this.ApplicableTcs = showTc1
         this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
         this.gridOperations(true);
     }
@@ -1001,6 +1170,7 @@ class AssignToUser extends Component {
             this.setState({ multi: {}, selectedRows: 0, totalRows: 0 })
         }
     }
+
     resetSingle() {
         this.saveLocalTC(this.props.tcDetails);
         this.setState({ isEditing: false });
@@ -1010,14 +1180,13 @@ class AssignToUser extends Component {
     saveAll() {
         // let auto_assignee = '-'
         // let auto_workingState = 'AUTO_ASSIGNED'
-       
         this.gridOperations(false);
         let items = [];
         let statusItems = [];
         let workingStatusTemp = ''
         let statusFlag = 0
         let selectedRows = this.gridApi.getSelectedRows();
-        
+
         selectedRows.forEach(item => {
 
             let pushable = {
@@ -1035,7 +1204,7 @@ class AssignToUser extends Component {
             };
 
 
-            ['Priority', 'Assignee',  'WorkingStatus'].map(each => {
+            ['Priority', 'Assignee',  'WorkingStatus', 'OS'].map(each => {
                 if (item[each]) {
                     pushable[each] = item[each]
                     let old = item[each];
@@ -1048,22 +1217,19 @@ class AssignToUser extends Component {
                     //     auto_assignee = item[each]
                     //     pushable["Automation Assignee"] = auto_assignee
                     // }
-                   
                     // if(each == 'WorkingStatus'){
                     //     if(item[each]!== "APPROVED"){
                     //         auto_workingState = item[each]
                     //         pushable["Automation WorkingStatus"] = auto_workingState
                     //     }
-                       
-
                     // }
                 }
             })
-            
-            
+
             if (this.state.multi && this.state.multi.Build ) {
                 statusFlag = 1
                 let status = {};
+                if(!this.state.multi.TestedOn) this.state.multi.TestedOn = "";
                 status.Domain = item.Domain;
                 status.SubDomain = item.SubDomain;
                 status.Steps = item.Steps;
@@ -1072,6 +1238,7 @@ class AssignToUser extends Component {
                 status.TcName = this.getTcName(`${item.TcName}`);
                 status.Build = this.state.multi.Build;
                 status.Result = this.state.multi.Result;
+                status.TestedOn = this.state.multi.TestedOn;
                 status.Bugs = this.state.multi.Bugs;
                 status.CardType = item.CardType;
                 status.TcID = item.TcID;
@@ -1082,22 +1249,20 @@ class AssignToUser extends Component {
                     "TcID": item.TcID,
                     "CardType": item.CardType,
                     "UserName": this.props.user.email,
-                    "LogData": `Status Added: Build: ${this.state.multi.Build}, Result: ${this.state.multi.Result}, CardType: ${item.CardType}`,
+                    "LogData": `Status Added: Build: ${this.state.multi.Build}, Result: ${this.state.multi.Result}, TestedOn: ${this.state.multi.TestedOn}, CardType: ${item.CardType}`,
                     "RequestType": 'POST',
                     "URL": `/api/tcstatus/${this.props.selectedRelease.ReleaseNumber}`
                 }
 
                 statusItems.push(status)
             }
-            
+
             if(statusFlag == 1){
                 pushable["Manual WorkingStatus"] = "MANUAL_COMPLETED"
                 pushable["Manual Assignee"] = item.Assignee
             }
-            
             items.push(pushable);
         })
-        
         if (items.length === 0 && statusItems.length === 0) {
             return;
         }
@@ -1107,7 +1272,7 @@ class AssignToUser extends Component {
             this.saveMultipleTcInfo(items)
         }
     }
-    
+
     saveMultipleTcStatus(statusItems, items) {
         this.gridOperations(false);
         axios.post(`/api/tcstatusUpdate/${this.props.selectedRelease.ReleaseNumber}`, statusItems)
@@ -1116,7 +1281,8 @@ class AssignToUser extends Component {
                 if (items.length > 0) {
                     this.saveMultipleTcInfo(items)
                 } else {
-                    this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);
+                    //this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);
+                    this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
                     alert('Tc Status updated Successfully');
                 }
             }, error => {
@@ -1129,7 +1295,8 @@ class AssignToUser extends Component {
         axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
         .then(res => {
             this.gridOperations(true);
-            this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
+            //this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
+            this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
             alert('Tc Info Updated Successfully');
         }, error => {
             this.gridOperations(true);
@@ -1160,7 +1327,7 @@ class AssignToUser extends Component {
 
     textFields = [
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus',
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus', 'OS',
         'Manual Assignee','Automation Assignee', 'Manual WorkingStatus','Automation Assignee'
     ];
     whichFieldsUpdated(old, latest) {
@@ -1183,7 +1350,6 @@ class AssignToUser extends Component {
     }
 
     save() {
-        
         let data = {};
         this.textFields.map(item => data[item] = this.props.testcaseEdit[item]);
         let stateUserMapping = this.props.tcDetails.stateUserMapping
@@ -1204,15 +1370,13 @@ class AssignToUser extends Component {
         let Manual_WorkingStatus = stateUserMapping["Manual WorkingStatus"]
         data.stateUserMapping = {"Manual Assignee":Manual_Assignee,"Manual WorkingStatus":Manual_WorkingStatus}
 
-        
-
         if (this.props.testcaseEdit.CurrentStatus === 'Pass' || this.props.testcaseEdit.CurrentStatus === 'Fail' || this.props.testcaseEdit.CurrentStatus == 'Blocked' || this.props.testcaseEdit.CurrentStatus == 'Unblocked' ||  this.props.testcaseEdit.Bugs) {
             this.saveSingleTCStatus(data);
         } else {
             this.saveSingleTCInfo(data);
         }
     }
-    
+
     saveSingleTCStatus(data) {
         this.gridOperations(false);
         let status = {};
@@ -1227,7 +1391,7 @@ class AssignToUser extends Component {
         status.CardType = this.props.tcDetails.CardType;
         status.TcID = this.props.tcDetails.TcID;
         // status.Creator = this.props.tcDetails.Creator
-       
+
         if (this.props.testcaseEdit.CurrentStatus !== 'Fail' && this.props.testcaseEdit.CurrentStatus !== 'Pass' && this.props.testcaseEdit.CurrentStatus !== 'Blocked'  && this.props.testcaseEdit.CurrentStatus !== 'Unblocked') {
             let statusList = this.props.testcaseEdit.StatusList;
             if(statusList && statusList.length>0) {
@@ -1332,13 +1496,18 @@ class AssignToUser extends Component {
         }, 400);
     }
 
-   
     render() {
-
-
-        let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
-        let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
-
+        let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsCli ? this.props.selectedRelease.PlatformsCli : []
+        //let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
+        let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && (Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform])).length > 0 ? Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform]) : [];
+        //let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
+        let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform][this.state.domain];
+        let priority = this.state.platform ? ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'] : []
+        if (platforms) {
+            platforms.sort();
+        } else {
+            platforms = [];
+        }
         if (domains) {
             domains.sort();
         } else {
@@ -1359,7 +1528,7 @@ class AssignToUser extends Component {
             }
         }
 
-        let manualFilter = this.state.domain || this.state.subdomain || this.state.CardType || this.state.Priority || this.state.filterValue
+        let manualFilter = this.state.platform || this.state.domain || this.state.subdomain || this.state.CardType || this.state.Priority || this.state.filterValue
         let pass = 0, fail = 0, notTested = 0, prioritySkip = 0, priorityNA = 0, prioritySkipAndTested = 0, automated = 0, total = 0;
 
         if (manualFilter && this.gridApi) {
@@ -1390,7 +1559,6 @@ class AssignToUser extends Component {
                 }
             })
             total = this.gridApi.getModel().rowsToDisplay.length;
-            
         } else {
             if (this.props.selectedRelease && this.props.selectedRelease.TcAggregate) {
                 let tcAggr = this.props.selectedRelease.TcAggregate.all;
@@ -1401,21 +1569,15 @@ class AssignToUser extends Component {
             }
         }
         return (
-            
+
             <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                        
-                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} >
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ tcOpen: !this.state.tcOpen }, () => { if(this.state.tcOpen){ this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain )}})}>
                             <div class="row">
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
-                                        <div onClick={() => {
-                                            if (!this.state.tcOpen1) {
-                                                this.getTcs();
-                                            }
-                                            this.setState({ tcOpen: !this.state.tcOpen })
-                                        }} style={{ display: 'inlineBlock' }}>
+                                        <div style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.tcOpen &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1441,17 +1603,18 @@ class AssignToUser extends Component {
                         </div>
                         <Collapse isOpen={this.state.tcOpen}>
                             <div>
-                                
                                 {/* <div style={{ width: '100%', height: ((window.screen.height * (1 - 0.248)) - 20) + 'px', marginBottom: '6rem' }}> */}
                                 <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
                                             {
                                                 [
-                                                    { style: { width: '8rem', marginLeft: '1.5rem' }, field: 'domain', onChange: (e) => this.onSelectDomain(e), values: [{ value: '', text: 'Select Domain' }, ...(domains && domains.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '1.0rem' }, field: 'platform', onChange: (e) => this.onSelectPlatform(e), values: [{ value: '', text: 'Select Platform' }, ...(platforms && platforms.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'domain', onChange: (e) => this.onSelectDomain(e), values: [{ value: '', text: 'Select Domain' }, ...(domains && domains.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'subDomain', onChange: (e) => this.onSelectSubDomain(e), values: [{ value: '', text: 'Select SubDomain' }, ...(subdomains && subdomains.map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'CardType', onChange: (e) => this.onSelectCardType(e), values: [{ value: '', text: 'Select CardType' }, ...(['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '7rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] }
+                                                    //{ style: { width: '8rem', marginLeft: '0.5rem' }, field: 'CardType', onChange: (e) => this.onSelectCardType(e), values: [{ value: '', text: 'Select CardType' }, ...(['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(each => ({ value: each, text: each })))] },
+                                                    //{ style: { width: '7rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] }
+                                                    { style: { width: '7rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(priority && priority.map(each => ({ value: each, text: each })))] }
                                                 ].map(item => (
                                                     this.props.data &&
                                                     <div style={item.style}>
@@ -1470,8 +1633,8 @@ class AssignToUser extends Component {
                                                 <Button disabled={this.state.isApiUnderProgress} id="getall" onClick={() => this.getAlltcs()} type="button">All</Button>
                                             </div>
                                             <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
-                                                <Button id="PopoverAssign2" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
-                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign2" id="PopoverAssignButton2" toggle={() => this.popoverToggle2()} isOpen={this.state.popoverOpen2}>
+                                                <Button id="PopoverAssignToUser2" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
+                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignToUser2" id="PopoverAssignToUserButton2" toggle={() => this.popoverToggle2()} isOpen={this.state.popoverOpen2}>
                                                     <PopoverBody>
                                                         <div>
                                                             <input type="checkbox" onClick={this.handleAllCheckedTCs}  value="checkedall" /> Check / Uncheck All
@@ -1493,15 +1656,14 @@ class AssignToUser extends Component {
                                                                 })
                                                                 }
                                                                 </ul>
-                                                                
                                                             <Button onClick={() => this.showSelectedTCs()}>Show Selected TC</Button>
                                                         </div>
                                                     </PopoverBody>
                                                 </UncontrolledPopover>
                                             </div>
                                             <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
-                                                <Button id="PopoverAssign1" type="button"><i class="fa fa-columns" aria-hidden="true"></i></Button>
-                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign1" id="PopoverAssignButton1" toggle={() => this.popoverToggle1()} isOpen={this.state.popoverOpen1}>
+                                                <Button id="PopoverAssignToUser1" type="button"><i class="fa fa-columns" aria-hidden="true"></i></Button>
+                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignToUser1" id="PopoverAssignToUserButton1" toggle={() => this.popoverToggle1()} isOpen={this.state.popoverOpen1}>
                                                     <PopoverBody>
                                                         <div>
                                                             <input type="checkbox" onClick={this.handleAllChecked}  value="checkedall" /> Check / Uncheck All
@@ -1513,7 +1675,6 @@ class AssignToUser extends Component {
                                                                 }
                                                                 </ul>
                                                             <Button onClick={() => this.setSelectedColumns()}>Change Column View</Button>
-                                                           
                                                         </div>
                                                     </PopoverBody>
                                                 </UncontrolledPopover>
@@ -1522,8 +1683,8 @@ class AssignToUser extends Component {
                                                 this.props.user &&
                                                 <div style={{ width: '8rem', marginLeft: '0.5rem' }}>
                                                     <span>
-                                                        <Button disabled={this.state.isApiUnderProgress} id="PopoverAssign" type="button">Apply Multiple</Button>
-                                                        <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign" id="PopoverAssignButton" toggle={() => this.popoverToggle()} isOpen={this.state.popoverOpen}>
+                                                        <Button disabled={this.state.isApiUnderProgress} id="PopoverAssignToUser" type="button">Apply Multiple</Button>
+                                                        <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignToUser" id="PopoverAssignToUserButton" toggle={() => this.popoverToggle()} isOpen={this.state.popoverOpen}>
                                                             <PopoverBody>
                                                                 {
                                                                     [
@@ -1535,7 +1696,6 @@ class AssignToUser extends Component {
 
                                                                         // { labels: 'Assignee', values: [{ value: '', text: 'Select Automation Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
                                                                         // { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Automation Working Status' }, ...(wsA.map(each => ({ value: each, text: each })))] },
-                                                                        
                                                                     ].map(each => <FormGroup className='rp-app-table-value'>
                                                                         <Label className='rp-app-table-label' htmlFor={each.labels}>
                                                                             {each.header}
@@ -1560,7 +1720,6 @@ class AssignToUser extends Component {
                                                                         </Input>
                                                                     </FormGroup>)
                                                                 }
-                                                               
                                                                 <Row>
                                                                 <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
@@ -1574,7 +1733,6 @@ class AssignToUser extends Component {
                                                                                     })
                                                                                 }
                                                                                 this.setState({ multi: { ...this.state.multi, Priority: e.target.value } })
-                                                                                
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="select" id={`select_Priority`} >
                                                                             {
@@ -1595,12 +1753,32 @@ class AssignToUser extends Component {
                                                                                     })
                                                                                 }
                                                                                 this.setState({ multi: { ...this.state.multi, OS: e.target.value } })
-                                                                                
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="select" id={`select_OS`} >
                                                                             {
                                                                                 ['Operating System','CentOS', 'RHEL'].map(item => <option value={item}>{item}</option>)
                                                                             }
+                                                                            </Input>
+                                                                        </FormGroup>
+                                                                    </Col>
+                                                                    <Col md="6">
+                                                                        <FormGroup className='rp-app-table-value'>
+                                                                            <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.TestedOn} onChange={(e) => {
+                                                                                this.isAnyChanged = true;
+                                                                                let selectedRows = this.gridApi.getSelectedRows();
+                                                                                if (e.target.value && e.target.value !== '') {
+                                                                                    selectedRows.forEach(item => {
+                                                                                        this.onCellEditing(item, 'CurrentStatus.TestedOn', e.target.value)
+                                                                                        item['CurrentStatus.TestedOn'] = e.target.value;
+                                                                                    })
+                                                                                }
+                                                                                this.setState({ multi: { ...this.state.multi, TestedOn: e.target.value } })
+                                                                                setTimeout(this.gridApi.redrawRows(), 0);
+                                                                            }} type="select" id={`select_TestedOn`} >
+                                                                                {
+                                                                                    //["Tested on","BOS","NYNJ","Software solution"].map(item => <option value={item}>{item}</option>)
+                                                                                    [{ value: '', text: 'Tested On' }, { value: 'BOS', text: 'BOS' }, { value: 'NYNJ', text: 'NYNJ' }, { value: 'Software solution', text: 'Software solution' }].map(item => <option value={item.value}>{item.text}</option>)
+                                                                                }
                                                                             </Input>
                                                                         </FormGroup>
                                                                     </Col>
@@ -1647,12 +1825,11 @@ class AssignToUser extends Component {
                                                                                 this.setState({ multi: { ...this.state.multi, Build: e.target.value } })
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="text" id={`select_Build`} placeholder="Build No" >
-                                                                            </Input> 
+                                                                            </Input>
                                                                         </FormGroup>
                                                                     </Col>
 
                                                                 </Row>
-                                                                
                                                                 {
                                                                     this.isBlockedOrFailed &&
                                                                     <Row>
@@ -1663,7 +1840,6 @@ class AssignToUser extends Component {
                                                                                     </Label> */}
                                                                                     <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Bugs} onChange={(e) => {
                                                                                         this.isAnyChanged = true;
-                                                                                        
                                                                                         let selectedRows = this.gridApi.getSelectedRows();
                                                                                         if (e.target.value && e.target.value !== '') {
                                                                                             selectedRows.forEach(item => {
@@ -1681,7 +1857,6 @@ class AssignToUser extends Component {
                                                                 }
 
                                                                 <div style={{ float: 'right', marginBottom: '0.5rem' }}>
-                                                                     
                                                                     <span>
                                                                         {
                                                                             this.isAnyChanged &&
@@ -1698,7 +1873,6 @@ class AssignToUser extends Component {
                                                                             </Button>
                                                                         }
                                                                     </span>
-                                                                   
                                                                 </div>
                                                             </PopoverBody>
                                                         </UncontrolledPopover>
@@ -1706,7 +1880,6 @@ class AssignToUser extends Component {
 
                                                 </div>
                                             }
-                                             
                                             <div style={{ width: '5rem', marginLeft: '0.5rem' }}>
                                                 <Button disabled={this.state.isApiUnderProgress} title="Only selected TCS will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.gridApi) {
@@ -1725,7 +1898,7 @@ class AssignToUser extends Component {
                                     </div>
                                     <div style={{ width: "100%", height: "100%" }}>
                                         <div
-                                            id="myAllGrid"
+                                            id="assignToUserGrid"
                                             style={{
                                                 height: "100%",
                                                 width: "100%",
@@ -1868,7 +2041,7 @@ class AssignToUser extends Component {
                                                     <div style={{ width: '100%', height: '300px', marginBottom: '3rem' }}>
                                                         <div style={{ width: "100%", height: "100%" }}>
                                                             <div
-                                                                id="e2eGrid"
+                                                                id="assignToUserE2EGrid"
                                                                 style={{
                                                                     height: "100%",
                                                                     width: "100%",
@@ -1897,7 +2070,7 @@ class AssignToUser extends Component {
                                                     <div style={{ width: '100%', height: '250px', marginBottom: '3rem' }}>
                                                         <div style={{ width: "100%", height: "100%" }}>
                                                             <div
-                                                                id="activityGrid"
+                                                                id="assignToUserActivityGrid"
                                                                 style={{
                                                                     height: "100%",
                                                                     width: "100%",

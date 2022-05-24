@@ -599,19 +599,19 @@ class AssignToUserAutomationTCGUI extends Component {
         }
     }
     componentDidMount() {
-        setTimeout(() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain), 400);
-        if (this.props.user &&
-            (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
-                this.props.user.role === 'ENGG')) {
-            // this.setState({ tcOpen: true })
-        }
-        axios.get('/api/userinfo/')
-        .then(response=>{
+        // setTimeout(() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain), 400);
+        // if (this.props.user &&
+        //     (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
+        //         this.props.user.role === 'ENGG')) {
+        //     // this.setState({ tcOpen: true })
+        // }
+        // axios.get('/api/userinfo/')
+        // .then(response=>{
             
-        })
-        .catch(err=>{
-            console.log("error",err)
-        })
+        // })
+        // .catch(err=>{
+        //     console.log("error",err)
+        // })
     }
     componentWillReceiveProps(newProps) {
         if (this.props.selectedRelease && newProps.selectedRelease && this.props.selectedRelease.ReleaseNumber !== newProps.selectedRelease.ReleaseNumber) {
@@ -1372,16 +1372,11 @@ class AssignToUserAutomationTCGUI extends Component {
             <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ tcOpen: !this.state.tcOpen })}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ tcOpen: !this.state.tcOpen }, () => { if(this.state.tcOpen){this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain)}})}>
                             <div class="row">
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
-                                    <div onClick={() => {
-                                            if (!this.state.tcOpen) {
-                                                this.getTcs();
-                                            }
-                                            this.setState({ tcOpen: !this.state.tcOpen })
-                                        }} style={{ display: 'inlineBlock' }}>
+                                    <div style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.tcOpen &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1658,7 +1653,7 @@ class AssignToUserAutomationTCGUI extends Component {
                                     </div>
                                     <div style={{ width: "100%", height: "100%" }}>
                                         <div
-                                            id="myAllGrid"
+                                            id="AssignToUserAutoTcGuiGrid"
                                             style={{
                                                 height: "100%",
                                                 width: "100%",
@@ -1807,7 +1802,7 @@ class AssignToUserAutomationTCGUI extends Component {
                                                     <div style={{ width: '100%', height: '300px', marginBottom: '3rem' }}>
                                                         <div style={{ width: "100%", height: "100%" }}>
                                                             <div
-                                                                id="e2eGrid"
+                                                                id="e2eGridGuiAuto"
                                                                 style={{
                                                                     height: "100%",
                                                                     width: "100%",
@@ -1836,7 +1831,7 @@ class AssignToUserAutomationTCGUI extends Component {
                                                     <div style={{ width: '100%', height: '250px', marginBottom: '3rem' }}>
                                                         <div style={{ width: "100%", height: "100%" }}>
                                                             <div
-                                                                id="activityGrid"
+                                                                id="activityGridGuiAuto"
                                                                 style={{
                                                                     height: "100%",
                                                                     width: "100%",

@@ -19,7 +19,7 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
 import { element } from 'prop-types';
 import { CSVLink } from 'react-csv';
-import {projects, projectToManagerMap, projectsList, devManagers} from "../../constants";
+import {projects, projectToManagerMap, projectsList, devManagers, status} from "../../constants";
 class CustomerTickets extends Component {
     startAt = 0;
     isApiUnderProgress = false;
@@ -165,12 +165,12 @@ class CustomerTickets extends Component {
                     let keyData = params.data.Active;
                     let priority = params.data.Severity;
                     if(priority == "P3"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20%3D%20active)%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20%3D%20active)%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(priority != "Total"){
                         let priMap = {"P1": "Highest", "P2": "High"}
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20(labels%20%3D%20active)%20AND%20priority%20%3D%20${priMap[priority]}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20%3D%20active)%20AND%20priority%20%3D%20${priMap[priority]}%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -207,11 +207,11 @@ class CustomerTickets extends Component {
                             label = encodeURIComponent(label);
                         }
                         if (customer == "Unclassified"){
-                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
                         else{
-                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20customer-${customer}%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
                     }
@@ -241,11 +241,11 @@ class CustomerTickets extends Component {
                             label = encodeURIComponent(label);
                         }
                         if (customer == "Unclassified"){
-                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
                         else{
-                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20customer-${customer}%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
                     }
@@ -275,11 +275,11 @@ class CustomerTickets extends Component {
                             label = encodeURIComponent(label);
                         }
                         if (customer == "Unclassified"){
-                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
                         else{
-                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20AND%20labels%20%3D%20active%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20customer-${customer}%20AND%20labels%20%3D%20active%20AND%20(priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest%20OR%20priority%20%3D%20Medium)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
                     }
@@ -309,11 +309,11 @@ class CustomerTickets extends Component {
                             label = encodeURIComponent(label);
                         }
                         if (customer == "Unclassified"){
-                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20in%20(customer)${label}%20AND%20labels%20%3D%20active%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
                         else{
-                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20customer-${customer}%20AND%20labels%20%3D%20active%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20customer-${customer}%20AND%20labels%20%3D%20active%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             return newLink;
                         }
                     }
@@ -347,10 +347,10 @@ class CustomerTickets extends Component {
                             }
                             proj = proj + projectToManagerMap[Manager][projectToManagerMap[Manager].length - 1]
                             proj = encodeURIComponent(proj);
-                                newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20is%20not%20EMPTY%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                                newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20is%20not%20EMPTY%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             }
                         else {
-                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20is%20not%20EMPTY%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20is%20not%20EMPTY%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         }
                         return newLink;
                     }
@@ -376,10 +376,10 @@ class CustomerTickets extends Component {
                             }
                             proj = proj + projectToManagerMap[Manager][projectToManagerMap[Manager].length - 1]
                             proj = encodeURIComponent(proj);
-                                newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20is%20EMPTY%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                                newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20is%20EMPTY%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             }
                         else {
-                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20AND%20duedate%20is%20EMPTY%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20AND%20duedate%20is%20EMPTY%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         }
                         return newLink;
                     }
@@ -405,10 +405,10 @@ class CustomerTickets extends Component {
                             }
                             proj = proj + projectToManagerMap[Manager][projectToManagerMap[Manager].length - 1]
                             proj = encodeURIComponent(proj);
-                                newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20%3C%20now()%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                                newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20%3C%20now()%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             }
                         else {
-                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20%3C%20now()%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20%3C%20now()%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         }
                         return newLink;
                     }
@@ -440,10 +440,10 @@ class CustomerTickets extends Component {
                             }
                             proj = proj + projectToManagerMap[Manager][projectToManagerMap[Manager].length - 1]
                             proj = encodeURIComponent(proj);
-                                newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                                newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${proj})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                             }
                         else {
-                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                            newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         }
                         return newLink;
                     }
@@ -469,11 +469,11 @@ class CustomerTickets extends Component {
                     let keyData = params.data.P1;
                     let Product = params.data.Product
                     if (Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${Product})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${Product})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20Highest%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -490,11 +490,11 @@ class CustomerTickets extends Component {
                     let keyData = params.data.P2;
                     let Product = params.data.Product
                     if (Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${Product})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${Product})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20active%20AND%20priority%20%3D%20High%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -511,11 +511,11 @@ class CustomerTickets extends Component {
                     let keyData = params.data.P3;
                     let Product = params.data.Product
                     if (Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20active%20AND%20(priority%20%3D%20Medium%20OR%20priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20active%20AND%20(priority%20%3D%20Medium%20OR%20priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${Product})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20active%20AND%20(priority%20%3D%20Medium%20OR%20priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${Product})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20active%20AND%20(priority%20%3D%20Medium%20OR%20priority%20%3D%20Low%20OR%20priority%20%3D%20Lowest)%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -532,11 +532,11 @@ class CustomerTickets extends Component {
                     let keyData = params.data.Total;
                     let Product = params.data.Product
                     if (Product == "Unclassified"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20active%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20active%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else if(Product != "Total"){
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${Product})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20AND%20labels%20%3D%20active%20%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${Product})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20labels%20%3D%20active%20%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -561,7 +561,7 @@ class CustomerTickets extends Component {
                     let keyData = params.data.WithDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20is%20not%20EMPTY%20AND%20assignee%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -578,7 +578,7 @@ class CustomerTickets extends Component {
                     let keyData = params.data.WithOutDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20is%20EMPTY%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -595,7 +595,7 @@ class CustomerTickets extends Component {
                     let keyData = params.data.PassedDueDate;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20AND%20duedate%20%20%3C%20now()%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{
@@ -618,7 +618,7 @@ class CustomerTickets extends Component {
                     let keyData = params.data.Total;
                     if (params.data.Developer.trim() != "Total"){
                         let dev = encodeURIComponent(params.data.Developer.trim());
-                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(Duplicate%2C%20%22In%20Progress%22%2C%20Info%2C%20Open%2C%20%22To%20Do%22)%20%20AND%20labels%20%3D%20active%20%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
+                        let newLink = `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20%20AND%20labels%20%3D%20active%20%20AND%20(duedate%20is%20EMPTY%20OR%20duedate%20is%20not%20EMPTY)%20AND%20assignee%20%3D%20%22${dev}%22%20ORDER%20BY%20created%20DESC target= "_blank">${keyData}</a>`;
                         return newLink;
                     }
                     else{

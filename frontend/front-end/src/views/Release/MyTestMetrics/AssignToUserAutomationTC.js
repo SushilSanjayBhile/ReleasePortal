@@ -49,6 +49,9 @@ class AssignToUserAutomationTC extends Component {
     isAnyChanged = false;
     isBlockedOrFailed = false;
     allTCsToShow = []
+    tcHolder = [];
+    ApplicableTcs = [];
+    platformList = [];
     constructor(props) {
         super(props);
         let columnDefDict = {
@@ -71,14 +74,12 @@ class AssignToUserAutomationTC extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-          
             'WorkingStatus2' : {
                 headerName: "Automation Working Status", field: "stateUserMapping.Automation WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            
             'Automation Assignee' : {
                 headerName: "Automation Assignee", field: "stateUserMapping.Automation Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
                 cellClass: 'cell-wrap-text',
@@ -87,7 +88,6 @@ class AssignToUserAutomationTC extends Component {
                     values: this.props.users.map(item => item.name)
                 }
             },
-          
             'Description': {
                 headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '520',
@@ -95,18 +95,17 @@ class AssignToUserAutomationTC extends Component {
                 cellClass: 'cell-wrap-text',
             },
             'CardType' : {
-                headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-            
-                cellEditor: 'selectionEditor',
+                headerName: "Platform", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+                //cellEditor: 'selectionEditor',
                 cellClass: 'cell-wrap-text',
-                cellEditorParams: {
-                    values: ['BOS', 'NYNJ', 'COMMON'],
-                    multiple: true
-                }
+                editable: false,
+                // cellEditorParams: {
+                //     values: ['BOS', 'NYNJ', 'COMMON'],
+                //     multiple: true
+                // }
             },
             'Build' :  {
                 headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-            
                 cellEditor: 'selectionEditor',
                 cellClass: 'cell-wrap-text',
                 cellEditorParams: {
@@ -114,10 +113,8 @@ class AssignToUserAutomationTC extends Component {
                     multiple: true
                 }
             },
-            
             'Status' : {
                 headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-            
                 cellEditor: 'selectionEditor',
                 cellClass: 'cell-wrap-text',
                 cellEditorParams: {
@@ -130,11 +127,10 @@ class AssignToUserAutomationTC extends Component {
             },
             'Priority' :  {
                 headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
-            }, 
+            },
             'Assignee' : {
                 headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
                 cellClass: 'cell-wrap-text',
-            
                 cellEditor: 'selectionEditor',
                 cellEditorParams: {
                     values: this.props.users.map(item => item.name)
@@ -159,13 +155,13 @@ class AssignToUserAutomationTC extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            'Steps' : { 
+            'Steps' : {
                 headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-          'Notes' : { 
+          'Notes' : {
                 headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
                 width: '180',
                 editable: false,
@@ -178,7 +174,6 @@ class AssignToUserAutomationTC extends Component {
                 cellClass: 'cell-wrap-text',
             },
         }
-        
         this.state = {
 
             updateCounter: 1,
@@ -189,10 +184,10 @@ class AssignToUserAutomationTC extends Component {
             rowSelect: false,
             isEditing: false,
             delete: false,
-    
+
             tableColumnsTcs: [
-                {id: 1, value: "Show Skip", isChecked: false},
-                {id: 2, value: "Show Not Applicable", isChecked: false},
+                {id: 1, value: "Skip", isChecked: false},
+                {id: 2, value: "NA", isChecked: false},
                 {id: 3, value: "Applicable", isChecked: true},
             ],
 
@@ -208,7 +203,7 @@ class AssignToUserAutomationTC extends Component {
                 {id: 1, value: "TcID", isChecked: false},
                 {id: 2, value: "Scenario", isChecked: false},
                 {id: 3, value: "Description", isChecked: false},
-                {id: 4, value: "CardType", isChecked: false},
+                {id: 4, value: "Platform", isChecked: false},
                 {id: 5, value: "Build", isChecked: false},
                 {id: 6, value: "Status", isChecked: false},
                 {id: 7, value: "Bug", isChecked: false},
@@ -223,9 +218,10 @@ class AssignToUserAutomationTC extends Component {
                 {id: 16, value: "applicable", isChecked: false},
 
               ],
-              
+
             columnDefs: [
                 columnDefDict['TcID'],
+                columnDefDict['CardType'],
                 columnDefDict['TcName'],
                 columnDefDict['WorkingStatus2'],
                 columnDefDict['Scenario'],
@@ -233,7 +229,6 @@ class AssignToUserAutomationTC extends Component {
                 columnDefDict['Steps'],
                 // columnDefDict['WorkingStatus'],
                 columnDefDict['Automation Assignee'],
-               
                 columnDefDict['Status'],
                 columnDefDict['Build'],
                 columnDefDict['Bug'],
@@ -242,7 +237,6 @@ class AssignToUserAutomationTC extends Component {
                 // columnDefDict['Notes'],
 
             ],
-            
             defaultColDef: { resizable: true },
 
             e2eColumnDefs: [{
@@ -252,6 +246,9 @@ class AssignToUserAutomationTC extends Component {
             },
             {
                 headerName: "Result", field: "Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
+            },
+            {
+                headerName: "Tested On", field: "TestedOn", sortable: true, filter: true, cellClass: 'cell-wrap-text',
             },
             {
                 headerName: "Bugs", field: "Bugs", sortable: true, filter: true, cellStyle: this.renderEditedCell, cellClass: 'cell-wrap-text',
@@ -290,7 +287,7 @@ class AssignToUserAutomationTC extends Component {
    //Priority Based Filter functions
     handleAllCheckedTCs = (event) => {
         let tableColumnsTcs = this.state.tableColumnsTcs
-        tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked) 
+        tableColumnsTcs.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({tableColumnsTcs: tableColumnsTcs})
     }
 
@@ -302,17 +299,28 @@ class AssignToUserAutomationTC extends Component {
         })
         this.setState({tableColumnsTcs: tableColumnsTcs})
     }
-   
-    showSelectedTCs = () =>{
+
+    showSelectedTCsOld = () =>{
         this.getTcsToShow(this.props.selectedRelease.ReleaseNumber , true);
         this.setState({ popoverOpen2: !this.state.popoverOpen2 });
     }
 
+    showSelectedTCs = () =>{
+        if (!this.state.platform){
+            this.getTcsToShow(this.props.selectedRelease.ReleaseNumber , true);
+            this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority);
+        }
+        else{
+            this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber,true);
+            this.getTcs(false, this.state.CardType, this.state.platform, null, null, null);
+        }
+        this.setState({ popoverOpen2: !this.state.popoverOpen2 });
+    }
 
     //Status Based Filter functions
     handleAllCheckedStatusTCs = (event) => {
         let statusColumn = this.state.statusColumn
-        statusColumn.forEach(columnName => columnName.isChecked = event.target.checked) 
+        statusColumn.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({statusColumn: statusColumn})
     }
 
@@ -328,7 +336,7 @@ class AssignToUserAutomationTC extends Component {
     //column based filter functions
     handleAllChecked = (event) => {
         let tableColumns = this.state.tableColumns
-        tableColumns.forEach(columnName => columnName.isChecked = event.target.checked) 
+        tableColumns.forEach(columnName => columnName.isChecked = event.target.checked)
         this.setState({tableColumns: tableColumns})
 
     }
@@ -364,14 +372,12 @@ class AssignToUserAutomationTC extends Component {
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-       
         'WorkingStatus2' : {
             headerName: "Automation Working Status", field: "stateUserMapping.Automation WorkingStatus", sortable: true, filter: true, cellStyle: this.renderEditedCell,
             width: '180',
             editable: false,
             cellClass: 'cell-wrap-text',
         },
-
         'Automation Assignee' : {
             headerName: "Automation Assignee", field: "stateUserMapping.Automation Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
             cellClass: 'cell-wrap-text',
@@ -380,7 +386,6 @@ class AssignToUserAutomationTC extends Component {
                 values: this.props.users.map(item => item.name)
             }
         },
-          
           'Description': {
               headerName: "Description", field: "Description", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               width: '520',
@@ -388,18 +393,17 @@ class AssignToUserAutomationTC extends Component {
               cellClass: 'cell-wrap-text',
           },
           'CardType' : {
-              headerName: "CardType", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
-              cellEditor: 'selectionEditor',
+              headerName: "Platform", field: "CardType", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
+              //cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
-              cellEditorParams: {
-                  values: ['BOS', 'NYNJ', 'COMMON'],
-                  multiple: true
-              }
+              editable: false,
+            //   cellEditorParams: {
+            //       values: ['BOS', 'NYNJ', 'COMMON'],
+            //       multiple: true
+            //   }
           },
           'Build' :  {
               headerName: "Build", field: "CurrentStatus.Build", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
@@ -409,7 +413,6 @@ class AssignToUserAutomationTC extends Component {
           },
           'Status' : {
               headerName: "Status", field: "CurrentStatus.Result", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
-        
               cellEditor: 'selectionEditor',
               cellClass: 'cell-wrap-text',
               cellEditorParams: {
@@ -422,11 +425,10 @@ class AssignToUserAutomationTC extends Component {
           },
           'Priority' :  {
               headerName: "Priority", field: "Priority", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100', cellClass: 'cell-wrap-text',
-          }, 
+          },
           'Assignee' : {
               headerName: "Assignee", field: "Assignee", sortable: true, filter: true, cellStyle: this.renderEditedCell, width: '100',
               cellClass: 'cell-wrap-text',
-        
               cellEditor: 'selectionEditor',
               cellEditorParams: {
                   values: this.props.users.map(item => item.name)
@@ -451,13 +453,13 @@ class AssignToUserAutomationTC extends Component {
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-          'Steps' : { 
+          'Steps' : {
               headerName: "Steps", field: "Steps", sortable: true, filter: true, cellStyle: this.renderEditedCell,
               width: '180',
               editable: false,
               cellClass: 'cell-wrap-text',
           },
-          'Notes' : { 
+          'Notes' : {
             headerName: "Notes", field: "Notes", sortable: true, filter: true, cellStyle: this.renderEditedCell,
             width: '180',
             editable: false,
@@ -470,17 +472,26 @@ class AssignToUserAutomationTC extends Component {
             cellClass: 'cell-wrap-text',
         },
         }
-        
+
         let tableColumns = this.state.tableColumns;
         let selectedColumns = []
+        tableColumns.map(columnName => {
+            if (columnName.value == "Platform"){
+                columnName.value = "CardType"
+            }
+        })
         tableColumns.forEach(columnName => {
             if (columnName.isChecked == true){
                 selectedColumns.push(columnDefDict1[columnName.value])
             }
         })
-
         this.setState({columnDefs:selectedColumns});
         this.setState({ popoverOpen1: !this.state.popoverOpen1 });
+        tableColumns.map(columnName => {
+            if (columnName.value == "CardType"){
+                columnName.value = "Platform"
+            }
+        })
     }
 
     getRowHeight = (params) => {
@@ -560,7 +571,6 @@ class AssignToUserAutomationTC extends Component {
             if (this.editedRows[`${params.TcID}_${params.CardType}`][field]) {
                 this.editedRows[`${params.TcID}_${params.CardType}`][field] =
                     { ...this.editedRows[`${params.TcID}_${params.CardType}`][field], oldValue: params[field], newValue: value }
-                   
             } else {
             this.editedRows[`${params.TcID}_${params.CardType}`] =
                 { ...this.editedRows[`${params.TcID}_${params.CardType}`], [field]: { oldValue: params[field], originalValue: params[field], newValue: value } }
@@ -576,9 +586,8 @@ class AssignToUserAutomationTC extends Component {
             // console.log("onCellEditing if else",this.editedRows)
         }
     }
-    
+
     onRowSelected = (params) => {
-       
         if (this.gridApi) {
             if (params.column && params.column.colId !== "TcID") {
                 return false
@@ -593,7 +602,7 @@ class AssignToUserAutomationTC extends Component {
         if (this.pageNumber < 0) {
             this.pageNumber = 0;
         }
-        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, this.state.priority);
+        this.getTcs(true, this.state.CardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.priority);
     }
     onSelectionChanged = (event) => {
         this.setState({ selectedRows: event.api.getSelectedRows().length })
@@ -620,12 +629,12 @@ class AssignToUserAutomationTC extends Component {
         }
     }
     componentDidMount() {
-        setTimeout(() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain), 400);
-        if (this.props.user &&
-            (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
-                this.props.user.role === 'ENGG')) {
-            // this.setState({ tcOpen: true })
-        }
+        // setTimeout(() => this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain), 400);
+        // if (this.props.user &&
+        //     (this.props.user.role === 'ADMIN' || this.props.user.role === 'QA' || this.props.user.role === 'DEV' ||
+        //         this.props.user.role === 'ENGG')) {
+        //     // this.setState({ tcOpen: true })
+        // }
         // axios.get('/api/userinfo/')
         // .then(response=>{
         // })
@@ -639,10 +648,10 @@ class AssignToUserAutomationTC extends Component {
             this.isAnyChanged = false;
             this.isBlockedOrFailed = false;
             this.setState({
-                rowSelect: false, CardType: '', domain: '', subDomain: '', Priority: '',
+                rowSelect: false, CardType: '', platfrom: '', domain: '', subDomain: '', Priority: '',
                 isEditing: false
             })
-            setTimeout(() => this.getTcs(null, null, null, null, null, newProps.selectedRelease.ReleaseNumber), 400);
+            setTimeout(() => this.getTcs(true, null, null, null, null, null, null, newProps.selectedRelease.ReleaseNumber), 400);
         }
     }
 
@@ -654,15 +663,28 @@ class AssignToUserAutomationTC extends Component {
     }
 
     // SELECTION BOX
+    onSelectPlatform(platform) {
+        if (platform === '') {
+            platform = null;
+        } else {
+            //this.getTcByPlatform(platform);
+        }
+        //this.getTcByPlatform(platform);
+
+        // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
+        this.setState({ platform: platform, domain: '', subDomain: ''});
+        this.getTcs(false, this.state.CardType, platform, '', '', this.state.Priority);
+    }
+
     onSelectDomain(domain) {
         if (domain === '') {
             domain = null;
         } else {
-            this.getTcByDomain(domain);
+            //this.getTcByDomain(domain);
         }
         // let data = this.filterData({ Domain: domain, SubDomain: null, CardType: this.state.CardType });
         this.setState({ domain: domain, subDomain: '' });
-        this.getTcs(this.state.CardType, domain, '', this.state.Priority);
+        this.getTcsToShowMod(this.state.platform, domain, '', this.state.Priority, this.props.selectedRelease.ReleaseNumber);
     }
     onSelectSubDomain(subDomain) {
         if (subDomain === '') {
@@ -670,7 +692,8 @@ class AssignToUserAutomationTC extends Component {
         }
         // let data = this.filterData({ Domain: this.state.domain, SubDomain: subDomain, CardType: this.state.CardType })
         this.setState({ subDomain: subDomain });
-        this.getTcs(this.state.CardType, this.state.domain, subDomain, this.state.Priority);
+        //this.getTcs(this.state.CardType, this.state.domain, subDomain, this.state.Priority);
+        this.getTcsToShowMod(this.state.platform, this.state.domain, subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
     }
     onSelectCardType(cardType) {
         if (cardType === '') {
@@ -678,7 +701,8 @@ class AssignToUserAutomationTC extends Component {
         }
         //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ CardType: cardType });
-        this.getTcs(cardType, this.state.domain, this.state.subDomain, this.state.Priority);
+        //this.getTcs(cardType, this.state.domain, this.state.subDomain, this.state.Priority);
+        this.getTcs(cardType, this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
     }
     onSelectPriority(priority) {
         if (priority === '') {
@@ -686,7 +710,8 @@ class AssignToUserAutomationTC extends Component {
         }
         //let data = this.filterData({ Domain: this.state.domain, SubDomain: this.state.subDomain, CardType: cardType });
         this.setState({ Priority: priority });
-        this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, priority);
+        //this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, priority);
+        this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, priority, this.props.selectedRelease.ReleaseNumber);
     }
 
     // // RELEASE
@@ -789,7 +814,7 @@ class AssignToUserAutomationTC extends Component {
         if (!this.props.selectedRelease.ReleaseNumber) {
             return;
         }
-        
+
         this.gridOperations(false);
         axios.get(`/api/tcinfo/${this.props.selectedRelease.ReleaseNumber}/id/${data.TcID}/card/${data.CardType}`)
             .then(res => {
@@ -818,11 +843,12 @@ class AssignToUserAutomationTC extends Component {
                 this.gridOperations(true);
             })
     }
-    getTcs(CardType, domain, subDomain, priority, all, selectedRelease, updateRelease) {
+    getTcs(flag, CardType, platform, domain, subDomain, priority, all, selectedRelease, updateRelease) {
         let release = selectedRelease ? selectedRelease : this.props.selectedRelease.ReleaseNumber;
         if (!release) {
             return;
         }
+        CardType = platform
         this.gridOperations(false);
         let startingIndex = this.pageNumber * this.rows;
         let url = `/api/wholetcinfo/${release}?index=${startingIndex}&count=${this.rows}`;
@@ -830,7 +856,7 @@ class AssignToUserAutomationTC extends Component {
             // url = `/api/wholetcinfo/${release}`;
             url = `/api/wholetcinfo/${release}?`;
         }
-        if (CardType || domain || subDomain || priority) {
+        if (platform || CardType || domain || subDomain || priority) {
             url = `/api/wholetcinfo/${release}?`;
             if (CardType) url += ('&CardType=' + CardType);
             if (domain) url += ('&Domain=' + domain);
@@ -839,6 +865,13 @@ class AssignToUserAutomationTC extends Component {
         }
         url += ('&WorkingStatus=' + 'Automation Assignee')
 
+        let str1 = ''
+        this.state.tableColumnsTcs.forEach(item=>{
+            if(item.isChecked == true){
+                str1 = str1 + item.value + ","
+            }
+        })
+        url += ('&applicable=' + str1);
         let user = ''
         if(this.props.user.name || this.props.user.email){
             user = this.props.user.name
@@ -852,9 +885,14 @@ class AssignToUserAutomationTC extends Component {
             .then(all => {
                 // Filters should not go away if data is reloaded
                 //this.setState({ domain: this.state.domain, subDomain: this.state.domain, CardType: this.state.CardType, data: null, rowSelect: false })
-               
                 this.allTCsToShow = all.data;
-                this.getTcsToShow(release,updateRelease)
+                if(flag || !this.state.platform){
+                    this.getTcsToShow(release,updateRelease)
+                }
+                if (this.state.platform){
+                    this.getTcsToShowMod(this.state.platform, this.state.domain, this.state.subDomain, this.state.Priority, this.props.selectedRelease.ReleaseNumber);
+                    this.getTcs(true, null, null, null, null, null, true);
+                }
 
             }).catch(err => {
                 this.saveLocalMultipleTC({ data: [], id: release }, true, updateRelease);
@@ -862,18 +900,18 @@ class AssignToUserAutomationTC extends Component {
             })
     }
     getAlltcs() {
-        this.setState({ loading: true, domain: '', subDomain: '', CardType: '', Priority: '' })
+        this.setState({ loading: true, platform:'', domain: '', subDomain: '', CardType: '', Priority: '' })
         this.saveLocalMultipleTC({ data: [], id: this.props.selectedRelease.ReleaseNumber }, true);
         this.getTcs(null, null, null, null, true);
     }
 
-    getTcsToShow(release,updateRelease){
+    getTcsToShowOld(release,updateRelease){
 
         let showTc = []
         let skipTcs = []
         let NATcs = []
         let ApplicableTcs = []
-        
+
         for(let i = 0; i < this.allTCsToShow.length; i++){
             if(this.allTCsToShow[i].Priority == 'Skip' ){
                 skipTcs.push(this.allTCsToShow[i])
@@ -891,12 +929,12 @@ class AssignToUserAutomationTC extends Component {
                 skipTcs.forEach(skipTC=>{
                     showTc.push(skipTC)
                 })
-            } 
+            }
             if(item.isChecked == true && item.value == 'Show Not Applicable' ){
                 NATcs.forEach(NATC=>{
                     showTc.push(NATC)
                 })
-            } 
+            }
             if(item.isChecked == true && item.value == 'Applicable' ){
                 ApplicableTcs.forEach(applicableTC=>{
                     showTc.push(applicableTC)
@@ -908,7 +946,7 @@ class AssignToUserAutomationTC extends Component {
         this.state.statusColumn.forEach(item=>{
 
             showTc.forEach(tcItem=>{
-               
+
                 if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
                     statusFlag = 1
                     showTc1.push(tcItem)
@@ -931,9 +969,120 @@ class AssignToUserAutomationTC extends Component {
             })
         })
         if(statusFlag == 0){
-            showTc1 = showTc; 
+            showTc1 = showTc;
         }
 
+        this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
+        this.gridOperations(true);
+    }
+
+    getTcsToShow(release,updateRelease){
+
+        let showTc = []
+        this.ApplicableTcs = []
+        showTc = []
+        showTc = this.allTCsToShow
+        let showTc1 = []
+        let statusFlag = 0
+        this.state.statusColumn.forEach(item=>{
+
+            showTc.forEach(tcItem=>{
+                if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Fail' && tcItem.CurrentStatus.Result == 'Fail'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Block' && tcItem.CurrentStatus.Result == 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Not Tested' && tcItem.CurrentStatus.Result != 'Pass' && tcItem.CurrentStatus.Result != 'Fail' && tcItem.CurrentStatus.Result != 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+            })
+        })
+        if(statusFlag == 0){
+            showTc1 = showTc;
+        }
+        this.ApplicableTcs = showTc1
+        this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
+        this.gridOperations(true);
+    }
+
+    getTcsToShowMod(platform, domain, subdomain, priority, release, updateRelease){
+        //this.gridOperations(false);
+        this.tcHolder = []
+            if(platform) {
+              this.tcHolder = [...this.allTCsToShow]
+            }
+            if(domain){
+                let TcByDomain = []
+                for (let i = 0 ; i < this.tcHolder.length; i++) {
+                    if(this.tcHolder[i].Domain === domain ){
+                        TcByDomain.push(this.tcHolder[i])
+                    }
+                }
+                this.tcHolder = [...TcByDomain]
+            }
+            if(subdomain){
+                let TcBySubdomain = []
+                for (let i = 0 ; i < this.tcHolder.length; i++) {
+                    if(this.tcHolder[i].SubDomain === subdomain ){
+                        TcBySubdomain.push(this.tcHolder[i])
+                    }
+                }
+                this.tcHolder = [...TcBySubdomain]
+            }
+            if(priority){
+                let tem = []
+                for (let i = 0 ; i < this.tcHolder.length; i++) {
+                    if(this.tcHolder[i].Priority === priority ){
+                        tem.push(this.tcHolder[i])
+                    }
+                }
+                this.tcHolder = [...tem]
+            }
+        let showTc = []
+        this.ApplicableTcs = []
+        showTc = []
+        showTc = this.tcHolder
+        let showTc1 = []
+        let statusFlag = 0
+        this.state.statusColumn.forEach(item=>{
+
+            showTc.forEach(tcItem=>{
+                if(item.isChecked == true && item.value == 'Pass' && tcItem.CurrentStatus.Result == 'Pass'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Fail' && tcItem.CurrentStatus.Result == 'Fail'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Block' && tcItem.CurrentStatus.Result == 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+
+                if(item.isChecked == true && item.value == 'Not Tested' && tcItem.CurrentStatus.Result != 'Pass' && tcItem.CurrentStatus.Result != 'Fail' && tcItem.CurrentStatus.Result != 'Blocked'){
+                    statusFlag = 1
+                    showTc1.push(tcItem)
+                }
+            })
+        })
+        if(statusFlag == 0){
+            showTc1 = showTc;
+        }
+        this.ApplicableTcs = showTc1
         this.saveLocalMultipleTC({ data:showTc1, id: release }, false, updateRelease)
         this.gridOperations(true);
     }
@@ -962,14 +1111,13 @@ class AssignToUserAutomationTC extends Component {
     saveAll() {
         let auto_assignee = '-'
         let auto_workingState = 'AUTO_ASSIGNED'
-       
         this.gridOperations(false);
         let items = [];
         let statusItems = [];
         let workingStatusTemp = ''
         let statusFlag = 0
         let selectedRows = this.gridApi.getSelectedRows();
-        
+
         selectedRows.forEach(item => {
             console.log("selected row",item)
 
@@ -988,7 +1136,7 @@ class AssignToUserAutomationTC extends Component {
             };
 
 
-            ['Priority', 'Assignee',  'WorkingStatus'].map(each => {
+            ['Priority', 'Assignee',  'WorkingStatus', 'OS'].map(each => {
                 console.log("field",each,"value",item[each])
                 if (item[each]) {
                     pushable[each] = item[each]
@@ -1002,22 +1150,20 @@ class AssignToUserAutomationTC extends Component {
                         auto_assignee = item[each]
                         pushable["Automation Assignee"] = auto_assignee
                     }
-                   
+
                     if(each == 'WorkingStatus'){
                         if(item[each]!== "APPROVED"){
                             auto_workingState = item[each]
                             pushable["Automation WorkingStatus"] = auto_workingState
                         }
-                       
-
                     }
                 }
             })
-            
-            
+
             if (this.state.multi && this.state.multi.Build ) {
                 statusFlag = 1
                 let status = {};
+                if(!this.state.multi.TestedOn) this.state.multi.TestedOn = "";
                 status.Domain = item.Domain;
                 status.SubDomain = item.SubDomain;
                 status.Steps = item.Steps;
@@ -1043,15 +1189,14 @@ class AssignToUserAutomationTC extends Component {
 
                 statusItems.push(status)
             }
-            
+
             if(statusFlag == 1){
                 pushable["Automation WorkingStatus"] = "AUTO_COMPLETED"
                 pushable["Automation Assignee"] = item.Assignee
             }
-            
+
             items.push(pushable);
         })
-        
         if (items.length === 0 && statusItems.length === 0) {
             return;
         }
@@ -1061,7 +1206,7 @@ class AssignToUserAutomationTC extends Component {
             this.saveMultipleTcInfo(items)
         }
     }
-    
+
     saveMultipleTcStatus(statusItems, items) {
         this.gridOperations(false);
         console.log("before tc status update",statusItems)
@@ -1071,7 +1216,8 @@ class AssignToUserAutomationTC extends Component {
                 if (items.length > 0) {
                     this.saveMultipleTcInfo(items)
                 } else {
-                    this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);
+                    //this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);
+                    this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
                     alert('Tc Status updated Successfully');
                 }
             }, error => {
@@ -1085,7 +1231,8 @@ class AssignToUserAutomationTC extends Component {
         axios.put(`/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
         .then(res => {
             this.gridOperations(true);
-            this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
+            //this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true)
+            this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
             alert('Tc Info Updated Successfully');
         }, error => {
             this.gridOperations(true);
@@ -1116,7 +1263,7 @@ class AssignToUserAutomationTC extends Component {
 
     textFields = [
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'Tag', 'Priority',
-        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus',
+        'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus', 'OS',
         'Manual Assignee','Automation Assignee', 'Manual WorkingStatus','Automation Assignee'
     ];
     whichFieldsUpdated(old, latest) {
@@ -1139,13 +1286,12 @@ class AssignToUserAutomationTC extends Component {
     }
 
     save() {
-        
         let data = {};
         this.textFields.map(item => data[item] = this.props.testcaseEdit[item]);
         let stateUserMapping = this.props.tcDetails.stateUserMapping
         stateUserMapping = stateUserMapping.replace(/'/g,'"');
         stateUserMapping = JSON.parse(stateUserMapping);
-       
+
         data.Activity = {
             Release: this.props.selectedRelease.ReleaseNumber,
             "TcID": this.props.tcDetails.TcID,
@@ -1158,24 +1304,20 @@ class AssignToUserAutomationTC extends Component {
 
         let Automation_Assignee = stateUserMapping["Automation Assignee"];
         let Automation_WorkingStatus = stateUserMapping["Automation WorkingStatus"]
-       
 
         if(this.props.testcaseEdit.TcName != "TC NOT AUTOMATED"){
             Automation_WorkingStatus = "AUTO_COMPLETED";
         }
 
         data.stateUserMapping = {"Automation Assignee":Automation_Assignee,"Automation WorkingStatus":Automation_WorkingStatus}
-       
-       
 
-        // console.log("data before put",data)
         if (this.props.testcaseEdit.CurrentStatus === 'Pass' || this.props.testcaseEdit.CurrentStatus === 'Fail' || this.props.testcaseEdit.CurrentStatus == 'Blocked' || this.props.testcaseEdit.CurrentStatus == 'Unblocked' ||  this.props.testcaseEdit.Bugs) {
             this.saveSingleTCStatus(data);
         } else {
             this.saveSingleTCInfo(data);
         }
     }
-    
+
     saveSingleTCStatus(data) {
         this.gridOperations(false);
         let status = {};
@@ -1189,7 +1331,7 @@ class AssignToUserAutomationTC extends Component {
         status.Result = this.props.testcaseEdit.CurrentStatus;
         status.CardType = this.props.tcDetails.CardType;
         status.TcID = this.props.tcDetails.TcID;
-       
+
         if (this.props.testcaseEdit.CurrentStatus !== 'Fail' && this.props.testcaseEdit.CurrentStatus !== 'Pass' && this.props.testcaseEdit.CurrentStatus !== 'Blocked'  && this.props.testcaseEdit.CurrentStatus !== 'Unblocked') {
             let statusList = this.props.testcaseEdit.StatusList;
             if(statusList && statusList.length>0) {
@@ -1293,13 +1435,20 @@ class AssignToUserAutomationTC extends Component {
         }, 400);
     }
 
-   
     render() {
 
+        let platforms = this.props.selectedRelease && this.props.selectedRelease.PlatformsCli ? this.props.selectedRelease.PlatformsCli : []
+        //let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
+        let domains = this.state.platform && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli && (Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform])).length > 0 ? Object.keys(this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform]) : [];
+        //let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
+        let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.PlatformWiseDomainSubdomainCli[this.state.platform][this.state.domain];
+        let priority = this.state.platform ? ['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'] : []
 
-        let domains = this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions && Object.keys(this.props.selectedRelease.TcAggregate.AvailableDomainOptions);
-        let subdomains = this.state.domain && this.props.selectedRelease.TcAggregate && this.props.selectedRelease.TcAggregate.AvailableDomainOptions[this.state.domain];
-
+        if (platforms) {
+            platforms.sort();
+        } else {
+            platforms = [];
+        }
         if (domains) {
             domains.sort();
         } else {
@@ -1320,7 +1469,7 @@ class AssignToUserAutomationTC extends Component {
             }
         }
 
-        let manualFilter = this.state.domain || this.state.subdomain || this.state.CardType || this.state.Priority || this.state.filterValue
+        let manualFilter = this.state.platform || this.state.domain || this.state.subdomain || this.state.CardType || this.state.Priority || this.state.filterValue
         let pass = 0, fail = 0, notTested = 0, prioritySkip = 0, priorityNA = 0, prioritySkipAndTested = 0, automated = 0, total = 0;
 
         if (manualFilter && this.gridApi) {
@@ -1351,7 +1500,7 @@ class AssignToUserAutomationTC extends Component {
                 }
             })
             total = this.gridApi.getModel().rowsToDisplay.length;
-            
+
         } else {
             if (this.props.selectedRelease && this.props.selectedRelease.TcAggregate) {
                 let tcAggr = this.props.selectedRelease.TcAggregate.all;
@@ -1363,20 +1512,15 @@ class AssignToUserAutomationTC extends Component {
         }
         // console.clear()
         return (
-            
+
             <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => this.setState({ tcOpen: !this.state.tcOpen }, () => { if(this.state.tcOpen){this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain)}})}>
                             <div class="row">
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
-                                        <div onClick={() => {
-                                            if (!this.state.tcOpen) {
-                                                this.getTcs();
-                                            }
-                                            this.setState({ tcOpen: !this.state.tcOpen })
-                                        }} style={{ display: 'inlineBlock' }}>
+                                        <div style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.tcOpen &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -1402,17 +1546,18 @@ class AssignToUserAutomationTC extends Component {
                         </div>
                         <Collapse isOpen={this.state.tcOpen}>
                             <div>
-                                
                                 {/* <div style={{ width: '100%', height: ((window.screen.height * (1 - 0.248)) - 20) + 'px', marginBottom: '6rem' }}> */}
                                 <div style={{ width: '100%', height: '600px', marginBottom: '6rem' }}>
                                     <div class="test-header">
                                         <div class="row">
                                             {
                                                 [
-                                                    { style: { width: '8rem', marginLeft: '1.5rem' }, field: 'domain', onChange: (e) => this.onSelectDomain(e), values: [{ value: '', text: 'Select Domain' }, ...(domains && domains.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '1.0rem' }, field: 'platform', onChange: (e) => this.onSelectPlatform(e), values: [{ value: '', text: 'Select Platform' }, ...(platforms && platforms.map(each => ({ value: each, text: each })))] },
+                                                    { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'domain', onChange: (e) => this.onSelectDomain(e), values: [{ value: '', text: 'Select Domain' }, ...(domains && domains.map(each => ({ value: each, text: each })))] },
                                                     { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'subDomain', onChange: (e) => this.onSelectSubDomain(e), values: [{ value: '', text: 'Select SubDomain' }, ...(subdomains && subdomains.map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'CardType', onChange: (e) => this.onSelectCardType(e), values: [{ value: '', text: 'Select CardType' }, ...(['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(each => ({ value: each, text: each })))] },
-                                                    { style: { width: '7rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] }
+                                                    // { style: { width: '8rem', marginLeft: '0.5rem' }, field: 'CardType', onChange: (e) => this.onSelectCardType(e), values: [{ value: '', text: 'Select CardType' }, ...(['BOS', 'NYNJ', 'COMMON', 'SOFTWARE'].map(each => ({ value: each, text: each })))] },
+                                                    // { style: { width: '7rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] }
+                                                    { style: { width: '7rem', marginLeft: '0.5rem' }, field: 'Priority', onChange: (e) => this.onSelectPriority(e), values: [{ value: '', text: 'Select Priority' }, ...(priority && priority.map(each => ({ value: each, text: each })))] }
                                                 ].map(item => (
                                                     this.props.data &&
                                                     <div style={item.style}>
@@ -1431,8 +1576,8 @@ class AssignToUserAutomationTC extends Component {
                                                 <Button disabled={this.state.isApiUnderProgress} id="getall" onClick={() => this.getAlltcs()} type="button">All</Button>
                                             </div>
                                             <div style={{ width: '2.5rem', marginLeft: '0.5rem' }}>
-                                                <Button id="PopoverAssignAutomationCLI2" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
-                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignAutomationCLI2" id="PopoverAssignAutomationCLI2" toggle={() => this.popoverToggle2()} isOpen={this.state.popoverOpenAutomationCLI2}>
+                                                <Button id="AssignToUserAutoTcCLI2" type="button"><i class="fa fa-filter" aria-hidden="true"></i></Button>
+                                                <UncontrolledPopover trigger="legacy" placement="bottom" target="AssignToUserAutoTcCLI2" id="AssignToUserAutoTcCLI2Button" toggle={() => this.popoverToggle2()} isOpen={this.state.popoverOpenAUtomationCLI2}>
                                                     <PopoverBody>
                                                         <div>
                                                             <input type="checkbox" onClick={this.handleAllCheckedTCs}  value="checkedall" /> Check / Uncheck All
@@ -1454,7 +1599,6 @@ class AssignToUserAutomationTC extends Component {
                                                                 })
                                                                 }
                                                                 </ul>
-                                                                
                                                             <Button onClick={() => this.showSelectedTCs()}>Show Selected TC</Button>
                                                         </div>
                                                     </PopoverBody>
@@ -1474,7 +1618,6 @@ class AssignToUserAutomationTC extends Component {
                                                                 }
                                                                 </ul>
                                                             <Button onClick={() => this.setSelectedColumns()}>Change Column View</Button>
-                                                           
                                                         </div>
                                                     </PopoverBody>
                                                 </UncontrolledPopover>
@@ -1496,7 +1639,6 @@ class AssignToUserAutomationTC extends Component {
 
                                                                         // { labels: 'Assignee', values: [{ value: '', text: 'Select Automation Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
                                                                         { labels: 'WorkingStatus', values: [{ value: '', text: 'Select Automation Working Status' }, ...(wsA.map(each => ({ value: each, text: each })))] },
-                                                                        
                                                                     ].map(each => <FormGroup className='rp-app-table-value'>
                                                                         <Label className='rp-app-table-label' htmlFor={each.labels}>
                                                                             {each.header}
@@ -1521,9 +1663,6 @@ class AssignToUserAutomationTC extends Component {
                                                                         </Input>
                                                                     </FormGroup>)
                                                                 }
-
-                                                                
-                                                               
                                                                 <Row>
                                                                 <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
@@ -1537,7 +1676,6 @@ class AssignToUserAutomationTC extends Component {
                                                                                     })
                                                                                 }
                                                                                 this.setState({ multi: { ...this.state.multi, OS: e.target.value } })
-                                                                                
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="select" id={`select_OS`} >
                                                                             {
@@ -1563,7 +1701,28 @@ class AssignToUserAutomationTC extends Component {
                                                                                 {
                                                                                     ["Applicability","Applicable","NA","Skip"].map(item => <option value={item}>{item}</option>)
                                                                                 }
-                                                                            </Input> 
+                                                                            </Input>
+                                                                        </FormGroup>
+                                                                    </Col>
+                                                                    <Col md="6">
+                                                                        <FormGroup className='rp-app-table-value'>
+                                                                            <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.TestedOn} onChange={(e) => {
+                                                                                this.isAnyChanged = true;
+                                                                                let selectedRows = this.gridApi.getSelectedRows();
+                                                                                if (e.target.value && e.target.value !== '') {
+                                                                                    selectedRows.forEach(item => {
+                                                                                        this.onCellEditing(item, 'CurrentStatus.TestedOn', e.target.value)
+                                                                                        item['CurrentStatus.TestedOn'] = e.target.value;
+                                                                                    })
+                                                                                }
+                                                                                this.setState({ multi: { ...this.state.multi, TestedOn: e.target.value } })
+                                                                                setTimeout(this.gridApi.redrawRows(), 0);
+                                                                            }} type="select" id={`select_TestedOn`} >
+                                                                                {
+                                                                                    //["Tested on","BOS","NYNJ","Software solution"].map(item => <option value={item}>{item}</option>)
+                                                                                    [{ value: '', text: 'Tested On' }, { value: 'BOS', text: 'BOS' }, { value: 'NYNJ', text: 'NYNJ' }, { value: 'Software solution', text: 'Software solution' }].map(item => <option value={item.value}>{item.text}</option>)
+                                                                                }
+                                                                            </Input>
                                                                         </FormGroup>
                                                                     </Col>
                                                                     <Col md="6">
@@ -1609,12 +1768,11 @@ class AssignToUserAutomationTC extends Component {
                                                                                 this.setState({ multi: { ...this.state.multi, Build: e.target.value } })
                                                                                 setTimeout(this.gridApi.redrawRows(), 0);
                                                                             }} type="text" id={`select_Build`} placeholder="Build No" >
-                                                                            </Input> 
+                                                                            </Input>
                                                                         </FormGroup>
                                                                     </Col>
 
                                                                 </Row>
-                                                                
                                                                 {
                                                                     this.isBlockedOrFailed &&
                                                                     <Row>
@@ -1625,7 +1783,6 @@ class AssignToUserAutomationTC extends Component {
                                                                                     </Label> */}
                                                                                     <Input required disabled={this.state.isApiUnderProgress} value={this.state.multi && this.state.multi.Bugs} onChange={(e) => {
                                                                                         this.isAnyChanged = true;
-                                                                                        
                                                                                         let selectedRows = this.gridApi.getSelectedRows();
                                                                                         if (e.target.value && e.target.value !== '') {
                                                                                             selectedRows.forEach(item => {
@@ -1643,7 +1800,6 @@ class AssignToUserAutomationTC extends Component {
                                                                 }
 
                                                                 <div style={{ float: 'right', marginBottom: '0.5rem' }}>
-                                                                     
                                                                     <span>
                                                                         {
                                                                             this.isAnyChanged &&
@@ -1660,7 +1816,6 @@ class AssignToUserAutomationTC extends Component {
                                                                             </Button>
                                                                         }
                                                                     </span>
-                                                                   
                                                                 </div>
                                                             </PopoverBody>
                                                         </UncontrolledPopover>
@@ -1668,7 +1823,6 @@ class AssignToUserAutomationTC extends Component {
 
                                                 </div>
                                             }
-                                             
                                             <div style={{ width: '5rem', marginLeft: '0.5rem' }}>
                                                 <Button disabled={this.state.isApiUnderProgress} title="Only selected TCS will be downloaded" size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.gridApi) {
@@ -1687,7 +1841,7 @@ class AssignToUserAutomationTC extends Component {
                                     </div>
                                     <div style={{ width: "100%", height: "100%" }}>
                                         <div
-                                            id="myAllGrid"
+                                            id="AssignToUserAutoTCGrid"
                                             style={{
                                                 height: "100%",
                                                 width: "100%",
@@ -1830,7 +1984,7 @@ class AssignToUserAutomationTC extends Component {
                                                     <div style={{ width: '100%', height: '300px', marginBottom: '3rem' }}>
                                                         <div style={{ width: "100%", height: "100%" }}>
                                                             <div
-                                                                id="e2eGrid"
+                                                                id="e2eGridAutoCli"
                                                                 style={{
                                                                     height: "100%",
                                                                     width: "100%",
@@ -1859,7 +2013,7 @@ class AssignToUserAutomationTC extends Component {
                                                     <div style={{ width: '100%', height: '250px', marginBottom: '3rem' }}>
                                                         <div style={{ width: "100%", height: "100%" }}>
                                                             <div
-                                                                id="activityGrid"
+                                                                id="activityGridAutoCli"
                                                                 style={{
                                                                     height: "100%",
                                                                     width: "100%",
