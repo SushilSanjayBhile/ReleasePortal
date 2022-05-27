@@ -134,7 +134,7 @@ export const steps = {
             DevAssignee: null,
             InitialWorkingStatus: request && request.InitialWorkingStatus ? request.InitialWorkingStatus : 'FROM_MASTER'
         }
-    }, //2.5 
+    }, //2.5
     // 'onAdminPendingForRegression': (request) => {
     //     return {
     //         step: 'onAdminPendingForRegression',
@@ -442,9 +442,9 @@ export const AdminWorkingStatuses = [
     'DELETED',
 ]
 export const tcFields = {
-    'Assignee': 'Assignee','DevAssignee': 'DevAssignee','AutoAssignee':'AutoAssignee', 
-    'WorkingStatus':'WorkingStatus','Priority': 'Priority', 
-    'NewTcID':'NewTcID', 'Scenario':'Scenario', 
+    'Assignee': 'Assignee','DevAssignee': 'DevAssignee','AutoAssignee':'AutoAssignee',
+    'WorkingStatus':'WorkingStatus','Priority': 'Priority',
+    'NewTcID':'NewTcID', 'Scenario':'Scenario',
     'Description':'Description', 'Notes':'Notes', 'ExpectedBehaviour':'ExpectedBehaviour',
     'Steps':'Steps', 'Tag':'Tag', 'TcName':'TcName'
 }
@@ -496,7 +496,6 @@ export const tcTypes = {
                     }
                     break;
                 case workingStatuses.UNAPPROVED.title:
-                    
                     break;
             }
         }
@@ -574,4 +573,26 @@ devProj = devProj + projectsList[projectsList.length - 1]
 autoValProj = devProj + '\, ' + '\"Automation and Validation\"'
 export const projects = encodeURIComponent(devProj)
 export const projectQA = encodeURIComponent(autoValProj)
-export const projectToManagerMap = {"Rahul Soman": ["UA", "DWS"], "David Taylor": ["GW", "SPEK"], "Vivek Gupta": ["UE", "OPS"]}
+export const projectToManagerMap = {"Rahul Soman": ["UA", "DWS", "UE"], "David Taylor": ["GW", "SPEK"], "Vivek Gupta": ["OPS"]};
+
+//function to find out number of business days between two days.
+const MS_PER_DAY = 86400000;
+export const getBusinessDaysCount = (startDate, endDate) => {
+    let sday = startDate.getDay()
+    let eday = endDate.getDay()
+    let days = Math.ceil(endDate - startDate) / MS_PER_DAY
+
+    let weeks = Math.floor(days / 7) //calulating the weeks in day difference.
+    days = days - (weeks * 2) //remove saturday and sunday from each week.
+    //handling of special cases
+    if(sday - eday > 1){
+        days = days - 2
+    }
+    if(sday == 0 && eday != 6){
+        days = days - 1
+    }
+    if(eday == 6 && sday != 0){
+        days = days -1
+    }
+    return days
+}

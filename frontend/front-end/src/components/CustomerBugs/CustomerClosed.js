@@ -19,7 +19,7 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
 import { element } from 'prop-types';
 import { CSVLink } from 'react-csv';
-import {projectToManagerMap, projectsList, devManagers} from "../../constants";
+import {projectToManagerMap, projectsList, devManagers, getBusinessDaysCount} from "../../constants";
 class CustomerClosed extends Component {
     startAt = 0;
     isApiUnderProgress = false;
@@ -1088,10 +1088,11 @@ class CustomerClosed extends Component {
                 devDict[temp.Developer] = ''
             }
             if(this.allTCsToShow[i]["fields"]["updated"]){
-                 let diff = new Date(this.allTCsToShow[i]["fields"]["updated"]).getTime() - new Date(this.allTCsToShow[i]["fields"]["created"]).getTime()
-                let res = Math.round(diff / MS_PER_DAY)
-                temp.DaysToClose = res
-                if(temp.DaysToClose == 0){
+                // let diff = new Date(this.allTCsToShow[i]["fields"]["updated"]).getTime() - new Date(this.allTCsToShow[i]["fields"]["created"]).getTime()
+                // let res = Math.round(diff / MS_PER_DAY)
+                // temp.DaysToClose = res
+                temp.DaysToClose = Math.round(getBusinessDaysCount(new Date(this.allTCsToShow[i]["fields"]["updated"]).getTime(), new Date(this.allTCsToShow[i]["fields"]["created"]).getTime()))
+                if(temp.DaysToClose <= 0){
                     temp.DaysToClose = 1
                 }
             }
