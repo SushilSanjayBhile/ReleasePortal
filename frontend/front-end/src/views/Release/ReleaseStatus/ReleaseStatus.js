@@ -138,13 +138,13 @@ class ReleaseStatus extends Component {
         let list2 = []
         let url  = `/api/bugwiseblockedtcs/` + release
         axios.get(url).then(res=>{
-                    // console.log("response of blocked data",res.data)
                     list.push(res.data);
                     for (let [key, value] of Object.entries(list[0])) {
                         list2.push({'bug_no':key,'value':value})
                     }
                     let a = this.sortBugList(list2)
-                    this.setState({blockedBugList:list2})
+                    //this.setState({blockedBugList:list2})
+                    this.state.blockedBugList = list2
                     let list3 = []
                     let list4 = []
                     if(this.state.totalBugList.issues){
@@ -166,12 +166,30 @@ class ReleaseStatus extends Component {
                             list4.push(list3[i])
                         }
                     }
-                    this.setState({blockedBugList:list4})
+                    //this.setState({blockedBugList:list4})
+                    this.state.blockedBugList = list4
                     }
+                    this.state.blockedBugList.forEach((item, idx) => {
+                        let promises = []
+                        promises.push(axios.get(`/rest/getBugDetails`,{
+                            params: {
+                                key: item.bug_no,
+                            }
+                        }).then(all => {
+                            if(all.data.issues.length > 0){
+                                this.state.blockedBugList[idx]["summary"] = all.data.issues[0]["fields"]["summary"]
+                                this.state.blockedBugList[idx]["status"] = all.data.issues[0]["fields"]["status"]["name"]
+                            }
+                        }).catch(err => {
+                        }))
+                        Promise.all(promises).then(result => {
+                            this.setState({blockedBugList : this.state.blockedBugList})
+                        })
+                    })
                 },
                 error => {
                 console.log('bugwiseblockedtcs',error);
-        })
+            })
     }
     getFeatureDetails(dws) {
         axios.post('/rest/featuredetail', { data: dws }).then(res => {
@@ -204,7 +222,7 @@ class ReleaseStatus extends Component {
             this.state.blockedBugList.map((e, i) => {
             return (
                         <tr key={i}>
-                            <td width="100px" height="50px" >{e.bug_no}</td>
+                            <td width="100px" height="50px" ><a href={"https://diamanti.atlassian.net/browse/" + e.bug_no} target='_blank'>{e.bug_no}</a></td>
                             <td width="100px" height="50px" >{e.summary}</td>
                             <td width="100px" height="50px" >{e.status}</td>
                             <td width="100px" height="50px" >{e.value}</td>

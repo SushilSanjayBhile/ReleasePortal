@@ -575,7 +575,7 @@ export const projects = encodeURIComponent(devProj)
 export const projectQA = encodeURIComponent(autoValProj)
 export const projectToManagerMap = {"Rahul Soman": ["UA", "DWS", "UE"], "David Taylor": ["GW", "SPEK"], "Vivek Gupta": ["OPS"]};
 
-//function to find out number of business days between two days.
+//function to find out number of business days between two dates.
 const MS_PER_DAY = 86400000;
 export const getBusinessDaysCount = (startDate, endDate) => {
     let sday = startDate.getDay()

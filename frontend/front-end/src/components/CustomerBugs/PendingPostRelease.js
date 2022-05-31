@@ -805,11 +805,9 @@ class PendingPostRelease extends Component {
                 let duedate = new Date(this.allTCsToShow[i]["fields"]["duedate"])
                 let today = new Date()
                 if(today.getTime() > duedate.getTime()){
-                    // let diff = today.getTime() - duedate.getTime()
-                    // let res = Math.round(diff / MS_PER_DAY)
-                    // temp.DaysPassedDueDate = res
-                    let res = getBusinessDaysCount(duedate, today)
-                    temp.DaysPassedDueDate = Math.round(res)
+                    let diff = today.getTime() - duedate.getTime()
+                    temp.DaysPassedDueDate = Math.round(diff / MS_PER_DAY)
+                    //temp.DaysPassedDueDate = Math.round(getBusinessDaysCount(duedate, today))
                     if(temp.DaysPassedDueDate <= 0){
                         temp.DaysPassedDueDate = 1
                     }
@@ -820,11 +818,9 @@ class PendingPostRelease extends Component {
             else{
                 let cdate = new Date(this.allTCsToShow[i]["fields"]["created"])
                 let today = new Date()
-                // let diff = today.getTime() - cdate.getTime()
-                // let res = Math.round(diff / MS_PER_DAY)
-                // temp.DaysWithoutDueDate = res
-                let res = getBusinessDaysCount(cdate, today)
-                temp.DaysWithoutDueDate =  Math.round(res)
+                let diff = today.getTime() - cdate.getTime()
+                temp.DaysWithoutDueDate = Math.round(diff / MS_PER_DAY)
+                //temp.DaysWithoutDueDate = Math.round(getBusinessDaysCount(cdate, today))
                 if(temp.DaysWithoutDueDate <= 0){
                     temp.DaysWithoutDueDate = 1
                 }
@@ -853,11 +849,9 @@ class PendingPostRelease extends Component {
             if(temp.OpenDays == 0) {
                 let date1 = new Date()
                 let date2 = new Date(this.allTCsToShow[i]["fields"]["created"])
-                // let diff = date1.getTime() - new Date(date2).getTime()
-                // let res = Math.round(diff / MS_PER_DAY)
-                // temp.OpenDays = res
-                let res = getBusinessDaysCount(date2, date1)
-                temp.OpenDays = Math.round(res)
+                let diff = date1.getTime() - date2.getTime()
+                temp.OpenDays = Math.round(diff / MS_PER_DAY)
+                //temp.OpenDays = Math.round(getBusinessDaysCount(date2, date1))
                 if(temp.OpenDays <= 0){
                     temp.OpenDays = 1
                 }

@@ -36,11 +36,11 @@ export default {
       url: '/release/sanityresults',
       icon: 'fa fa-table',
     },
-    {
-      name: 'Documents',
-      url: '/release/docs',
-      icon: 'fa fa-file'
-    },
+    // {
+    //   name: 'Documents',
+    //   url: '/release/docs',
+    //   icon: 'fa fa-file'
+    // },
     {
       name: 'Builds Information',
       url: '/release/builds',
@@ -94,15 +94,11 @@ export default {
     //   icon: 'fa fa-table',
     // },
 
-    {
-      name: 'Jira Dashboard',
-      url: 'https://diamanti.atlassian.net/secure/Dashboard.jspa?selectPageId=12400',
-      attributes: { target: '_blank' },
-      icon: 'fa fa-bug',
-    },
-
-    
-   
-    
+    // {
+    //   name: 'Jira Dashboard',
+    //   url: 'https://diamanti.atlassian.net/secure/Dashboard.jspa?selectPageId=12400',
+    //   attributes: { target: '_blank' },
+    //   icon: 'fa fa-bug',
+    // },
   ],
 };

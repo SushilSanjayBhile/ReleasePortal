@@ -1088,10 +1088,9 @@ class CustomerClosed extends Component {
                 devDict[temp.Developer] = ''
             }
             if(this.allTCsToShow[i]["fields"]["updated"]){
-                // let diff = new Date(this.allTCsToShow[i]["fields"]["updated"]).getTime() - new Date(this.allTCsToShow[i]["fields"]["created"]).getTime()
-                // let res = Math.round(diff / MS_PER_DAY)
-                // temp.DaysToClose = res
-                temp.DaysToClose = Math.round(getBusinessDaysCount(new Date(this.allTCsToShow[i]["fields"]["updated"]).getTime(), new Date(this.allTCsToShow[i]["fields"]["created"]).getTime()))
+                let diff = new Date(this.allTCsToShow[i]["fields"]["updated"]).getTime() - new Date(this.allTCsToShow[i]["fields"]["created"]).getTime()
+                temp.DaysToClose = Math.round(diff / MS_PER_DAY)
+                //temp.DaysToClose = Math.round(getBusinessDaysCount(new Date(this.allTCsToShow[i]["fields"]["updated"]).getTime(), new Date(this.allTCsToShow[i]["fields"]["created"]).getTime()))
                 if(temp.DaysToClose <= 0){
                     temp.DaysToClose = 1
                 }

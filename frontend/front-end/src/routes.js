@@ -43,7 +43,7 @@ const ReleaseQAStrategy = React.lazy(() => import('./views/Release/ReleaseQAStra
 const ReleaseTestMetrics = React.lazy(() => import('./views/Release/ReleaseTestMetrics/ReleaseTestMetrics'));
 const ReleaseStatus = React.lazy(() => import('./views/Release/ReleaseStatus/ReleaseStatus'));
 const ReleaseAdmin = React.lazy(() => import('./views/Release/ReleaseAdmin/ReleaseAdmin'));
-const ReleaseDocs = React.lazy(() => import('./views/Release/ReleaseDocs/ReleaseDocs'));
+//const ReleaseDocs = React.lazy(() => import('./views/Release/ReleaseDocs/ReleaseDocs'));
 const ReleaseBuilds = React.lazy(() => import('./views/Release/ReleaseBuilds/ReleaseBuilds'));
 const Settings = React.lazy(() => import('./views/Release/Settings/createUser'));
 const ReleaseTestMetricsGUI = React.lazy(() => import('./views/Release/ReleaseTestMetricsGUI/ReleaseTestMetricsGUI'))
@@ -70,7 +70,7 @@ const routes = [
   { path: '/release/guitestmetrics', name: 'QA Strategy', exact: true, component: ReleaseTestMetricsGUI },
   { path: '/release/status', name: 'Release Status', exact: true, component: ReleaseStatus },
   { path: '/release/user', name: 'Admin Panel', exact: true, component: ReleaseAdmin },
-  { path: '/release/docs', name: 'Documentation Panel', exact: true, component: ReleaseDocs },
+  //{ path: '/release/docs', name: 'Documentation Panel', exact: true, component: ReleaseDocs },
   { path: '/release/builds', name: 'Release Build', exact: true, component: ReleaseBuilds },
   { path: '/release/settings', name: 'settings', exact: true, component: Settings },
   { path: '/release/sanityresults', name: 'sanityresults', exact: true, component: ReleaseSanityResult },

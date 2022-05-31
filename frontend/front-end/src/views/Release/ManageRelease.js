@@ -884,7 +884,7 @@ class ManageRelease extends Component {
         axios.get(url)
         .then(response=>{
             if(response.data){
-                response.data.forEach((item)=>{
+                response.data.sort().forEach((item)=>{
                     this.platformList.push({value: item, isChecked: false})
                 })
             }
@@ -905,7 +905,7 @@ class ManageRelease extends Component {
         axios.get(url)
         .then(response=>{
             if(response.data){
-                response.data.forEach((item)=>{
+                response.data.sort().forEach((item)=>{
                     this.platformListGui.push({value: item, isChecked: false})
                 })
             }

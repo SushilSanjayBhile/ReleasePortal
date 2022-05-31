@@ -329,6 +329,7 @@ class QaAnalysis extends Component {
                         <td width="140px" height="50px">{e.Close}</td>
                         <td width="140px" height="50px">{e.CustomerBug}</td>
                         <td width="140px" height="50px">{e.Open}</td>
+                        <td width="140px" height="50px">{e.Invalid}</td>
                     </tr>
                 );
             })
@@ -408,7 +409,7 @@ class QaAnalysis extends Component {
     }
 
     getdata(){
-        let output = []
+        let output = {}
         let titleMap = {}
         axios.get(`/rest/jira/bugdata`)
         .then(res => {
@@ -435,6 +436,15 @@ class QaAnalysis extends Component {
                             break;
                         case "To Do":
                             titleMap["To Do"] = idx + 1
+                            break;
+                        case "Unreproducible":
+                            titleMap["Unreproducible"] = idx + 1
+                            break;
+                        case "Wont Fix":
+                            titleMap["Wont Fix"] = idx + 1
+                            break;
+                        case "NOT A BUG":
+                            titleMap["NOT A BUG"] = idx + 1
                             break;
                         default:
                       }
@@ -466,16 +476,31 @@ class QaAnalysis extends Component {
                             let inqaurl = element[key][titleMap["IN QA"]]["markup"]
                             let inqaBugCount = parseInt(inqaurl.split(">")[1].split("<")[0],10)
 
-                            let totalurl = element[key][titleMap["Total"]]["markup"]
-                            let totalBugCount = parseInt(totalurl.split(">")[1].split("<")[0],10)
+                            let unReproUrl = element[key][titleMap["Unreproducible"]]["markup"]
+                            let unReproBugCount = parseInt(unReproUrl.split(">")[1].split("<")[0],10)
 
-                            output.push({
-                                    "Release": element[key][0]["markup"],
-                                    "Open": openBugCount + todoBugCount + inpgBugCount,
-                                    "Close": closeBugCount + resBugCount + inqaBugCount,
-                                    "Total": totalBugCount,
-                                    "CustomerBug": 0
-                                    })
+                            let wontFixUrl = element[key][titleMap["Wont Fix"]]["markup"]
+                            let wontFixBugCount = parseInt(wontFixUrl.split(">")[1].split("<")[0],10)
+
+                            let notBugUrl = element[key][titleMap["NOT A BUG"]]["markup"]
+                            let notBugCount = parseInt(notBugUrl.split(">")[1].split("<")[0],10)
+
+                            let release = element[key][0]["markup"]
+                            if(output[release]){
+                                output[release]["Open"] = output[release]["Open"] + openBugCount + todoBugCount + inpgBugCount
+                                output[release]["Close"] = output[release]["Close"] + closeBugCount + resBugCount + inqaBugCount
+                                output[release]["Total"] = output[release]["Total"] + resBugCount + openBugCount + todoBugCount + inpgBugCount + unReproBugCount + wontFixBugCount + notBugCount
+                                output[release]["Invalid"] = output[release]["Invalid"] + unReproBugCount + wontFixBugCount + notBugCount
+                            }
+                            else{
+                                output[element[key][0]["markup"]] = {
+                                "Release": release,
+                                "Open": openBugCount + todoBugCount + inpgBugCount,
+                                "Close": closeBugCount + resBugCount + inqaBugCount,
+                                "Total": resBugCount + openBugCount + todoBugCount + inpgBugCount + unReproBugCount + wontFixBugCount + notBugCount,
+                                "Invalid": unReproBugCount + wontFixBugCount + notBugCount,
+                                }
+                            }
 
                         }
                 }
@@ -483,7 +508,7 @@ class QaAnalysis extends Component {
                 axios.get(`/rest/cbug`)
                 .then(res => {
                     let data = res.data.searchResultTotal.rows
-                    let out = []
+                    let out = {}
                     data.forEach(element => {
                         let keyofelement = Object.keys(element)
                         if(keyofelement.length > 0){
@@ -493,21 +518,26 @@ class QaAnalysis extends Component {
                                 if(filter.length != 1 && filter[0] !== "2" && filter[0] !== "1" && filter[0] !== "0"){
                                     let totalurl = element[key][total]["markup"]
                                     let totalBugCount = parseInt(totalurl.split(">")[1].split("<")[0],10)
-                                    out.push({
-                                            "Release": element[key][0]["markup"],
-                                            "CustomerBug": totalBugCount,
-                                            })
+
+                                    if(out[element[key][0]["markup"]]){
+                                        out[element[key][0]["markup"]]= out[element[key][0]["markup"]]+ totalBugCount
+                                    }
+                                    else{
+                                        out[element[key][0]["markup"]] = totalBugCount
+                                        }
                                 }
                         }
                     })
-                    out.forEach(element => {
-                        output.some(item => {
-                            if(item["Release"] === element["Release"]){
-                                item["CustomerBug"] = element["CustomerBug"]
-                            }
-                        })
+                    Object.keys(out).forEach(key => {
+                        if(output[key]){
+                            output[key]["CustomerBug"] = out[key]
+                        }
                     })
-                    this.setState({jiraBugData : output})
+                    let temp = []
+                    Object.keys(output).forEach(key => {
+                        temp.push(output[key])
+                    })
+                    this.setState({jiraBugData : temp})
                 }).catch(error=>{
                     console.log("Error",error)
                     })
@@ -669,6 +699,8 @@ class QaAnalysis extends Component {
                                                 <th width="140px" height="50px" ><b>Resolved</b></th>
                                                 <th width="140px" height="50px" ><b>Customer Bugs</b></th>
                                                 <th width="140px" height="50px" ><b>Still Open</b></th>
+                                                <th width="140px" height="50px" ><b>Invalid Bugs</b></th>
+
                                                     {
                                                         this.state.jiraBugData ? this.renderTableDataForJiraBugData() :null
                                                     }
