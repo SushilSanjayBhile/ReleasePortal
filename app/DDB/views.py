@@ -649,7 +649,9 @@ def get_gui_priorityDict(guiTcInfo,guiStatus):
         except:
             #pass
             priority = gsd[id]["Priority"]
-            myDict['Priority'][priority]['NotTested'] +=1
+            applicable = gsd[id]["applicable"]
+            if applicable != "Skip" and applicable != "NA":
+                myDict['Priority'][priority]['NotTested'] +=1
 
     return myDict["Priority"]
 
@@ -2323,7 +2325,7 @@ def USER_LOGIN_VIEW(request):
         return JsonResponse({'role': data['role']}, status = 200)
 
 @csrf_exempt
-def IMPORT_TCs(request):
+def IMPORT_TCs_old(request):
     if request.method == "GET":
         interface = request.GET.get("interface")
         froRelease = request.GET.get("froRelease")
@@ -2352,4 +2354,38 @@ def IMPORT_TCs(request):
             return HttpResponse("UNCOMMENT CODE")
         elif interface == "GUI":
             duplicate_guitc_ddmtodd330(platform, dom, toRelease, froRelease)
+            return HttpResponse("UNCOMMENT CODE")
+
+@csrf_exempt
+def IMPORT_TCs(request):
+    if request.method == "GET":
+        interface = request.GET.get("interface")
+        froRelease = request.GET.get("froRelease")
+        toRelease = request.GET.get("toRelease")
+        platform = request.GET.get("platform")
+        domain = request.GET.get("domain")
+        subDomains = request.GET.get("subd")
+        subDomains = json.loads(subDomains)
+        subDomains = subDomains["subd"]
+        print(subDomains)
+        #check if domains subdomains are in toRelease if not adding it
+        if domain != "":
+            domainGet = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(toRelease).filter(Domain = domain)
+            if len(domainGet) < 1:
+                addDomain(domain, toRelease)
+                for subd in subDomains:
+                    addSubDomain(domain, subd, toRelease)
+            else:
+                subdomainGet = DEFAULT_DOMAIN_SUBDOMAIN.objects.using(toRelease).get(Domain = domain)
+                ser = DOMAIN_SUBDOMAIN_SERIALIZER(subdomainGet)
+                for subd in subDomains:
+                    if subd not in ser.data['SubDomain']:
+                        addSubDomain(domain, subd, toRelease)
+
+        #Adding given platform and domain tcs to intended release
+        if interface == "CLI":
+            duplicate_clitc_ddmtodd330(platform, domain, subDomains, toRelease, froRelease)
+            return HttpResponse("UNCOMMENT CODE")
+        elif interface == "GUI":
+            duplicate_guitc_ddmtodd330(platform, domain, subDomains, toRelease, froRelease)
             return HttpResponse("UNCOMMENT CODE")

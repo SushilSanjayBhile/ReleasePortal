@@ -172,7 +172,7 @@ def duplicate_tcs_by_rel_gui(request):
     tcdata = TC_INFO_GUI.objects.using(release).values().all()
     print("after length", len(tcdata))
 
-def duplicate_clitc_ddmtodd330(platform, domain, toRelease, froRelease):
+def duplicate_clitc_ddmtodd330_old(platform, domain, toRelease, froRelease):
     tcdata = TC_INFO.objects.using(froRelease).values().filter(CardType = platform)
     todata = TC_INFO.objects.using(toRelease).values().all()
     print("before length torelease", len(todata))
@@ -203,6 +203,35 @@ def duplicate_clitc_ddmtodd330(platform, domain, toRelease, froRelease):
 
     todata = TC_INFO.objects.using(toRelease).values().all()
     print("after length torelease", len(todata))
+
+def duplicate_clitc_ddmtodd330(platform, domain, subDomains, toRelease, froRelease):
+    tcdata = TC_INFO.objects.using(froRelease).values().filter(CardType = platform)
+    if domain != "":
+        tcdata = tcdata.filter(Domain = domain)
+        for i in tcdata:
+            if i["SubDomain"] in subDomains:
+                ser = TC_INFO_SERIALIZER(i).data
+                try:
+                    _ = TC_INFO.objects.using(toRelease).get(TcID = ser["TcID"], CardType = ser["CardType"])
+                except:
+                    fd = TcInfoForm(ser)
+                    if fd.is_valid():
+                        data = fd.save(commit = False)
+                        data.save(using = toRelease)
+                    else:
+                        print("INVALID", fd.errors)
+    else:
+        for i in tcdata:
+            ser = TC_INFO_SERIALIZER(i).data
+            try:
+                _ = TC_INFO.objects.using(toRelease).get(TcID = ser["TcID"], CardType = ser["CardType"])
+            except:
+                fd = TcInfoForm(ser)
+                if fd.is_valid():
+                    data = fd.save(commit = False)
+                    data.save(using = toRelease)
+                else:
+                    print("INVALID", fd.errors)
 
 def duplicate_tcs(request):
     #return HttpResponse("UNCOMMENT CODE")

@@ -917,7 +917,6 @@ app.use('/rest/tasksByQA', (req, res) => {
 
 app.use('/rest/getBugDetails', (req, res) => {
     var totalBugsStr = `?jql=key%20%3D%20${req.query.key}`
-    console.log("totalBugsStr", totalBugsStr)
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {
             loginJIRA().then(function () {

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {
-    Row, Col, Button, Collapse, Form, FormGroup, Label, Input, FormText 
+    Row, Col, Button, Collapse, Form, FormGroup, Label, Input, FormText
 } from 'reactstrap';
 import axios from 'axios';
 import { connect } from 'react-redux';
@@ -12,7 +12,6 @@ import  CheckBox  from '../../../components/TestCasesAll/CheckBox';
 
 let form = {}
 class ImportTCs extends Component {
-    
     constructor(){
         super();
         this.state = {
@@ -23,10 +22,10 @@ class ImportTCs extends Component {
             allReleases1: [],
             platform: '',
             platforms: {},
+            domain: '',
             disable: true,
             importTc:[]
         }
-       
     }
 
     componentDidMount() {
@@ -39,7 +38,6 @@ class ImportTCs extends Component {
               });
               this.setState({allReleases1:rel})
             }, error => {
-              
             });
       }
 
@@ -50,35 +48,36 @@ class ImportTCs extends Component {
             .then(res => {
               this.setState({platforms:res.data, platform:'', importTc:[]})
             }, error => {
-              
             });
         }
     }
 
     handleSubmit = (e) => {
-        if(this.state.release === this.state.froRelease) { 
+        if(this.state.release === this.state.froRelease) {
             this.setState({disable:true})
             alert("Both the releases can not be same")
         }
         else {
             this.setState({disable:true})
-            let d = {}
-            if(this.state.importTc.length > 0) {
-                this.state.importTc.forEach(domain => {
-                    d[domain] = this.state.platforms[this.state.platform][domain]
-                })
+            let subd = []
+            console.log("this.state.importTc",this.state.importTc)
+            if(this.state.importTc.length == 0) {
+                if(this.state.platform && this.state.domain){
+                    subd = this.state.platforms[this.state.platform][this.state.domain]
+                }
             }
             else {
-                d = this.state.platforms[this.state.platform]
+                subd = this.state.importTc
             }
             axios.get(`/api/importTCs/`,{
                 params: {
                 interface:"CLI",
-                froRelease:this.state.froRelease,
-                toRelease:this.state.release,
-                platform:this.state.platform,
-                domains:d
-                }    
+                froRelease: this.state.froRelease,
+                toRelease: this.state.release,
+                platform: this.state.platform,
+                domain: this.state.domain,
+                subd: { subd },
+                }
             })
                 .then(response=>{
                     alert("TCs imported successfully")
@@ -88,36 +87,35 @@ class ImportTCs extends Component {
             })
         }
     }
-    
+
     reset = () =>{
-        this.setState({release:'', platform: '', froRelease: '  '})
+        this.setState({release:'', platform: '', domain: '', froRelease: '  '})
     }
 
     selectMultiselect(event, checked) {
         let value = event.val();
-        let domains = null;
+        let temp = null;
         if (checked && this.state.importTc) {
-            domains = [...this.state.importTc, value];
+            temp = [...this.state.importTc, value];
         }
         if (checked && !this.state.importTc) {
-            domains = [value];
+            temp = [value];
         }
         if (!checked && this.state.importTc) {
             let array = this.state.importTc;
             array.splice(array.indexOf(value), 1);
-            domains = array;
+            temp = array;
         }
-        this.setState({ importTc: domains });
-    } 
+        this.setState({ importTc: temp });
+    }
 
     render() {
-       
-        let Domains = []
+        let Domains = [], SubDomains = [];
         Domains = this.state.platform && Object.keys(this.state.platforms).length > 0 ? Object.keys(this.state.platforms[this.state.platform]) : []
-        //SubDomains = this.state.platform && this.state.platforms && Domains.length > 0 ? this.state.platforms[this.state.platform][Domains] : []
-        let d = Domains.length > 0 ? Domains.map(item => ({ value: item, selected: this.state.importTc && this.state.importTc.includes(item) })) : [];
-        //let sd = SubDomains.length > 0 ? SubDomains.map(item => ({ value: item, selected: this.state.addSubDomains && this.state.addSubDomains.includes(item) })) : [];
-        let multiselect = { 'Domains': d};
+        SubDomains = this.state.platform && Object.keys(this.state.platforms).length > 0 && this.state.domain ? this.state.platforms[this.state.platform][this.state.domain] : []
+        //let d = Domains.length > 0 ? Domains.map(item => ({ value: item, selected: this.state.importTc && this.state.importTc.includes(item) })) : [];
+        let sd = SubDomains.length > 0 ? SubDomains.map(item => ({ value: item, selected: this.state.importTc && this.state.importTc.includes(item) })) : [];
+        let multiselect = { 'SubDomains': sd};
         return(
             <div>
             {
@@ -152,9 +150,6 @@ class ImportTCs extends Component {
 
                                     <Col xs="6" md="3" lg="3">
                                         <FormGroup className='rp-app-table-value'>
-                                                {/* <Label className='rp-app-table-label' htmlFor="UserRole">
-                                                    User Role
-                                                </Label> */}
                                                 <Row xs="6" md="3" lg="3">
                                                     {
                                                             <Input style={{ borderColor: this.state.errors['release'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="release" name="release" value={this.state.release}
@@ -168,13 +163,10 @@ class ImportTCs extends Component {
                                                 </Row>
                                         </FormGroup>
                                         <FormGroup className='rp-app-table-value'>
-                                                {/* <Label className='rp-app-table-label' htmlFor="UserRole">
-                                                    User Role
-                                                </Label> */}
                                                 <Row xs="6" md="3" lg="3">
                                                     {
                                                             <Input style={{ borderColor: this.state.errors['frorelease'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="frorelease" name="frorelease" value={this.state.froRelease}
-                                                                onChange={(e) => this.setState({ froRelease: e.target.value ,platforms:{}, errors: { ...this.state.errors, froRelease: null }},() => this.getPlatform())} >
+                                                                onChange={(e) => this.setState({ froRelease: e.target.value ,platforms:{}, domain: '', errors: { ...this.state.errors, froRelease: null }},() => this.getPlatform())} >
                                                                 <option value=''>Select from Release</option>
                                                                 {
                                                                     this.state.allReleases1.map(item => <option value={item}>{item}</option>)
@@ -190,7 +182,7 @@ class ImportTCs extends Component {
                                             {
                                                  Object.keys(this.state.platforms).length > 0 ?
                                                     <Input style={{ borderColor: this.state.errors['platform'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="platform" name="platform" value={this.state.platform}
-                                                        onChange={(e) => this.setState({ platform: e.target.value ,importTc:[], disable:false, errors: { ...this.state.errors, platform: null } },() => {if(this.state.platform === '')this.setState({disable:true});})} >
+                                                        onChange={(e) => this.setState({ platform: e.target.value ,importTc:[], disable:false, errors: { ...this.state.errors, platform: null } },() => {if(this.state.platform === '')this.setState({disable:true, domain: ''});})} >
                                                         <option value=''>Select Platform</option>
                                                         {
                                                             Object.keys(this.state.platforms).map(item => <option value={item}>{item}</option>)
@@ -203,11 +195,27 @@ class ImportTCs extends Component {
                                     <Col xs="6" md="3" lg="3">
                                     <FormGroup className='rp-app-table-value'>
                                         <Row xs="10" md="10" lg="10">
+                                            {
+                                                 this.state.platform && Domains.length > 0 ?
+                                                    <Input style={{ borderColor: this.state.errors['domains'] ? 'red' : '' }} className='rp-app-table-value' type="select" id="domain" name="domain" value={this.state.domain}
+                                                        onChange={(e) => this.setState({ domain: e.target.value ,importTc:[], disable:false, errors: { ...this.state.errors, domain: null } },() => {if(this.state.domain === '')this.setState({disable:true});})} >
+                                                        <option value=''>Select Domain</option>
+                                                        {
+                                                            Domains.map(item => <option value={item}>{item}</option>)
+                                                        }
+                                                    </Input>:null
+                                            }
+                                        </Row>
+                                        </FormGroup>
+                                    </Col>
+                                    <Col xs="6" md="3" lg="3">
+                                    <FormGroup className='rp-app-table-value'>
+                                        <Row xs="10" md="10" lg="10">
                                         {
-                                            this.state.platform && Object.keys(this.state.platforms).length > 0 ?
+                                            this.state.domain && Object.keys(this.state.platforms).length > 0 ?
                                                 [
-                                                    { field: 'Domains', header: 'Select Domains' },
-                                                    //{ field: 'SubDomains', header: 'Select Sub Domains' }
+                                                    //{ field: 'Domains', header: 'Select Domains' },
+                                                    { field: 'SubDomains', header: 'Select Sub Domains' }
                                                 ].map(item => (
                                                     <Col xs="10" md="10" lg="10">
                                                         <FormGroup className='rp-app-table-value'>
@@ -224,7 +232,6 @@ class ImportTCs extends Component {
                                         </Row>
                                         </FormGroup>
                                     </Col>
-                                    
                                     <Button outline color="success" id = 'submit' disabled={this.state.disable} onClick={this.handleSubmit} > Submit </Button>
                                 </Form>
                             </div>
