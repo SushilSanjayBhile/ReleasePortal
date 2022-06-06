@@ -1170,8 +1170,8 @@ class TestCasesAll extends Component {
     //SAVE TC
     saveAll() {
         this.gridOperations(false);
-        let auto_assignee = ''
-        let auto_workingState = ''
+        // let auto_assignee = ''
+        // let auto_workingState = ''
         let items = [];
         let statusItems = [];
         let selectedRows = this.gridApi.getSelectedRows();
@@ -1189,8 +1189,8 @@ class TestCasesAll extends Component {
                     "URL": `/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`
                 }
             };
-            ['Priority', 'Assignee',  'WorkingStatus','OS'].map(each => {
-                let Manual_Assignee = item.stateUserMapping["Manual Assignee"]
+            ['Priority', 'WorkingStatus','OS'].map(each => {
+                //let Manual_Assignee = item.stateUserMapping["Manual Assignee"]
                 if (item[each]) {
                     pushable[each] = item[each]
                     let old = item[each];
@@ -1199,22 +1199,22 @@ class TestCasesAll extends Component {
                     }
                     pushable.Activity.LogData += `${each}:{old: ${old}, new: ${item[each]}}, `
 
-                    if(each ==  'Assignee'){
-                        auto_assignee = item[each]
-                        auto_workingState = "AUTO_ASSIGNED"
-                        pushable["Automation Assignee"] = item[each]
-                        pushable["Automation WorkingStatus"] = auto_workingState
+                    // if(each ==  'Assignee'){
+                    //     auto_assignee = item[each]
+                    //     auto_workingState = "AUTO_ASSIGNED"
+                    //     pushable["Automation Assignee"] = item[each]
+                    //     pushable["Automation WorkingStatus"] = auto_workingState
 
-                    }
+                    // }
                     // if(each == 'WorkingStatus'){
                     //     auto_workingState = item[each]
                     //     pushable["Automation WorkingStatus"] = item[each]
                     // }
 
 
-                    pushable.stateUserMapping =  {"Manual Assignee" : Manual_Assignee,"Manual WorkingStatus" : "Inprogress","Automation Assignee" : auto_assignee ,"Automation WorkingStatus":auto_workingState}
-                    pushable["Manual WorkingStatus"] = "Inprogress"
-                    pushable["Manual Assignee"] = Manual_Assignee
+                    // pushable.stateUserMapping =  {"Manual Assignee" : Manual_Assignee,"Manual WorkingStatus" : "Inprogress","Automation Assignee" : auto_assignee ,"Automation WorkingStatus":auto_workingState}
+                    // pushable["Manual WorkingStatus"] = "Inprogress"
+                    // pushable["Manual Assignee"] = Manual_Assignee
                 }
             })
             if (this.state.multi && this.state.multi.Build ) {
@@ -1259,6 +1259,8 @@ class TestCasesAll extends Component {
 
     saveApplicable() {
         this.gridOperations(false);
+        let auto_assignee = ''
+        let auto_workingState = ''
         let items = [];
         let selectedRows = this.gridApi.getSelectedRows();
         selectedRows.forEach(item => {
@@ -1275,7 +1277,8 @@ class TestCasesAll extends Component {
                     "URL": `/api/tcupdate/${this.props.selectedRelease.ReleaseNumber}`
                 }
             };
-            ['applicable'].map(each => {
+            ['applicable', 'Assignee'].map(each => {
+                let Manual_Assignee = item.stateUserMapping["Manual Assignee"]
                 if (item[each]) {
                     pushable[each] = item[each]
                     let old = item[each];
@@ -1283,6 +1286,17 @@ class TestCasesAll extends Component {
                         old = `${this.editedRows[`${item.TcID}_${item.CardType}`][each].originalValue}`
                     }
                     pushable.Activity.LogData += `${each}:{old: ${old}, new: ${item[each]}}, `
+
+                    if(each ==  'Assignee'){
+                        auto_assignee = item[each]
+                        auto_workingState = "AUTO_ASSIGNED"
+                        pushable["Automation Assignee"] = item[each]
+                        pushable["Automation WorkingStatus"] = auto_workingState
+
+                    }
+                    pushable.stateUserMapping =  {"Manual Assignee" : Manual_Assignee,"Manual WorkingStatus" : "Inprogress","Automation Assignee" : auto_assignee ,"Automation WorkingStatus":auto_workingState}
+                    pushable["Manual WorkingStatus"] = "Inprogress"
+                    pushable["Manual Assignee"] = Manual_Assignee
                 }
             })
             items.push(pushable);
@@ -1813,7 +1827,7 @@ class TestCasesAll extends Component {
                                                         <Button disabled={this.state.isApiUnderProgress} id="PopoverAssign" type="button">Apply Multiple</Button>
                                                         <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssign" id="PopoverAssignButton" toggle={() => this.popoverToggle()} isOpen={this.state.popoverOpen}>
                                                             <PopoverBody>
-                                                                {
+                                                                {/* {
                                                                     [
                                                                         // { labels: 'Priority', values: [{ value: '', text: 'Select Priority' }, ...(['P0', 'P1', 'P2', 'P3', 'P4', 'P5', 'P6', 'P7', 'Skip', 'NA'].map(each => ({ value: each, text: each })))] },
                                                                         { labels: 'Assignee', values: [{ value: '', text: 'Select Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
@@ -1840,7 +1854,7 @@ class TestCasesAll extends Component {
                                                                             }
                                                                         </Input>
                                                                     </FormGroup>)
-                                                                }
+                                                                } */}
                                                                 <Row>
                                                                     <Col md="6">
                                                                         <FormGroup className='rp-app-table-value'>
@@ -2021,7 +2035,7 @@ class TestCasesAll extends Component {
                                                         <Button disabled={this.state.isApiUnderProgress} id="PopoverAssignn" type="button">Applicable/Skip/NA</Button>
                                                         <UncontrolledPopover trigger="legacy" placement="bottom" target="PopoverAssignn" id="PopoverAssignnButton" toggle={() => this.popoverToggleApplicable()} isOpen={this.state.ApplicablepopoverOpen}>
                                                             <PopoverBody>
-                                                                <Row>
+                                                                {/* <Row>
                                                                     <Col md="12">
                                                                         <FormGroup className='rp-app-table-value'>
                                                                             <Input required disabled={this.state.isApiUnderProgress} value={this.state.multiApplicable && this.state.multiApplicable.applicable} onChange={(e) => {
@@ -2042,7 +2056,34 @@ class TestCasesAll extends Component {
                                                                             </Input>
                                                                         </FormGroup>
                                                                     </Col>
-                                                                </Row>
+                                                                </Row> */}
+                                                                {
+                                                                    [
+                                                                        { labels: 'Assignee', values: [{ value: '', text: 'Select Assignee' }, ...(this.props.users.map(each => ({ value: each, text: each })))] },
+                                                                        { labels: 'applicable', values: [{ value: '', text: 'Applicability' }, ...(["Applicable","NA","Skip"].map(each => ({ value: each, text: each })))] },
+
+                                                                    ].map(each => <FormGroup className='rp-app-table-value'>
+                                                                        <Label className='rp-app-table-label' htmlFor={each.labels}>
+                                                                            {each.header}
+                                                                        </Label>
+                                                                        <Input disabled={this.state.isApiUnderProgress} value={this.state.multiApplicable && this.state.multiApplicable[each.labels]} onChange={(e) => {
+                                                                            this.isApplicableChanged = true;
+                                                                            let selectedRows = this.gridApi.getSelectedRows();
+                                                                            if (e.target.value && e.target.value !== '') {
+                                                                                selectedRows.forEach(item => {
+                                                                                    this.onCellEditing(item, each.labels, e.target.value)
+                                                                                    item[each.labels] = e.target.value;
+                                                                                })
+                                                                            }
+                                                                            this.setState({ multiApplicable: { ...this.state.multiApplicable, [each.labels]: e.target.value } })
+                                                                            setTimeout(this.gridApi.redrawRows(), 0);
+                                                                        }} type="select" id={`select_${each.labels}`}>
+                                                                            {
+                                                                                each.values.map(item => <option value={item.value}>{item.text}</option>)
+                                                                            }
+                                                                        </Input>
+                                                                    </FormGroup>)
+                                                                }
                                                                 <div style={{ float: 'right', marginBottom: '0.5rem' }}>
                                                                     <span>
                                                                         {
