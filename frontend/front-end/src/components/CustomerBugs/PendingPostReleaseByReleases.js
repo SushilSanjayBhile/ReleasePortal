@@ -181,7 +181,6 @@ class PendingPostReleaseByReleases extends Component {
                 cellRenderer: (params) => {
                     let keyData = params.data.WithDueDate;
                     let Manager = params.data.DevManager;
-                    let list = this.props.devManager[Manager];
                     if(Manager != "Total"){
                         let proj = ''
                         let newLink = ''
@@ -211,7 +210,6 @@ class PendingPostReleaseByReleases extends Component {
                 cellRenderer: (params) => {
                     let keyData = params.data.WithOutDueDate;
                     let Manager = params.data.DevManager;
-                    let list = this.props.devManager[Manager];
                     if(Manager != "Total"){
                         let proj = ''
                         let newLink = ''
@@ -808,9 +806,9 @@ class PendingPostReleaseByReleases extends Component {
                 let duedate = new Date(this.allTCsToShow[i]["fields"]["duedate"])
                 let today = new Date()
                 if(today.getTime() > duedate.getTime()){
-                    let diff = today.getTime() - duedate.getTime()
-                    temp.DaysPassedDueDate = Math.round(diff / MS_PER_DAY)
-                    //temp.DaysPassedDueDate = Math.roundgetBusinessDaysCount(duedate, today))
+                    // let diff = today.getTime() - duedate.getTime()
+                    // temp.DaysPassedDueDate = Math.round(diff / MS_PER_DAY)
+                    temp.DaysPassedDueDate = Math.round(getBusinessDaysCount(duedate, today))
                     if(temp.DaysPassedDueDate <= 0){
                         temp.DaysPassedDueDate = 1
                     }
@@ -821,9 +819,9 @@ class PendingPostReleaseByReleases extends Component {
             else{
                 let cdate = new Date(this.allTCsToShow[i]["fields"]["created"])
                 let today = new Date()
-                let diff = today.getTime() - cdate.getTime()
-                temp.DaysWithoutDueDate = Math.round(diff / MS_PER_DAY)
-                //temp.DaysWithoutDueDate = Math.roundgetBusinessDaysCount(cdate, today))
+                // let diff = today.getTime() - cdate.getTime()
+                // temp.DaysWithoutDueDate = Math.round(diff / MS_PER_DAY)
+                temp.DaysWithoutDueDate = Math.round(getBusinessDaysCount(cdate, today))
                 if(temp.DaysWithoutDueDate <= 0){
                     temp.DaysWithoutDueDate = 1
                 }
@@ -852,9 +850,9 @@ class PendingPostReleaseByReleases extends Component {
             if(temp.OpenDays == 0) {
                 let date1 = new Date()
                 let date2 = new Date(this.allTCsToShow[i]["fields"]["created"])
-                let diff = date1.getTime() - date2.getTime()
-                temp.OpenDays = Math.round(diff / MS_PER_DAY)
-                //temp.OpenDays = Math.round(getBusinessDaysCount(date2, date1))
+                // let diff = date1.getTime() - date2.getTime()
+                // temp.OpenDays = Math.round(diff / MS_PER_DAY)
+                temp.OpenDays = Math.round(getBusinessDaysCount(date2, date1))
                 if(temp.OpenDays == 0){
                     temp.OpenDays = 1
                 }
@@ -885,7 +883,7 @@ class PendingPostReleaseByReleases extends Component {
             }
         })
         this.TicketsByProduct.push({Product: "Total", P2: Pr2, P3: Pr3, Total: prtotal})
-        let wd = 0, wod = 0, pd = 0, avgm = 0, dtotal = 0;
+        let wd = 0, wod = 0, pd = 0, dtotal = 0, dividend = 0, divisor = 0;
         Object.keys(devM).forEach(key => {
             if(key != "NA"){
                 let temp = devM[key]["WithOutDueDate"] == 0 ? 0 : Math.round(devM[key]["DaysWithoutDueDate"] / devM[key]["WithOutDueDate"])
@@ -893,15 +891,16 @@ class PendingPostReleaseByReleases extends Component {
                 wd = wd + devM[key]["WithDueDate"];
                 wod = wod + devM[key]["WithOutDueDate"];
                 pd = pd + devM[key]["PassedDueDate"];
-                avgm = avgm + temp;
+                dividend = dividend + devM[key]["DaysWithoutDueDate"]
+                divisor = divisor + devM[key]["WithOutDueDate"]
                 dtotal = dtotal + devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"];
             }
         })
-        let len = 0;
         this.Sort(this.TicketsByDevManager, "devm");
-        len = this.TicketsByDevManager.length
-        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, AvgDaysWithoutDueDate: len == 0 ? 0 : Math.round(avgm/len), Total: dtotal})
-        let dewd = 0, dewod = 0, depd = 0, avgd = 0, detotal = 0;
+        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, AvgDaysWithoutDueDate: divisor == 0 ? 0 : Math.round(dividend/divisor), Total: dtotal})
+        let dewd = 0, dewod = 0, depd = 0, detotal = 0;
+        dividend = 0
+        divisor = 0
         Object.keys(dev).forEach(key => {
             if(key != "NA"){
                 let temp = dev[key]["WithOutDueDate"] == 0 ? 0 : Math.round(dev[key]["DaysWithOutDueDate"] / dev[key]['WithOutDueDate'])
@@ -909,13 +908,14 @@ class PendingPostReleaseByReleases extends Component {
                 dewd = dewd + dev[key]["WithDueDate"];
                 dewod = dewod + dev[key]["WithOutDueDate"];
                 depd = depd + dev[key]["PassedDueDate"];
-                avgd = avgd + temp
+                dividend = dividend + dev[key]["DaysWithOutDueDate"]
+                divisor = divisor + dev[key]['WithOutDueDate']
                 detotal = detotal + dev[key]["WithDueDate"] + dev[key]["WithOutDueDate"];
             }
         })
         this.Sort(this.TicketsByDeveloper,"dev");
-        len  = this.TicketsByDeveloper.length
-        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: len == 0 ? 0 : Math.round(avgd/len), Total: detotal})
+        console.log("divisor",divisor, dividend)
+        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: divisor == 0 ? 0 : Math.round(dividend/divisor), Total: detotal})
         severityDictTotal["Total"] = severityDictP2["Total"] + severityDictP3["Total"]
         severityDictTotal["Age"] = severityDictP2["Age"] + severityDictP3["Age"]
         let d2 = {Severity: severityDictP2["Severity"], TotalBugs: severityDictP2["Total"], TotalOpenDays: severityDictP2["Age"], AvgOpenDays: severityDictP2["Total"] == 0 ? 0 : Math.round(severityDictP2["Age"] / severityDictP2["Total"])}

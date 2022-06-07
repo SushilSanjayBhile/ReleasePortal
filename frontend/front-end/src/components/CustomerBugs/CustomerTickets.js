@@ -19,7 +19,7 @@ import DatePickerEditor from '../TestCasesAll/datePickerEditor';
 import  CheckBox  from '../TestCasesAll/CheckBox';
 import { element } from 'prop-types';
 import { CSVLink } from 'react-csv';
-import {projects, projectToManagerMap, projectsList, devManagers, status, getBusinessDaysCount} from "../../constants";
+import {projects, projectToManagerMap, projectsList, devManagers, status} from "../../constants";
 class CustomerTickets extends Component {
     startAt = 0;
     isApiUnderProgress = false;
@@ -1154,7 +1154,7 @@ class CustomerTickets extends Component {
             }
         })
         this.TicketsByProduct.push({Product: "Total", P1: Pr1, P2: Pr2, P3: Pr3, Total: prtotal})
-        let wd = 0, wod = 0, pd = 0, avgm = 0, dtotal = 0;
+        let wd = 0, wod = 0, pd = 0, dtotal = 0, dividend = 0, divisor = 0;
         Object.keys(devM).forEach(key => {
             if(key != "NA"){
                 let temp = devM[key]["WithOutDueDate"] == 0 ? 0 : Math.round(devM[key]["DaysWithoutDueDate"] / devM[key]["WithOutDueDate"])
@@ -1162,15 +1162,16 @@ class CustomerTickets extends Component {
                 wd = wd + devM[key]["WithDueDate"];
                 wod = wod + devM[key]["WithOutDueDate"];
                 pd = pd + devM[key]["PassedDueDate"];
-                avgm = avgm + temp;
+                dividend = dividend + devM[key]["DaysWithoutDueDate"]
+                divisor = divisor + devM[key]["WithOutDueDate"]
                 dtotal = dtotal + devM[key]["WithDueDate"] + devM[key]["WithOutDueDate"];
             }
         })
-        let len = 0;
         this.Sort(this.TicketsByDevManager, "devm");
-        len = this.TicketsByDevManager.length
-        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, AvgDaysWithoutDueDate: len == 0 ? 0 : Math.round(avgm/len), Total: dtotal})
-        let dewd = 0, dewod = 0, depd = 0, avgd = 0, detotal = 0;
+        this.TicketsByDevManager.push({DevManager: "Total", WithDueDate: wd, WithOutDueDate: wod, PassedDueDate: pd, AvgDaysWithoutDueDate: divisor == 0 ? 0 : Math.round(dividend/divisor), Total: dtotal})
+        let dewd = 0, dewod = 0, depd = 0, detotal = 0;
+        dividend = 0
+        divisor = 0
         Object.keys(dev).forEach(key => {
             if(key != "NA"){
                 let temp = dev[key]["WithOutDueDate"] == 0 ? 0 : Math.round(dev[key]["DaysWithOutDueDate"] / dev[key]['WithOutDueDate'])
@@ -1178,14 +1179,13 @@ class CustomerTickets extends Component {
                 dewd = dewd + dev[key]["WithDueDate"];
                 dewod = dewod + dev[key]["WithOutDueDate"];
                 depd = depd + dev[key]["PassedDueDate"];
-                avgd = avgd + temp
+                dividend = dividend + dev[key]["DaysWithOutDueDate"]
+                divisor = divisor + dev[key]['WithOutDueDate']
                 detotal = detotal + dev[key]["WithDueDate"] + dev[key]["WithOutDueDate"];
             }
         })
         this.Sort(this.TicketsByDeveloper,"dev");
-        len  = this.TicketsByDeveloper.length
-
-        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: len == 0 ? 0 : Math.round(avgd/len), Total: detotal})
+        this.TicketsByDeveloper.push({Developer: "Total", WithDueDate: dewd, WithOutDueDate: dewod, PassedDueDate: depd, AvgWithoutDueDate: divisor == 0 ? 0 : Math.round(dividend/divisor), Total: detotal})
         severityDictTotal["Active"] = severityDictP1["Active"] + severityDictP2["Active"] + severityDictP3["Active"]
         severityDictTotal["Age"] = severityDictP1["Age"] + severityDictP2["Age"] + severityDictP3["Age"]
 
