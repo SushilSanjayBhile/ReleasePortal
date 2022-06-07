@@ -1267,20 +1267,31 @@ class AssignToUser extends Component {
             return;
         }
         if (statusItems.length > 0) {
-            this.saveMultipleTcStatus(statusItems, items);
+            this.saveMultipleTcStatus(statusItems, items, statusFlag);
         } else {
-            this.saveMultipleTcInfo(items)
+            if(statusFlag != 1){
+                this.saveMultipleTcInfo(items)
+            }
         }
     }
 
-    saveMultipleTcStatus(statusItems, items) {
+    saveMultipleTcStatus(statusItems, items, statusFlag) {
         this.gridOperations(false);
         axios.post(`/api/tcstatusUpdate/${this.props.selectedRelease.ReleaseNumber}`, statusItems)
-            .then(res => {
-                this.gridOperations(true);
-                if (items.length > 0) {
-                    this.saveMultipleTcInfo(items)
-                } else {
+           .then(res => {
+                //this.gridOperations(true);
+                if (statusFlag == 1 && items.length > 0) {
+                    axios.put(`/api/tcapplicabilityupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
+                    .then(res => {
+                        this.gridOperations(true);
+                        this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
+                        alert('Tc Info Updated Successfully');
+                    }, error => {
+                        this.gridOperations(true);
+                        alert('Failed To Update TC Info');
+                    });
+                }
+                else {
                     //this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);
                     this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
                     alert('Tc Status updated Successfully');
@@ -1328,7 +1339,7 @@ class AssignToUser extends Component {
     textFields = [
         'TcID', 'TcName', 'Scenario', 'Tag', 'Assignee', 'Tag', 'Priority',
         'Description', 'Steps', 'ExpectedBehaviour', 'Notes', 'WorkingStatus', 'OS',
-        'Manual Assignee','Automation Assignee', 'Manual WorkingStatus','Automation Assignee'
+        'Manual Assignee','Automation Assignee', 'Manual WorkingStatus',
     ];
     whichFieldsUpdated(old, latest) {
         let changes = {};

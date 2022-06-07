@@ -1026,22 +1026,34 @@ class AssignToUserGUI extends Component {
             return;
         }
         if (statusItems.length > 0) {
-            this.saveMultipleTcStatus(statusItems, items);
+            this.saveMultipleTcStatus(statusItems, items, statusFlag);
         } else {
-            this.saveMultipleTcInfo(items)
+            if(statusFlag != 1){
+                this.saveMultipleTcInfo(items)
+            }
         }
     }
-    saveMultipleTcStatus(statusItems, items) {
+    saveMultipleTcStatus(statusItems, items, statusFlag) {
         let flag = 0;
         this.gridOperations(false);
             axios.post(`/api/tcstatusgui/${this.props.selectedRelease.ReleaseNumber}`, statusItems)
             .then(res => {
-                this.gridOperations(true);
+                //this.gridOperations(true);
                 flag = 1
-                if (items.length > 0) {
-                    this.saveMultipleTcInfo(items)
+                if (statusFlag == 1 && items.length > 0) {
+                    //this.saveMultipleTcInfo(items)
+                    axios.put(`/api/tcapplicabilityupdate/${this.props.selectedRelease.ReleaseNumber}`, items)
+                    .then(res => {
+                        this.gridOperations(true);
+                        this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
+                        alert('Tc Info Updated Successfully');
+                    }, error => {
+                        this.gridOperations(true);
+                        alert('Failed To Update TC Info');
+                    });
                 } else {
-                    this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);
+                    this.getTcs(false, this.state.CardType, this.state.platform, null, null, false, false, false, true)
+                    //this.getTcs(this.state.CardType, this.state.domain, this.state.subDomain, false, false, false, true);
                 }
             }, error => {
                 this.gridOperations(true);

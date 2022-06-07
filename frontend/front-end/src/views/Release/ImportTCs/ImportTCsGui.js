@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {
-    Row, Col, Button, Collapse, Form, FormGroup, Label, Input, FormText 
+    Row, Col, Button, Collapse, Form, FormGroup, Label, Input, FormText
 } from 'reactstrap';
 import axios from 'axios';
 import { connect } from 'react-redux';
