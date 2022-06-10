@@ -514,13 +514,16 @@ app.use('/rest/AllOpenBugsNoImprovement', (req, res) => {
         var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     }
     else if(req.query.flag == "P1ByRelease"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        //var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     }
     else if(req.query.flag == "P2"){
         var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     }
     else if(req.query.flag == "P2ByRelease"){
-        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        //var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20(labels%20not%20in%20(active)%20OR%20labels%20is%20EMPTY)%20AND%20priority%20not%20in%20(Highest)%20AND%20fixVersion%20in%20(${req.query.fixVersions})%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+
     }
     else if(req.query.flag == "pie"){
         var totalBugsStr = `/?jql=project%20in%20(${projects})%20AND%20issuetype%20in%20(Bug)%20AND%20status%20in%20(${status})%20AND%20created%20%3E%3D%202022-01-01%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`

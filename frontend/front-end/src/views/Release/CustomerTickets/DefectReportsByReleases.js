@@ -47,7 +47,22 @@ class DefectReportsByRelease extends Component {
                         }
                     }
                 })
-                this.setState({pfixVersions: fixv},() => { this.setState({loading: false});this.showForSelectedRelease();})
+                let templist = [],nameList = [];
+                let set = new Set();
+                fixv.forEach(ele => {
+                    set.add(ele.value)
+                })
+                nameList = [...set]
+                nameList.sort()
+                nameList.forEach(ele => {
+                    fixv.some(item => {
+                        if(item.value == ele){
+                            templist.push(item)
+                            return true;
+                        }
+                    })
+                })
+                this.setState({pfixVersions: templist},() => { this.setState({loading: false});this.showForSelectedRelease();})
             })
         })
     }
