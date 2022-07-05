@@ -706,7 +706,8 @@ def domain_gui_aggreggation(guiTcInfo, guiStatus):
 
         #if prior == "Skip" or prior == "NA" or res == "Unblocked":
         #     continue
-
+        if res == "Unblocked":
+            continue
         if tcname == "TC NOT AUTOMATED":
             myDict['domain-gui'][domain]['Tested']['manual'][res] += 1
             myDict['domain-gui'][domain]['NotTested'] -= 1

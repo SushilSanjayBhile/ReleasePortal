@@ -20,7 +20,7 @@ from sh import pg_dump
 from psycopg2 import sql
 import json, datetime, os, time
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-from .latestStatusUpdate import latestResultUpdateFunction        
+from .latestStatusUpdate import latestResultUpdateFunction
 from .tcinfo import GenerateLogData
 errorTCs = []
 sucessTCs = []
@@ -54,7 +54,7 @@ def updateStatusFunc(domain, subdomain, tcid, tcname, build, result, cardtype, R
         data.save(using = Release)
         sucessTCs.append(tcid)
         if result.lower() != "skip" and cardtype != "NOT FOUND":
-            logData = "Status Added: Build: "+ build +", Result: "+ result +", TestedOn: , CardType: "+ cardtype
+            logData = "Status Added: Build: "+ build +", Result: "+ result +", TestedOn: , CardType: "+ cardtype +", Auto: True"
             url = "/api/tcinfoput/"+Release+"/id/"+tcid+"/card/"+cardtype
             GenerateLogData(email, "POST", url, logData, tcid, cardtype, Release)
     else:
