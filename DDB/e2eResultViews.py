@@ -54,7 +54,7 @@ def updateStatusFunc(domain, subdomain, tcid, tcname, build, result, cardtype, R
         data.save(using = Release)
         sucessTCs.append(tcid)
         if result.lower() != "skip" and cardtype != "NOT FOUND":
-            logData = "Status Added: Build: "+ build +", Result: "+ result +", TestedOn: , CardType: "+ cardtype
+            logData = "Status Added: Build: "+ build +", Result: "+ result +", TestedOn: , CardType: "+ cardtype +", Auto: True"
             url = "/api/tcinfoput/"+Release+"/id/"+tcid+"/card/"+cardtype
             GenerateLogData(email, "POST", url, logData, tcid, cardtype, Release)
     else:

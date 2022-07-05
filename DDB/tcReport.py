@@ -123,17 +123,28 @@ def RESULT_LOGS(Release, sdate, edate):
         data = LOGS.objects.using(Release).all()
         serializer = LOG_SERIALIZER(data, many = True)
         count = 0
+        temp = {"manPass": 0, "autoPass": 0, "manFail": 0, "autoFail": 0, "manBlock": 0, "autoBlock": 0, "manTotal": 0, "autoTotal": 0}
         for log in serializer.data:
-            if "status added" in log["LogData"].lower():
-                user = log["UserName"]
-                if user == "":
-                    continue
-                date_time_str = log["Timestamp"]
-                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
-                
-                if date_time_obj >= sdate and date_time_obj < edate:
-                    count += 1
-        return count
+             date_time_str = log["Timestamp"]
+             date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+             if "status added" in log["LogData"].lower() and (date_time_obj >= sdate and date_time_obj < edate):
+                 if "auto: true" in log["LogData"].lower():
+                     if "result: pass" in log["LogData"].lower():
+                         temp["autoPass"] = temp["autoPass"] + 1
+                     elif  "result: fail" in log["LogData"].lower():
+                         temp["autoFail"] = temp["autoFail"] + 1
+                     else:
+                         temp["autoBlock"] = temp["autoBlock"] + 1
+                 else:
+                     if "result: pass" in log["LogData"].lower():
+                         temp["manPass"] = temp["manPass"] + 1
+                     elif  "result: fail" in log["LogData"].lower():
+                         temp["manFail"] = temp["manFail"] + 1
+                     else:
+                         temp["manBlock"] = temp["manBlock"] + 1
+        temp["manTotal"] = temp["manPass"] + temp["manFail"] + temp["manBlock"]
+        temp["autoTotal"] = temp["autoPass"] + temp["autoFail"] + temp["autoBlock"]
+        return temp
     except:
         return "NA"
 
@@ -142,16 +153,27 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
         data = LOGSGUI.objects.using(Release).all()
         serializer = GUI_LOGS_SERIALIZER(data, many = True)
         count = 0
+        temp = {"manPass": 0, "autoPass": 0, "manFail": 0, "autoFail": 0, "manBlock": 0, "autoBlock": 0, "manTotal": 0, "autoTotal": 0}
         for log in serializer.data:
-            if "status added" in log["LogData"].lower():
-                user = log["UserName"]
-                if user == "":
-                    continue
-                date_time_str = log["Timestamp"]
-                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
-                
-                if date_time_obj >= sdate and date_time_obj < edate:
-                    count += 1
-        return count
+            date_time_str = log["Timestamp"]
+            date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+            if "status added" in log["LogData"].lower() and (date_time_obj >= sdate and date_time_obj < edate):
+                if "auto: true" in log["LogData"].lower():
+                     if "result: pass" in log["LogData"].lower():
+                         temp["autoPass"] = temp["autoPass"] + 1
+                     elif  "result: fail" in log["LogData"].lower():
+                         temp["autoFail"] = temp["autoFail"] + 1
+                     else:
+                         temp["autoBlock"] = temp["autoBlock"] + 1
+                else:
+                     if "result: pass" in log["LogData"].lower():
+                         temp["manPass"] = temp["manPass"] + 1
+                     elif  "result: fail" in log["LogData"].lower():
+                         temp["manFail"] = temp["manFail"] + 1
+                     else:
+                         temp["manBlock"] = temp["manBlock"] + 1
+        temp["manTotal"] = temp["manPass"] + temp["manFail"] + temp["manBlock"]
+        temp["autoTotal"] = temp["autoPass"] + temp["autoFail"] + temp["autoBlock"]
+        return temp
     except:
         return "NA"
