@@ -176,6 +176,7 @@ class QaAnalysis extends Component {
         let tempList = []
         let tempListGUI = []
         if(intf === "CLI") {
+            this.setState({disableShowButton: true, testCountDataWithRange: []})
             axios.get('/api/tcReport/',{
                 params: {
                     interface:intf,
@@ -187,10 +188,17 @@ class QaAnalysis extends Component {
                 let data = response.data
                 let keys = Object.keys(data)
                 keys.forEach(key =>{
-                    if(data[key] != 0){
+                    if(data[key].autoTotal != 0 || data[key].manTotal != 0){
                         tempList.push({
-                                "Release":key,
-                                "Total":data[key]
+                            "Release": key,
+                            "passM": data[key].manPass,
+                            "failM": data[key].manFail,
+                            "blockM": data[key].manBlock,
+                            "totalM": data[key].manTotal,
+                            "passA": data[key].autoPass,
+                            "failA": data[key].autoFail,
+                            "blockA": data[key].autoBlock,
+                            "totalA": data[key].autoTotal,
                         })
                     }
                 })
@@ -209,6 +217,7 @@ class QaAnalysis extends Component {
             })
         }
         if(intf === "GUI") {
+            this.setState({disableShowButtonGui: true, testCountDataWithRangeForGUI: []})
             axios.get('/api/tcReport/',{
                 params: {
                     interface:intf,
@@ -220,10 +229,17 @@ class QaAnalysis extends Component {
                 let data = response.data
                 let keys = Object.keys(data)
                 keys.forEach(key =>{
-                    if(data[key] != 0){
+                    if(data[key].autoTotal != 0 || data[key].manTotal != 0){
                         tempListGUI.push({
-                                "Release":key,
-                                "Total":data[key]
+                            "Release": key,
+                            "passM": data[key].manPass,
+                            "failM": data[key].manFail,
+                            "blockM": data[key].manBlock,
+                            "totalM": data[key].manTotal,
+                            "passA": data[key].autoPass,
+                            "failA": data[key].autoFail,
+                            "blockA": data[key].autoBlock,
+                            "totalA": data[key].autoTotal,
                         })
                     }
                 })
@@ -291,7 +307,14 @@ class QaAnalysis extends Component {
             return (
                     <tr key={i}>
                         <td width="140px" height="50px">{e.Release}</td>
-                        <td width="140px" height="50px">{e.Total}</td>
+                        <td width="140px" height="50px">{e.passM}</td>
+                        <td width="140px" height="50px">{e.failM}</td>
+                        <td width="140px" height="50px">{e.blockM}</td>
+                        <td width="140px" height="50px">{e.totalM}</td>
+                        <td width="140px" height="50px">{e.passA}</td>
+                        <td width="140px" height="50px">{e.failA}</td>
+                        <td width="140px" height="50px">{e.blockA}</td>
+                        <td width="140px" height="50px">{e.totalA}</td>
                     </tr>
                 );
             })
@@ -308,7 +331,14 @@ class QaAnalysis extends Component {
             return (
                     <tr key={i}>
                         <td width="140px" height="50px">{e.Release}</td>
-                        <td width="140px" height="50px">{e.Total}</td>
+                        <td width="140px" height="50px">{e.passM}</td>
+                        <td width="140px" height="50px">{e.failM}</td>
+                        <td width="140px" height="50px">{e.blockM}</td>
+                        <td width="140px" height="50px">{e.totalM}</td>
+                        <td width="140px" height="50px">{e.passA}</td>
+                        <td width="140px" height="50px">{e.failA}</td>
+                        <td width="140px" height="50px">{e.blockA}</td>
+                        <td width="140px" height="50px">{e.totalA}</td>
                     </tr>
                 );
             })
@@ -383,10 +413,8 @@ class QaAnalysis extends Component {
         ttempDateEnd = endDate['tEndDate']
         this.setState({
             tendDate : ttempDateEnd,
-            testCountDataWithRange : []
         },()=>{
-            //this.getTestCountDataWithRange(this.state.tstartDate,this.state.tendDate,'CLI');
-            this.getTestCountDataWithRange(this.state.tstartDate, this.state.tendDate, 'CLI');
+            this.setState({disableShowButton : false})
         })
     }
 
@@ -401,10 +429,8 @@ class QaAnalysis extends Component {
         ttempDateEndGUI = endDate['tEndDate1']
         this.setState({
             tendDateGUI : ttempDateEndGUI,
-            testCountDataWithRangeForGUI : []
         },()=>{
-            //this.getTestCountDataWithRange(this.state.tstartDateGUI,this.state.tendDateGUI,'GUI');
-            this.getTestCountDataWithRange(this.state.tstartDateGUI, this.state.tendDateGUI, 'GUI');
+            this.setState({disableShowButtonGui : false})
         })
     }
 
@@ -735,7 +761,7 @@ class QaAnalysis extends Component {
                             </div>
                             <Collapse isOpen={this.state.testCountWithRangeView}>
                                 <Row>
-                                    <div style={{ marginRight: '8rem' ,marginLeft: '4rem', width:'650px', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
+                                    <div style={{ marginRight: '8rem' ,marginLeft: '4rem', width:'100%', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
                                         <div class="row"  style={{marginTop:'1rem'}}>
                                             <div class="col-md-3">
                                                 From Date<Input  type="date" id="tStartDate" value={DATE5} onChange={(e) => this.testSelectedStartDateCLI({ tStartDate: e.target.value })} ></Input>
@@ -744,12 +770,23 @@ class QaAnalysis extends Component {
                                             <div class="col-md-3">
                                                 To Date<Input  type="date" id="tEndDate" value={DATE6} onChange={(e) => this.testSelectedEndDateCLI({ tEndDate: e.target.value })} />
                                             </div>
+                                            <div class="col-md-3" style={{marginTop: '1rem'}}>
+                                                <Button disabled={ this.state.disableShowButton } size="md" className="rp-rb-save-btn" onClick={(e) => {this.getTestCountDataWithRange(this.state.tstartDate, this.state.tendDate,'CLI');}} >
+                                                    Show
+                                                </Button>
+                                            </div>
                                         </div>
                                         <Table>
                                             <tbody>
                                                 <th width="140px" height="50px" ><b>Release</b></th>
-                                                {/* <th width="250px" height="50px" ><b>Date Range</b></th> */}
-                                                <th width="140px" height="50px" ><b>Total Tested</b></th>
+                                                <th width="140px" height="50px" ><b>Pass(Manual)</b></th>
+                                                <th width="140px" height="50px" ><b>Fail(Manual)</b></th>
+                                                <th width="140px" height="50px" ><b>Block(Manual)</b></th>
+                                                <th width="140px" height="50px" ><b>Total(Manual)</b></th>
+                                                <th width="140px" height="50px" ><b>Pass(Automated)</b></th>
+                                                <th width="140px" height="50px" ><b>Fail(Automated)</b></th>
+                                                <th width="140px" height="50px" ><b>Block(Automated)</b></th>
+                                                <th width="140px" height="50px" ><b>Total(Automated)</b></th>
                                                     {
                                                         this.state.testCountDataWithRange ? this.renderTableDataForTestCountWithRange() : null
                                                     }
@@ -784,7 +821,7 @@ class QaAnalysis extends Component {
                             </div>
                             <Collapse isOpen={this.state.testCountWithRangeViewForGUI}>
                                 <Row>
-                                    <div style={{ marginRight: '4rem' ,marginLeft: '4rem', width:'650px', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
+                                    <div style={{ marginRight: '4rem' ,marginLeft: '4rem', width:'100%', marginTop: '1rem' , overflowY: 'scroll', maxHeight: '30rem' }}>
                                         <div class="row"  style={{marginTop:'1rem'}}>
                                             <div class="col-md-3">
                                                 From Date<Input  type="date" id="tStartDate1" value={DATE7} onChange={(e) => this.testSelectedStartDateGUI({ tStartDate1: e.target.value })} ></Input>
@@ -793,12 +830,23 @@ class QaAnalysis extends Component {
                                             <div class="col-md-3">
                                                 To Date<Input  type="date" id="tEndDate1" value={DATE8} onChange={(e) => this.testSelectedEndDateGUI({ tEndDate1: e.target.value })} />
                                             </div>
+                                            <div class="col-md-3" style={{marginTop: '1rem'}}>
+                                                <Button disabled={ this.state.disableShowButtonGui } size="md" className="rp-rb-save-btn" onClick={(e) => {this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');}} >
+                                                    Show
+                                                </Button>
+                                            </div>
                                         </div>
                                         <Table>
                                             <tbody>
-                                                <th width="140px" height="50px" ><b>Release </b></th>
-                                                {/* <th width="250px" height="50px" ><b>Date Range</b></th> */}
-                                                <th width="140px" height="50px" ><b>Total Tested</b></th>
+                                                <th width="140px" height="50px" ><b>Release</b></th>
+                                                <th width="140px" height="50px" ><b>Pass(Manual)</b></th>
+                                                <th width="140px" height="50px" ><b>Fail(Manual)</b></th>
+                                                <th width="140px" height="50px" ><b>Block(Manual)</b></th>
+                                                <th width="140px" height="50px" ><b>Total(Manual)</b></th>
+                                                <th width="140px" height="50px" ><b>Pass(Automated)</b></th>
+                                                <th width="140px" height="50px" ><b>Fail(Automated)</b></th>
+                                                <th width="140px" height="50px" ><b>Block(Automated)</b></th>
+                                                <th width="140px" height="50px" ><b>Total(Automated)</b></th>
                                                     {
                                                         this.state.testCountDataWithRangeForGUI ? this.renderTableDataForTestCountWithRangeForGUI() : null
                                                     }

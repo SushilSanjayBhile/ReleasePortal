@@ -62,19 +62,19 @@ class IndividualReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.Name
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task%2C%20Subtask)%20AND%20%22Epic%20Link%22%20not%20in%20(DWS-8723%2C%20DWS-8722%2C%20OPS-91%2C%20OPS-90)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Tasks}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task%2C%20Subtask)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Tasks}</a>`;
                 },
             },
-            'NonTCTasks' : {
-                headerName: "Non TC Testing Tasks", field: "NonTCTasks", sortable: true, filter: true,
-                cellClass: 'cell-wrap-text',
-                editable: false,
-                cellRenderer: (params) => {
-                    let sdet = params.data.Name
-                    sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task%2C%20Subtask)AND%20%22Epic%20Link%22%20in%20(DWS-8723%2C%20DWS-8722%2C%20OPS-91%2C%20OPS-90)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.NonTCTasks}</a>`;
-                },
-            },
+            // 'NonTCTasks' : {
+            //     headerName: "Non TC Testing Tasks", field: "NonTCTasks", sortable: true, filter: true,
+            //     cellClass: 'cell-wrap-text',
+            //     editable: false,
+            //     cellRenderer: (params) => {
+            //         let sdet = params.data.Name
+            //         sdet = encodeURIComponent(sdet)
+            //         return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task%2C%20Subtask)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.NonTCTasks}</a>`;
+            //     },
+            // },
         }
 
         this.state = {
@@ -91,7 +91,7 @@ class IndividualReport extends Component {
                 columnDefDict['Automated'],
                 columnDefDict['Filed'],
                 columnDefDict['Tasks'],
-                columnDefDict['NonTCTasks'],
+                //columnDefDict['NonTCTasks'],
             ],
             defaultColDef: { resizable: true },
             modules: AllCommunityModules,
@@ -184,21 +184,21 @@ class IndividualReport extends Component {
                             "sdate": startDate,
                             "edate": endDate,
                             "qaMail": user["email"],
-                            "nonTCTask": "false",
+                            //"nonTCTask": "false",
                         }}).then(resp => {
                             user["Tasks"] = resp.data.total
                         })
                     );
-                    promises.push(axios.get(`/rest/tasksByQA`,{
-                        params: {
-                            "sdate": startDate,
-                            "edate": endDate,
-                            "qaMail": user["email"],
-                            "nonTCTask": "true",
-                        }}).then(resp => {
-                            user["NonTCTasks"] = resp.data.total
-                        })
-                    );
+                    // promises.push(axios.get(`/rest/tasksByQA`,{
+                    //     params: {
+                    //         "sdate": startDate,
+                    //         "edate": endDate,
+                    //         "qaMail": user["email"],
+                    //         "nonTCTask": "true",
+                    //     }}).then(resp => {
+                    //         user["NonTCTasks"] = resp.data.total
+                    //     })
+                    // );
                 })
                 Promise.all(promises).then(result => {
                     this.ApplicableTcs = list;this.gridOperations(true);
