@@ -803,7 +803,7 @@ class QaAnalysis extends Component {
                                 <div class="row">
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
-                                            <div onClick={() => this.setState({ testCountWithRangeViewForGUI: !this.state.testCountWithRangeViewForGUI },()=>{if(this.state.testCountWithRangeView){this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');}})} style={{ display: 'inlineBlock' }}>
+                                            <div onClick={() => this.setState({ testCountWithRangeViewForGUI: !this.state.testCountWithRangeViewForGUI },()=>{if(this.state.testCountWithRangeViewForGUI){this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');}})} style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.testCountWithRangeViewForGUI &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -831,7 +831,7 @@ class QaAnalysis extends Component {
                                                 To Date<Input  type="date" id="tEndDate1" value={DATE8} onChange={(e) => this.testSelectedEndDateGUI({ tEndDate1: e.target.value })} />
                                             </div>
                                             <div class="col-md-3" style={{marginTop: '1rem'}}>
-                                                <Button disabled={ this.state.disableShowButtonGui } size="md" className="rp-rb-save-btn" onClick={(e) => {this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');}} >
+                                                <Button disabled={ this.state.disableShowButtonGui } size="md" className="rp-rb-save-btn" onClick={(e) => {this.getTestCountDataWithRange(this.state.tstartDate, this.state.tendDate,'GUI');}} >
                                                     Show
                                                 </Button>
                                             </div>

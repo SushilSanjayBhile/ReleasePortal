@@ -16,8 +16,8 @@ let users = jsonfile.readFileSync('./users.json');
 let allTcs = jsonfile.readFileSync('./tcCompleteSort.json');
 let initTC = jsonfile.readFileSync('./initTC.json');
 let selectedTC = jsonfile.readFileSync('./initSelect.json');
-const projects = encodeURIComponent("DWS\, SPEK\, OPS\, GW\, UA\, UE")
-const projectQA = encodeURIComponent("DWS\, SPEK\, OPS\, GW\, UA\, UE\, \"Automation and Validation\"")
+const projects = encodeURIComponent("DWS\, SPEK\, OPS\, GROUNDWORK\, UA\, UE")
+const projectQA = encodeURIComponent("DWS\, SPEK\, OPS\, GROUNDWORK\, UA\, UE\, \"Automation and Validation\"")
 const status = encodeURIComponent("Duplicate\, \"In Progress\"\, Info\, Open\, \"To Do\"\, Backlog")
 
 // assignedTCs['2.3.0'] = { "ADMIN": Object.keys(allTcs['2.3.0']) }
