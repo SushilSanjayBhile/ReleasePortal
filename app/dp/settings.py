@@ -15,7 +15,7 @@ from constraints import *
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
@@ -78,6 +78,38 @@ WSGI_APPLICATION = 'dp.wsgi.application'
 
 
 DATABASES = {
+    'DMC3.4.1': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DMC3.4.1',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'DCX-3.5.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DCX-3.5.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'OCP-4.10': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'OCP-4.10',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'OSE-3.2.3': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'OSE-3.2.3',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'DMC3.3.3': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'DMC3.3.3',

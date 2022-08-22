@@ -13,7 +13,7 @@ from .latestStatusUpdate import LATEST_STATUS_VIEW_UPDATE_ALL
 from .tcinfo import TC_INFO_GET_POST_VIEW, GET_TC_INFO_BY_ID, WHOLE_TC_INFO, MULTIPLE_TC_UPDATION, \
         UPDATE_TC_INFO_BY_ID, TcCountByFilter,MULTIPLE_TC_INFO_UPDATION, sync_tcs, sync_platform, duplicate_tcs, duplicate_tcs_gui, duplicate_tcs_by_rel,duplicate_tcs_by_rel_gui, MULTIPLE_TC_UPDATION_APPROVAL_UNAPPROVAL, GetNonExecutedTCs
 
-from .getStatistics import BUG_WISE_BLOCKED_TCS 
+from .getStatistics import BUG_WISE_BLOCKED_TCS
 from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO,MULTIPLE_TC_UPDATION_GUI,GetNonExecutedTCsGui, GUI_TC_INFO_GET_POST_VIEW1
 from .releaseBuildInfo import RELEASEBUILDINFOGETPOSTVIEW,RELEASEBUILDINFODELETEVIEW
 from .createRelease import mergeDB
@@ -131,6 +131,6 @@ urlpatterns = [
     path('duptcgui', duplicate_tcs_gui),
     path('tcupdategui/<str:Release>', MULTIPLE_TC_UPDATION_GUI),
     path('release_all_info/releaseName/<str:Release>', TCAGGREGATE_DASHBOARD),
-    path('execute/<str:release>/<str:platform>/<str:fileName><str:email>',update_data),
+    path('execute/<str:release>/<str:platform>/<str:fileName>/<str:email>',update_data),
     path('fixVersionsGetPut', FIXVERSION),
 ]

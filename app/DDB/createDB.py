@@ -51,19 +51,19 @@ def createReleaseDB(release, parentRelease):
 
 
     databaseExistsString = "\'NAME\': \'" + release + "\',"
-    with open('/portal/app/dp/settings.py', 'r') as fp:
+    with open('/release-portal/app/dp/settings.py', 'r') as fp:
         f = fp.readlines()
         for line in f:
             if databaseExistsString in line:
                 return 1
 
     lineNo = 0
-    with open('/portal/app/dp/settings.py', 'r') as fp:
+    with open('/release-portal/app/dp/settings.py', 'r') as fp:
         f = fp.readlines()
         for line in f:
             lineNo += 1
             if "DATABASES = {" in line:
-                
+
                 string = """    '{release}': {{
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': '{release}',
@@ -78,12 +78,12 @@ def createReleaseDB(release, parentRelease):
                 contents = "".join(f)
     fp.close()
 
-    newfp = open("/portal/app/dp/newsettings.py", "w+")
+    newfp = open("/release-portal/app/dp/newsettings.py", "w+")
     newfp.write(contents)
     newfp.close()
 
-    os.system("cp /portal/app/dp/settings.py /portal/app/dp/oldsettings.py")
-    os.system("mv /portal/app/dp/newsettings.py /portal/app/dp/settings.py")
+    os.system("cp /release-portal/app/dp/settings.py /release-portal/app/dp/oldsettings.py")
+    os.system("mv /release-portal/app/dp/newsettings.py /release-portal/app/dp/settings.py")
 
     return 1
 
@@ -143,7 +143,7 @@ def cleanupdb(request):
     release = req["ReleaseNumber"]
     pRelease = req["ParentRelease"]
     print(req)
-    
+
     # statements to delete all the logs and status of newly created releases
     TC_STATUS.objects.using(release).all().delete()
     TC_STATUS_GUI.objects.using(release).all().delete()

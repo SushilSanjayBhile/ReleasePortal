@@ -20,7 +20,9 @@
     "private": true,
     "dependencies": {
         "concurrently": "^5.0.1",
+        "cors": "^2.8.5",
         "express": "^4.17.1",
+        "express-fileupload": "^1.2.1",
         "http": "0.0.0",
         "http-proxy": "^1.18.0",
         "jsonfile": "^5.0.0",

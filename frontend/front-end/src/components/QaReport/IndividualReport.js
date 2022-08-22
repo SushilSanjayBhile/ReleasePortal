@@ -62,7 +62,7 @@ class IndividualReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.Name
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task%2C%20Subtask)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Tasks}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Tasks}</a>`;
                 },
             },
             // 'NonTCTasks' : {
