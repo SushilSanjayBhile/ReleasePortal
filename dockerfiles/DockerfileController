@@ -1,0 +1,60 @@
+# Image to be used for Diamanti Release Portal
+FROM ubuntu:18.04
+
+# Maintainer of diamanti release portal docker image
+MAINTAINER sushil bhile <sushilmaxbhile@gmail.com>
+
+# Package updation
+RUN apt update
+
+# Apt package installation
+RUN apt install sudo -y
+RUN apt install vim -y
+RUN apt install curl -y
+RUN apt install python3.7 -y
+RUN apt install python3-pip -y
+RUN rm /usr/bin/python3
+RUN ln -s /usr/bin/python3.7 /usr/bin/python3
+RUN python3 --version
+RUN pip3 --version
+RUN apt install jq -y
+RUN pip3 install requests
+RUN pip3 install oauth2client
+RUN pip3 install google-api-python-client
+RUN pip3 install gspread
+RUN pip3 install setuptools_rust
+RUN pip3 install --upgrade pip
+RUN pip3 install pyOpenSSL
+#RUN apt install python3-openssl -y
+RUN pip3 install django-cors-headers
+RUN apt install wget -y
+RUN apt install openssh-client -y
+RUN apt install git -y
+RUN apt install tmux -y
+RUN apt install unzip -y
+RUN ssh-keygen -t ed25519 -C "sushilmaxbhile@gmail.com" -f /root/.ssh/id_ed25519  -q -N """"
+
+# Postgres installation
+ENV TZ=Asia/Kolkata
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt install postgresql postgresql-contrib -y
+RUN apt install python3-dateutil -y
+
+# Copying app
+COPY release-portal/ /release-portal
+RUN mkdir /release-portal/log/
+#COPY gitconfig ~/.gitconfig
+#COPY finalapp/ /release-portal/app/finalapp
+
+# Requirement installation for backend
+COPY release-portal/app/requirementsController.txt /release-portal/app/
+RUN pip3 install -r /release-portal/app/requirementsController.txt
+#COPY dockerfiles/ /release-portal/dockerfiles/
+#COPY k8sconfigfiles/ /release-portal/k8sconfigfiles/
+#COPY scripts/ /release-portal/scripts/
+ENV PYTHONUNBUFFERED=0
+
+# Start postgres service and our controller app
+#ENTRYPOINT ls / && /bin/bash
+ENTRYPOINT python3 /release-portal/app/manage.py runserver 0:8000 && bash
+

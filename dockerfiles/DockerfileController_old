@@ -1,0 +1,43 @@
+# Image to be used for Diamanti Release Portal
+FROM ubuntu:18.04
+
+# Maintainer of diamanti release portal docker image
+MAINTAINER sushil bhile <sushilmaxbhile@gmail.com>
+
+# Package updation
+RUN apt update
+
+# Apt package installation
+RUN apt install sudo -y
+RUN apt install vim -y
+RUN apt install python3.6 -y
+RUN apt install python3-pip -y
+RUN apt install python3-psycopg2 -y
+RUN apt install curl -y
+RUN apt install wget -y
+RUN apt install openssh-client -y
+RUN apt install git -y
+RUN apt install tmux -y
+RUN ssh-keygen -t ed25519 -C "sushilmaxbhile@gmail.com" -f /root/.ssh/id_ed25519  -q -N """"
+
+# Postgres installation
+ENV TZ=Asia/Kolkata
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt install postgresql postgresql-contrib -y
+
+# Copying app
+COPY app/ /portal/app/
+COPY gitconfig ~/.gitconfig
+
+# Requirement installation for backend
+COPY requirementsController.txt /portal/app/
+RUN pip3 install -r /portal/app/requirementsController.txt
+
+COPY dockerfiles/ /portal/dockerfiles/
+COPY k8sconfigfiles/ /portal/k8sconfigfiles/
+COPY scripts/ /portal/scripts/
+
+ENV PYTHONUNBUFFERED=0
+
+# Start postgres service and our controller app
+ENTRYPOINT python3 /portal/app/manage.py runserver 0:8000 && bash

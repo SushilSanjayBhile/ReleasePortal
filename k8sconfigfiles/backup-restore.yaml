@@ -1,0 +1,88 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: release-sc-high
+provisioner: dcx.csi.diamanti.com
+reclaimPolicy: Retain
+parameters:
+  mirrorCount: "1"
+  perfTier: high
+  fsType: ext4
+allowVolumeExpansion: true
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+  - ReadWriteOnce
+  flexVolume:
+    driver: diamanti.com/nfs
+    fsType: ext4
+    options:
+      name: nfs-pv
+      type: nfs
+      server: 172.16.0.25
+      path: "/dws_nas_scratch/release-portal-backup"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: release-pvc
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Gi
+  storageClassName: release-sc-high
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-pvc
+spec:
+  volumeName: nfs-pv
+  storageClassName: ""
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: restore-pod
+  annotations:
+    diamanti.com/endpoint: none
+spec:
+  containers:
+  - image: centos:7.5.1804
+    command: ["tar"]
+    args:
+      - "-xvpz"
+      - "--file=/backup-dir/tar-backup-qa-portal-release-pvc-1589353296.tar.gz"
+      - "--strip-components=1"
+      - "-C"
+      - "/data"
+      - "--numeric-owner"
+    name: tar-backup
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: /data
+      name: release-pvc
+    - mountPath: /backup-dir
+      name: backup-vol
+  restartPolicy: OnFailure
+  volumes:
+  - name: release-pvc
+    persistentVolumeClaim:
+      claimName: release-pvc
+  - name: backup-vol
+    persistentVolumeClaim:
+      claimName: nfs-pvc
