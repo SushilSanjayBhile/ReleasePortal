@@ -78,9 +78,41 @@ WSGI_APPLICATION = 'dp.wsgi.application'
 
 
 DATABASES = {
-    'OCP-CoreOS-4.7.40': {
+    'UE-3.4.2': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'OCP-CoreOS-4.7.40',
+        'NAME': 'UE-3.4.2',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'DMC3.4.1': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DMC3.4.1',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'DCX-3.5.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DCX-3.5.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'OCP-4.10': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'OCP-4.10',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'OSE-3.2.3': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'OSE-3.2.3',
         'USER': userName,
         'PASSWORD': passwd,
         'HOST': hostName,
