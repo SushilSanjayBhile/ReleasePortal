@@ -104,10 +104,14 @@ def get_all_weeks_records():
             data[i]["totalGUIDelta"] = data[i]["TotalGui"] - data[i + 1]["TotalGui"]
             data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"] - data[i + 1]["AutomatedGui"]
         else:
-            data[i]["totalCLIDelta"] = data[i]["TotalCli"]
-            data[i]["automatedCLIDelta"] = data[i]["AutomatedCli"]
-            data[i]["totalGUIDelta"] = data[i]["TotalGui"]
-            data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"]
+            #data[i]["totalCLIDelta"] = data[i]["TotalCli"]
+            #data[i]["automatedCLIDelta"] = data[i]["AutomatedCli"]
+            #data[i]["totalGUIDelta"] = data[i]["TotalGui"]
+            #data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"]
+            data[i]["totalCLIDelta"] = 0
+            data[i]["automatedCLIDelta"] = 0
+            data[i]["totalGUIDelta"] = 0
+            data[i]["automatedGUIDelta"] = 0
         data[i]["automation_perc_cli"] = round(data[i]["AutomatedCli"] * 100 / data[i]["TotalCli"], 2)
         data[i]["automation_perc_gui"] = round(data[i]["AutomatedGui"] * 100 / data[i]["TotalGui"], 2)
     return data
@@ -120,10 +124,14 @@ def calculate_all_weeks_records(data):
             data[i]["totalGUIDelta"] = data[i]["TotalGui"] - data[i + 1]["TotalGui"]
             data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"] - data[i + 1]["AutomatedGui"]
         else:
-            data[i]["totalCLIDelta"] = data[i]["TotalCli"]
-            data[i]["automatedCLIDelta"] = data[i]["AutomatedCli"]
-            data[i]["totalGUIDelta"] = data[i]["TotalGui"]
-            data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"]
+            #data[i]["totalCLIDelta"] = data[i]["TotalCli"]
+            #data[i]["automatedCLIDelta"] = data[i]["AutomatedCli"]
+            #data[i]["totalGUIDelta"] = data[i]["TotalGui"]
+            #data[i]["automatedGUIDelta"] = data[i]["AutomatedGui"]
+            data[i]["totalCLIDelta"] = 0
+            data[i]["automatedCLIDelta"] = 0
+            data[i]["totalGUIDelta"] = 0
+            data[i]["automatedGUIDelta"] = 0
         data[i]["automation_perc_cli"] = round(data[i]["AutomatedCli"] * 100 / data[i]["TotalCli"], 2)
         data[i]["automation_perc_gui"] = round(data[i]["AutomatedGui"] * 100 / data[i]["TotalGui"], 2)
 

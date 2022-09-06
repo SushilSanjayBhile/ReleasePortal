@@ -55,8 +55,8 @@ else{
     ttempDateStartGUI = year +"-"+ "0" + month +"-"+ "01"
     ttempDateEndGUI = year +"-"+ "0" +  month +"-"+ dayInCurrentMonth
 
-    tempDateStartAPI = year +"-"+ month +"-"+ "01"
-    tempDateEndAPI = year +"-"+ month +"-"+ dayInCurrentMonth
+    tempDateStartAPI = year +"-"+ "0" + month +"-"+ "01"
+    tempDateEndAPI = year +"-"+ "0" + month +"-"+ dayInCurrentMonth
 }
 class QaAnalysis extends Component {
     constructor(props) {
@@ -76,6 +76,12 @@ class QaAnalysis extends Component {
             jiraBugData: [],
             startDate : tempDateStartAPI,
             endDate : tempDateEndAPI,
+            startDateGUI: tempDateStartGUI,
+            endDateGUI: tempDateEndAPI,
+            tstartDate: tempDateStartAPI,
+            tendDate: tempDateEndGUI,
+            tstartDateGUI: ttempDateStartGUI,
+            tendDateGUI: ttempDateEndGUI,
             globalDate : false
         }
     }
@@ -127,6 +133,13 @@ class QaAnalysis extends Component {
     getAutomationCountDataWithRange = (startDate,endDate,intf) =>{
         let tempList = []
         let tempListGUI = []
+
+        if(intf == 'CLI'){
+            this.setState({disableShowButtonCliWeekly: true,})
+        }
+        else if(intf == 'GUI'){
+            this.setState({disableShowButtonGuiWeekly: true,})
+        }
 
         axios.get('/api/automation/',{
             params: {
@@ -380,7 +393,7 @@ class QaAnalysis extends Component {
         this.setState({
             endDate : tempDateEnd,
         },()=>{
-            this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');
+            this.setState({disableShowButtonCliWeekly : false})
         })
     }
 
@@ -396,7 +409,7 @@ class QaAnalysis extends Component {
         this.setState({
             endDateGUI : tempDateEndGUI,
         },()=>{
-            this.getAutomationCountDataWithRange(this.state.startDateGUI,this.state.endDateGUI,'GUI');
+            this.setState({disableShowButtonGuiWeekly : false})
         })
     }
 
@@ -525,6 +538,7 @@ class QaAnalysis extends Component {
                                 "Close": closeBugCount + resBugCount + inqaBugCount,
                                 "Total": resBugCount + openBugCount + todoBugCount + inpgBugCount + unReproBugCount + wontFixBugCount + notBugCount,
                                 "Invalid": unReproBugCount + wontFixBugCount + notBugCount,
+                                "CustomerBug": 0,
                                 }
                             }
 
@@ -594,7 +608,7 @@ class QaAnalysis extends Component {
                                 <div class="row">
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
-                                            <div onClick={() => this.setState({ automationCountWithRangeView: !this.state.automationCountWithRangeView },()=>{this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');})} style={{ display: 'inlineBlock' }}>
+                                            <div onClick={() => this.setState({ automationCountWithRangeView: !this.state.automationCountWithRangeView },()=>{if(this.state.automationCountWithRangeView){this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');}})} style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.automationCountWithRangeView &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -620,6 +634,11 @@ class QaAnalysis extends Component {
 
                                             <div class="col-md-3">
                                                 To Date<Input  type="date" id="EndDate" value={DATE2} onChange={(e) => this.selectedEndDate({ EndDate: e.target.value })} />
+                                            </div>
+                                            <div class="col-md-3" style={{marginTop: '1rem'}}>
+                                                <Button disabled={ this.state.disableShowButtonCliWeekly } size="md" className="rp-rb-save-btn" onClick={(e) => {this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');}} >
+                                                    Show
+                                                </Button>
                                             </div>
                                         </div>
                                         <Table>
@@ -647,7 +666,7 @@ class QaAnalysis extends Component {
                                 <div class="row">
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
-                                            <div onClick={() => this.setState({ automationCountWithRangeViewForGUI: !this.state.automationCountWithRangeViewForGUI },()=>{this.getAutomationCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');})} style={{ display: 'inlineBlock' }}>
+                                            <div onClick={() => this.setState({ automationCountWithRangeViewForGUI: !this.state.automationCountWithRangeViewForGUI },()=>{if(this.state.automationCountWithRangeViewForGUI){this.getAutomationCountDataWithRange(this.state.startDateGUI,this.state.endDateGUI,'GUI');}})} style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.automationCountWithRangeViewForGUI &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -674,6 +693,11 @@ class QaAnalysis extends Component {
                                             <div class="col-md-3">
                                                 To Date<Input  type="date" id="EndDate1" value={DATE4} onChange={(e) => this.selectedEndDateGUI({ EndDate1: e.target.value })} />
                                             </div>
+                                            <div class="col-md-3" style={{marginTop: '1rem'}}>
+                                                <Button disabled={ this.state.disableShowButtonGuiWeekly } size="md" className="rp-rb-save-btn" onClick={(e) => {this.getAutomationCountDataWithRange(this.state.startDateGUI,this.state.endDateGUI,'GUI');}} >
+                                                    Show
+                                                </Button>
+                                            </div>
                                         </div>
                                         <Table>
                                             <tbody>
@@ -699,7 +723,7 @@ class QaAnalysis extends Component {
                                 <div class="row">
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
-                                            <div onClick={() => this.setState({ jiraDataView: !this.state.jiraDataView },()=>{this.getdata();})} style={{ display: 'inlineBlock' }}>
+                                            <div onClick={() => this.setState({ jiraDataView: !this.state.jiraDataView },()=>{if(this.state.jiraDataView){this.getdata();}})} style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.jiraDataView &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -743,7 +767,7 @@ class QaAnalysis extends Component {
                                 <div class="row">
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
-                                            <div onClick={() => this.setState({ testCountWithRangeView: !this.state.testCountWithRangeView },()=> {if(this.state.testCountWithRangeView){this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'CLI');}})} style={{ display: 'inlineBlock' }}>
+                                            <div onClick={() => this.setState({ testCountWithRangeView: !this.state.testCountWithRangeView },()=> {if(this.state.testCountWithRangeView){this.getTestCountDataWithRange(this.state.tstartDate,this.state.tendDate,'CLI');}})} style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.testCountWithRangeView &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -803,7 +827,7 @@ class QaAnalysis extends Component {
                                 <div class="row">
                                     <div class='col-lg-12'>
                                         <div style={{ display: 'flex' }}>
-                                            <div onClick={() => this.setState({ testCountWithRangeViewForGUI: !this.state.testCountWithRangeViewForGUI },()=>{if(this.state.testCountWithRangeViewForGUI){this.getTestCountDataWithRange(this.state.startDate,this.state.endDate,'GUI');}})} style={{ display: 'inlineBlock' }}>
+                                            <div onClick={() => this.setState({ testCountWithRangeViewForGUI: !this.state.testCountWithRangeViewForGUI },()=>{if(this.state.testCountWithRangeViewForGUI){this.getTestCountDataWithRange(this.state.tstartDateGUI,this.state.tendDateGUI,'GUI');}})} style={{ display: 'inlineBlock' }}>
                                             {
                                                 !this.state.testCountWithRangeViewForGUI &&
                                                 <i className="fa fa-angle-down rp-rs-down-arrow"></i>
@@ -831,7 +855,7 @@ class QaAnalysis extends Component {
                                                 To Date<Input  type="date" id="tEndDate1" value={DATE8} onChange={(e) => this.testSelectedEndDateGUI({ tEndDate1: e.target.value })} />
                                             </div>
                                             <div class="col-md-3" style={{marginTop: '1rem'}}>
-                                                <Button disabled={ this.state.disableShowButtonGui } size="md" className="rp-rb-save-btn" onClick={(e) => {this.getTestCountDataWithRange(this.state.tstartDate, this.state.tendDate,'GUI');}} >
+                                                <Button disabled={ this.state.disableShowButtonGui } size="md" className="rp-rb-save-btn" onClick={(e) => {this.getTestCountDataWithRange(this.state.tstartDateGUI, this.state.tendDateGUI,'GUI');}} >
                                                     Show
                                                 </Button>
                                             </div>
