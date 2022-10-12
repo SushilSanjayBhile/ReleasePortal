@@ -251,6 +251,27 @@ app.use('/rest/featuredetail', (req, res) => {
 }, err => {
 })
 
+app.use('/rest/unReleasedVersions',(req,res) => {
+    //Used Jira dashbord link: https://diamanti.atlassian.net/jira/dashboards/12860?maximized=13904
+    var dashboardUrl = `/rest/gadget/1.0/twodimensionalfilterstats/generate?filterId=filter-13860&xstattype=allFixfor&ystattype=assignees&sortDirection=asc&sortBy=natural&numberToShow=1000`
+    var jiraReq = client.get(JIRA_URL + dashboardUrl, searchArgs, function (searchResultTotal, response) {
+        if (response.statusCode === 401) {
+                loginJIRA().then(function () {
+                    client.get(JIRA_URL + dashboardUrl, function (searchResultTotal2, responseTotal) {
+                        res.send(searchResultTotal2);
+                    }, err1 => { console.log('cannot get jira') });
+                }).catch(err => { console.log('promise failed'); console.log(err) })
+            } else {
+               res.send({searchResultTotal})
+            }
+        }, err => {
+            console.log('caught error in primitive')
+        });
+        jiraReq.on('error', function (err) {
+            console.log('cannot get features due to error in fetching JIRA', err)
+        })
+},err => { });
+
 app.use('/rest/cbug',(req,res) => {
     var cusBugsStr = `/rest/gadget/1.0/twodimensionalfilterstats/generate?filterId=filter-13703&xstattype=statuses&ystattype=allVersion&sortDirection=desc&sortBy=total&numberToShow=1000`
     var jiraReq = client.get(JIRA_URL + cusBugsStr, searchArgs, function (searchResultTotal, response) {
@@ -910,6 +931,27 @@ app.use('/rest/tasksByQA', (req, res) => {
         console.log('caught error in primitive')
     });
     jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
+
+app.use('/rest/tasks', (req, res) => {
+    var totalBugsStr = `?jql=assignee%20in%20(%22${req.query.qaMail}%22)%20AND%20issuetype%20in%20(Sub-task)%20AND%20status%20in%20(Done%2C%20%22In%20Progress%22%2C%20ToDo)%20AND%20fixVersion%20in%20(${req.query.fixVerStr})%20ORDER%20BY%20created%20DESC`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+    if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log(err)
         console.log('cannot get features due to error in fetching JIRA')
     })
 }, err => { });

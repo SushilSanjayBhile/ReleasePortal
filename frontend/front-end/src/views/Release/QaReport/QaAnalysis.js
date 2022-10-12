@@ -6,6 +6,7 @@ import axios from 'axios';
 import { saveTestCase, saveTestCaseStatus, saveSingleTestCase } from '../../../actions';
 import './QaAnalysis.scss'
 import IndividualReport from '../../../components/QaReport/IndividualReport';
+import SDETReleaseReport from '../../../components/QaReport/SDETReleaseReport';
 function daysInThisMonth() {
     var now = new Date();
     return new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
@@ -884,6 +885,9 @@ class QaAnalysis extends Component {
                 </div>
                 {
                     <IndividualReport></IndividualReport>
+                }
+                {
+                    <SDETReleaseReport></SDETReleaseReport>
                 }
                 < Modal isOpen={this.state.modal} toggle={() => this.toggle()}>
                     <ModalHeader eader toggle={() => this.toggle()}>Confirmation</ModalHeader>
