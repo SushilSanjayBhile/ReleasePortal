@@ -52,11 +52,13 @@ def RESULT_LOGS(Release, sdate, edate):
                         logdata = log["LogData"]
                         if "status added" in log["LogData"].lower():
                                 if log["UserName"] not in user:
-                                    user[log["UserName"]] = {}
+                                    user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
                                     user[log["UserName"]]["auto"] = 0
                                     user[log["UserName"]]["exec"] = 1
                                 else:
                                     user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
+                                    if rel["ReleaseNumber"] not in user["execIn"]:
+                                        user["execIn"] = user["execIn"] + "," + rel["ReleaseNumber"]
 
                         try:
                             if rel["ReleaseNumber"] == "DCX-DMC-Master":
@@ -87,11 +89,13 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
                         logdata = log["LogData"]
                         if "status added" in log["LogData"].lower():
                             if log["UserName"] not in user:
-                                user[log["UserName"]] = {}
+                                user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
                                 user[log["UserName"]]["auto"] = 0
                                 user[log["UserName"]]["exec"] = 1
                             else:
                                 user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
+                                if rel["ReleaseNumber"] not in user["execIn"]:
+                                        user["execIn"] = user["execIn"] + "," + rel["ReleaseNumber"]
                         try:
                             if rel["ReleaseNumber"] == "DCX-DMC-Master":
                                 logdata = json.loads(logdata)

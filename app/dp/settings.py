@@ -78,7 +78,23 @@ WSGI_APPLICATION = 'dp.wsgi.application'
 
 
 DATABASES = {
-        'K8s-3.6.0': {
+    'UA-3.6.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'UA-3.6.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'OSE-4.12': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'OSE-4.12',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'K8s-3.6.0': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'K8s-3.6.0',
         'USER': userName,

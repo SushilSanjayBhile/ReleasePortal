@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import {
-    Col,Row, Table, Button,
+    Col, Row, Table, Button,
     UncontrolledPopover, PopoverBody,
     Modal, ModalHeader, ModalBody, ModalFooter, Input, FormGroup, Label, Collapse
 } from 'reactstrap';
@@ -15,24 +15,26 @@ import MoodRenderer from "../TestCasesAll/moodRenderer";
 import NumericEditor from "../TestCasesAll/numericEditor";
 import SelectionEditor from '../TestCasesAll/selectionEditor';
 import DatePickerEditor from '../TestCasesAll/datePickerEditor';
-import  CheckBox  from '../TestCasesAll/CheckBox'
+import CheckBox from '../TestCasesAll/CheckBox'
 import './popover.scss';
+import { conditionallyUpdateScrollbar } from 'reactstrap/lib/utils';
 class SDETReleaseReport extends Component {
     isApiUnderProgress = false;
     sdetData = {};
     userInfo = [];
     releaseInfo = {};
     fixVerStr = '';
+    jiraData = [];
 
     constructor(props) {
         super(props);
         let columnDefDict = {
-            'name' : {
+            'name': {
                 headerName: "Name", field: "name", sortable: true, filter: true,
                 editable: false,
                 width: '150',
             },
-            'assigned' : {
+            'assigned': {
                 headerName: "Assigned", field: "assigned", sortable: true, filter: true,
                 width: '100',
                 editable: false,
@@ -70,7 +72,7 @@ class SDETReleaseReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.name
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Sub-task)%20AND%20status%20in%20(%22In%20Progress%22)%20AND%20fixVersion%20in%20(${this.fixVerStr})%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.inProg}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20in%20(%22In%20Progress%22)%20AND%20fixVersion%20in%20(${this.fixVerStr})%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.inProg}</a>`;
                 },
             },
             'inProgSp': {
@@ -87,7 +89,7 @@ class SDETReleaseReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.name
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Sub-task)%20AND%20status%20in%20(Done)%20AND%20fixVersion%20in%20(${this.fixVerStr})%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.done}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20in%20(Done)%20AND%20fixVersion%20in%20(${this.fixVerStr})%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.done}</a>`;
                 },
             },
             'doneSp': {
@@ -104,7 +106,7 @@ class SDETReleaseReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.name
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Sub-task)%20AND%20status%20in%20(ToDo)%20AND%20fixVersion%20in%20(${this.fixVerStr})%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.todo}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20in%20(ToDo)%20AND%20fixVersion%20in%20(${this.fixVerStr})%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.todo}</a>`;
                 },
             },
             'todoSp': {
@@ -149,12 +151,12 @@ class SDETReleaseReport extends Component {
                 datePicker: DatePickerEditor
             },
         }
-        if(this.month >= '10'){
+        if (this.month >= '10') {
 
-            this.DateStart = this.year +"-"+ this.month +"-"+ "01"
-            this.DateEnd = this.year +"-"+ this.month +"-"+ this.dayInCurrentMonth
+            this.DateStart = this.year + "-" + this.month + "-" + "01"
+            this.DateEnd = this.year + "-" + this.month + "-" + this.dayInCurrentMonth
         }
-        else{
+        else {
 
             this.DateStart = this.year + "-" + "0" + this.month + "-" + "01"
             this.DateEnd = this.year + "-" + "0" + this.month + "-" + this.dayInCurrentMonth
@@ -174,8 +176,8 @@ class SDETReleaseReport extends Component {
     onGridReady = params => {
         this.gridApi = params.api;
         this.gridColumnApi = params.columnApi;
-         const sortModelCR = [
-            {colId: 'name', sort: 'asc'}
+        const sortModelCR = [
+            { colId: 'name', sort: 'asc' }
         ];
         this.gridApi.setSortModel(sortModelCR);
         params.api.sizeColumnsToFit();
@@ -183,11 +185,11 @@ class SDETReleaseReport extends Component {
     gridOperations(enable) {
         if (enable) {
             if (this.state.isApiUnderProgress) {
-                this.setState({ isApiUnderProgress: false});
+                this.setState({ isApiUnderProgress: false });
             }
         } else {
             if (!this.state.isApiUnderProgress) {
-                this.setState({ isApiUnderProgress: true});
+                this.setState({ isApiUnderProgress: true });
             }
         }
     }
@@ -198,12 +200,12 @@ class SDETReleaseReport extends Component {
         let promise = []
         promise.push(axios.get('/rest/unReleasedVersions').then(res => {
             let data = res.data.searchResultTotal.firstRow
-            if(data){
-                if(data.cells.length > 1){
+            if (data) {
+                if (data.cells.length > 1) {
                     data.cells.forEach(cell => {
                         //code to get all releases.
-                        if(cell.markup != "T:"){
-                            temp.push({value: cell.markup, isChecked: true})
+                        if (cell.markup != "T:") {
+                            temp.push({ value: cell.markup, isChecked: true })
                         }
                     })
                 }
@@ -213,38 +215,62 @@ class SDETReleaseReport extends Component {
             this.gridOperations(true);
         }));
         Promise.all(promise).then(result => {
+            let uList = []
             this.state.unRelVer = temp
-            this.makeFixvVerString()
+            this.state.unRelVer.forEach(ver => {
+                if (ver.isChecked == true) {
+                    uList.push(ver.value)
+                }
+            })
+            this.fixVerStr = this.makeString(uList)
             axios.get(`/api/release/cdate`).then(res => {
-                    res.data.forEach(item => {
+                res.data.forEach(item => {
                     this.releaseInfo[item.ReleaseNumber] = item.RelNum
                 });
-                    this.state.targetRel =  this.findMatchingRel()
-                    this.getAllData()
-                }).catch(err => {
-                    console.log("Error in fetching release /api/release/cdate", err)
-                    this.gridOperations(true);
-                });
+                this.state.targetRel = this.findMatchingRel()
+                this.getAllData()
+            }).catch(err => {
+                console.log("Error in fetching release /api/release/cdate", err)
+                this.gridOperations(true);
+            });
         })
     }
 
-    makeFixvVerString(){
+    makeString(list) {
+        let str = ''
+        if (list.length == 0) {
+            str = ''
+        }
+        else if (list.length == 1) {
+            str = encodeURIComponent("\"" + list[0] + "\"")
+        }
+        else {
+            for (let i = 0; i < list.length - 1; i++) {
+                str = str + "\"" + list[i] + "\"" + ", "
+            }
+            str = str + "\"" + list[list.length - 1] + "\""
+            str = encodeURIComponent(str)
+        }
+        return str;
+    }
+
+    makeFixvVerString() {
         let temp = []
         this.state.unRelVer.forEach(ver => {
-            if(ver.isChecked == true){
+            if (ver.isChecked == true) {
                 temp.push(ver.value)
             }
         })
 
         let fixVerStr = ''
-        if(temp.length == 0){
+        if (temp.length == 0) {
             fixVerStr = ''
         }
-        else if(temp.length ==1){
-            fixVerStr = encodeURIComponent("\""+temp[0]+"\"")
+        else if (temp.length == 1) {
+            fixVerStr = encodeURIComponent("\"" + temp[0] + "\"")
         }
-        else{
-            for(let i = 0; i < temp.length - 1; i++){
+        else {
+            for (let i = 0; i < temp.length - 1; i++) {
                 fixVerStr = fixVerStr + "\"" + temp[i] + "\"" + ", "
             }
             fixVerStr = fixVerStr + "\"" + temp[temp.length - 1] + "\""
@@ -253,16 +279,16 @@ class SDETReleaseReport extends Component {
         this.fixVerStr = fixVerStr;
     }
 
-    findMatchingRel(){
+    findMatchingRel() {
         let rel = []
         this.state.unRelVer.forEach(ver => {
-            if(ver.isChecked){
-                if(ver.value in this.releaseInfo || ver.value.toLowerCase() in this.releaseInfo){
+            if (ver.isChecked) {
+                if (ver.value in this.releaseInfo || ver.value.toLowerCase() in this.releaseInfo) {
                     rel.push(ver.value)
                 }
                 else {
                     Object.keys(this.releaseInfo).forEach(key => {
-                        if(ver.value.toLowerCase() == this.releaseInfo[key].toLowerCase()){
+                        if (ver.value.toLowerCase() == this.releaseInfo[key].toLowerCase()) {
                             rel.push(key)
                             return;
                         }
@@ -273,32 +299,32 @@ class SDETReleaseReport extends Component {
         return rel;
     }
 
-    getDataForSelectedFixVersion(){
+    getDataForSelectedFixVersionold() {
         this.gridOperations(false);
         this.makeFixvVerString()
         this.state.targetRel = this.findMatchingRel()
         let qaList = {}
         let promises = []
         Object.keys(this.sdetData).forEach(key => {
-            if(key != "Automated"){
+            if (key != "Automated") {
                 Object.keys(this.sdetData[key]).forEach(rel => {
-                    if(this.state.targetRel.includes(rel)){
+                    if (this.state.targetRel.includes(rel)) {
                         Object.keys(this.sdetData[key][rel]).forEach(qa => {
-                            if(qaList[qa]){
-                                if(key.toLocaleLowerCase().includes("assigned")){
+                            if (qaList[qa]) {
+                                if (key.toLocaleLowerCase().includes("assigned")) {
                                     qaList[qa]["assigned"] = qaList[qa]["assigned"] + this.sdetData[key][rel][qa]["assigned"]
                                     qaList[qa]["time"] = qaList[qa]["time"] + this.sdetData[key][rel][qa]["time"]
                                 }
-                                else{
+                                else {
                                     qaList[qa]["executed"] = qaList[qa]["executed"] + this.sdetData[key][rel][qa]
                                 }
                             }
-                            else{
-                                if(key.toLocaleLowerCase().includes("assigned")){
-                                    qaList[qa] = {"assigned": this.sdetData[key][rel][qa]["assigned"], "time": this.sdetData[key][rel][qa]["time"], "executed": 0}
+                            else {
+                                if (key.toLocaleLowerCase().includes("assigned")) {
+                                    qaList[qa] = { "assigned": this.sdetData[key][rel][qa]["assigned"], "time": this.sdetData[key][rel][qa]["time"], "executed": 0 }
                                 }
-                                else{
-                                    qaList[qa] = {"assigned": 0, "time": 0.0, "executed": this.sdetData[key][rel][qa]}
+                                else {
+                                    qaList[qa] = { "assigned": 0, "time": 0.0, "executed": this.sdetData[key][rel][qa] }
                                 }
                             }
                         })
@@ -317,49 +343,141 @@ class SDETReleaseReport extends Component {
             user.doneSp = 0
             user.todo = 0
             user.todoSp = 0
-            if(user.email in qaList){
+            if (user.email in qaList) {
                 user.assigned = user.assigned + qaList[user.email]["assigned"]
                 user.executed = user.executed + qaList[user.email]["executed"]
                 user.exeTime = user.exeTime + qaList[user.email]["time"]
             }
-            if(user.name in qaList){
+            if (user.name in qaList) {
                 user.assigned = user.assigned + qaList[user.name]["assigned"]
                 user.executed = user.executed + qaList[user.name]["executed"]
                 user.exeTime = user.exeTime + qaList[user.name]["time"]
             }
-            promises.push(axios.get(`/rest/tasks`,{
+            promises.push(axios.get(`/rest/tasks`, {
                 params: {
                     "qaMail": user["email"],
                     "fixVerStr": this.fixVerStr,
-                }}).then(resp => {
-                    resp.data.issues.forEach(issue => {
-                        if(issue.fields.status.name == "Done"){
-                            user.done = user.done + 1
-                            user.doneSp = user.doneSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
-                        }
-                        else if(issue.fields.status.name == "ToDo" || issue.fields.status.name == "To Do"){
-                            user.todo = user.todo + 1
-                            user.todoSp = user.todoSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
-                        }
-                        else if(issue.fields.status.name == "In Progress"){
-                            user.inProg = user.inProg + 1
-                            user.inProgSp = user.inProgSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
-                        }
-                    })
-                }).catch(err => {
-                    console.log("Error in fetching user tasks /rest/tasks , err, qaMail", err, user["email"])
-                    this.gridOperations(true);
+                }
+            }).then(resp => {
+                resp.data.issues.forEach(issue => {
+                    if (issue.fields.status.name == "Done") {
+                        user.done = user.done + 1
+                        user.doneSp = user.doneSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                    }
+                    else if (issue.fields.status.name == "ToDo" || issue.fields.status.name == "To Do") {
+                        user.todo = user.todo + 1
+                        user.todoSp = user.todoSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                    }
+                    else if (issue.fields.status.name == "In Progress") {
+                        user.inProg = user.inProg + 1
+                        user.inProgSp = user.inProgSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                    }
                 })
+            }).catch(err => {
+                console.log("Error in fetching user tasks /rest/tasks , err, qaMail", err, user["email"])
+                this.gridOperations(true);
+            })
             );
         })
         Promise.all(promises).then(result => {
-            this.setState({ApplicableTcs: undefined})
-            this.setState({ApplicableTcs: this.userlist}, (() => {this.gridOperations(true);}))
+            this.setState({ ApplicableTcs: undefined })
+            this.setState({ ApplicableTcs: this.userlist }, (() => { this.gridOperations(true); }))
         })
     }
 
+    getDataForSelectedFixVersion() {
+        this.gridOperations(false);
+        this.state.targetRel = this.findMatchingRel()
+        let qaList = {}
+        //let promises = []
+        Object.keys(this.sdetData).forEach(key => {
+            if (key != "Automated") {
+                Object.keys(this.sdetData[key]).forEach(rel => {
+                    if (this.state.targetRel.includes(rel)) {
+                        Object.keys(this.sdetData[key][rel]).forEach(qa => {
+                            if (qaList[qa]) {
+                                if (key.toLocaleLowerCase().includes("assigned")) {
+                                    qaList[qa]["assigned"] = qaList[qa]["assigned"] + this.sdetData[key][rel][qa]["assigned"]
+                                    qaList[qa]["time"] = qaList[qa]["time"] + this.sdetData[key][rel][qa]["time"]
+                                }
+                                else {
+                                    qaList[qa]["executed"] = qaList[qa]["executed"] + this.sdetData[key][rel][qa]
+                                }
+                            }
+                            else {
+                                if (key.toLocaleLowerCase().includes("assigned")) {
+                                    qaList[qa] = { "assigned": this.sdetData[key][rel][qa]["assigned"], "time": this.sdetData[key][rel][qa]["time"], "executed": 0 }
+                                }
+                                else {
+                                    qaList[qa] = { "assigned": 0, "time": 0.0, "executed": this.sdetData[key][rel][qa] }
+                                }
+                            }
+                        })
+                    }
+                })
+            }
+        })
+        let tempDict = {}
+        console.log("this.jiraData", this.jiraData)
+        this.jiraData.forEach(issue => {
+            let user = issue.fields.assignee.displayName
+            if (!tempDict[user]) {
+                tempDict[user] = { inProg: 0, inProgSp: 0, done: 0, doneSp: 0, todo: 0, todoSp: 0 }
+            }
+            // if (issue.fields.status.name == "Done") {
+            //     this.userlist[user].done = this.userlist[user].done + 1
+            //     this.userlist[user].doneSp = this.userlist[user].doneSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+            // }
+            // else if (issue.fields.status.name == "ToDo" || issue.fields.status.name == "To Do") {
+            //     this.userlist[user].todo = this.userlist[user].todo + 1
+            //     this.userlist[user].todoSp = this.userlist[user].todoSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+            // }
+            // else if (issue.fields.status.name == "In Progress") {
+            //     this.userlist[user].inProg = this.userlist[user].inProg + 1
+            //     this.userlist[user].inProgSp = this.userlist[user].inProgSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+            // }
+            if (issue.fields.status.name == "Done") {
+                tempDict[user].done = tempDict[user].done + 1
+                tempDict[user].doneSp = tempDict[user].doneSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+            }
+            else if (issue.fields.status.name == "ToDo" || issue.fields.status.name == "To Do") {
+                tempDict[user].todo = tempDict[user].todo + 1
+                tempDict[user].todoSp = tempDict[user].todoSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+            }
+            else if (issue.fields.status.name == "In Progress") {
+                tempDict[user].inProg = tempDict[user].inProg + 1
+                tempDict[user].inProgSp = tempDict[user].inProgSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+            }
+        })
+        console.log("tempDict", tempDict)
+        this.userlist.forEach(user => {
+            user.assigned = 0
+            user.executed = 0
+            user.exeTime = 0
+            user.remained = 0
+            user.inProg = tempDict[user.name] ? tempDict[user.name].inProg : console.log("username",user.name)
+            user.inProgSp = tempDict[user.name].inProgSp
+            user.done = tempDict[user.name].done
+            user.doneSp = tempDict[user.name].doneSp
+            user.todo = tempDict[user.name].todo
+            user.todoSp = tempDict[user.name].todoSp
+            if (user.email in qaList) {
+                user.assigned = user.assigned + qaList[user.email]["assigned"]
+                user.executed = user.executed + qaList[user.email]["executed"]
+                user.exeTime = user.exeTime + qaList[user.email]["time"]
+            }
+            if (user.name in qaList) {
+                user.assigned = user.assigned + qaList[user.name]["assigned"]
+                user.executed = user.executed + qaList[user.name]["executed"]
+                user.exeTime = user.exeTime + qaList[user.name]["time"]
+            }
+        })
+        this.setState({ ApplicableTcs: undefined })
+        this.setState({ ApplicableTcs: this.userlist }, (() => { this.gridOperations(true); }))
+    }
+
     getAllData() {
-        axios.get('/api/sdetReleaseReport/',{
+        axios.get('/api/sdetReleaseReport/', {
             params: {
                 releases: this.state.targetRel
             },
@@ -367,24 +485,24 @@ class SDETReleaseReport extends Component {
             this.sdetData = all.data.SDETRelReport
             let qaList = {}
             Object.keys(this.sdetData).forEach(key => {
-                if(key != "Automated"){
+                if (key != "Automated") {
                     Object.keys(this.sdetData[key]).forEach(rel => {
                         Object.keys(this.sdetData[key][rel]).forEach(qa => {
-                            if(qaList[qa]){
-                                if(key.toLocaleLowerCase().includes("assigned")){
+                            if (qaList[qa]) {
+                                if (key.toLocaleLowerCase().includes("assigned")) {
                                     qaList[qa]["assigned"] = qaList[qa]["assigned"] + this.sdetData[key][rel][qa]["assigned"]
                                     qaList[qa]["time"] = qaList[qa]["time"] + this.sdetData[key][rel][qa]["time"]
                                 }
-                                else{
+                                else {
                                     qaList[qa]["executed"] = qaList[qa]["executed"] + this.sdetData[key][rel][qa]
                                 }
                             }
-                            else{
-                                if(key.toLocaleLowerCase().includes("assigned")){
-                                    qaList[qa] = {"assigned": this.sdetData[key][rel][qa]["assigned"], "time": this.sdetData[key][rel][qa]["time"], "executed": 0}
+                            else {
+                                if (key.toLocaleLowerCase().includes("assigned")) {
+                                    qaList[qa] = { "assigned": this.sdetData[key][rel][qa]["assigned"], "time": this.sdetData[key][rel][qa]["time"], "executed": 0 }
                                 }
-                                else{
-                                    qaList[qa] = {"assigned": 0, "time": 0.0, "executed": this.sdetData[key][rel][qa]}
+                                else {
+                                    qaList[qa] = { "assigned": 0, "time": 0.0, "executed": this.sdetData[key][rel][qa] }
                                 }
                             }
                         })
@@ -395,14 +513,14 @@ class SDETReleaseReport extends Component {
             let promises = []
             axios.get(`/api/userinfo`).then(res => {
                 res.data.forEach(user => {
-                    if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "yatish@diamanti.com" || user["email"] == "bharati@diamanti.com" || user["email"] == "kdivekar@diamanti.com" || user["email"] == "ajadhav@diamanti.com"))) {
-                        let temp = {email: user["email"], name:user["name"], assigned: 0, executed:0, exeTime: 0, remained: 0, automated: this.sdetData["Automated"][user["email"]] ? this.sdetData["Automated"][user["email"]]["auto"] : 0, inProg: 0, inProgSp: 0, done: 0, doneSp: 0, todo: 0, todoSp: 0}
-                        if(user.email in qaList){
+                    if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "bharati@diamanti.com" || user["email"] == "sshende@diamanti.com" || user["email"] == "ajadhav@diamanti.com"))) {
+                        let temp = { email: user["email"], name: user["name"], assigned: 0, executed: 0, exeTime: 0, remained: 0, automated: this.sdetData["Automated"][user["email"]] ? this.sdetData["Automated"][user["email"]]["auto"] : 0, inProg: 0, inProgSp: 0, done: 0, doneSp: 0, todo: 0, todoSp: 0 }
+                        if (user.email in qaList) {
                             temp.assigned = temp.assigned + qaList[user.email]["assigned"]
                             temp.executed = temp.executed + qaList[user.email]["executed"]
                             temp.exeTime = temp.exeTime + qaList[user.email]["time"]
                         }
-                        if(user.name in qaList){
+                        if (user.name in qaList) {
                             temp.assigned = temp.assigned + qaList[user.name]["assigned"]
                             temp.executed = temp.executed + qaList[user.name]["executed"]
                             temp.exeTime = temp.exeTime + qaList[user.name]["time"]
@@ -411,33 +529,35 @@ class SDETReleaseReport extends Component {
                     }
                 })
                 this.userlist.forEach(user => {
-                    promises.push(axios.get(`/rest/tasks`,{
+                    promises.push(axios.get(`/rest/tasks`, {
                         params: {
                             "qaMail": user["email"],
                             "fixVerStr": this.fixVerStr,
-                        }}).then(resp => {
-                            resp.data.issues.forEach(issue => {
-                                if(issue.fields.status.name == "Done"){
-                                    user.done = user.done + 1
-                                    user.doneSp = user.doneSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
-                                }
-                                else if(issue.fields.status.name == "ToDo" || issue.fields.status.name == "To Do"){
-                                    user.todo = user.todo + 1
-                                    user.todoSp = user.todoSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
-                                }
-                                else if(issue.fields.status.name == "In Progress"){
-                                    user.inProg = user.inProg + 1
-                                    user.inProgSp = user.inProgSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
-                                }
-                            })
-                        }).catch(err => {
-                            console.log("Error in fetching user tasks /rest/tasks , err, qaMail", err, user["email"])
-                            this.gridOperations(true);
+                        }
+                    }).then(resp => {
+                        this.jiraData = [...this.jiraData, ...resp.data.issues]
+                        resp.data.issues.forEach(issue => {
+                            if (issue.fields.status.name == "Done") {
+                                user.done = user.done + 1
+                                user.doneSp = user.doneSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                            }
+                            else if (issue.fields.status.name == "ToDo" || issue.fields.status.name == "To Do") {
+                                user.todo = user.todo + 1
+                                user.todoSp = user.todoSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                            }
+                            else if (issue.fields.status.name == "In Progress") {
+                                user.inProg = user.inProg + 1
+                                user.inProgSp = user.inProgSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                            }
                         })
+                    }).catch(err => {
+                        console.log("Error in fetching user tasks /rest/tasks , err, qaMail", err, user["email"])
+                        this.gridOperations(true);
+                    })
                     );
                 })
                 Promise.all(promises).then(result => {
-                    this.setState({ApplicableTcs: this.userlist}, (() => {this.gridOperations(true);}));
+                    this.setState({ ApplicableTcs: this.userlist }, (() => { this.gridOperations(true); }));
                 })
             })
         }).catch(err => {
@@ -445,27 +565,118 @@ class SDETReleaseReport extends Component {
             this.gridOperations(true);
         })
     }
+
+    getAllDatanew() {
+        axios.get('/api/sdetReleaseReport/', {
+            params: {
+                releases: this.state.targetRel
+            },
+        }).then(all => {
+            this.sdetData = all.data.SDETRelReport
+            let qaList = {}
+            Object.keys(this.sdetData).forEach(key => {
+                if (key != "Automated") {
+                    Object.keys(this.sdetData[key]).forEach(rel => {
+                        Object.keys(this.sdetData[key][rel]).forEach(qa => {
+                            if (qaList[qa]) {
+                                if (key.toLocaleLowerCase().includes("assigned")) {
+                                    qaList[qa]["assigned"] = qaList[qa]["assigned"] + this.sdetData[key][rel][qa]["assigned"]
+                                    qaList[qa]["time"] = qaList[qa]["time"] + this.sdetData[key][rel][qa]["time"]
+                                }
+                                else {
+                                    qaList[qa]["executed"] = qaList[qa]["executed"] + this.sdetData[key][rel][qa]
+                                }
+                            }
+                            else {
+                                if (key.toLocaleLowerCase().includes("assigned")) {
+                                    qaList[qa] = { "assigned": this.sdetData[key][rel][qa]["assigned"], "time": this.sdetData[key][rel][qa]["time"], "executed": 0 }
+                                }
+                                else {
+                                    qaList[qa] = { "assigned": 0, "time": 0.0, "executed": this.sdetData[key][rel][qa] }
+                                }
+                            }
+                        })
+                    })
+                }
+            })
+            this.userlist = []
+            let promises = [], nameList = [];
+            axios.get(`/api/userinfo`).then(res => {
+                res.data.forEach(user => {
+                    if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "yatish@diamanti.com" || user["email"] == "bharati@diamanti.com" || user["email"] == "kdivekar@diamanti.com" || user["email"] == "ajadhav@diamanti.com"))) {
+                        let temp = { email: user["email"], name: user["name"], assigned: 0, executed: 0, exeTime: 0, remained: 0, automated: this.sdetData["Automated"][user["email"]] ? this.sdetData["Automated"][user["email"]]["auto"] : 0, inProg: 0, inProgSp: 0, done: 0, doneSp: 0, todo: 0, todoSp: 0 }
+                        if (user.email in qaList) {
+                            temp.assigned = temp.assigned + qaList[user.email]["assigned"]
+                            temp.executed = temp.executed + qaList[user.email]["executed"]
+                            temp.exeTime = temp.exeTime + qaList[user.email]["time"]
+                        }
+                        if (user.name in qaList) {
+                            temp.assigned = temp.assigned + qaList[user.name]["assigned"]
+                            temp.executed = temp.executed + qaList[user.name]["executed"]
+                            temp.exeTime = temp.exeTime + qaList[user.name]["time"]
+                        }
+                        nameList.push(user.name)
+                        this.userlist.push(temp);
+                    }
+                })
+                promises.push(axios.get(`/rest/allTasks`, {
+                    params: {
+                        "qaMail": this.makeString(nameList),
+                        "fixVerStr": this.fixVerStr,
+                    }
+                }).then(resp => {
+                    this.jiraData = resp.data.issues
+                    this.jiraData.forEach(issue => {
+                        let user = issue.fields.assignee.displayName
+                        if (issue.fields.status.name == "Done") {
+                            this.userlist[user].done = this.userlist[user].done + 1
+                            this.userlist[user].doneSp = this.userlist[user].doneSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                        }
+                        else if (issue.fields.status.name == "ToDo" || issue.fields.status.name == "To Do") {
+                            this.userlist[user].todo = this.userlist[user].todo + 1
+                            this.userlist[user].todoSp = this.userlist[user].todoSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                        }
+                        else if (issue.fields.status.name == "In Progress") {
+                            this.userlist[user].inProg = this.userlist[user].inProg + 1
+                            this.userlist[user].inProgSp = this.userlist[user].inProgSp + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                        }
+                    })
+                }).catch(err => {
+                    //console.log("Error in fetching user tasks /rest/tasks , err, qaMail", err, user["email"])
+                    this.gridOperations(true);
+                })
+                );
+                Promise.all(promises).then(result => {
+                    this.setState({ ApplicableTcs: this.userlist }, (() => { this.gridOperations(true); }));
+                })
+            })
+        }).catch(err => {
+            console.log("Error in fetching sdet release report /api/sdetReleaseReport/", err)
+            this.gridOperations(true);
+        })
+    }
+
     popoverToggleFixVer = () => this.setState({ popoverOpenFixVer: !this.state.popoverOpenFixVer });
     handleAllChecked = (event) => {
         let fixVersions = this.state.unRelVer
         fixVersions.forEach(columnName => columnName.isChecked = event.target.checked)
-        this.setState({unRelVer: fixVersions})
+        this.setState({ unRelVer: fixVersions })
 
     }
     handleCheckChieldElement = (event) => {
         let fixVersions = this.state.unRelVer
         fixVersions.forEach(columnName => {
             if (columnName.value === event.target.value)
-                columnName.isChecked =  event.target.checked
+                columnName.isChecked = event.target.checked
         })
-        this.setState({unRelVer: fixVersions})
+        this.setState({ unRelVer: fixVersions })
     }
-    disable(){
-        if(this.state.isApiUnderProgress){
-             return true;
-         }
-         else return false;
-     }
+    disable() {
+        if (this.state.isApiUnderProgress) {
+            return true;
+        }
+        else return false;
+    }
     render() {
         if (this.gridApi) {
             if (this.state.isApiUnderProgress) {
@@ -482,7 +693,7 @@ class SDETReleaseReport extends Component {
             <div>
                 <Row>
                     <Col xs="11" sm="11" md="11" lg="11" className="rp-summary-tables" style={{ 'margin-left': '1.5rem' }}>
-                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => {this.setState({ tcOpen: !this.state.tcOpen }, () => {if(this.state.tcOpen){/*this.getAllData()*/}});}}>
+                        <div className='rp-app-table-header' style={{ cursor: 'pointer' }} onClick={() => { this.setState({ tcOpen: !this.state.tcOpen }, () => { if (this.state.tcOpen) {/*this.getAllData()*/ } }); }}>
                             <div class="row">
                                 <div class='col-lg-12'>
                                     <div style={{ display: 'flex' }}>
@@ -506,22 +717,22 @@ class SDETReleaseReport extends Component {
                         <Collapse isOpen={this.state.tcOpen}>
                             <div>
                                 <div style={{ width: '100%', height: '500px', marginBottom: '6rem' }}>
-                                <div class="test-header">
+                                    <div class="test-header">
                                         <div class="row">
                                             <div style={{ display: 'inline', position: 'absolute', marginTop: '0.5rem', right: '20rem' }}>
                                                 <Button disabled={this.disable()} id="PopoverAssignFixVer" type="button"><i class="fa fa-check-square-o" aria-hidden="true"></i></Button>
                                                 <UncontrolledPopover className="popover-container" trigger="legacy" placement="bottom" target="PopoverAssignFixVer" id="PopoverAssignButtonFixVer" toggle={() => this.popoverToggleFixVer()} isOpen={this.state.popoverOpenFixVer}>
                                                     <PopoverBody>
                                                         <div>
-                                                            <input type="checkbox" onClick={this.handleAllChecked}  value="checkedall" /> Check / Uncheck All
-                                                            <ul style={{columns: 5, width: '700px'}}>
-                                                            {
-                                                            this.state.unRelVer.map((columnName) => {
-                                                                return (<CheckBox handleCheckChieldElement={this.handleCheckChieldElement}  {...columnName} />)
-                                                            })
-                                                            }
+                                                            <input type="checkbox" onClick={this.handleAllChecked} value="checkedall" /> Check / Uncheck All
+                                                            <ul style={{ columns: 5, width: '700px' }}>
+                                                                {
+                                                                    this.state.unRelVer.map((columnName) => {
+                                                                        return (<CheckBox handleCheckChieldElement={this.handleCheckChieldElement}  {...columnName} />)
+                                                                    })
+                                                                }
                                                             </ul>
-                                                            <Button disabled={ this.disable() } size="md" className="rp-rb-set-btn" onClick={(e) => {this.setState({ popoverOpenFixVer: !this.state.popoverOpenFixVer});this.getDataForSelectedFixVersion();}} >Set</Button>
+                                                            <Button disabled={this.disable()} size="md" className="rp-rb-set-btn" onClick={(e) => { this.setState({ popoverOpenFixVer: !this.state.popoverOpenFixVer }); this.getDataForSelectedFixVersion(); }} >Set</Button>
                                                             {/* <Button onClick={() => {this.setState({ popoverOpenFixVer: !this.state.popoverOpenFixVer});this.getDataForSelectedFixVersion();}}>Set</Button> */}
                                                         </div>
                                                     </PopoverBody>
@@ -530,7 +741,7 @@ class SDETReleaseReport extends Component {
                                             <div style={{ width: '5rem', marginLeft: '1rem' }}>
                                                 <Button disabled={this.state.isApiUnderProgress} size="md" className="rp-rb-save-btn" onClick={() => {
                                                     if (this.gridApi) {
-                                                        this.gridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "SDET Report.csv"});
+                                                        this.gridApi.exportDataAsCsv({ allColumns: true, onlySelected: false, fileName: "SDET Report.csv" });
                                                     }
                                                 }} >
                                                     Download
@@ -573,12 +784,12 @@ class SDETReleaseReport extends Component {
                                             />
                                         </div>
                                     </div>
-                                        <div style={{ display: 'inline' }}>
-                                            {
-                                                <div style={{ display: 'inline' }}>
-                                                    <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {this.state.ApplicableTcs != null && this.state.ApplicableTcs != undefined ? this.state.ApplicableTcs.length : 0}</span>
-                                                </div>
-                                            }
+                                    <div style={{ display: 'inline' }}>
+                                        {
+                                            <div style={{ display: 'inline' }}>
+                                                <span style={{ marginLeft: '0.5rem' }} className='rp-app-table-value'>Total: {this.state.ApplicableTcs != null && this.state.ApplicableTcs != undefined ? this.state.ApplicableTcs.length : 0}</span>
+                                            </div>
+                                        }
                                     </div>
                                 </div>
                             </div >

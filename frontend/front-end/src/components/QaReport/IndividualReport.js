@@ -33,6 +33,11 @@ class IndividualReport extends Component {
                 editable: false,
                 width: '250',
             },
+            'Releases' : {
+                headerName: "Executed In", field: "Releases", sortable: true, filter: true,
+                editable: false,
+                width: '250',
+            },
             'Executed' : {
                 headerName: "TCs Executed", field: "Executed", sortable: true, filter: true,
                 width: '200',
@@ -50,31 +55,62 @@ class IndividualReport extends Component {
                 cellClass: 'cell-wrap-text',
                 editable: false,
                 cellRenderer: (params) => {
-                    let sdet = params.data.Name
+                    let sdet = params.data.email
                     sdet = encodeURIComponent(sdet)
                     return `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projectQA})%20AND%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20createdDate%20%3E%3D%20${this.DateStart}%20AND%20createdDate%20%3C%3D%20${this.DateEnd}%20AND%20creator%20%3D%20%22${sdet}%22%20%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Filed}</a>`;
                 },
             },
-            'Tasks' : {
-                headerName: "Tasks Completed", field: "Tasks", sortable: true, filter: true,
+            'taskp' : {
+                headerName: "Tasks In Progress", field: "taskp", sortable: true, filter: true,
                 cellClass: 'cell-wrap-text',
                 editable: false,
                 cellRenderer: (params) => {
-                    let sdet = params.data.Name
+                    let sdet = params.data.email
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Tasks}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.taskp}</a>`;
                 },
             },
-            // 'NonTCTasks' : {
-            //     headerName: "Non TC Testing Tasks", field: "NonTCTasks", sortable: true, filter: true,
-            //     cellClass: 'cell-wrap-text',
-            //     editable: false,
-            //     cellRenderer: (params) => {
-            //         let sdet = params.data.Name
-            //         sdet = encodeURIComponent(sdet)
-            //         return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Task%2C%20Sub-task%2C%20Subtask)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.NonTCTasks}</a>`;
-            //     },
-            // },
+            'taskps' : {
+                headerName: "Story Points(In Prog)", field: "taskps", sortable: true, filter: true,
+                cellClass: 'cell-wrap-text',
+                width: '200',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'taskc' : {
+                headerName: "Tasks Completed", field: "taskc", sortable: true, filter: true,
+                cellClass: 'cell-wrap-text',
+                editable: false,
+                cellRenderer: (params) => {
+                    let sdet = params.data.email
+                    sdet = encodeURIComponent(sdet)
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.taskc}</a>`;
+                },
+            },
+            'taskcs' : {
+                headerName: "Story Points(Done)", field: "taskcs", sortable: true, filter: true,
+                cellClass: 'cell-wrap-text',
+                width: '200',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+            'tasko' : {
+                headerName: "Other Tasks", field: "tasko", sortable: true, filter: true,
+                cellClass: 'cell-wrap-text',
+                editable: false,
+                cellRenderer: (params) => {
+                    let sdet = params.data.email
+                    sdet = encodeURIComponent(sdet)
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.tasko}</a>`;
+                },
+            },
+            'taskos' : {
+                headerName: "Story Points(Other)", field: "taskos", sortable: true, filter: true,
+                cellClass: 'cell-wrap-text',
+                width: '200',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
         }
 
         this.state = {
@@ -84,14 +120,20 @@ class IndividualReport extends Component {
             startDate: null,
             endDate: null,
             tcOpen: false,
+            //ApplicableTcs: [],
 
             columnDefs: [
                 columnDefDict['Name'],
                 columnDefDict['Executed'],
+                columnDefDict['Releases'],
                 columnDefDict['Automated'],
                 columnDefDict['Filed'],
-                columnDefDict['Tasks'],
-                //columnDefDict['NonTCTasks'],
+                columnDefDict['taskp'],
+                columnDefDict['taskps'],
+                columnDefDict['taskc'],
+                columnDefDict['taskcs'],
+                columnDefDict['tasko'],
+                columnDefDict['taskos'],
             ],
             defaultColDef: { resizable: true },
             modules: AllCommunityModules,
@@ -162,11 +204,12 @@ class IndividualReport extends Component {
             let QAs = all.data.qaReport
             let list = []
             let promises = []
+            let promises2 = []
             axios.get(`/api/userinfo`).then(res => {
                 res.data.forEach(user => {
-                    if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "yatish@diamanti.com" || user["email"] == "bharati@diamanti.com" || user["email"] == "kdivekar@diamanti.com" || user["email"] == "ajadhav@diamanti.com"))) {
-                        QAs[user["email"]] ? list.push({email: user["email"],Name:user["name"], Executed: QAs[user["email"]].exec, Automated: QAs[user["email"]].auto, Filed: 0}) :
-                        list.push({email: user["email"],Name:user["name"], Executed:0, Automated:0, Filed: 0});
+                    if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "yatish@diamanti.com" || user["email"] == "bharati@diamanti.com" || user["email"] == "sshende@diamanti.com" || user["email"] == "ajadhav@diamanti.com"))) {
+                        QAs[user["email"]] ? list.push({email: user["email"],Name:user["name"], Executed: QAs[user["email"]].exec, Releases: QAs[user["email"]].execIn, Automated: QAs[user["email"]].auto, Filed: 0}) :
+                        list.push({email: user["email"],Name:user["name"], Executed:0, Releases: "", Automated:0, Filed: 0, taskc:0, taskcs:0, taskp:0, taskps:0, tasko:0, taskos:0});
                     }
                 })
                 list.forEach(user => {
@@ -183,10 +226,43 @@ class IndividualReport extends Component {
                         params: {
                             "sdate": startDate,
                             "edate": endDate,
+                            "flag": "count",
                             "qaMail": user["email"],
                             //"nonTCTask": "false",
                         }}).then(resp => {
-                            user["Tasks"] = resp.data.total
+                            for(let i = 0; i <= resp.data.total; i=i+100){
+                                promises2.push(axios.get(`/rest/tasksByQA`,{
+                                    params: {
+                                        "startAt": i,
+                                        "sdate": startDate,
+                                        "edate": endDate,
+                                        "flag": "",
+                                        "qaMail": user["email"],
+                                    }
+                                }).then(result => {
+                                    result.data.issues.forEach(issue => {
+                                        if (issue.fields.status.name == "Done" || issue.fields.status.name == "Closed" ) {
+                                            user["taskc"] = user["taskc"] + 1
+                                            console.log(issue.fields.customfield_10002, issue.key)
+                                            user["taskcs"] = user["taskcs"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                                        }
+                                        else if (issue.fields.status.name == "In Progress") {
+                                            user["taskp"] = user["taskp"] + 1
+                                            console.log(issue.fields.customfield_10002, issue.key)
+                                            user["taskps"] = user["taskps"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                                        }
+                                        else {
+                                            user["tasko"] = user["tasko"] + 1
+                                            console.log(issue.fields.customfield_10002, issue.key)
+                                            user["taskos"] = user["taskos"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                                        }
+                                    })
+                                }).catch(err => {
+                                    //this.pgridOperations(true);
+                                }))
+                            }
+                            Promise.all(promises2).then(result => {
+                            })
                         })
                     );
                     // promises.push(axios.get(`/rest/tasksByQA`,{
@@ -199,10 +275,15 @@ class IndividualReport extends Component {
                     //         user["NonTCTasks"] = resp.data.total
                     //     })
                     // );
-                })
+                }
+                )
                 Promise.all(promises).then(result => {
-                    this.ApplicableTcs = list;this.gridOperations(true);
+                    Promise.all(promises2).then(result => {
+                        this.ApplicableTcs = list
+                        console.log(this.ApplicableTcs, list)
+                        this.gridOperations(true)
                     })
+                })
             })
         }).catch(err => {
             this.gridOperations(true);
