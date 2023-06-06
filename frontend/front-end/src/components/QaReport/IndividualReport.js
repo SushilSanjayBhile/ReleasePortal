@@ -25,6 +25,7 @@ class IndividualReport extends Component {
     dayInCurrentMonth = new Date(new Date().getFullYear(), new Date().getMonth()+1, 0).getDate();
     DateStart = '';
     DateEnd= '';
+    //status= encodeURIComponent(`"To Do",ToDo,Backlog,"Selected for Development", Demo, Documentation, "IN QA", Info, Resolved, Unreproducible,"Won't Fix", "Wont Fix", Duplicate, "NOT A BUG"`)
     constructor(props) {
         super(props);
         let columnDefDict = {
@@ -67,7 +68,7 @@ class IndividualReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.email
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.taskp}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20AND%20status%20in%20(%22In%20Progress%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.taskp}</a>`;
                 },
             },
             'taskps' : {
@@ -84,7 +85,7 @@ class IndividualReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.email
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.taskc}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20AND%20status%20in%20(Done%2C%20Closed)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.taskc}</a>`;
                 },
             },
             'taskcs' : {
@@ -94,23 +95,23 @@ class IndividualReport extends Component {
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
-            'tasko' : {
-                headerName: "Other Tasks", field: "tasko", sortable: true, filter: true,
-                cellClass: 'cell-wrap-text',
-                editable: false,
-                cellRenderer: (params) => {
-                    let sdet = params.data.email
-                    sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.tasko}</a>`;
-                },
-            },
-            'taskos' : {
-                headerName: "Story Points(Other)", field: "taskos", sortable: true, filter: true,
-                cellClass: 'cell-wrap-text',
-                width: '200',
-                editable: false,
-                cellClass: 'cell-wrap-text',
-            },
+            // 'tasko' : {
+            //     headerName: "Other Tasks", field: "tasko", sortable: true, filter: true,
+            //     cellClass: 'cell-wrap-text',
+            //     editable: false,
+            //     cellRenderer: (params) => {
+            //         let sdet = params.data.email
+            //         sdet = encodeURIComponent(sdet)
+            //         return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(${this.status})%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20AND%20status%20in%20(${this.status})%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.tasko}</a>`;
+            //     },
+            // },
+            // 'taskos' : {
+            //     headerName: "Story Points(Other)", field: "taskos", sortable: true, filter: true,
+            //     cellClass: 'cell-wrap-text',
+            //     width: '200',
+            //     editable: false,
+            //     cellClass: 'cell-wrap-text',
+            // },
         }
 
         this.state = {
@@ -132,8 +133,8 @@ class IndividualReport extends Component {
                 columnDefDict['taskps'],
                 columnDefDict['taskc'],
                 columnDefDict['taskcs'],
-                columnDefDict['tasko'],
-                columnDefDict['taskos'],
+                // columnDefDict['tasko'],
+                // columnDefDict['taskos'],
             ],
             defaultColDef: { resizable: true },
             modules: AllCommunityModules,
@@ -192,7 +193,7 @@ class IndividualReport extends Component {
         //this.getTcs(this.DateStart,this.DateEnd);
         //setTimeout(() => this.getTcs(this.DateStart, this.DateEnd), 400);
     }
-    getTcs(startDate, endDate) {
+    getTcsold(startDate, endDate) {
         this.state.disableShowButton = true;
         this.gridOperations(false);
         axios.get('/api/qaReport/',{
@@ -243,19 +244,16 @@ class IndividualReport extends Component {
                                     result.data.issues.forEach(issue => {
                                         if (issue.fields.status.name == "Done" || issue.fields.status.name == "Closed" ) {
                                             user["taskc"] = user["taskc"] + 1
-                                            console.log(issue.fields.customfield_10002, issue.key)
                                             user["taskcs"] = user["taskcs"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
                                         }
                                         else if (issue.fields.status.name == "In Progress") {
                                             user["taskp"] = user["taskp"] + 1
-                                            console.log(issue.fields.customfield_10002, issue.key)
                                             user["taskps"] = user["taskps"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
                                         }
-                                        else {
-                                            user["tasko"] = user["tasko"] + 1
-                                            console.log(issue.fields.customfield_10002, issue.key)
-                                            user["taskos"] = user["taskos"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
-                                        }
+                                        // else {
+                                        //     user["tasko"] = user["tasko"] + 1
+                                        //     user["taskos"] = user["taskos"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                                        // }
                                     })
                                 }).catch(err => {
                                     //this.pgridOperations(true);
@@ -289,6 +287,104 @@ class IndividualReport extends Component {
             this.gridOperations(true);
         })
     }
+
+    getTcs(startDate, endDate) {
+        this.state.disableShowButton = true;
+        this.gridOperations(false);
+        let outerPromise = []
+        let innerPromise = []
+        let list = []
+        outerPromise.push(axios.get('/api/qaReport/',{
+            params: {
+                startdate:startDate,
+                enddate :endDate
+            },
+        }).then(all => {
+            let QAs = all.data.qaReport
+            innerPromise.push(axios.get(`/api/userinfo`).then(res => {
+                res.data.forEach(user => {
+                    if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "cnoginahal@diamanti.com" || user["email"] == "slonkar@diamanti.com" || user["email"] == "bharati@diamanti.com" || user["email"] == "sshende@diamanti.com" || user["email"] == "ajadhav@diamanti.com"))) {
+                        QAs[user["email"]] ? list.push({email: user["email"],Name:user["name"], Executed: QAs[user["email"]].exec, Releases: QAs[user["email"]].execIn, Automated: QAs[user["email"]].auto, Filed: 0,taskc:0, taskcs:0, taskp:0, taskps:0, tasko:0, taskos:0}) :
+                        list.push({email: user["email"],Name:user["name"], Executed:0, Releases: "", Automated:0, Filed: 0, taskc:0, taskcs:0, taskp:0, taskps:0, tasko:0, taskos:0});
+                    }
+                })
+            }))
+        }))
+        Promise.all(outerPromise).then(result => {
+            Promise.all(innerPromise).then(output => {
+                this.getBugsByQA(list, startDate, endDate)
+            })
+        })
+    }
+
+    getBugsByQA(list, startDate, endDate){
+        let promise = []
+        list.forEach(user => {
+            promise.push(axios.get(`/rest/bugsByQA`,{
+                params: {
+                    "sdate": startDate,
+                    "edate": endDate,
+                    "qaMail": user["email"],
+                }}).then(resp => {
+                    user["Filed"] = resp.data.total
+                })
+            );
+        })
+        Promise.all(promise).then(resolve => {
+            this.getTasksbyQA(list, startDate, endDate)
+        })
+    }
+
+    getTasksbyQA(list, startDate, endDate){
+        let outerPromise = []
+        let innerPromise = []
+        list.forEach(user => {
+            outerPromise.push(axios.get(`/rest/tasksByQA`,{
+                params: {
+                    "sdate": startDate,
+                    "edate": endDate,
+                    "flag": "count",
+                    "qaMail": user["email"],
+                }}).then(resp => {
+                    for(let i = 0; i <= resp.data.total; i=i+100){
+                        innerPromise.push(axios.get(`/rest/tasksByQA`,{
+                            params: {
+                                "startAt": i,
+                                "sdate": startDate,
+                                "edate": endDate,
+                                "flag": "",
+                                "qaMail": user["email"],
+                            }
+                        }).then(result => {
+                            result.data.issues.forEach(issue => {
+                                if (issue.fields.status.name == "Done" || issue.fields.status.name == "Closed" ) {
+                                    user["taskc"] = user["taskc"] + 1
+                                    user["taskcs"] = user["taskcs"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                                }
+                                else if (issue.fields.status.name == "In Progress") {
+                                    user["taskp"] = user["taskp"] + 1
+                                    user["taskps"] = user["taskps"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                                }
+                                else {
+                                    user["tasko"] = user["tasko"] + 1
+                                    user["taskos"] = user["taskos"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                                }
+                            })
+                        }).catch(err => {
+                            //this.pgridOperations(true);
+                        }))
+                    }
+                })
+            );
+        })
+        Promise.all(outerPromise).then(result => {
+            Promise.all(innerPromise).then(output => {
+                this.ApplicableTcs = list
+                this.gridOperations(true)
+            })
+        })
+    }
+
     startDate = (startDate) =>{
         this.DateStart = startDate['StartDate']
         this.setState({

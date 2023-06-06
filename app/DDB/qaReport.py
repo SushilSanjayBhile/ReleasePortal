@@ -57,7 +57,7 @@ def RESULT_LOGS(Release, sdate, edate):
                                     user[log["UserName"]]["exec"] = 1
                                 else:
                                     user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
-                                    if rel["ReleaseNumber"] not in user["execIn"]:
+                                    if rel["ReleaseNumber"] not in user[log[user["UserName"]]]["execIn"]:
                                         user["execIn"] = user["execIn"] + "," + rel["ReleaseNumber"]
 
                         try:
@@ -65,7 +65,7 @@ def RESULT_LOGS(Release, sdate, edate):
                                 logdata = json.loads(logdata)
                                 if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
                                     if log["UserName"] not in user:
-                                        user[log["UserName"]] = {}
+                                        user[log["UserName"]] = {"execIn": ""}
                                         user[log["UserName"]]["auto"] = 1
                                         user[log["UserName"]]["exec"] = 0
                                     else:
@@ -94,14 +94,14 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
                                 user[log["UserName"]]["exec"] = 1
                             else:
                                 user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
-                                if rel["ReleaseNumber"] not in user["execIn"]:
+                                if rel["ReleaseNumber"] not in user[log[user["UserName"]]]["execIn"]:
                                         user["execIn"] = user["execIn"] + "," + rel["ReleaseNumber"]
                         try:
                             if rel["ReleaseNumber"] == "DCX-DMC-Master":
                                 logdata = json.loads(logdata)
                                 if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
                                     if log["UserName"] not in user:
-                                        user[log["UserName"]] = {}
+                                        user[log["UserName"]] = {"execIn": ""}
                                         user[log["UserName"]]["auto"] = 1
                                         user[log["UserName"]]["exec"] = 0
                                     else:

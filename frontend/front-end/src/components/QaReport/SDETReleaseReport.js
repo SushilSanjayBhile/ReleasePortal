@@ -513,7 +513,7 @@ class SDETReleaseReport extends Component {
             let promises = []
             axios.get(`/api/userinfo`).then(res => {
                 res.data.forEach(user => {
-                    if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "bharati@diamanti.com" || user["email"] == "sshende@diamanti.com" || user["email"] == "ajadhav@diamanti.com"))) {
+                    if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "cnoginahal@diamanti.com" || user["email"] == "slonkar@diamanti.com" || user["email"] == "bharati@diamanti.com" || user["email"] == "sshende@diamanti.com" || user["email"] == "ajadhav@diamanti.com"))) {
                         let temp = { email: user["email"], name: user["name"], assigned: 0, executed: 0, exeTime: 0, remained: 0, automated: this.sdetData["Automated"][user["email"]] ? this.sdetData["Automated"][user["email"]]["auto"] : 0, inProg: 0, inProgSp: 0, done: 0, doneSp: 0, todo: 0, todoSp: 0 }
                         if (user.email in qaList) {
                             temp.assigned = temp.assigned + qaList[user.email]["assigned"]
