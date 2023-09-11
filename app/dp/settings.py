@@ -78,6 +78,30 @@ WSGI_APPLICATION = 'dp.wsgi.application'
 
 
 DATABASES = {
+    'UA-3.7.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'UA-3.7.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'SPEK-3.7.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'SPEK-3.7.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'UE-3.6.2': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'UE-3.6.2',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'UA-3.6.0': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'UA-3.6.0',
@@ -201,6 +225,14 @@ DATABASES = {
     'OCP-4.10': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'OCP-4.10',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'OSE-3.4.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'OSE-3.4.0',
         'USER': userName,
         'PASSWORD': passwd,
         'HOST': hostName,

@@ -5,7 +5,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .views import RELEASEINFO
-from .serializers import RELEASE_SERIALIZER, LOG_SERIALIZER, GUI_LOGS_SERIALIZER
+from .serializers import RELEASE_SERIALIZER, LOG_SERIALIZER, GUI_LOGS_SERIALIZER , TC_INFO_GUI_SERIALIZER
 from .models import RELEASES, LOGS, LOGSGUI, TC_INFO, TC_INFO_GUI
 from django.db.models import Count
 from django.db.models import Q
@@ -55,10 +55,12 @@ def RESULT_LOGS(Release, sdate, edate):
                                     user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
                                     user[log["UserName"]]["auto"] = 0
                                     user[log["UserName"]]["exec"] = 1
+                                    user[log["UserName"]]["tc"] = []
+
                                 else:
                                     user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
-                                    if rel["ReleaseNumber"] not in user[log[user["UserName"]]]["execIn"]:
-                                        user["execIn"] = user["execIn"] + "," + rel["ReleaseNumber"]
+                                    if rel["ReleaseNumber"] not in user[log["UserName"]]["execIn"]:
+                                        user[log["UserName"]]["execIn"] = user[log["UserName"]]["execIn"] + "," + rel["ReleaseNumber"]
 
                         try:
                             if rel["ReleaseNumber"] == "DCX-DMC-Master":
@@ -68,8 +70,11 @@ def RESULT_LOGS(Release, sdate, edate):
                                         user[log["UserName"]] = {"execIn": ""}
                                         user[log["UserName"]]["auto"] = 1
                                         user[log["UserName"]]["exec"] = 0
+                                        user[log["UserName"]]["tc"] = [log["TcID"]]
                                     else:
-                                        user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
+                                        if log["TcID"] not in user[log["UserName"]]["tc"]:
+                                            user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
+                                            user[log["UserName"]]["tc"].append(log["TcID"])
                         except:
                             pass
             except:
@@ -92,20 +97,27 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
                                 user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
                                 user[log["UserName"]]["auto"] = 0
                                 user[log["UserName"]]["exec"] = 1
+                                user[log["UserName"]]["tc"] = []
                             else:
                                 user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
-                                if rel["ReleaseNumber"] not in user[log[user["UserName"]]]["execIn"]:
-                                        user["execIn"] = user["execIn"] + "," + rel["ReleaseNumber"]
+                                if rel["ReleaseNumber"] not in user[log["UserName"]]["execIn"]:
+                                    user[log["UserName"]]["execIn"] = user[log["UserName"]]["execIn"] + "," + rel["ReleaseNumber"]
                         try:
                             if rel["ReleaseNumber"] == "DCX-DMC-Master":
                                 logdata = json.loads(logdata)
+                                tcid = TC_INFO_GUI.objects.using(rel["ReleaseNumber"]).get(id = log["tcInfoNum"])
+                                ser = TC_INFO_GUI_SERIALIZER(tcid)
+                                tcid = ser.data["TcID"]
                                 if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
                                     if log["UserName"] not in user:
                                         user[log["UserName"]] = {"execIn": ""}
                                         user[log["UserName"]]["auto"] = 1
                                         user[log["UserName"]]["exec"] = 0
+                                        user[log["UserName"]]["tc"] = [tcid]
                                     else:
-                                        user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
+                                        if tcid not in user[log["UserName"]]["tc"]:
+                                            user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
+                                            user[log["UserName"]]["tc"].append(tcid)
                         except:
                             pass
             except:

@@ -1,4 +1,4 @@
-import requests, json
+import requests, json, re
 from logging import getLogger
 from dao.parse import get_greped_lines_and_directory_build_name
 from utils.constants import (
@@ -6,12 +6,12 @@ from utils.constants import (
 			show_flag, console_handler, drive_directory, drive_sub_directory, email
 			)
 
-from utils.parse_utils import ( 
-                        convert_formatted_strings_to_raw_strings, 
+from utils.parse_utils import (
+                        convert_formatted_strings_to_raw_strings,
                         remove_duplicates_from_status_lists,
                         group_list_elements
                         )
-                        
+
 from re import findall, IGNORECASE
 
 
@@ -41,19 +41,18 @@ def add_id_to_given_list (line, grep_words, arg_list, tc_name_list) :
             tc_name_string, tc_ids_string = line.split(word)
         break
 
-    tc_name_list.append(tc_name_string)    
+    tc_name_list.append(tc_name_string)
     id_list = findall('[A-Z0-9._]+\-[0-9]+.[0-9]+', tc_ids_string, flags=IGNORECASE)
     arg_list += id_list
     return
 
 
 # Compare 2 consecutive lines and add the TC IDs to pass,fail list
-def segregate_tc_ids( line_list) :
+def segregate_tc_ids_old( line_list) :
     pass_list, fail_list = [], []
     skipped_list = []
     passed_tc_name, failed_tc_name, skipped_tc_name = [], [], []
     i = 0
-    
     while i < len(line_list) :
         j = i+1
         if i < len(line_list) - 1 :
@@ -75,30 +74,106 @@ def segregate_tc_ids( line_list) :
         if i == len(line_list) - 1 :      # Last Line
             add_id_to_given_list (line_list[i], grep_words, fail_list, failed_tc_name)
             i += 1
-        
     return ( pass_list, fail_list, skipped_list,
 	     passed_tc_name, failed_tc_name, skipped_tc_name )
+
+def get_tc_name_id_list(line):
+    tc_name_string = ''
+    tc_ids_string = ''
+    tc_id_list = []
+    for word in grep_words :
+        if word in line :
+            tc_name_string, tc_ids_string = line.split(word)
+            break
+    id_list = findall('[A-Z0-9._]+[\_|\-][0-9]+.[0-9]+', tc_ids_string, flags=IGNORECASE)
+    tc_id_list += id_list
+    return (tc_name_string, tc_id_list)
+
+def check_for_pass_skip_fail(start_test_lines, end_test_lines, pass_list, skipped_list, fail_list, tcName, tcidList):
+    #check for fail in start_test_lines
+    found = False
+    tcName = tcName.split()[0]
+    for i in range(0,len(start_test_lines)-1):
+        if tcName in start_test_lines[i] and re.search(r'ERROR\s+TestFailed', start_test_lines[i+1]):
+            found = True
+            fail_list += tcidList
+            return
+    #check for pass in end_test_lines
+    if not found:
+        for line in end_test_lines:
+            if tcName in line:
+                found = True
+                pass_list += tcidList
+                return
+    #finally if not found in pass and fail add it in skipped list
+    if not found:
+        skipped_list += tcidList
+
+def filter_tc_ids(pass_list, fail_list, skipped_list):
+    #remove tc from pass_list and fail_list if tc also in skipped list
+    for tc in skipped_list:
+        if tc in pass_list:
+            pass_list.remove(tc)
+        if tc in fail_list:
+            fail_list.remove(tc)
+
+def segregate_tc_ids( line_list, end_test_lines, start_test_lines) :
+    pass_list, fail_list = [], []
+    skipped_list = []
+    passed_tc_name, failed_tc_name, skipped_tc_name = [], [], []
+    preTcName = ''
+    i = 0
+    while i < len(line_list) :
+        j = i+1
+        if i < len(line_list) - 1 :
+            tcName,tcidString = get_tc_name_id_list(line_list[i])
+            tcNameToCompare, _= get_tc_name_id_list(line_list[j])
+            if tcName == preTcName:
+                i+=1
+                preTcName = tcName
+                continue
+            if tcName in tcNameToCompare:
+                if "TEST_PASSED" in line_list[j]:
+                    pass_list += tcidString
+                elif "TEST_FAILED" in line_list[j]:
+                    fail_list += tcidString
+                elif "TEST_SKIPPED" in line_list[j]:
+                    skipped_list += tcidString
+                i += 2
+            else:
+                check_for_pass_skip_fail(start_test_lines, end_test_lines, pass_list, skipped_list, fail_list, tcName, tcidString)
+                i += 1
+        if i == len(line_list) - 1 :      # Last Line
+            tcName,tcidString = get_tc_name_id_list(line_list[i])
+            check_for_pass_skip_fail(start_test_lines, end_test_lines, pass_list, skipped_list, fail_list, tcName, tcidString)
+            break
+        preTcName = tcName
+    filter_tc_ids(pass_list, fail_list, skipped_list)
+    return ( pass_list, fail_list, skipped_list,
+             passed_tc_name, failed_tc_name, skipped_tc_name )
 
 
 # Parse Log File and return Status_Dicts grouped by TC IDs
 def parse_log_file(filename) :
     resultDict = {}
     result = get_greped_lines_and_directory_build_name(filename)
-    
+
     greped_lines = result[0]
+    end_test_lines = result[3]
+    start_test_lines = result[4]
     drive_dir_name = result[1]
     build_name = result[2]
 
     if build_name == "" :
-        build_name = input('Enter Build Manually:')	
+        build_name = input('Enter Build Manually:')
 
     # Drive dir to be updated, passed as an argument
     if drive_directory != "#!" :
         drive_dir_name = drive_directory
 
     raw_strings  = convert_formatted_strings_to_raw_strings( greped_lines)
-    
-    result = segregate_tc_ids( raw_strings)
+
+    result = segregate_tc_ids( raw_strings, end_test_lines, start_test_lines)
     pass_id_list = result[0]
     fail_id_list = result[1]
     skipped_list = result[2]
@@ -106,12 +181,12 @@ def parse_log_file(filename) :
     failed_tc_name = result[4]
     skipped_tc_name = result[5]
 
-    pass_id_list, fail_id_list = remove_duplicates_from_status_lists ( 
+    pass_id_list, fail_id_list = remove_duplicates_from_status_lists (
                                     pass_id_list, fail_id_list )
     skipped_list = sorted(list(set(skipped_list)))
 
 
-    passed_tc_name, failed_tc_name = remove_duplicates_from_status_lists ( 
+    passed_tc_name, failed_tc_name = remove_duplicates_from_status_lists (
                                         passed_tc_name, failed_tc_name )
     skipped_tc_name = sorted(list(set(skipped_tc_name)))
 
@@ -132,7 +207,7 @@ def parse_log_file(filename) :
         resultDict['fail_name_list'] = failed_tc_name
         resultDict['skipped_name_list'] = skipped_tc_name
 
-        res = requests.post(url = e2eResultUpdateAPI, data = json.dumps(resultDict))    
+        res = requests.post(url = e2eResultUpdateAPI, data = json.dumps(resultDict))
         #print(res, "if response is 200: data entered successfully")
         #res = res.json()
         resultDict['msg'] = res
@@ -156,5 +231,5 @@ def parse_log_file(filename) :
     pass_id_dict = group_list_elements( pass_id_list)
     fail_id_dict = group_list_elements( fail_id_list)
 
-    return ( pass_id_dict, fail_id_dict, 
+    return ( pass_id_dict, fail_id_dict,
              drive_dir_name, build_name )
