@@ -1,9 +1,10 @@
+import re
 from re import findall
 from utils.constants import grep_words
 
 # Return greped lines, dir name, build name
 def get_greped_lines_and_directory_build_name(filename) :
-    greped_lines = []
+    greped_lines, end_test_lines, start_test_lines = [], [], []
     drive_dir_name = ''
     build_name = ''
     rpm_flag = True
@@ -19,6 +20,9 @@ def get_greped_lines_and_directory_build_name(filename) :
 
             elif any( word in line for word in grep_words ) :
                 greped_lines.append(line)
+            elif "END_TEST" in line :
+                end_test_lines.append(line)
+            elif "START_TEST" in line or re.search(r'ERROR\s+TestFailed', line):
+                start_test_lines.append(line)
 
-
-    return greped_lines, drive_dir_name, build_name
+    return greped_lines, drive_dir_name, build_name, end_test_lines, start_test_lines

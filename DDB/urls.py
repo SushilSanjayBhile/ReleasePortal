@@ -29,7 +29,7 @@ from .migrate import Migrate
 from .new import automation_count_get_post_view, custom_automation_count_get_view
 
 from .tcReport import getTcReport
-from .qaReport import getQAReport, getSDETReleaseReport
+from .qaReport import getQAReport, getSDETReleaseReport, getTcExecutionCount
 from .mergeCardType import MergingCardTypes
 from .commandExec import update_data
 
@@ -47,6 +47,7 @@ urlpatterns = [
     path('automation/', automation_count_get_post_view),
     path('tcReport/', getTcReport),
     path('qaReport/', getQAReport),
+    path('tcExecutioncsv/', getTcExecutionCount),
     path('sdetReleaseReport/', getSDETReleaseReport),
     path('customautomation/', custom_automation_count_get_view),
 
