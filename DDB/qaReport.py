@@ -31,6 +31,8 @@ def getQAReport(request):
             if key in outputGui:
                 output[key]["auto"] = output[key]["auto"] + outputGui[key]["auto"]
                 output[key]["exec"] = output[key]["exec"] + outputGui[key]["exec"]
+                output[key]["aexec"] = output[key]["aexec"] + outputGui[key]["aexec"]
+
         for key in outputGui:
             if key not in output:
                 output[key] = outputGui[key]
@@ -49,14 +51,22 @@ def RESULT_LOGS(Release, sdate, edate):
                     date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
                     if date_time_obj >= sdate and date_time_obj <= edate:
                         logdata = log["LogData"]
-                        if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower():
+                        if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower() and "result: unblocked" not in log["LogData"].lower():
                                 if log["UserName"] not in user:
                                     user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
                                     user[log["UserName"]]["auto"] = 0
-                                    user[log["UserName"]]["exec"] = 1
+                                    user[log["UserName"]]["exec"] = 0
+                                    user[log["UserName"]]["aexec"] = 0
                                     user[log["UserName"]]["tc"] = []
+                                    if "auto: true" in log["LogData"]:
+                                        user[log["UserName"]]["aexec"] = 1
+                                    else:
+                                        user[log["UserName"]]["exec"] = 1
                                 else:
-                                    user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
+                                    if "auto: true" in log["LogData"]:
+                                        user[log["UserName"]]["aexec"] = user[log["UserName"]]["aexec"] + 1
+                                    else:
+                                        user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
                                     if rel["ReleaseNumber"] not in user[log["UserName"]]["execIn"]:
                                         user[log["UserName"]]["execIn"] = user[log["UserName"]]["execIn"] + "," + rel["ReleaseNumber"]
 
@@ -68,6 +78,7 @@ def RESULT_LOGS(Release, sdate, edate):
                                         user[log["UserName"]] = {"execIn": ""}
                                         user[log["UserName"]]["auto"] = 1
                                         user[log["UserName"]]["exec"] = 0
+                                        user[log["UserName"]]["aexec"] = 0
                                         user[log["UserName"]]["tc"] = [log["TcID"]]
                                     else:
                                         if log["TcID"] not in user[log["UserName"]]["tc"]:
@@ -91,11 +102,12 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
                     date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
                     if date_time_obj >= sdate and date_time_obj <= edate:
                         logdata = log["LogData"]
-                        if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower():
+                        if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower() and "result: unblocked" not in log["LogData"].lower():
                             if log["UserName"] not in user:
                                 user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
                                 user[log["UserName"]]["auto"] = 0
                                 user[log["UserName"]]["exec"] = 1
+                                user[log["UserName"]]["aexec"] = 0
                                 user[log["UserName"]]["tc"] = []
                             else:
                                 user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
@@ -112,6 +124,7 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
                                         user[log["UserName"]] = {"execIn": ""}
                                         user[log["UserName"]]["auto"] = 1
                                         user[log["UserName"]]["exec"] = 0
+                                        user[log["UserName"]]["aexec"] = 0
                                         user[log["UserName"]]["tc"] = [tcid]
                                     else:
                                         if tcid not in user[log["UserName"]]["tc"]:
