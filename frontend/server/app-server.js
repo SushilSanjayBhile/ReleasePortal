@@ -894,8 +894,11 @@ app.use('/rest/PendingDefects', (req, res) => {
         console.log('cannot get features due to error in fetching JIRA')
     })
 }, err => { });
+
 app.use('/rest/bugsByQA', (req, res) => {
-    var totalBugsStr = `?jql=project%20in%20(${projectQA})%20AND%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20createdDate%20%3E%3D%20${req.query.sdate}%20AND%20createdDate%20%3C%3D%20${req.query.edate}%20AND%20creator%20%3D%20%22${req.query.qaMail}%22%20%20ORDER%20BY%20created%20DESC&maxResults=0`
+    //var totalBugsStr = `?jql=project%20in%20(${projectQA})%20AND%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20createdDate%20%3E%3D%20${req.query.sdate}%20AND%20createdDate%20%3C%3D%20${req.query.edate}%20AND%20creator%20%3D%20%22${req.query.qaMail}%22%20%20ORDER%20BY%20created%20DESC&maxResults=0`
+    var totalBugsStr = `?jql=project%20not%20in%20(%22Product%20Management%22%2C%20%22Automation%20and%20Validation%22%2C%20Stevedore%2C%20%22Diamanti%20Software%22)%20and%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20createdDate%20%3E%3D%20${req.query.sdate}%20AND%20createdDate%20%3C%3D%20${req.query.edate}%20and%20creator%20%3D%20%22${req.query.qaMail}%22%20%20ORDER%20BY%20created%20DESC&maxResults=0`
+    //project%20not%20in%20(%22Product%20Management%22%2C%20%22Automation%20and%20Validation%22%2C%20Stevedore%2C%20%22Diamanti%20Software%22)%20and%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20createdDate%20%3E%3D%20${req.query.sdate}%20AND%20createdDate%20%3C%3D%20${req.query.edate}%20and%20creator%20%3D%20%22${req.query.qaMail}%22%20%20ORDER%20BY%20created%20DESC
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {
             loginJIRA().then(function () {
@@ -914,12 +917,97 @@ app.use('/rest/bugsByQA', (req, res) => {
     })
 }, err => { });
 
-app.use('/rest/tasksByQA', (req, res) => {
+app.use('/rest/Other_TaskByQA', (req, res) => {
+    var totalBugsStr = `?jql=`+ encodeURIComponent(`updatedDate >= ${req.query.sdate} and updatedDate <= ${req.query.edate} AND status in (Blocked, Closed, Done, Duplicate,"NOT A BUG",Unreproducible) AND (assignee="${req.query.qaMail}" or creator="${req.query.qaMail}") and type in(Bug,Improvement,"New Feature") and project not in("Product Management", "Automation and Validation", Stevedore, "Diamanti Software")`)+`&maxResults=0`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+        console.log(jiraReq)
+        if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
+
+app.use('/rest/Automation_Failures_Fixed', (req, res) => {
     if(req.query.flag == "count"){
-        var totalBugsStr = `?jql=assignee%20in%20(%22${req.query.qaMail}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${req.query.sdate}%22%2C%20%22${req.query.edate}%22)%20order%20by%20created%20DESC&maxResults=0`
+        var totalBugsStr = `?jql=`+encodeURIComponent(`project in( "Automation and Validation") and status changed to (Done) during (${req.query.sdate}, ${req.query.edate}) AND status in (Blocked, Closed, Done, Duplicate) AND assignee="${req.query.qaMail}"`)+`&maxResults=0`
     }
     else{
-        var totalBugsStr = `?jql=assignee%20in%20(%22${req.query.qaMail}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${req.query.sdate}%22%2C%20%22${req.query.edate}%22)%20order%20by%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+        var totalBugsStr = `?jql=`+encodeURIComponent(`project in( "Automation and Validation") and status changed to (Done) during (${req.query.sdate}, ${req.query.edate}) AND status in (Blocked, Closed, Done, Duplicate) AND assignee="${req.query.qaMail}"`)+`&maxResults=1000&startAt=${req.query.startAt}`
+    }
+    console.log(jiraReq)
+    //var totalBugsStr = `?jql=`+encodeURIComponent(`project in( "Automation and Validation") and status changed to (Done) during (${req.query.sdate}, ${req.query.edate}) AND status in (Blocked, Closed, Done, Duplicate) AND assignee="${req.query.qaMail}"`)+`&maxResults=0`
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+    if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
+
+app.use('/rest/tasksByQAClosed', (req, res) => {
+    // if(req.query.flag == "count"){
+    //     var totalBugsStr = `?jql=assignee%20in%20(%22${req.query.qaMail}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task%2C%20Testing%2C%20Automation%2C%20Testplan)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${req.query.sdate}%22%2C%20%22${req.query.edate}%22)%20order%20by%20created%20DESC&maxResults=0`
+    // }
+    // else{
+    //     var totalBugsStr = `?jql=assignee%20in%20(%22${req.query.qaMail}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task%2C%20Testing)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${req.query.sdate}%22%2C%20%22${req.query.edate}%22)%20order%20by%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+    // }
+    if(req.query.flag == "count"){
+        var totalBugsStr = `?jql=project%20not%20in(%22Automation%20and%20Validation%22)%20AND%20issuetype%20not%20in(Bug%2CImprovement%2c%22New%20Feature%22)%20and%20assignee%20%3D%20%22${req.query.qaMail}%22%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${req.query.sdate}%22%2C%20%22${req.query.edate}%22)%20ORDER%20BY%20created%20DESC&maxResults=0`
+    }
+    else{
+        var totalBugsStr = `?jql=project%20not%20in(%22Automation%20and%20Validation%22)%20AND%20issuetype%20not%20in(Bug%2CImprovement%2c%22New%20Feature%22)%20and%20assignee%20%3D%20%22${req.query.qaMail}%22%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${req.query.sdate}%22%2C%20%22${req.query.edate}%22)%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+    }
+    var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
+    if (response.statusCode === 401) {
+            loginJIRA().then(function () {
+                client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, function (searchResultTotal2, responseTotal) {
+                    res.send(searchResultTotal2);
+                }, err1 => { console.log('cannot get jira') });
+            }).catch(err => { console.log('promise failed'); console.log(err) })
+        } else {
+            res.send(searchResultTotal);
+        }
+    }, err => {
+        console.log('caught error in primitive')
+    });
+    jiraReq.on('error', function (err) {
+        console.log('cannot get features due to error in fetching JIRA')
+    })
+}, err => { });
+
+app.use('/rest/tasksByQAInprogress', (req, res) => {
+    // if(req.query.flag == "count"){
+    //     var totalBugsStr = `?jql=assignee%20in%20(%22${req.query.qaMail}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task%2C%20Testing%2C%20Automation%2C%20Testplan)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${req.query.sdate}%22%2C%20%22${req.query.edate}%22)%20order%20by%20created%20DESC&maxResults=0`
+    // }
+    // else{
+    //     var totalBugsStr = `?jql=assignee%20in%20(%22${req.query.qaMail}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task%2C%20Testing)%20AND%20status%20changed%20to%20(Done%2C%20Closed%2C%20%22In%20Progress%22)%20during%20(%22${req.query.sdate}%22%2C%20%22${req.query.edate}%22)%20order%20by%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
+    // }
+    if(req.query.flag == "count"){
+        var totalBugsStr = `?jql=project%20not%20in(%22Automation%20and%20Validation%22)%20AND%20issuetype%20not%20in(Bug%2CImprovement%2c%22New%20Feature%22)%20and%20assignee%20%3D%20%22${req.query.qaMail}%22%20AND%20status%20changed%20to%20(%22In%20Progress%22)%20during%20(%22${req.query.sdate}%22%2C%20%22${req.query.edate}%22)%20ORDER%20BY%20created%20DESC&maxResults=0`
+    }
+    else{
+        var totalBugsStr = `?jql=project%20not%20in(%22Automation%20and%20Validation%22)%20AND%20issuetype%20not%20in(Bug%2CImprovement%2c%22New%20Feature%22)%20and%20assignee%20%3D%20%22${req.query.qaMail}%22%20AND%20status%20changed%20to%20(%22In%20Progress%22)%20during%20(%22${req.query.sdate}%22%2C%20%22${req.query.edate}%22)%20ORDER%20BY%20created%20DESC&maxResults=1000&startAt=${req.query.startAt}`
     }
     var jiraReq = client.get(JIRA_URL + '/rest/api/3/search' + totalBugsStr, searchArgs, function (searchResultTotal, response) {
     if (response.statusCode === 401) {

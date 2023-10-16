@@ -40,11 +40,19 @@ class IndividualReport extends Component {
                 width: '250',
             },
             'Executed' : {
-                headerName: "TCs Executed", field: "Executed", sortable: true, filter: true,
+                headerName: "Manually Executed", field: "Executed", sortable: true, filter: true,
                 width: '200',
                 editable: false,
                 cellClass: 'cell-wrap-text',
             },
+
+            'AExecuted' : {
+                headerName: "Automated Executed", field: "AExecuted", sortable: true, filter: true,
+                width: '200',
+                editable: false,
+                cellClass: 'cell-wrap-text',
+            },
+
             'Automated': {
                 headerName: "TCs Automated", field: "Automated", sortable: true, filter: true,
                 width: '200',
@@ -58,7 +66,8 @@ class IndividualReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.email
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in%20(${projectQA})%20AND%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20createdDate%20%3E%3D%20${this.DateStart}%20AND%20createdDate%20%3C%3D%20${this.DateEnd}%20AND%20creator%20%3D%20%22${sdet}%22%20%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Filed}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in%20(%22Product%20Management%22%2C%20%22Automation%20and%20Validation%22%2C%20Stevedore%2C%20%22Diamanti%20Software%22)%20and%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20createdDate%20%3E%3D%20${this.DateStart}%20AND%20createdDate%20%3C%3D%20${this.DateEnd}%20and%20creator%20%3D%20%22${sdet}%22%20%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Filed}</a>`;
+                    //project%20in%20(${projectQA})%20AND%20issuetype%20in%20(Bug%2C%20Improvement)%20AND%20createdDate%20%3E%3D%20${this.DateStart}%20AND%20createdDate%20%3C%3D%20${this.DateEnd}%20AND%20creator%20%3D%20%22${sdet}%22%20%20ORDER%20BY%20created%20DESC
                 },
             },
             'taskp' : {
@@ -68,7 +77,9 @@ class IndividualReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.email
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20AND%20status%20in%20(%22In%20Progress%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.taskp}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in(%22Automation%20and%20Validation%22)%20AND%20issuetype%20not%20in(Bug%2CImprovement%2C%22New%20Feature%22)%20%20AND%20assignee%20%3D%20%22${sdet}%22%20AND%20status%20changed%20to%20(%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.taskp}</a>`;
+                    //assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task%2C%20Testing%2C%20Automation%2C%20Testplan)%20AND%20status%20changed%20to%20(%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC
+                    //project%20not%20in(%22Automation%20and%20Validation%22)%20AND%20issuetype%20not%20in(Bug%2CImprovement%2C%22New%20Feature%22)%20%20AND%20assignee%20%3D%20(%22${sdet}%22)%20AND%20status%20changed%20to%20(%22In%20Progress%22)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC
                 },
             },
             'taskps' : {
@@ -85,7 +96,9 @@ class IndividualReport extends Component {
                 cellRenderer: (params) => {
                     let sdet = params.data.email
                     sdet = encodeURIComponent(sdet)
-                    return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20AND%20status%20in%20(Done%2C%20Closed)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.taskc}</a>`;
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=project%20not%20in(%22Automation%20and%20Validation%22)%20AND%20issuetype%20not%20in(Bug%2CImprovement%2c%22New%20Feature%22)%20and%20assignee%20%3D%20%22${sdet}%22%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.taskc  }</a>`;
+                    //assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task%2C%20Testing%2C%20Automation%2C%20Testplan)%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20AND%20status%20in%20(Done%2C%20Closed)%20ORDER%20BY%20created%20DESC
+                    //project%20not%20in(%22Automation%20and%20Validation%22)%20AND%20issuetype%20not%20in(Bug%2CImprovement)%20and%20assignee%20%3D%20%22${sdet}%22%20AND%20status%20changed%20to%20(Done%2C%20Closed)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)
                 },
             },
             'taskcs' : {
@@ -112,6 +125,38 @@ class IndividualReport extends Component {
             //     editable: false,
             //     cellClass: 'cell-wrap-text',
             // },
+            'autoFailureFix' : {
+                headerName: "Automation Failure Fix", field: "autoFailureFix", sortable: true, filter: true,
+                cellClass: 'cell-wrap-text',
+                editable: false,
+                cellRenderer: (params) => {
+                    let sdet = params.data.email
+                    console.log("para",params.data.autoFailureFix)
+                    //let query = `project in( "Automation and Validation") and status changed to (Done) during (${this.DateStart}, ${this.DateEnd}) AND status in (Blocked, Closed, Done, Duplicate) AND assignee="${sdet}"`
+                    //return `<a https://diamanti.atlassian.net/issues/?jql=`+encodeURIComponent(query)+`target= "_blank">${params.data.autoFailureFix}</a>`
+                    //return encodeURIComponent(query)
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=project%20in(%20%22Automation%20and%20Validation%22)%20and%20status%20changed%20to%20(Done)%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20AND%20status%20in%20(Blocked%2C%20Closed%2C%20Done%2C%20Duplicate)%20AND%20assignee%3D%22${sdet}%22%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.autoFailureFix}</a>`;
+                   //return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(${this.status})%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20AND%20status%20in%20(${this.status})%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.autoFailureFix}</a>`;
+
+                },
+            },
+            'Other_TaskByQA' : {
+                headerName: "Bug Closed", field: "Other_TaskByQA", sortable: true, filter: true,
+                cellClass: 'cell-wrap-text',
+                width: '200',
+                editable: false,
+                cellRenderer: (params) => {
+                    let sdet = params.data.email
+                    console.log("para",params.data.Other_TaskByQA)
+                    //let query = `updatedDate >= ${this.DateStart} and updatedDate <= ${this.DateEnd} AND status in (Blocked, Closed, Done, Duplicate,"NOT A BUG",Unreproducible) AND assignee="${this.sdet}" or creator="${sdet}" and type in(Bug,Improvement,"New Feature") and project not in("Product Management", "Automation and Validation", Stevedore, "Diamanti Software")`
+                    //return `<a href= https://diamanti.atlassian.net/issues/?jql=`+encodeURIComponent(query)+`target= "_blank">${params.data.Other_TaskByQA}</a>`
+                    //console.log("q",query)
+                    //return encodeURIComponent(query)
+                    return `<a href= https://diamanti.atlassian.net/issues/?jql=updatedDate%20%3E%3D%20%22${this.DateStart}%22%20and%20updatedDate%20%3C%3D%22${this.DateEnd}%22%20AND%20status%20in%20(Blocked%2C%20Closed%2C%20Done%2C%20Duplicate%2C"NOT%20A%20BUG"%2CUnreproducible)%20AND%20(assignee%3D%22${sdet}%22%20or%20creator%3D%22${sdet}%22)%20and%20type%20in(Bug%2CImprovement%2C"New%20Feature")%20and%20project%20not%20in("Product%20Management"%2C%20"Automation%20and%20Validation"%2C%20Stevedore%2C%20"Diamanti%20Software")%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Other_TaskByQA}</a>`;
+                   //return `<a href= https://diamanti.atlassian.net/issues/?jql=assignee%20in%20(%22${sdet}%22)%20AND%20issuetype%20in%20(Story%2C%20Sub-task)%20AND%20status%20changed%20to%20(${this.status})%20during%20(%22${this.DateStart}%22%2C%20%22${this.DateEnd}%22)%20AND%20status%20in%20(${this.status})%20ORDER%20BY%20created%20DESC target= "_blank">${params.data.Other_TaskByQA}</a>`;
+                   //return `updatedDate%20%3E%3D%20%222023-10-01%22%20and%20updatedDate%20%3C%3D%222023-10-31%22%20AND%20status%20in%20(Blocked%2C%20Closed%2C%20Done%2C%20Duplicate%2C%22NOT%20A%20BUG%22%2CUnreproducible)%20AND%20assignee%3D%22pjain%40diamanti.com%22%20or%20creator%3D%22pjain%40diamanti.com%22%20and%20type%20in(Bug%2CImprovement%2C%22New%20Feature%22)%20and%20project%20not%20in(%22Product%20Management%22%2C%20%22Automation%20and%20Validation%22%2C%20Stevedore%2C%20%22Diamanti%20Software%22)%20ORDER%20BY%20created%20DESC`
+                },
+            },
         }
 
         this.state = {
@@ -126,15 +171,16 @@ class IndividualReport extends Component {
             columnDefs: [
                 columnDefDict['Name'],
                 columnDefDict['Executed'],
+                columnDefDict['AExecuted'],
                 columnDefDict['Releases'],
                 columnDefDict['Automated'],
                 columnDefDict['Filed'],
+                columnDefDict['Other_TaskByQA'],
                 columnDefDict['taskp'],
                 columnDefDict['taskps'],
                 columnDefDict['taskc'],
                 columnDefDict['taskcs'],
-                // columnDefDict['tasko'],
-                // columnDefDict['taskos'],
+                columnDefDict['autoFailureFix'],
             ],
             defaultColDef: { resizable: true },
             modules: AllCommunityModules,
@@ -304,8 +350,8 @@ class IndividualReport extends Component {
             innerPromise.push(axios.get(`/api/userinfo`).then(res => {
                 res.data.forEach(user => {
                     if (user["role"] == "QA" || ((user["role"] == "ADMIN") && (user["email"] == "cnoginahal@diamanti.com" || user["email"] == "slonkar@diamanti.com" || user["email"] == "bharati@diamanti.com" || user["email"] == "sshende@diamanti.com" || user["email"] == "ajadhav@diamanti.com"))) {
-                        QAs[user["email"]] ? list.push({email: user["email"],Name:user["name"], Executed: QAs[user["email"]].exec, Releases: QAs[user["email"]].execIn, Automated: QAs[user["email"]].auto, Filed: 0,taskc:0, taskcs:0, taskp:0, taskps:0, tasko:0, taskos:0}) :
-                        list.push({email: user["email"],Name:user["name"], Executed:0, Releases: "", Automated:0, Filed: 0, taskc:0, taskcs:0, taskp:0, taskps:0, tasko:0, taskos:0});
+                        QAs[user["email"]] ? list.push({email: user["email"],Name:user["name"], Executed: QAs[user["email"]].exec, AExecuted: QAs[user["email"]].aexec, Releases: QAs[user["email"]].execIn, Automated: QAs[user["email"]].auto, Filed: 0,taskc:0, taskcs:0, taskp:0, taskps:0, tasko:0, taskos:0, autoFailureFix: 0, Other_TaskByQA: 0}) :
+                        list.push({email: user["email"],Name:user["name"], Executed:0, Releases: "", Automated:0, AExecuted:0, Filed: 0, taskc:0, taskcs:0, taskp:0, taskps:0, tasko:0, taskos:0, autoFailureFix: 0, Other_TaskByQA: 0});
                     }
                 })
             }))
@@ -331,15 +377,52 @@ class IndividualReport extends Component {
             );
         })
         Promise.all(promise).then(resolve => {
-            this.getTasksbyQA(list, startDate, endDate)
+            this.getAutomationFailuresFixed(list, startDate, endDate)
+            //this.getTasksbyQA(list, startDate, endDate)
         })
     }
 
-    getTasksbyQA(list, startDate, endDate){
+    ggetAutomationFailuresFixed(list, startDate, endDate){
+        let promise = []
+        list.forEach(user => {
+            promise.push(axios.get(`/rest/Automation_Failures_Fixed`,{
+                params: {
+                    "sdate": startDate,
+                    "edate": endDate,
+                    "qaMail": user["email"],
+                }}).then(resp => {
+                    user["autoFailureFix"] = resp.data.total
+                })
+            );
+        })
+        Promise.all(promise).then(resolve => {
+            this.getOtherTaskByQA(list, startDate, endDate)
+        })
+    }
+
+    getOtherTaskByQA(list, startDate, endDate){
+        let promise = []
+        list.forEach(user => {
+            promise.push(axios.get(`/rest/Other_TaskByQA`,{
+                params: {
+                    "sdate": startDate,
+                    "edate": endDate,
+                    "qaMail": user["email"],
+                }}).then(resp => {
+                    user["Other_TaskByQA"] = resp.data.total
+                })
+            );
+        })
+        Promise.all(promise).then(resolve => {
+            this.getTasksbyQAInP(list, startDate, endDate)
+        })
+    }
+
+    getAutomationFailuresFixed(list, startDate, endDate){
         let outerPromise = []
         let innerPromise = []
         list.forEach(user => {
-            outerPromise.push(axios.get(`/rest/tasksByQA`,{
+            outerPromise.push(axios.get(`/rest/Automation_Failures_Fixed`,{
                 params: {
                     "sdate": startDate,
                     "edate": endDate,
@@ -347,7 +430,7 @@ class IndividualReport extends Component {
                     "qaMail": user["email"],
                 }}).then(resp => {
                     for(let i = 0; i <= resp.data.total; i=i+100){
-                        innerPromise.push(axios.get(`/rest/tasksByQA`,{
+                        innerPromise.push(axios.get(`/rest/Automation_Failures_Fixed`,{
                             params: {
                                 "startAt": i,
                                 "sdate": startDate,
@@ -357,18 +440,105 @@ class IndividualReport extends Component {
                             }
                         }).then(result => {
                             result.data.issues.forEach(issue => {
-                                if (issue.fields.status.name == "Done" || issue.fields.status.name == "Closed" ) {
-                                    user["taskc"] = user["taskc"] + 1
-                                    user["taskcs"] = user["taskcs"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
-                                }
-                                else if (issue.fields.status.name == "In Progress") {
+                                    user["autoFailureFix"] = user["autoFailureFix"] + (issue.fields.customfield_10671 != null ? issue.fields.customfield_10671 : 0)
+                            })
+                        }).catch(err => {
+                            //this.pgridOperations(true);
+                        }))
+                    }
+                })
+            );
+        })
+        Promise.all(outerPromise).then(result => {
+            Promise.all(innerPromise).then(output => {
+               this.getOtherTaskByQA(list, startDate, endDate)
+            })
+        })
+    }
+
+    getTasksbyQAInP(list, startDate, endDate){
+        let outerPromise = []
+        let innerPromise = []
+        list.forEach(user => {
+            outerPromise.push(axios.get(`/rest/tasksByQAInprogress`,{
+                params: {
+                    "sdate": startDate,
+                    "edate": endDate,
+                    "flag": "count",
+                    "qaMail": user["email"],
+                }}).then(resp => {
+                    for(let i = 0; i <= resp.data.total; i=i+100){
+                        innerPromise.push(axios.get(`/rest/tasksByQAInprogress`,{
+                            params: {
+                                "startAt": i,
+                                "sdate": startDate,
+                                "edate": endDate,
+                                "flag": "",
+                                "qaMail": user["email"],
+                            }
+                        }).then(result => {
+                            result.data.issues.forEach(issue => {
+                               // if (issue.fields.status.name == "Done" || issue.fields.status.name == "Closed" ) {
+                            //         user["taskc"] = user["taskc"] + 1
+                            //         user["taskcs"] = user["taskcs"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                            //    // }
+                                // else if (issue.fields.status.name == "In Progress") {
                                     user["taskp"] = user["taskp"] + 1
                                     user["taskps"] = user["taskps"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
-                                }
-                                else {
-                                    user["tasko"] = user["tasko"] + 1
-                                    user["taskos"] = user["taskos"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
-                                }
+                                // }
+                                // else {
+                                //     user["tasko"] = user["tasko"] + 1
+                                //     user["taskos"] = user["taskos"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                                // }
+                            })
+                        }).catch(err => {
+                            //this.pgridOperations(true);
+                        }))
+                    }
+                })
+            );
+        })
+        Promise.all(outerPromise).then(result => {
+            Promise.all(innerPromise).then(output => {
+               this.getTasksbyQAClosed(list, startDate, endDate)
+            })
+        })
+    }
+
+    getTasksbyQAClosed(list, startDate, endDate){
+        let outerPromise = []
+        let innerPromise = []
+        list.forEach(user => {
+            outerPromise.push(axios.get(`/rest/tasksByQAClosed`,{
+                params: {
+                    "sdate": startDate,
+                    "edate": endDate,
+                    "flag": "count",
+                    "qaMail": user["email"],
+                }}).then(resp => {
+                    for(let i = 0; i <= resp.data.total; i=i+100){
+                        innerPromise.push(axios.get(`/rest/tasksByQAClosed`,{
+                            params: {
+                                "startAt": i,
+                                "sdate": startDate,
+                                "edate": endDate,
+                                "flag": "",
+                                "qaMail": user["email"],
+                            }
+                        }).then(result => {
+                            result.data.issues.forEach(issue => {
+                               // if (issue.fields.status.name == "Done" || issue.fields.status.name == "Closed" ) {
+                                    user["taskc"] = user["taskc"] + 1
+                                    user["taskcs"] = user["taskcs"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                               // }
+                                // else if (issue.fields.status.name == "In Progress") {
+                                //     user["taskp"] = user["taskp"] + 1
+                                //     user["taskps"] = user["taskps"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                                // }
+                                // else {
+                                //     user["tasko"] = user["tasko"] + 1
+                                //     user["taskos"] = user["taskos"] + (issue.fields.customfield_10002 != null ? issue.fields.customfield_10002 : 0)
+                                // }
                             })
                         }).catch(err => {
                             //this.pgridOperations(true);

@@ -524,16 +524,16 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                 fd = GuiInfoForm(newData)
                 if fd.is_valid():
                     data = fd.save(commit = False)
-                    if "master" not in Release:
-                        flag = 1
-                        data.save(using = Release)
+                    #if "master" not in Release:
+                    #    flag = 1
+                    data.save(using = Release)
 
-                        #d = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = req["CardType"])
-                        #dSer = TC_INFO_GUI_SERIALIZER(d)
+                    d = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = req["CardType"])
+                    dSer = TC_INFO_GUI_SERIALIZER(d)
 
-                        if "Activity" in req:
-                            AD = req['Activity']
-                            GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], card, AD['Release'])
+                    if "Activity" in req:
+                        AD = req['Activity']
+                        GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], dSer.data[0]['id'], AD['Release'])
                 else:
                     print(fd.errors)
 
@@ -591,10 +591,13 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                         data = fd.save(commit = False)
                         data.save(using = ReleaseMaster)
                         flag = 1
+
+                        d = TC_INFO_GUI.objects.using(Release).filter(TcID = req['TcID'], BrowserName = req["BrowserName"], CardType = req["CardType"])
+                        dSer = TC_INFO_GUI_SERIALIZER(d)
                     
                         if "Activity" in req:
                             AD = req['Activity']
-                            GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], card, ReleaseMaster)
+                            GenerateGUILogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], dSer.data[0]['TcID'], ReleaseMaster)
                     else:
                         print(fd.errors)
 

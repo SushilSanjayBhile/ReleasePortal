@@ -1,5 +1,6 @@
 import requests, json
 import datetime
+import csv
 
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -32,6 +33,8 @@ def getQAReport(request):
             if key in outputGui:
                 output[key]["auto"] = output[key]["auto"] + outputGui[key]["auto"]
                 output[key]["exec"] = output[key]["exec"] + outputGui[key]["exec"]
+                output[key]["aexec"] = output[key]["aexec"] + outputGui[key]["aexec"]
+
         for key in outputGui:
             if key not in output:
                 output[key] = outputGui[key]
@@ -50,15 +53,23 @@ def RESULT_LOGS(Release, sdate, edate):
                     date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
                     if date_time_obj >= sdate and date_time_obj <= edate:
                         logdata = log["LogData"]
-                        if "status added" in log["LogData"].lower():
+                        if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower():
                                 if log["UserName"] not in user:
                                     user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
                                     user[log["UserName"]]["auto"] = 0
-                                    user[log["UserName"]]["exec"] = 1
+                                    user[log["UserName"]]["aexec"] = 0
+                                    user[log["UserName"]]["exec"] = 0
+                                    if "auto: true" in log["LogData"].lower():
+                                        user[log["UserName"]]["aexec"] = 1
+                                    else:
+                                        user[log["UserName"]]["exec"] = 1
                                     user[log["UserName"]]["tc"] = []
 
                                 else:
-                                    user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
+                                    if "auto: true" in log["LogData"].lower():
+                                        user[log["UserName"]]["aexec"] = user[log["UserName"]]["aexec"] + 1
+                                    else:
+                                        user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
                                     if rel["ReleaseNumber"] not in user[log["UserName"]]["execIn"]:
                                         user[log["UserName"]]["execIn"] = user[log["UserName"]]["execIn"] + "," + rel["ReleaseNumber"]
 
@@ -70,6 +81,7 @@ def RESULT_LOGS(Release, sdate, edate):
                                         user[log["UserName"]] = {"execIn": ""}
                                         user[log["UserName"]]["auto"] = 1
                                         user[log["UserName"]]["exec"] = 0
+                                        user[log["UserName"]]["aexec"] = 0
                                         user[log["UserName"]]["tc"] = [log["TcID"]]
                                     else:
                                         if log["TcID"] not in user[log["UserName"]]["tc"]:
@@ -92,11 +104,13 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
                     date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
                     if date_time_obj >= sdate and date_time_obj <= edate:
                         logdata = log["LogData"]
-                        if "status added" in log["LogData"].lower():
+                        if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower():
                             if log["UserName"] not in user:
                                 user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
                                 user[log["UserName"]]["auto"] = 0
                                 user[log["UserName"]]["exec"] = 1
+                                user[log["UserName"]]["aexec"] = 0
+
                                 user[log["UserName"]]["tc"] = []
                             else:
                                 user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
@@ -113,6 +127,7 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
                                         user[log["UserName"]] = {"execIn": ""}
                                         user[log["UserName"]]["auto"] = 1
                                         user[log["UserName"]]["exec"] = 0
+                                        user[log["UserName"]]["aexec"] = 0
                                         user[log["UserName"]]["tc"] = [tcid]
                                     else:
                                         if tcid not in user[log["UserName"]]["tc"]:
@@ -123,6 +138,230 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
             except:
                 pass
     return user
+
+@csrf_exempt
+def getTcExecutionCount(request):
+    if request.method == "GET":
+        sdate = datetime.datetime.strptime(request.GET.get("startdate"), '%Y-%m-%d').date()
+        edate = datetime.datetime.strptime(request.GET.get("enddate"), '%Y-%m-%d').date()
+        data = RELEASES.objects.using("universal").all().order_by("-CreationDate")
+        serializer = RELEASE_SERIALIZER(data, many = True)
+        Release = serializer.data
+    cliTcs = {}
+    guiTcs = {}
+    for rel in Release:
+        if rel["ReleaseNumber"] != "TestDatabase" and rel["ReleaseNumber"] != "DCX-DMC-Master":
+            data = LOGS.objects.using(rel["ReleaseNumber"]).all()
+            serializer = LOG_SERIALIZER(data, many = True)
+            #try:
+            cliTcs[rel["ReleaseNumber"]] = {}
+            for log in serializer.data:
+                date_time_str = log["Timestamp"]
+                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+                if date_time_obj >= sdate and date_time_obj <= edate:
+                    #logdata = log["LogData"]
+                    if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower():
+                            if log["CardType"] not in cliTcs[rel["ReleaseNumber"]]:
+                                cliTcs[rel["ReleaseNumber"]][log["CardType"]] = {log["TcID"]:1}
+                            else:
+                                if log["TcID"] not in cliTcs[rel["ReleaseNumber"]][log["CardType"]]:
+                                    cliTcs[rel["ReleaseNumber"]][log["CardType"]][log["TcID"]] = 1
+                                else:
+                                    cliTcs[rel["ReleaseNumber"]][log["CardType"]][log["TcID"]] = cliTcs[rel["ReleaseNumber"]][log["CardType"]][log["TcID"]] + 1
+        #except:
+            #    pass
+            data = LOGSGUI.objects.using(rel["ReleaseNumber"]).all()
+            serializer = GUI_LOGS_SERIALIZER(data, many = True)
+            #try:
+            guiTcs[rel["ReleaseNumber"]] = {}
+            for log in serializer.data:
+                date_time_str = log["Timestamp"]
+                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+                if date_time_obj >= sdate and date_time_obj <= edate:
+                    try:
+                        tcid = TC_INFO_GUI.objects.using(rel["ReleaseNumber"]).get(id = log["tcInfoNum"])
+                        ser = TC_INFO_GUI_SERIALIZER(tcid)
+                        tcid = ser.data["TcID"]
+                        if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower():
+                                cardType = log["LogData"].split("CardType:")[1]
+                                if cardType not in guiTcs[rel["ReleaseNumber"]]:
+                                    guiTcs[rel["ReleaseNumber"]][cardType] = {tcid:1}
+                                else:
+                                    if tcid not in guiTcs[rel["ReleaseNumber"]][cardType]:
+                                        guiTcs[rel["ReleaseNumber"]][cardType][tcid] = 1
+                                    else:
+                                        guiTcs[rel["ReleaseNumber"]][cardType][tcid] = guiTcs[rel["ReleaseNumber"]][cardType][tcid] + 1
+                    except:
+                        pass
+            #    pass
+
+    cliauto, guiauto = getTcAutomationCount(sdate,edate)
+    #print("sdate",sdate)
+    added = getTcAddedCount(sdate,edate)
+    print("added",added)
+    response = HttpResponse(
+        content_type="text/csv",
+        headers={"Content-Disposition": 'attachment; filename="TCexecution.csv"'},
+    )
+    writer = csv.writer(response)
+    #print("user", user)
+    #with open('TCexecution.csv', mode='w') as csv_file:
+    #    fieldnames = ['Release', 'Platform', 'TcID', 'Count']
+    #    writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+    #    writer.writeheader()
+    writer.writerow(['Release', 'Platform', 'TcID', 'Count'])
+    for rel in cliTcs:
+        for platform in cliTcs[rel]:
+            for tcid in cliTcs[rel][platform]:
+                #if rel == "UE-3.6.2":
+                    #print(tcid, user[rel][platform][tcid])
+                #writer.writerow(['Release': rel, 'Platform': platform, 'TcID': tcid, 'Count': user[rel][platform][tcid]])
+                writer.writerow([rel, platform, tcid, cliTcs[rel][platform][tcid]])
+
+    writer.writerow(['---------GUI TC EXECUTION DATA-------------'])
+
+    for rel in guiTcs:
+        for platform in guiTcs[rel]:
+            for tcid in guiTcs[rel][platform]:
+                #if rel == "UE-3.6.2":
+                    #print(tcid, user[rel][platform][tcid])
+                #writer.writerow(['Release': rel, 'Platform': platform, 'TcID': tcid, 'Count': user[rel][platform][tcid]])
+                writer.writerow([rel, platform, tcid, guiTcs[rel][platform][tcid]])
+    writer.writerow(['---------CLI AUTOMATION DATA-------------'])
+
+    for user in cliauto:
+        writer.writerow([user, cliauto[user]["auto"]])
+
+    writer.writerow(['---------GUI AUTOMATION DATA-------------'])
+
+    for user in guiauto:
+        writer.writerow([user, guiauto[user]["auto"]])
+
+    writer.writerow(['---------Newly Added Test Cases-------------'])
+
+
+    for user in added:
+        for name in added[user]:
+            writer.writerow([user, name, added[user][name]["cliAdded"], added[user][name]["guiAdded"]])
+
+    return response
+
+
+def getTcAutomationCount(sdate, edate):
+    data = RELEASES.objects.using("universal").all().order_by("-CreationDate")
+    serializer = RELEASE_SERIALIZER(data, many = True)
+    Release = serializer.data
+    cliauto = {}
+    guiauto = {}
+    for rel in Release:
+        if rel["ReleaseNumber"] == "DCX-DMC-Master":
+            data = LOGS.objects.using(rel["ReleaseNumber"]).all()
+            serializer = LOG_SERIALIZER(data, many = True)
+            #try:
+            for log in serializer.data:
+                date_time_str = log["Timestamp"]
+                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+                if date_time_obj >= sdate and date_time_obj <= edate:
+                    logdata = log["LogData"]
+                    try:
+                        logdata = json.loads(logdata)
+                        if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
+                            if log["UserName"] not in cliauto:
+                                cliauto[log["UserName"]] = {"auto":1}
+                                cliauto[log["UserName"]]["tc"] = [log["TcID"]]
+                            else:
+                                #cliauto[log["UserName"]]["auto"] = cliauto[log["UserName"]]["auto"] + 1
+                                if log["TcID"] not in cliauto[log["UserName"]]["tc"]:
+                                    cliauto[log["UserName"]]["auto"] = cliauto[log["UserName"]]["auto"] + 1
+                                    cliauto[log["UserName"]]["tc"].append(log["TcID"])
+                    except:
+                        pass
+            data = LOGSGUI.objects.using(rel["ReleaseNumber"]).all()
+            serializer = GUI_LOGS_SERIALIZER(data, many = True)
+            for log in serializer.data:
+                date_time_str = log["Timestamp"]
+                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+                if date_time_obj >= sdate and date_time_obj <= edate:
+                    logdata = log["LogData"]
+                    try:
+                        logdata = json.loads(logdata)
+                        tcid = TC_INFO_GUI.objects.using(rel["ReleaseNumber"]).get(id = log["tcInfoNum"])
+                        ser = TC_INFO_GUI_SERIALIZER(tcid)
+                        tcid = ser.data["TcID"]
+                        if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
+                            if log["UserName"] not in guiauto:
+                                guiauto[log["UserName"]] = {"auto":1}
+                                guiauto[log["UserName"]]["tc"] = [tcid]
+                            else:
+                                if tcid not in guiauto[log["UserName"]]["tc"]:
+                                    guiauto[log["UserName"]]["auto"] = guiauto[log["UserName"]]["auto"] + 1
+                                    guiauto[log["UserName"]]["tc"].append(tcid)
+                                #guiauto[log["UserName"]]["auto"] = cliauto[log["UserName"]]["auto"] + 1
+                    except:
+                        pass
+
+    return cliauto, guiauto
+
+def getTcAddedCount(sdate, edate):
+    data = RELEASES.objects.using("universal").all().order_by("-CreationDate")
+    serializer = RELEASE_SERIALIZER(data, many = True)
+    Release = serializer.data
+    #sdate = datetime.datetime.strptime(sdate, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+    #edate = datetime.datetime.strptime(edate, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+    added = {}
+    for rel in Release:
+        if rel["ReleaseNumber"] != "TestDatabase" and rel["ReleaseNumber"] != "DCX-DMC-Master" and rel["ReleaseNumber"] != "master":
+            data = LOGS.objects.using(rel["ReleaseNumber"]).all()
+            serializer = LOG_SERIALIZER(data, many = True)
+            for log in serializer.data:
+                date_time_str = log["Timestamp"]
+                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+                if date_time_obj >= sdate and date_time_obj <= edate:
+                    if "created tc" in log["LogData"].lower():
+                        if rel["ReleaseNumber"] not in added:
+                            added[rel["ReleaseNumber"]] = {}
+                            if log["UserName"] not in added[rel["ReleaseNumber"]]:
+                                added[rel["ReleaseNumber"]][log["UserName"]] = {"cliAdded" : 1, "guiAdded": 0}
+                            else:
+                                added[rel["ReleaseNumber"]][log["UserName"]]["cliAdded"] = 1
+
+                        else:
+                            if log["UserName"] not in added[rel["ReleaseNumber"]]:
+                                added[rel["ReleaseNumber"]][log["UserName"]] = {"cliAdded" : 1, "guiAdded": 0}
+                            else:
+                                added[rel["ReleaseNumber"]][log["UserName"]]["cliAdded"] = added[rel["ReleaseNumber"]][log["UserName"]]["cliAdded"] + 1
+
+            data = LOGSGUI.objects.using(rel["ReleaseNumber"]).all()
+            serializer = GUI_LOGS_SERIALIZER(data, many = True)
+            for log in serializer.data:
+                date_time_str = log["Timestamp"]
+                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+                if date_time_obj >= sdate and date_time_obj <= edate:
+                    if "created tc" in log["LogData"].lower():
+                        if rel["ReleaseNumber"] not in added:
+                            added[rel["ReleaseNumber"]] = {}
+                            if log["UserName"] not in added[rel["ReleaseNumber"]]:
+                                added[rel["ReleaseNumber"]][log["UserName"]] = {"cliAdded" : 0, "guiAdded": 1}
+                            else:
+                                added[rel["ReleaseNumber"]][log["UserName"]]["guiAdded"] = 1
+
+                        else:
+                            if log["UserName"] not in added[rel["ReleaseNumber"]]:
+                                added[rel["ReleaseNumber"]][log["UserName"]] = {"cliAdded" : 0, "guiAdded": 1}
+                            else:
+                                added[rel["ReleaseNumber"]][log["UserName"]]["guiAdded"] = added[rel["ReleaseNumber"]][log["UserName"]]["cliAdded"] + 1
+
+
+                        #if rel["ReleaseNumber"] not in added:
+                        #    added[rel["ReleaseNumber"]] = {"cliAdded" : 0, "guiAdded": 1}
+                        #else:
+                        #    added[rel["ReleaseNumber"]]["guiAdded"] = added[rel["ReleaseNumber"]]["guiAdded"] + 1
+
+
+
+    return added
+
+
 
 @csrf_exempt
 def getSDETReleaseReport(request):

@@ -77,7 +77,32 @@ WSGI_APPLICATION = 'dp.wsgi.application'
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 
+
 DATABASES = {
+     'OSE-4.12-3.5.1': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'OSE-4.12-3.5.1',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'UE-3.7.2': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'UE-3.7.2',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'SPEK-3.8.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'SPEK-3.8.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'UA-3.7.0': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'UA-3.7.0',
