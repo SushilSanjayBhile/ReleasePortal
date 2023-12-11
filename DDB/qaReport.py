@@ -6,7 +6,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from .views import RELEASEINFO
-from .serializers import RELEASE_SERIALIZER, LOG_SERIALIZER, GUI_LOGS_SERIALIZER, TC_INFO_GUI_SERIALIZER
+from .serializers import RELEASE_SERIALIZER, LOG_SERIALIZER, GUI_LOGS_SERIALIZER, TC_INFO_GUI_SERIALIZER, TC_INFO_SERIALIZER
 from .models import RELEASES, LOGS, LOGSGUI, TC_INFO, TC_INFO_GUI
 from django.db.models import Count
 from django.db.models import Q
@@ -52,18 +52,32 @@ def RESULT_LOGS(Release, sdate, edate):
                     if date_time_obj >= sdate and date_time_obj <= edate:
                         logdata = log["LogData"]
                         if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower() and "result: unblocked" not in log["LogData"].lower():
+                                manual = True
+                                infoData = TC_INFO.objects.using(rel["ReleaseNumber"]).filter(TcID = log["TcID"]).get(CardType = log["CardType"])
+                                infoSerializer = TC_INFO_SERIALIZER(infoData)
+                                tcdata = infoSerializer.data
+
+                                if tcdata["TcName"] != "TC NOT AUTOMATED":
+                                    manual = False
+                                else:
+                                    manual = True
                                 if log["UserName"] not in user:
                                     user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
                                     user[log["UserName"]]["auto"] = 0
                                     user[log["UserName"]]["exec"] = 0
                                     user[log["UserName"]]["aexec"] = 0
                                     user[log["UserName"]]["tc"] = []
-                                    if "auto: true" in log["LogData"]:
+
+                                    infoData = TC_INFO.objects.using(rel["ReleaseNumber"]).filter(TcID = log["TcID"]).get(CardType = log["CardType"])
+                                    infoSerializer = TC_INFO_SERIALIZER(infoData)
+                                    tcdata = infoSerializer.data
+
+                                    if manual == False:
                                         user[log["UserName"]]["aexec"] = 1
                                     else:
                                         user[log["UserName"]]["exec"] = 1
                                 else:
-                                    if "auto: true" in log["LogData"]:
+                                    if manual == False:
                                         user[log["UserName"]]["aexec"] = user[log["UserName"]]["aexec"] + 1
                                     else:
                                         user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
@@ -92,6 +106,7 @@ def RESULT_LOGS(Release, sdate, edate):
     return user
 def RESULT_LOGS_GUI(Release, sdate, edate):
     user = {}
+    manual = True
     for rel in Release:
         if rel["ReleaseNumber"] != "TestDatabase":
             data = LOGSGUI.objects.using(rel["ReleaseNumber"]).all()
@@ -103,14 +118,31 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
                     if date_time_obj >= sdate and date_time_obj <= edate:
                         logdata = log["LogData"]
                         if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower() and "result: unblocked" not in log["LogData"].lower():
+                            manual = True
+                            tcid = TC_INFO_GUI.objects.using(rel["ReleaseNumber"]).get(id = log["tcInfoNum"])
+                            ser = TC_INFO_GUI_SERIALIZER(tcid)
+                            tcid = ser.data["TcID"]
+
+                            if ser.data["TcName"] == "TC NOT AUTOMATED":
+                                manual = True
+                            else:
+                                manual = False
                             if log["UserName"] not in user:
                                 user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
                                 user[log["UserName"]]["auto"] = 0
-                                user[log["UserName"]]["exec"] = 1
+                                user[log["UserName"]]["exec"] = 0
                                 user[log["UserName"]]["aexec"] = 0
                                 user[log["UserName"]]["tc"] = []
+
+                                if manual == False:
+                                    user[log["UserName"]]["aexec"] = 1
+                                else:
+                                    user[log["UserName"]]["exec"] = 1 
                             else:
-                                user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
+                                if manual == True:
+                                    user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
+                                else:
+                                    user[log["UserName"]]["aexec"] = user[log["UserName"]]["aexec"] + 1
                                 if rel["ReleaseNumber"] not in user[log["UserName"]]["execIn"]:
                                     user[log["UserName"]]["execIn"] = user[log["UserName"]]["execIn"] + "," + rel["ReleaseNumber"]
                         try:
@@ -158,7 +190,7 @@ def getTcExecutionCount(request):
                 date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
                 if date_time_obj >= sdate and date_time_obj <= edate:
                     #logdata = log["LogData"]
-                    if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower():
+                    if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower() and "result: unblocked" not in log["LogData"].lower():
                             if log["CardType"] not in cliTcs[rel["ReleaseNumber"]]:
                                 cliTcs[rel["ReleaseNumber"]][log["CardType"]] = {log["TcID"]:1}
                             else:

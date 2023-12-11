@@ -78,6 +78,22 @@ WSGI_APPLICATION = 'dp.wsgi.application'
 
 
 DATABASES = {
+    'DKE-3.8.0': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'DKE-3.8.0',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
+    'UE-MASTER': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'UE-MASTER',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'OSE-4.12-3.5.1': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'OSE-4.12-3.5.1',
