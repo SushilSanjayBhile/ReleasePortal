@@ -41,10 +41,13 @@ var Client = require('node-rest-client').Client;
 //const { resolve } = require('node:path');
 client = new Client();
 
+//Authorization key is the PAT(personal access token) used for authentication of JIRA
+//To generate new token follow the steps on the link- https://developer.atlassian.com/cloud/jira/platform/basic-auth-for-rest-apis/
 var searchArgs = {
     headers: {
         "Content-Type": "application/json",
-        "Authorization": "Basic YWNoYXZhbkBkaWFtYW50aS5jb206Y2VtRDF5UW1ySTIweFNCSWQwUU9DODgw"
+        "Authorization": "Basic c3ViaGFzaC5rdW1hckBkaWFtYW50aS5jb206QVRBVFQzeEZmR0YwbTA2aWpyTURra3dGZEVSVGVsNi1zdkVDa0pEZVQzV1JCbVhXR3FXTTF0MW1iaHJVMlVpbzFSN210RjVienp1SThXTTN3N0llV0N6Nks2anZiaUlKdnVKNC1hci1RMkFUQjN5aWZFME5vaWVRT2tPNjB2ZGpZajJuWGo5aUg1di0yV0NQRTNPbHRvMEMzbThlWFplNHZrN2N4Q0YzSlMxbTZqXzQ1ZXZsTFRrPTBBRkI0RjUz"
+
     }
 }
 
