@@ -686,8 +686,12 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
 
             # UPDATE GUI TC INFO IN DCX-DMC-Master release
             if Release != "TestDatabase":
-                if "dmc" in Release.lower():
-                    master = "DMC Master"
+		if "UE" in Release.lower():
+                    master = "UE-MASTER"
+                if "UA" in Release.lower():
+                    master = "UA-MASTER"
+                if "SPEK" in Release.lower():
+                    master = "SPEK-MASTER"               
                 else:
                     master = "master"
             #data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'], CardType = req["CardType"])

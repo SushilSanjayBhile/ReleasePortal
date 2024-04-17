@@ -1239,11 +1239,13 @@ def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
                 return JsonResponse({'Conflict': errRecords}, status = 409)
             return JsonResponse({'message': 'Success'}, status = 200)
 
-        if "dmc" in Release.lower():
-            #Release = "DMC Master"
-            pRelease = "DMC Master"
+	if "UE" in Release.lower():
+            pRelease = "UE-MASTER"
+        if "UA" in Release.lower():
+            pRelease = "UA-MASTER"
+        if "SPEK" in Release.lower():
+            pRelease = "SPEK-MASTER"  
         else:
-            #Release = "master"
             pRelease = "master"
         data = TC_INFO.objects.using(pRelease).filter(TcID = id)
         serializer = TC_INFO_SERIALIZER(data, many = True)
