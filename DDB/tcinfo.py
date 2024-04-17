@@ -564,11 +564,15 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                         GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
 
             # post request for master release
-            if "dmc" in Release.lower():
-                master = dmcMaster
+            if "UE" in Release.lower():
+                master = "UE-MASTER"
+            if "UA" in Release.lower():
+                master = "UA-MASTER"
+            if "SPEK" in Release.lower():
+                master = "SPEK-MASTER"
             else:
                 master = "master"
-            if Release != master and Release != "TestDatabase" and "master" not in Release.lower():
+            if Release != master and Release != "TestDatabase":
                 data = TC_INFO.objects.using(master).filter(TcID = req['TcID']).filter(CardType = card)
                 if len(data) != 0:
                     errorMsg[master].append('Duplicate: ' + req['TcID'] + ' with ' + card)

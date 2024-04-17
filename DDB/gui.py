@@ -337,7 +337,7 @@ def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
                 print(fd.errors)
 
         # post request for master release
-        if "dmc" in Release.lower():
+        if "UE" in Release.lower():
             master = dmcMaster
         if Release != master and Release != "TestDatabase":
             Release = master
@@ -539,8 +539,12 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     print(fd.errors)
 
             # post request for master release
-            if "dmc" in Release.lower():
-                master = dmcMaster
+            if "UE" in Release.lower():
+                master = "UE-MASTER"
+            if "UA" in Release.lower():
+                master = "UA-MASTER"
+            if "SPEK" in Release.lower():
+                master = "SPEK-MASTER"
             if Release != master and Release != "TestDatabase":
                 #Release = master
                 ReleaseMaster = master
