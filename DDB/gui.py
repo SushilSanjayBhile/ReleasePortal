@@ -337,7 +337,7 @@ def GUI_TC_INFO_GET_POST_VIEW1(request, Release):
                 print(fd.errors)
 
         # post request for master release
-        if "UE" in Release.lower():
+        if "ue" in Release.lower():
             master = dmcMaster
         if Release != master and Release != "TestDatabase":
             Release = master
@@ -539,12 +539,12 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
                     print(fd.errors)
 
             # post request for master release
-            if "UE" in Release.lower():
+            if "ue" in Release.lower():
                 master = "UE-MASTER"
-            if "UA" in Release.lower():
+            if "ua" in Release.lower():
                 master = "UA-MASTER"
-            if "SPEK" in Release.lower():
-                master = "SPEK-MASTER"
+            if "spek" in Release.lower():
+                master = "SPEK-Master"
             if Release != master and Release != "TestDatabase":
                 #Release = master
                 ReleaseMaster = master
@@ -686,14 +686,12 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
 
             # UPDATE GUI TC INFO IN DCX-DMC-Master release
             if Release != "TestDatabase":
-		if "UE" in Release.lower():
+                if "ue" in Release.lower():
                     master = "UE-MASTER"
-                if "UA" in Release.lower():
+                if "ua" in Release.lower():
                     master = "UA-MASTER"
-                if "SPEK" in Release.lower():
-                    master = "SPEK-MASTER"               
-                else:
-                    master = "master"
+                if "spek" in Release.lower():
+                    master = "SPEK-Master"
             #data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'], CardType = req["CardType"])
             data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'])
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)

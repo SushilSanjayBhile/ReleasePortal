@@ -23,7 +23,9 @@ def getQAReport(request):
         output = RESULT_LOGS(releases, start_date, end_date)
         #for key in output:
         #    output[key]["auto"] = len(output[key]["auto"])
+        print("output",output)
         outputGui = RESULT_LOGS_GUI(releases, start_date, end_date)
+        print("outputgui",outputGui)
         #for key in outputGui:
         #    outputGui[key]["auto"] = len(outputGui[key]["auto"])
 
@@ -36,10 +38,135 @@ def getQAReport(request):
         for key in outputGui:
             if key not in output:
                 output[key] = outputGui[key]
-
+        print("before return",output)
         return JsonResponse({"qaReport": output}, status = 200)
 
 def RESULT_LOGS(Release, sdate, edate):
+    user = {}
+    for rel in Release:
+        try:
+            if rel["ReleaseNumber"] != "TestDatabase":
+                data = LOGS.objects.using(rel["ReleaseNumber"]).all()
+                serializer = LOG_SERIALIZER(data, many = True)
+                for log in serializer.data:
+                    date_time_str = log["Timestamp"]
+                    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+                    if date_time_obj >= sdate and date_time_obj <= edate:
+                        logdata = log["LogData"]
+                        if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower() and "result: unblocked" not in log["LogData"].lower():
+                            manual = True
+                            infoData = TC_INFO.objects.using(rel["ReleaseNumber"]).filter(TcID = log["TcID"]).get(CardType = log["CardType"])
+                            infoSerializer = TC_INFO_SERIALIZER(infoData)
+                            tcdata = infoSerializer.data
+
+                            if tcdata["TcName"] != "TC NOT AUTOMATED" and "testedon: yes" not in log["LogData"].lower():
+                                manual = False
+                            else:
+                                manual = True
+                            if log["UserName"] not in user:
+                                user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
+                                user[log["UserName"]]["auto"] = 0
+                                user[log["UserName"]]["exec"] = 0
+                                user[log["UserName"]]["aexec"] = 0
+                                user[log["UserName"]]["tc"] = []
+
+                                #infoData = TC_INFO.objects.using(rel["ReleaseNumber"]).filter(TcID = log["TcID"]).get(CardType = log["CardType"])
+                                #infoSerializer = TC_INFO_SERIALIZER(infoData)
+                                #tcdata = infoSerializer.data
+
+                                if manual == False:
+                                    user[log["UserName"]]["aexec"] = 1
+                                else:
+                                    user[log["UserName"]]["exec"] = 1
+                            else:
+                                if manual == False:
+                                    user[log["UserName"]]["aexec"] = user[log["UserName"]]["aexec"] + 1
+                                else:
+                                    user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
+                                if rel["ReleaseNumber"] not in user[log["UserName"]]["execIn"]:
+                                    user[log["UserName"]]["execIn"] = user[log["UserName"]]["execIn"] + "," + rel["ReleaseNumber"]
+
+                        if rel["ReleaseNumber"] == "DCX-DMC-Master":
+                            logdata = json.loads(logdata)
+                            if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
+                                if log["UserName"] not in user:
+                                    user[log["UserName"]] = {"execIn": ""}
+                                    user[log["UserName"]]["auto"] = 1
+                                    user[log["UserName"]]["exec"] = 0
+                                    user[log["UserName"]]["aexec"] = 0
+                                    user[log["UserName"]]["tc"] = [log["TcID"]]
+                                else:
+                                    if log["TcID"] not in user[log["UserName"]]["tc"]:
+                                        user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
+                                        user[log["UserName"]]["tc"].append(log["TcID"])
+
+        except:
+            pass
+    return user
+def RESULT_LOGS_GUI(Release, sdate, edate):
+    user = {}
+    manual = True
+    for rel in Release:
+        try:
+            if rel["ReleaseNumber"] != "TestDatabase":
+                data = LOGSGUI.objects.using(rel["ReleaseNumber"]).all()
+                serializer = GUI_LOGS_SERIALIZER(data, many = True)
+                for log in serializer.data:
+                    date_time_str = log["Timestamp"]
+                    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+                    if date_time_obj >= sdate and date_time_obj <= edate:
+                        logdata = log["LogData"]
+                        if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower() and "result: unblocked" not in log["LogData"].lower():
+                            manual = True
+                            tcid = TC_INFO_GUI.objects.using(rel["ReleaseNumber"]).get(id = log["tcInfoNum"])
+                            ser = TC_INFO_GUI_SERIALIZER(tcid)
+                            tcid = ser.data["TcID"]
+
+                            if ser.data["TcName"] != "TC NOT AUTOMATED" and "testedon: yes" not in log["LogData"].lower():
+                                manual = False
+                            else:
+                                manual = True
+                            if log["UserName"] not in user:
+                                user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
+                                user[log["UserName"]]["auto"] = 0
+                                user[log["UserName"]]["exec"] = 0
+                                user[log["UserName"]]["aexec"] = 0
+                                user[log["UserName"]]["tc"] = []
+
+                                if manual == False:
+                                    user[log["UserName"]]["aexec"] = 1
+                                else:
+                                    user[log["UserName"]]["exec"] = 1 
+                            else:
+                                if manual == True:
+                                    user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
+                                else:
+                                    user[log["UserName"]]["aexec"] = user[log["UserName"]]["aexec"] + 1
+                                if rel["ReleaseNumber"] not in user[log["UserName"]]["execIn"]:
+                                    user[log["UserName"]]["execIn"] = user[log["UserName"]]["execIn"] + "," + rel["ReleaseNumber"]
+                        if rel["ReleaseNumber"] == "DCX-DMC-Master":
+                            logdata = json.loads(logdata)
+                            if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
+                                tcid = TC_INFO_GUI.objects.using(rel["ReleaseNumber"]).get(id = log["tcInfoNum"])
+                                ser = TC_INFO_GUI_SERIALIZER(tcid)
+                                tcid = ser.data["TcID"]
+                                if log["UserName"] not in user:
+                                    user[log["UserName"]] = {"execIn": ""}
+                                    user[log["UserName"]]["auto"] = 1
+                                    user[log["UserName"]]["exec"] = 0
+                                    user[log["UserName"]]["aexec"] = 0
+                                    user[log["UserName"]]["tc"] = [tcid]
+                                else:
+                                    if tcid not in user[log["UserName"]]["tc"]:
+                                        user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
+                                        user[log["UserName"]]["tc"].append(tcid)
+        except:
+            pass
+    return user
+
+
+
+def RESULT_LOGS_OLD(Release, sdate, edate):
     user = {}
     for rel in Release:
         if rel["ReleaseNumber"] != "TestDatabase":
@@ -104,21 +231,22 @@ def RESULT_LOGS(Release, sdate, edate):
                     except:
                         pass
     return user
-def RESULT_LOGS_GUI(Release, sdate, edate):
+def RESULT_LOGS_GUI_OLD(Release, sdate, edate):
     user = {}
     manual = True
     for rel in Release:
         if rel["ReleaseNumber"] != "TestDatabase":
+            #try:
             data = LOGSGUI.objects.using(rel["ReleaseNumber"]).all()
             serializer = GUI_LOGS_SERIALIZER(data, many = True)
-            try:
-                for log in serializer.data:
-                    date_time_str = log["Timestamp"]
-                    date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
-                    if date_time_obj >= sdate and date_time_obj <= edate:
-                        logdata = log["LogData"]
-                        if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower() and "result: unblocked" not in log["LogData"].lower():
-                            manual = True
+            for log in serializer.data:
+                date_time_str = log["Timestamp"]
+                date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%dT%H:%M:%S.%fZ').date()
+                if date_time_obj >= sdate and date_time_obj <= edate:
+                    logdata = log["LogData"]
+                    if "status added" in log["LogData"].lower() and "result: blocked" not in log["LogData"].lower() and "result: unblocked" not in log["LogData"].lower():
+                        manual = True
+                        try:
                             tcid = TC_INFO_GUI.objects.using(rel["ReleaseNumber"]).get(id = log["tcInfoNum"])
                             ser = TC_INFO_GUI_SERIALIZER(tcid)
                             tcid = ser.data["TcID"]
@@ -145,28 +273,30 @@ def RESULT_LOGS_GUI(Release, sdate, edate):
                                     user[log["UserName"]]["aexec"] = user[log["UserName"]]["aexec"] + 1
                                 if rel["ReleaseNumber"] not in user[log["UserName"]]["execIn"]:
                                     user[log["UserName"]]["execIn"] = user[log["UserName"]]["execIn"] + "," + rel["ReleaseNumber"]
-                        try:
-                            if rel["ReleaseNumber"] == "DCX-DMC-Master":
-                                logdata = json.loads(logdata)
-                                if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
-                                    tcid = TC_INFO_GUI.objects.using(rel["ReleaseNumber"]).get(id = log["tcInfoNum"])
-                                    ser = TC_INFO_GUI_SERIALIZER(tcid)
-                                    tcid = ser.data["TcID"]
-                                    if log["UserName"] not in user:
-                                        user[log["UserName"]] = {"execIn": ""}
-                                        user[log["UserName"]]["auto"] = 1
-                                        user[log["UserName"]]["exec"] = 0
-                                        user[log["UserName"]]["aexec"] = 0
-                                        user[log["UserName"]]["tc"] = [tcid]
-                                    else:
-                                        if tcid not in user[log["UserName"]]["tc"]:
-                                            user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
-                                            user[log["UserName"]]["tc"].append(tcid)
-
                         except:
                             pass
-            except:
-                pass
+                    try:
+                        if rel["ReleaseNumber"] == "DCX-DMC-Master":
+                            logdata = json.loads(logdata)
+                            if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
+                                tcid = TC_INFO_GUI.objects.using(rel["ReleaseNumber"]).get(id = log["tcInfoNum"])
+                                ser = TC_INFO_GUI_SERIALIZER(tcid)
+                                tcid = ser.data["TcID"]
+                                if log["UserName"] not in user:
+                                    user[log["UserName"]] = {"execIn": ""}
+                                    user[log["UserName"]]["auto"] = 1
+                                    user[log["UserName"]]["exec"] = 0
+                                    user[log["UserName"]]["aexec"] = 0
+                                    user[log["UserName"]]["tc"] = [tcid]
+                                else:
+                                    if tcid not in user[log["UserName"]]["tc"]:
+                                        user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
+                                        user[log["UserName"]]["tc"].append(tcid)
+
+                    except:
+                        pass
+            #except:
+            #    pass
     return user
 
 @csrf_exempt

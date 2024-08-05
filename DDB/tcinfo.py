@@ -564,6 +564,7 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                         GenerateLogData(AD['UserName'], AD['RequestType'], AD['URL'], AD['LogData'], AD['TcID'], card, AD['Release'])
 
             # post request for master release
+<<<<<<< Updated upstream
             if "UE" in Release.lower():
                 master = "UE-MASTER"
             if "UA" in Release.lower():
@@ -572,6 +573,17 @@ def TC_INFO_GET_POST_VIEW(request, Release):
                 master = "SPEK-MASTER"
             else:
                 master = "master"
+=======
+            if "ue" in Release.lower():
+                master = "UE-MASTER"
+            elif "ua" in Release.lower():
+                master = "UA-MASTER"
+            elif "spek" in Release.lower():
+                master = "SPEK-Master"
+            else:
+                master = "master"
+            print("master***",master)
+>>>>>>> Stashed changes
             if Release != master and Release != "TestDatabase":
                 data = TC_INFO.objects.using(master).filter(TcID = req['TcID']).filter(CardType = card)
                 if len(data) != 0:
@@ -1239,12 +1251,21 @@ def UPDATE_TC_INFO_BY_ID(request, Release, id, card):
                 return JsonResponse({'Conflict': errRecords}, status = 409)
             return JsonResponse({'message': 'Success'}, status = 200)
 
+<<<<<<< Updated upstream
 	if "UE" in Release.lower():
             pRelease = "UE-MASTER"
         if "UA" in Release.lower():
             pRelease = "UA-MASTER"
         if "SPEK" in Release.lower():
             pRelease = "SPEK-MASTER"  
+=======
+        if "ue" in Release.lower():
+            pRelease = "UE-MASTER"
+        elif "ua" in Release.lower():
+            pRelease = "UA-MASTER"
+        elif "spek" in Release.lower():
+            pRelease = "SPEK-Master"
+>>>>>>> Stashed changes
         else:
             pRelease = "master"
         data = TC_INFO.objects.using(pRelease).filter(TcID = id)
