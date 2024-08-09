@@ -78,6 +78,14 @@ WSGI_APPLICATION = 'dp.wsgi.application'
 
 
 DATABASES = {
+    'SPEK-3.9.2': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'SPEK-3.9.2',
+        'USER': userName,
+        'PASSWORD': passwd,
+        'HOST': hostName,
+        'PORT': portNumber,
+        },
     'GW-8.8.0': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'GW-8.8.0',
@@ -166,7 +174,6 @@ DATABASES = {
         'HOST': hostName,
         'PORT': portNumber,
         },
->>>>>>> Stashed changes
     'GW-8.7.5': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'GW-8.7.5',
