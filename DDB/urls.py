@@ -11,7 +11,7 @@ from .e2eResultViews import e2eResultUpdate
 from .statusViews import TC_STATUS_UPDATE_VIEW, GUI_TC_STATUS_UPDATE_VIEW
 from .latestStatusUpdate import LATEST_STATUS_VIEW_UPDATE_ALL
 from .tcinfo import TC_INFO_GET_POST_VIEW, GET_TC_INFO_BY_ID, WHOLE_TC_INFO, MULTIPLE_TC_UPDATION, \
-        UPDATE_TC_INFO_BY_ID, TcCountByFilter,MULTIPLE_TC_INFO_UPDATION, sync_tcs, sync_platform, duplicate_tcs, duplicate_tcs_gui, duplicate_tcs_by_rel,duplicate_tcs_by_rel_gui, MULTIPLE_TC_UPDATION_APPROVAL_UNAPPROVAL, GetNonExecutedTCs
+        UPDATE_TC_INFO_BY_ID, TcCountByFilter,MULTIPLE_TC_INFO_UPDATION, sync_tcs, sync_platform, duplicate_tcs, duplicate_tcs_gui, duplicate_tcs_by_rel,duplicate_tcs_by_rel_gui, MULTIPLE_TC_UPDATION_APPROVAL_UNAPPROVAL, GetNonExecutedTCs, PLATFORM_POST_VIEW
 
 from .getStatistics import BUG_WISE_BLOCKED_TCS 
 from .gui import GUI_TC_INFO_GET_POST_VIEW, GUI_TC_STATUS_GET_POST_VIEW, GET_TC_INFO_GUI_ID, WHOLE_GUI_TC_INFO,MULTIPLE_TC_UPDATION_GUI,GetNonExecutedTCsGui, GUI_TC_INFO_GET_POST_VIEW1
@@ -29,7 +29,7 @@ from .migrate import Migrate
 from .new import automation_count_get_post_view, custom_automation_count_get_view
 
 from .tcReport import getTcReport
-from .qaReport import getQAReport, getSDETReleaseReport, getTcExecutionCount
+from .qaReport import getQAReport, getSDETReleaseReport, getTcExecutionCount, getAppReport, getYearReport
 from .mergeCardType import MergingCardTypes
 from .commandExec import update_data
 
@@ -47,6 +47,8 @@ urlpatterns = [
     path('automation/', automation_count_get_post_view),
     path('tcReport/', getTcReport),
     path('qaReport/', getQAReport),
+    path('appReport/', getAppReport),
+    path('yearReport/', getYearReport),
     path('tcExecutioncsv/', getTcExecutionCount),
     path('sdetReleaseReport/', getSDETReleaseReport),
     path('customautomation/', custom_automation_count_get_view),
@@ -76,6 +78,7 @@ urlpatterns = [
     path('lateststatusupdate/<str:Release>', LATEST_STATUS_VIEW_UPDATE_ALL),
 
     path('tcinfo/<str:Release>', TC_INFO_GET_POST_VIEW),
+    path('tcinfo/<str:Release>/card/<str:card>', PLATFORM_POST_VIEW),
     path('tccount/<str:Release>', TcCountByFilter),
     path('<str:Release>/tcinfo/domain/<str:Domain>', DOMAINWISETCINFO),
     path('tcupdate/<str:Release>', MULTIPLE_TC_UPDATION),

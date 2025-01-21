@@ -541,10 +541,12 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             # post request for master release
             if "ue" in Release.lower():
                 master = "UE-MASTER"
-            if "ua" in Release.lower():
+            elif "ua" in Release.lower():
                 master = "UA-MASTER"
-            if "spek" in Release.lower():
+            elif "spek" in Release.lower():
                 master = "SPEK-Master"
+            elif "gw" in Release.lower():
+                master = "GW-Master"
             if Release != master and Release != "TestDatabase":
                 #Release = master
                 ReleaseMaster = master
@@ -688,10 +690,13 @@ def GUI_TC_INFO_GET_POST_VIEW(request, Release):
             if Release != "TestDatabase":
                 if "ue" in Release.lower():
                     master = "UE-MASTER"
-                if "ua" in Release.lower():
+                elif "ua" in Release.lower():
                     master = "UA-MASTER"
-                if "spek" in Release.lower():
+                elif "spek" in Release.lower():
                     master = "SPEK-Master"
+                elif "gw" in Release.lower():
+                    master = "GW-Master"
+
             #data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'], CardType = req["CardType"])
             data = TC_INFO_GUI.objects.using(master).filter(TcID = req['TcID'])
             dataSer = TC_INFO_GUI_SERIALIZER(data, many = True)

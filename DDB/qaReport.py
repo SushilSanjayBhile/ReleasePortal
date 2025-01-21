@@ -20,7 +20,153 @@ def getQAReport(request):
         releases = serializer.data
         output={}
         outputGui = {}
-        output = RESULT_LOGS(releases, start_date, end_date)
+        output = RESULT_LOGS_NEW(releases, start_date, end_date)
+        print("output",output)
+        outputGui = RESULT_LOGS_GUI_NEW(releases, start_date, end_date)
+        print("outputgui",outputGui)
+        for key in output:
+            if key in outputGui:
+                output[key]["auto"] = output[key]["auto"] + outputGui[key]["auto"]
+                output[key]["exec"] = output[key]["exec"] + outputGui[key]["exec"]
+                output[key]["aexec"] = output[key]["aexec"] + outputGui[key]["aexec"]
+
+        for key in outputGui:
+            if key not in output:
+                output[key] = outputGui[key]
+        print("before return",output)
+        return JsonResponse({"qaReport": output}, status = 200)
+
+
+def RESULT_LOGS_NEW(Release, sdate, edate):
+    user = {}
+    for rel in Release:
+        if rel["ReleaseNumber"] != "TestDatabase":
+            data  = LOGS.objects.values('TcID', 'CardType', 'UserName', 'LogData').filter(Q(LogData__contains = 'Status Added') & Q(Timestamp__gte=sdate) & Q(Timestamp__lte=edate)).using(rel["ReleaseNumber"])
+            for log in data:
+                if "result: blocked" not in log["LogData"].lower() and "result: unblocked" not in log["LogData"].lower():
+                    manual = True
+                    try:
+                        infoData = TC_INFO.objects.using(rel["ReleaseNumber"]).filter(TcID = log["TcID"]).get(CardType = log["CardType"])
+                        infoSerializer = TC_INFO_SERIALIZER(infoData)
+                        tcdata = infoSerializer.data
+                        if "Auto: True" in log["LogData"] or (tcdata["TcName"] != "TC NOT AUTOMATED" and "testedon: yes" not in log["LogData"].lower()) :
+                            manual = False
+                    except:
+                        pass
+                    if log["UserName"] not in user:
+                        user[log["UserName"]]={}
+                        user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
+                        user[log["UserName"]]["auto"] = 0
+                        user[log["UserName"]]["exec"] = 0
+                        user[log["UserName"]]["exec"] = 0
+                        user[log["UserName"]]["aexec"] = 0
+                        if manual == False:
+                            user[log["UserName"]]["aexec"] = 1
+                        else:
+                            user[log["UserName"]]["exec"] = 1
+                        user[log["UserName"]]["tc"] = []
+                    else:
+                        if manual == False:
+                            user[log["UserName"]]["aexec"] = user[log["UserName"]]["aexec"] + 1
+                        else:
+                            user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
+                        if rel["ReleaseNumber"] not in user[log["UserName"]]["execIn"]:
+                            user[log["UserName"]]["execIn"] = user[log["UserName"]]["execIn"] + "," + rel["ReleaseNumber"]
+            data  = LOGS.objects.values('TcID', 'CardType', 'UserName', 'LogData').filter(Q(LogData__contains = '"old":"TC NOT AUTOMATED"') & Q(Timestamp__gte=sdate) & Q(Timestamp__lte=edate)).using(rel["ReleaseNumber"])
+            for log in data:
+                logdata = log["LogData"]
+                logdata = json.loads(logdata)
+                if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
+                    if log["UserName"] not in user:
+                        user[log["UserName"]] = {"execIn": ""}
+                        user[log["UserName"]]["auto"] = 1
+                        user[log["UserName"]]["exec"] = 0
+                        user[log["UserName"]]["aexec"] = 0
+                        user[log["UserName"]]["tc"] = [log["TcID"]]
+                    else:
+                        if log["TcID"] not in user[log["UserName"]]["tc"]:
+                            user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
+                            user[log["UserName"]]["tc"].append(log["TcID"])
+    return user
+
+def RESULT_LOGS_GUI_NEW(Release, sdate, edate):
+    user = {}
+    for rel in Release:
+        if rel["ReleaseNumber"] != "TestDatabase":
+            data  = LOGSGUI.objects.values('tcInfoNum', 'UserName', 'LogData').filter(Q(LogData__contains = 'Status Added') & Q(Timestamp__gte=sdate) & Q(Timestamp__lte=edate)).using(rel["ReleaseNumber"])
+            for log in data:
+                if "result: blocked" not in log["LogData"].lower() and "result: unblocked" not in log["LogData"].lower():
+                    manual = True
+                    try:
+                        tcid = TC_INFO_GUI.objects.using(rel["ReleaseNumber"]).get(id = log["tcInfoNum"])
+                        ser = TC_INFO_GUI_SERIALIZER(tcid)
+                        if "Auto: True" in log["LogData"] or (ser.data["TcName"] != "TC NOT AUTOMATED" and "testedon: yes" not in log["LogData"].lower()):
+                            manual = False
+                    except:
+                        pass
+                    if log["UserName"] not in user:
+                        user[log["UserName"]]={}
+                        user[log["UserName"]] = {"execIn":rel["ReleaseNumber"]}
+                        user[log["UserName"]]["auto"] = 0
+                        user[log["UserName"]]["exec"] = 0
+                        user[log["UserName"]]["exec"] = 0
+                        user[log["UserName"]]["aexec"] = 0
+                        if manual == False:
+                            user[log["UserName"]]["aexec"] = 1
+                        else:
+                            user[log["UserName"]]["exec"] = 1
+                        user[log["UserName"]]["tc"] = []
+                    else:
+                        if manual == False:
+                            user[log["UserName"]]["aexec"] = user[log["UserName"]]["aexec"] + 1
+                        else:
+                            user[log["UserName"]]["exec"] = user[log["UserName"]]["exec"] + 1
+                        if rel["ReleaseNumber"] not in user[log["UserName"]]["execIn"]:
+                                    user[log["UserName"]]["execIn"] = user[log["UserName"]]["execIn"] + "," + rel["ReleaseNumber"]
+            data  = LOGSGUI.objects.values('tcInfoNum', 'UserName', 'LogData').filter(Q(LogData__contains = '"old":"TC NOT AUTOMATED"') & Q(Timestamp__gte=sdate) & Q(Timestamp__lte=edate)).using(rel["ReleaseNumber"])
+            for log in data:
+                logdata = log["LogData"]
+                logdata = json.loads(logdata)
+                if logdata["TcName"]["old"] == "TC NOT AUTOMATED" and logdata["TcName"]["new"] != "TC NOT AUTOMATED" :
+                    try:
+                        tcid = TC_INFO_GUI.objects.using(rel["ReleaseNumber"]).get(id = log["tcInfoNum"])
+                        ser = TC_INFO_GUI_SERIALIZER(tcid)
+                        tcid = ser.data["TcID"]
+                    except Exception as e:
+                        if log["UserName"] not in user:
+                            user[log["UserName"]] = {"execIn": ""}
+                            user[log["UserName"]]["auto"] = 1
+                            user[log["UserName"]]["exec"] = 0
+                            user[log["UserName"]]["aexec"] = 0
+                            user[log["UserName"]]["tc"] = []
+                        else:
+                            if log["TcID"] not in user[log["UserName"]]["tc"]:
+                                user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
+
+                    else:
+                        if log["UserName"] not in user:
+                            user[log["UserName"]] = {"execIn": ""}
+                            user[log["UserName"]]["auto"] = 1
+                            user[log["UserName"]]["exec"] = 0
+                            user[log["UserName"]]["aexec"] = 0
+                            user[log["UserName"]]["tc"] = [tcid]
+                        else:
+                            if log["TcID"] not in user[log["UserName"]]["tc"]:
+                                user[log["UserName"]]["auto"] = user[log["UserName"]]["auto"] + 1
+                                user[log["UserName"]]["tc"].append(tcid)
+    return user
+
+@csrf_exempt
+def getQAReportOld(request):
+    if request.method == "GET":
+        start_date = datetime.datetime.strptime(request.GET.get("startdate"), '%Y-%m-%d').date()
+        end_date = datetime.datetime.strptime(request.GET.get("enddate"), '%Y-%m-%d').date()
+        data = RELEASES.objects.using("universal").all().order_by("-CreationDate")
+        serializer = RELEASE_SERIALIZER(data, many = True)
+        releases = serializer.data
+        output={}
+        outputGui = {}
+        #output = RESULT_LOGS(releases, start_date, end_date)
         #for key in output:
         #    output[key]["auto"] = len(output[key]["auto"])
         print("output",output)
@@ -525,6 +671,30 @@ def getTcAddedCount(sdate, edate):
 
 
 @csrf_exempt
+def getAppReport(request):
+    output = {}
+    outputGui = {}
+    automated = {}
+    releases = []
+    if request.method == "GET":
+        #target_date = datetime.datetime.now().date() - datetime.timedelta(days=365)
+        target_date = datetime.date(2023, 12, 31)
+        data = RELEASES.objects.using("universal").filter(CreationDate__gt=target_date).order_by("-CreationDate")
+        serializer = RELEASE_SERIALIZER(data, many = True)
+        Release = serializer.data
+        for rel in Release:
+            releases.append(rel["ReleaseNumber"])
+        print(releases)
+        output = getCliExecuted(releases)
+        outputGui = getGuiExecuted(releases)
+        automated = getAutomatedCount()
+        #assignedCli = getCliAssigned(releases)
+        #assignedGui = getGuiAssigned(releases)
+        return JsonResponse({"SDETRelReport": {"CLIExec": output, "GuiExec": outputGui, "Automated": automated}}, status = 200)
+
+
+
+@csrf_exempt
 def getSDETReleaseReport(request):
     output = {}
     outputGui = {}
@@ -618,3 +788,101 @@ def iterSerializerForAuto(serializer, user):
         except:
             pass
     return user
+
+
+
+def getAutomatedCountAllReleases(Release, target_date):
+    auto = 0
+    idui = []
+    idcli = []
+    for relNum in Release:
+        if relNum != "TestDatabase":
+            result = LOGS.objects.values('TcID', 'CardType', 'UserName', 'LogData').filter(LogData__contains = '"old":"TC NOT AUTOMATED"', Timestamp__gt=target_date).annotate(Count('logNo')).using(relNum)
+            #result = LOGS.objects.values('TcID', 'CardType', 'UserName', 'LogData').filter(LogData__contains = '"old":"TC NOT AUTOMATED"').annotate(Count('logNo')).using(relNum)
+            idcli, temp = iterResultCli(result, idcli)
+            auto = auto + temp
+    for relNum in Release:
+        if relNum != "TestDatabase":
+            result = LOGSGUI.objects.values('tcInfoNum', 'UserName', 'LogData').filter(LogData__contains = '"old":"TC NOT AUTOMATED"', Timestamp__gt=target_date).annotate(Count('logNo')).using(relNum)
+            #result = LOGSGUI.objects.values('tcInfoNum', 'UserName', 'LogData').filter(LogData__contains = '"old":"TC NOT AUTOMATED"').annotate(Count('logNo')).using(relNum)
+            idui, temp = iterResultGui(result, idui, relNum)
+            auto = auto + temp
+    return auto
+
+def iterResultGui(result, idui, relNum):
+    temp = 0
+    for log in result:
+        try:
+            tcid = TC_INFO_GUI.objects.using(relNum).get(id = log["tcInfoNum"])
+            ser = TC_INFO_GUI_SERIALIZER(tcid)
+            tcid = ser.data["TcID"]
+            if tcid not in idui:
+                temp = temp + 1
+                idui.append(tcid)
+        except:
+            pass
+    return idui,temp
+
+def iterResultCli(result, idcli):
+    temp = 0
+    for log in result:
+        if log["TcID"] not in idcli:
+            temp = temp + 1
+            idcli.append(log["TcID"])
+    return idcli,temp
+
+def getCreateCountAllReleases(Release, target_date):
+    created = 0
+    idui = []
+    idcli = []
+    for relNum in Release:
+        if relNum != "TestDatabase":
+            result = LOGS.objects.values('TcID', 'CardType', 'UserName', 'LogData').filter(LogData__contains = 'CREATED TC', Timestamp__gt=target_date).annotate(Count('logNo')).using(relNum)
+            #result = LOGS.objects.values('TcID', 'CardType', 'UserName', 'LogData').filter(LogData__contains = 'CREATED TC').annotate(Count('logNo')).using(relNum)
+            idcli, temp = iterResultCli(result, idcli)
+            created = created + temp
+    for relNum in Release:
+        if relNum != "TestDatabase":
+            result = LOGSGUI.objects.values('tcInfoNum', 'UserName', 'LogData').filter(LogData__contains = 'CREATED TC', Timestamp__gt=target_date).annotate(Count('logNo')).using(relNum)
+            #result = LOGSGUI.objects.values('tcInfoNum', 'UserName', 'LogData').filter(LogData__contains = 'CREATED TC').annotate(Count('logNo')).using(relNum)
+            idui, temp = iterResultGui(result, idui, relNum)
+            created = created + temp
+    return created
+
+def getExecutedAllReleases(Release, target_date):
+    exe = 0
+    for relNum in Release:
+        if relNum != "TestDatabase":
+            result = LOGS.objects.values('TcID', 'CardType', 'UserName', 'LogData').filter(LogData__contains = 'Status Added', Timestamp__gt=target_date).annotate(Count('logNo')).using(relNum)
+            exe = exe + len(result)
+    for relNum in Release:
+        if relNum != "TestDatabase":
+            result = LOGSGUI.objects.values('tcInfoNum', 'UserName', 'LogData').filter(LogData__contains = 'Status Added', Timestamp__gt=target_date).annotate(Count('logNo')).using(relNum)
+            exe = exe + len(result)
+    return exe
+
+
+@csrf_exempt
+def getYearReport(request):
+    releases = []
+    if request.method == "GET":
+        #target_date = datetime.datetime.now().date() - datetime.timedelta(days=365)
+        target_date = datetime.date(2023, 12, 31)
+        #data = RELEASES.objects.using("universal").filter(CreationDate__gt=target_date).order_by("-CreationDate")
+        #serializer = RELEASE_SERIALIZER(data, many = True)
+        #Release = serializer.data
+        #for rel in Release:
+        #    releases.append(rel["ReleaseNumber"])
+        #exe = getExecutedAllReleases(releases,target_date)
+        data = RELEASES.objects.using("universal").filter(ReleaseNumber__contains = 'UE').order_by("-CreationDate")
+        serializer = RELEASE_SERIALIZER(data, many = True)
+        Release = serializer.data
+
+        for rel in Release:
+            releases.append(rel["ReleaseNumber"])
+        print(releases)
+        auto = getAutomatedCountAllReleases(releases,target_date)
+        exe = getExecutedAllReleases(releases,target_date)
+        created = getCreateCountAllReleases(releases,target_date)
+        return JsonResponse({"YearReport": {"Automated": auto, "Created": created, "Executed": exe}}, status = 200)
+
