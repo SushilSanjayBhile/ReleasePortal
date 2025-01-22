@@ -1,6 +1,9 @@
 *.pyc
+<<<<<<< HEAD
 frontend/front-end/node_modules/
 frontend/front-end/build/
 frontend/server/node_modules/
 frontend/server/node_modules/
 
+=======
+>>>>>>> f0374d636b9338878b2454a64b3625c1b0aaa8b5

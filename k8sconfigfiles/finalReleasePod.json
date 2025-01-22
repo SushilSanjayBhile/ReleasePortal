@@ -46,7 +46,7 @@
                         ]
                     },
                     {
-                        "image": "aratijadhav/dockernodejs:stableV71",
+                        "image": "aratijadhav/dockernodejs:stableV70",
                         "imagePullPolicy": "Always",
                         "name": "frontend",
                         "tty": true,
@@ -74,6 +74,10 @@
                                 "name": "release-pvc"
                             }
                         ]
+                                "cpu": "2000m",
+                                "memory": "16Gi"
+                            }
+                        }
                     }
                 ],
                 "restartPolicy": "Always",

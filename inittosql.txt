@@ -1,0 +1,78 @@
+BEGIN;
+--
+-- Create model AGGREGATE_TC_STATE
+--
+CREATE TABLE "DDB_aggregate_tc_state" ("id" serial NOT NULL PRIMARY KEY, "Domain" varchar(50) NOT NULL, "Total" integer NOT NULL, "Automated" integer NOT NULL, "Pass" integer NOT NULL, "Fail" integer NOT NULL);
+--
+-- Create model DEFAULT_DOMAIN
+--
+CREATE TABLE "DDB_default_domain" ("id" serial NOT NULL PRIMARY KEY, "Domain" varchar(100) NOT NULL, "User" varchar(100) NOT NULL);
+--
+-- Create model DEFAULT_SUBDOMAIN
+--
+CREATE TABLE "DDB_default_subdomain" ("id" serial NOT NULL PRIMARY KEY, "Domain" integer NOT NULL, "SubDomain" varchar(100) NOT NULL, "User" varchar(100) NOT NULL);
+--
+-- Create model DEFAULT_VALUES
+--
+CREATE TABLE "DDB_default_values" ("id" serial NOT NULL PRIMARY KEY, "key" varchar(100) NOT NULL, "value" varchar(250) NOT NULL);
+--
+-- Create model E2E
+--
+CREATE TABLE "DDB_e2e" ("id" serial NOT NULL PRIMARY KEY, "User" varchar(100) NOT NULL, "Date" timestamp with time zone NULL, "Build" varchar(100) NULL, "Tag" varchar(100) NULL, "Result" varchar(14) NULL, "Bug" varchar(500) NULL, "CardType" varchar(100) NULL, "NoOfTCsPassed" integer NULL, "E2EFocus" text NULL, "E2ESkipList" text NULL, "Setup" text NULL, "Notes" text NULL);
+--
+-- Create model LATEST_TC_STATUS
+--
+CREATE TABLE "DDB_latest_tc_status" ("id" serial NOT NULL PRIMARY KEY, "TcID" varchar(200) NOT NULL, "TcName" varchar(2000) NOT NULL, "Build" varchar(1000) NOT NULL, "Result" varchar(14) NOT NULL, "Bugs" varchar(500) NOT NULL, "Date" timestamp with time zone NOT NULL, "Domain" varchar(50) NOT NULL, "SubDomain" varchar(50) NOT NULL, "CardType" varchar(10) NOT NULL);
+--
+-- Create model LOGS
+--
+CREATE TABLE "DDB_logs" ("logNo" serial NOT NULL PRIMARY KEY, "UserName" varchar(100) NOT NULL, "Timestamp" timestamp with time zone NOT NULL, "RequestType" varchar(10) NOT NULL, "LogData" text NOT NULL, "URL" varchar(100) NULL, "TcID" varchar(200) NOT NULL, "CardType" varchar(100) NOT NULL);
+--
+-- Create model LONGEVITY
+--
+CREATE TABLE "DDB_longevity" ("id" serial NOT NULL PRIMARY KEY, "User" varchar(100) NOT NULL, "Date" timestamp with time zone NULL, "Build" varchar(100) NULL, "Result" varchar(14) NULL, "Bugs" varchar(500) NULL, "CardType" varchar(100) NULL, "NoOfDuration" integer NULL, "Notes" text NULL, "Setup" text NULL);
+--
+-- Create model RELEASES
+--
+CREATE TABLE "DDB_releases" ("ReleaseNumber" varchar(10) NOT NULL PRIMARY KEY, "BuildNumberList" varchar(50)[] NOT NULL, "Engineers" varchar(50)[] NULL, "CardType" varchar(100)[] NOT NULL, "ServerType" varchar(100)[] NOT NULL, "SetupsUsed" varchar(100)[] NOT NULL, "QAStartDate" timestamp with time zone NULL, "TargetedReleaseDate" timestamp with time zone NULL, "ActualReleaseDate" timestamp with time zone NULL, "TargetedCodeFreezeDate" timestamp with time zone NULL, "UpgradeTestingStartDate" timestamp with time zone NULL, "UpgradeMetrics" varchar(100)[] NULL, "Customers" varchar(100)[] NOT NULL, "FinalBuild" varchar(100) NOT NULL, "FinalOS" varchar(100) NOT NULL, "FinalDockerCore" varchar(100) NOT NULL, "UbootVersion" varchar(100) NOT NULL, "RedFlagsRisks" text NOT NULL, "AutomationSyncUp" text NOT NULL, "QARateOfProgress" integer NOT NULL, "Priority" varchar(2) NULL);
+--
+-- Create model STRESS
+--
+CREATE TABLE "DDB_stress" ("id" serial NOT NULL PRIMARY KEY, "User" varchar(100) NOT NULL, "Date" timestamp with time zone NULL, "Build" varchar(100) NULL, "CardType" varchar(100) NULL, "CfgFileUsed" varchar(100) NULL, "Result" varchar(14) NULL, "LinkFlap" varchar(14) NULL, "NoOfIteration" integer NULL, "Bugs" varchar(500) NULL, "Notes" text NULL, "Setup" text NULL);
+--
+-- Create model TC_INFO
+--
+CREATE TABLE "DDB_tc_info" ("id" serial NOT NULL PRIMARY KEY, "TcID" varchar(200) NOT NULL, "TcName" varchar(2000) NOT NULL, "Domain" varchar(50) NOT NULL, "SubDomain" varchar(50) NOT NULL, "Scenario" varchar(200) NOT NULL, "Description" text NOT NULL, "Steps" text NOT NULL, "ExpectedBehaviour" varchar(5000) NOT NULL, "Notes" varchar(2000) NOT NULL, "CardType" varchar(100) NOT NULL, "ServerType" varchar(10)[] NOT NULL, "WorkingStatus" varchar(50) NOT NULL, "Date" timestamp with time zone NOT NULL, "Assignee" varchar(50) NOT NULL, "Creator" varchar(50) NOT NULL, "Tag" varchar(20) NOT NULL, "Priority" varchar(5) NOT NULL);
+--
+-- Create model TC_STATUS
+--
+CREATE TABLE "DDB_tc_status" ("id" serial NOT NULL PRIMARY KEY, "TcID" varchar(200) NOT NULL, "TcName" varchar(2000) NOT NULL, "Build" varchar(1000) NOT NULL, "Result" varchar(14) NOT NULL, "Bugs" varchar(500) NOT NULL, "Date" timestamp with time zone NOT NULL, "Domain" varchar(50) NOT NULL, "SubDomain" varchar(50) NOT NULL, "CardType" varchar(10) NOT NULL);
+--
+-- Create model TC_STATUS_GUI
+--
+CREATE TABLE "DDB_tc_status_gui" ("id" serial NOT NULL PRIMARY KEY, "TcID" varchar(200) NOT NULL, "BuildUbuntuChrome" varchar(20) NOT NULL, "BuildUbuntuFirefox" varchar(20) NOT NULL, "BuildWindowsChrome" varchar(20) NOT NULL, "BuildWindowsFirefox" varchar(20) NOT NULL, "BuildWindowsIE" varchar(20) NOT NULL, "BuildMacSafari" varchar(20) NOT NULL, "ResultUbuntuChrome" varchar(20) NOT NULL, "ResultUbuntuFirefox" varchar(20) NOT NULL, "ResultWindowsIE" varchar(20) NOT NULL, "ResultWindowsChrome" varchar(20) NOT NULL, "ResultWindowsFirefox" varchar(20) NOT NULL, "ResultMacSafari" varchar(20) NOT NULL, "Bug" varchar(500) NOT NULL, "Date" timestamp with time zone NOT NULL, "Domain" varchar(50) NOT NULL, "SubDomain" varchar(50) NOT NULL, "CardType" varchar(10) NOT NULL);
+--
+-- Create model USER_INFO
+--
+CREATE TABLE "DDB_user_info" ("name" varchar(100) NOT NULL, "email" varchar(100) NOT NULL PRIMARY KEY, "role" varchar(10) NOT NULL, "Gender" varchar(1) NULL, "BloodGroup" varchar(5) NULL, "Qualification" varchar(20) NULL, "PreviousWorkExperienceInMonth" integer NULL, "DateOfJoining" timestamp with time zone NULL, "DateOfBirth" timestamp with time zone NULL, "ContactNumber" varchar(13) NULL, "PersonalEmail" varchar(100) NULL, "PreviousCompany" varchar(100) NULL, "TShirtSize" varchar(10) NULL, "Address" text NULL, "City" varchar(20) NULL, "PinCode" varchar(6) NULL, "State" varchar(20) NULL, "EmergencyContactNumber" varchar(13) NULL, "EmenrgencyContactPersonName" varchar(50) NULL, "EmergencyCOntactPersonRelation" varchar(20) NULL);
+--
+-- Create model SETUP_INFO
+--
+CREATE TABLE "DDB_setup_info" ("SetupName" varchar(20) NOT NULL PRIMARY KEY, "Inventory" varchar(5000) NOT NULL, "ClusterState" varchar(6) NOT NULL, "ClusterStatus" varchar(6) NOT NULL, "CurrentUserId_id" varchar(100) NOT NULL, "OwnerId_id" varchar(100) NOT NULL);
+--
+-- Create model SANITY_RESULTS
+--
+CREATE TABLE "DDB_sanity_results" ("SanityId" serial NOT NULL PRIMARY KEY, "Tag" varchar(6) NOT NULL, "Build" varchar(10) NOT NULL, "Result" varchar(10) NOT NULL, "Logs" text NOT NULL, "Timestamp" timestamp with time zone NOT NULL, "Setup_id" varchar(20) NOT NULL);
+CREATE INDEX "DDB_releases_ReleaseNumber_ef5cef76_like" ON "DDB_releases" ("ReleaseNumber" varchar_pattern_ops);
+CREATE INDEX "DDB_user_info_email_d693bd15_like" ON "DDB_user_info" ("email" varchar_pattern_ops);
+ALTER TABLE "DDB_setup_info" ADD CONSTRAINT "DDB_setup_info_CurrentUserId_id_e6b22f76_fk_DDB_user_info_email" FOREIGN KEY ("CurrentUserId_id") REFERENCES "DDB_user_info" ("email") DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE "DDB_setup_info" ADD CONSTRAINT "DDB_setup_info_OwnerId_id_b6c7ee0f_fk_DDB_user_info_email" FOREIGN KEY ("OwnerId_id") REFERENCES "DDB_user_info" ("email") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "DDB_setup_info_SetupName_ca709e0e_like" ON "DDB_setup_info" ("SetupName" varchar_pattern_ops);
+CREATE INDEX "DDB_setup_info_CurrentUserId_id_e6b22f76" ON "DDB_setup_info" ("CurrentUserId_id");
+CREATE INDEX "DDB_setup_info_CurrentUserId_id_e6b22f76_like" ON "DDB_setup_info" ("CurrentUserId_id" varchar_pattern_ops);
+CREATE INDEX "DDB_setup_info_OwnerId_id_b6c7ee0f" ON "DDB_setup_info" ("OwnerId_id");
+CREATE INDEX "DDB_setup_info_OwnerId_id_b6c7ee0f_like" ON "DDB_setup_info" ("OwnerId_id" varchar_pattern_ops);
+ALTER TABLE "DDB_sanity_results" ADD CONSTRAINT "DDB_sanity_results_Setup_id_71656cee_fk_DDB_setup" FOREIGN KEY ("Setup_id") REFERENCES "DDB_setup_info" ("SetupName") DEFERRABLE INITIALLY DEFERRED;
+CREATE INDEX "DDB_sanity_results_Setup_id_71656cee" ON "DDB_sanity_results" ("Setup_id");
+CREATE INDEX "DDB_sanity_results_Setup_id_71656cee_like" ON "DDB_sanity_results" ("Setup_id" varchar_pattern_ops);
+COMMIT;

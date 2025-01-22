@@ -1,0 +1,50 @@
+ componentDidMount() {
+    let assignedR = []
+    let engType = ''
+    if (this.props.allUsers.length === 0) {
+      axios.get(`/api/userinfo`).then(res => {
+        this.props.saveUsers(res.data)
+        let email = this.props.currentUser ? this.props.currentUser.email : ''
+        axios.get(`/api/user1/name/${email}`)
+        .then(res => {
+          res.data.forEach(item => {
+            item.AssignedReleases.forEach(element =>{
+              //this.allReleases1.push(element)
+              this.allReleases1.push(element)
+              if(item.EngineerType == 'GUI'){
+                this.setState({routePath: `/release/guitestmetrics`})
+              }
+              else this.setState({routePath: `/release/testmetrics`});
+            })
+          });
+          if (this.allReleases1[0]) {
+            this.getReleaseData(this.allReleases1[0] )
+            this.props.releaseChange({ id: this.allReleases1[0]  });
+          }
+
+        }, error => {
+          
+        });
+        
+      })
+      // assignedR.forEach(element => {
+      //   this.allReleases1.push(element)
+      // })
+    }
+    // let releaseInfoURL = `/api/release/info`;
+    //   axios.get(releaseInfoURL)
+    //     .then(res => {
+    //       console.log(res.data)
+    //       res.data.forEach(item => {
+    //         this.allReleases1.push(item.ReleaseNumber)
+    //         // this.props.saveReleaseBasicInfo({ id: item.ReleaseNumber, data: item });
+    //       });
+    //       if (this.allReleases1[0]) {
+    //         this.getReleaseData(this.allReleases1[0] )
+    //         this.props.releaseChange({ id: this.allReleases1[0]  });
+    //       }
+
+    //     }, error => {
+          
+    //     });
+  }
