@@ -7,7 +7,7 @@ var http = require('http');
 var httpProxy = require('http-proxy');
 
 // FOR DEVELOPMENT:
-var APP_URL = 'http://localhost:3000';
+var APP_URL = 'http://appserv85:3000';
 
 
 var BACK = ['/django'];
@@ -20,9 +20,9 @@ var TEST = ['/dummy'];
 // var DATA_URL = 'http://qaserv2:8000';
 // var DATA_URL = 'http://172.16.187.83:8000';
 
-var DATA_URL = 'http://release:8000';
+var DATA_URL = 'http://172.16.167.5:8000';
 // var DATA_URL = 'http://172.16.187.83:8000';
-var DJANGO_URL = 'http://172.16.187.83:8000';
+var DJANGO_URL = 'http://172.16.167.5:8000';
 // var DATA_URL = 'http://192.168.1.76:8000';
 
 // FOR PRODUCTION:

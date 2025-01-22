@@ -51,6 +51,34 @@ var searchArgs = {
     }
 }
 
+function loginJIRA() {
+    return new Promise((resolve, reject) => {
+        // Assuming you have a JIRA login request here
+        // Example with a request-promise or axios, adjust based on your environment
+        const request = require('request-promise'); // Or use 'axios'
+
+        const options = {
+            method: 'POST',
+            uri: JIRA_URL+'/rest/auth/1/session',
+            body: {
+                username: 'your-username',
+                password: 'your-password'
+            },
+            json: true
+        };
+
+        request(options)
+            .then(function (response) {
+                console.log('Logged in to JIRA successfully');
+                resolve(response);  // Resolve on success
+            })
+            .catch(function (err) {
+                console.log('JIRA login failed');
+                reject(err);  // Reject on error
+            });
+    });
+}
+
 // var JIRA_URL = 'http://dwsjira1.eng.diamanti.com:8080';
 var JIRA_URL = 'https://diamanti.atlassian.net'
 const app = express();

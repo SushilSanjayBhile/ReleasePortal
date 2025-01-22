@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {Col, Row, Table, Button, Collapse, Input, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import { connect } from 'react-redux';
-import { getCurrentRelease } from '../../../reducers/release.reducer';
+import { getCurrentRelease, gettcaggregate } from '../../../reducers/release.reducer';
 import { getEachTCStatusScenario } from '../../../reducers/testcase.reducer';
 import { getTCStatusForUIDomains, getTCStatusForUISubDomains, alldomains, getTCStatusForSunburst } from '../../../reducers/release.reducer';
 import { Bar, Doughnut,} from 'react-chartjs-2';
@@ -32,6 +32,49 @@ const options = {
     maintainAspectRatio: false
 }
 
+
+function getReleaseDataGraphTcAggregate(state) {
+    let domainData =[]
+
+    console.log(state.release.current.id)
+    let url  = `/api/release_all_info/releaseName/${state.release.current.id}`
+    axios.get(url).then(res=>{
+        for (const [key, value] of Object.entries(res.data.TcAggregate.domain)) {
+            let arr = {}
+            arr['Domain'] = key
+            for(const [key1, value1] of Object.entries(value)){
+                if(key1 == 'Tested'){
+                    for(const [key2, value2] of Object.entries(value1)){
+                        for(const [key3, value3] of Object.entries(value2)){
+                            let str = key2 + key3
+                            arr[str] = value3;
+                        }
+                    }
+                }
+                else{
+                    arr[key1] = value1;
+                }
+            }
+            domainData.push(arr);
+        }
+    },
+    error => {
+        console.log('Error Getting Release Data',error);
+    })
+
+    return domainData
+    // let url1  = `/api/release/${this.props.selectedRelease.ReleaseNumber}`
+    // axios.get(url1).then(res=>{
+    //     let releaseData =[]
+
+    //     releaseData = res.data
+    //     releaseData.TcAggregate["domain"] = domainData
+    //     this.setState({allTestCaseStatus:releaseData})
+    // },
+    // error => {
+    //     console.log('Error Getting Release Data',error);
+    // })
+}
 
 function daysInThisMonth() {
     var now = new Date();
@@ -115,7 +158,7 @@ class ReleaseTestCase extends Component {
             qaStrategy: {},
             domainSelected: false,
             releaseNo:false,
-            domains: getTCStatusForSunburst(this.props.selectedRelease),
+            domains: getTCStatusForSunburst(this.props.selectedRelease, this.props.TcAggregate),
             tcSummaryTitleStyle: window.screen.availWidth > 1400 ?
                 { position: 'absolute', top: '41%', left: '47%', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: '#003168' } :
                 { position: 'absolute', top: '42%', left: '46%', textAlign: 'center', fontSize: '13px', fontWeight: 600, color: '#003168' },
@@ -248,9 +291,53 @@ class ReleaseTestCase extends Component {
         console.log('e ',e);
     }
 
+    getReleaseDataGraph = () =>{
+        this.setState({allTestCaseStatus:[]})
+        let domainData =[]
+
+        let url  = `/api/release_all_info/releaseName/${this.props.selectedRelease.ReleaseNumber}`
+        axios.get(url).then(res=>{
+            for (const [key, value] of Object.entries(res.data.TcAggregate.domain)) {
+                let arr = {}
+                arr['Domain'] = key
+                for(const [key1, value1] of Object.entries(value)){
+                    if(key1 == 'Tested'){
+                        for(const [key2, value2] of Object.entries(value1)){
+                            for(const [key3, value3] of Object.entries(value2)){
+                                let str = key2 + key3
+                                arr[str] = value3;
+                            }
+                        }
+                    }
+                    else{
+                        arr[key1] = value1;
+                    }
+                }
+                domainData.push(arr);
+            }
+            this.setState({allTestCaseStatus:domainData})
+        },
+        error => {
+            console.log('Error Getting Release Data',error);
+        })
+
+        let url1  = `/api/release/${this.props.selectedRelease.ReleaseNumber}`
+        axios.get(url1).then(res=>{
+            let releaseData =[]
+
+            releaseData = res.data
+            releaseData.TcAggregate["domain"] = domainData
+            this.setState({allTestCaseStatus:releaseData})
+        },
+        error => {
+            console.log('Error Getting Release Data',error);
+        })
+    }
+
+
     getReleaseData = () =>{
         this.setState({allTestCaseStatus:[]})
-        //let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
+        // let url  = `/api/release/`  + this.props.selectedRelease.ReleaseNumber
         let url  = `/api/release_all_info/releaseName/${this.props.selectedRelease.ReleaseNumber}`
         axios.get(url).then(res=>{
             let domainData =[]
@@ -1420,7 +1507,7 @@ class ReleaseTestCase extends Component {
                                                 <i className="fa fa-angle-up rp-rs-down-arrow"></i>
                                             }
                                             <div className='rp-icon-button'></div>
-                                            <span className='rp-app-table-title'>Test Case Status (CLI + GUI)</span>
+                                            <span className='rp-app-table-title'>Test Case Status no graph (CLI + GUI)</span>
                                             </div>
                                         </div>
                                     </div>
@@ -1994,11 +2081,13 @@ class ReleaseTestCase extends Component {
         }
         </div>
         )
+            
     }
 }
 const mapStateToProps = (state, ownProps) => ({
     currentUser: state.auth.currentUser,
     selectedRelease: getCurrentRelease(state, state.release.current.id),
+    TcAggregate: gettcaggregate(state),
     selectedTC: state.testcase.all[state.release.current.id],
     // selectedTCStatus: state.testcase.status[state.release.current.id],
     // doughnuts: getTCStatusForUIDomains(state, state.release.current.id)

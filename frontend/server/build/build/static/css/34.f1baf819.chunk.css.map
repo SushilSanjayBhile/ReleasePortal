@@ -1,0 +1,1 @@
+{"version":3,"sources":["/home/diamanti/release-portal/frontend/front-end/src/views/Release/ReleaseQAStrategy/ReleaseQAStrategy.scss"],"names":[],"mappings":"AAAA,oBACE,cAAe,CACf,YAAa,CACb,iBAAkB","file":"34.f1baf819.chunk.css","sourcesContent":[".rp-tc-dougnut-text {\n  font-size: 18px;\n  padding: 1rem;\n  text-align: center;\n\n}\n"]}

@@ -918,6 +918,7 @@ def TCAGGREGATE_DASHBOARD(request, Release):
 
         #cli gui combined output
         dictionary["domain"] = cli_gui_combined_aggregation(dictionary['domain-cli'],dictionary['domain-gui'])
+        dictionary["domain"] = cli_gui_combined_aggregation(dictionary['domain-cli'],dictionary['domain-gui'])
 
         ############################################
         # cli total numbers calculation for dashboard
@@ -2232,6 +2233,7 @@ def RELEASEINFO(request, Release):
             #data = data.replace("'","\"")
             aggregateData = TCAGGREGATE_MOD(Release,platformsCli, platformsGui)
             serData['TcAggregate'] = aggregateData
+            serData['TcAggregate']["domain"] = {"sushil":"arati"}
             return HttpResponse(json.dumps(serData))
 
     elif request.method == "PUT":

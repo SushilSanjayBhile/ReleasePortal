@@ -6,6 +6,7 @@
 // any of the arbitrary users, to ensure that all the reducers update
 
 import { combineReducers } from 'redux';
+import axios from 'axios';
 
 import {
     SAVE_RELEASE_BASIC_INFO,
@@ -260,6 +261,40 @@ export const getCurrentRelease = (state) => {
     let current = state.release.all.filter(item => item.ReleaseNumber === state.release.current.id)[0];
     return current ? current : {}
 }
+
+export const gettcaggregate = (state) => {
+    let domainData =[]
+
+    console.log(state.release.current.id)
+    let url  = `/api/release_all_info/releaseName/${state.release.current.id}`
+    axios.get(url).then(res=>{
+        for (const [key, value] of Object.entries(res.data.TcAggregate.domain)) {
+            let arr = {}
+            arr['Domain'] = key
+            for(const [key1, value1] of Object.entries(value)){
+                if(key1 == 'Tested'){
+                    for(const [key2, value2] of Object.entries(value1)){
+                        for(const [key3, value3] of Object.entries(value2)){
+                            let str = key2 + key3
+                            arr[str] = value3;
+                        }
+                    }
+                }
+                else{
+                    arr[key1] = value1;
+                }
+            }
+            domainData.push(arr);
+        }
+    },
+    error => {
+        console.log('Error Getting Release Data',error);
+    })
+
+    return domainData
+
+}
+
 
 export const getTCForStatus = (state, id) => {
     let release = state.release.all.filter(item => item.ReleaseNumber === id)[0];
@@ -592,7 +627,10 @@ export const getTCStatusForUIDomains = (release) => {
     if (!release.TcAggregate) {
         return;
     }
+    console.log("getTCStatusForUIDomains release", release)
+    console.log("getTCStatusForUIDomains release.TcAggregate", release.TcAggregate)
     let doughnuts = [];
+
     let each = []
 
     if(release.ReleaseNumber == "DMC-3.0" || release.ReleaseNumber == "DMC Master" ){
@@ -790,16 +828,21 @@ export const getTCStatusForUISubDomains = (release, domain) => {
     return doughnuts;
 }
 
-export const getTCStatusForSunburst = (release) => {
+export const getTCStatusForSunburst = (release, TcAggregate) => {
+    release.TcAggregate = TcAggregate
+    console.log("this is from sunburst", release)
     if (!release) {
         return;
     }
-    if (!release.TcAggregate) {
+    console.log("this is from TcAggregate", release.TcAggregate)
+    if (!TcAggregate) {
         return;
     }
-    if (!release.TcAggregate.domain) {
+    console.log("this is from TcAggregate.domain", release.TcAggregate.domain)
+    if (!TcAggregate.domain) {
         return;
     }
+    console.log("this is after TcAggregate.domain", release.TcAggregate.domain)
 
     let domains = {
         name: 'domains', children: [
@@ -853,6 +896,7 @@ export const getTCStatusForSunburst = (release) => {
         }
     });
    
+    console.logs("this is from sunburst returning domain", domains)
     return domains;
 }
 

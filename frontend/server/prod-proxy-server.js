@@ -7,10 +7,10 @@ var http = require('http');
 var httpProxy = require('http-proxy');
 
 // FOR DEVELOPMENT:
-// var APP_URL = 'http://localhost:3000';
+var APP_URL = 'http://localhost:3000';
 
 // FOR PRODUCTION:
-var APP_URL = 'http://localhost:5051';
+// var APP_URL = 'http://localhost:5051';
 
 // var DJANGOURL = '/api/tcinfo'
 // // var DATA_URL = 'http://172.16.19.57:8000';
@@ -33,17 +33,31 @@ var TEST = ['/dummy'];
 
 
 // FOR DEVELOPMENT:
-// var DATA_URL = 'http://release:8000';
-var DJANGO_URL = 'http://localhost:8000';
+// var DATA_URL = 'http://qaserv2:8000';
+// var DATA_URL = 'http://172.16.187.83:8000';
+
+var DATA_URL = 'http://172.16.167.5:8000';
+// var DATA_URL = 'http://172.16.187.83:8000';
+var DJANGO_URL = 'http://172.16.167.5:8000';
 // var DATA_URL = 'http://192.168.1.76:8000';
 
 // FOR PRODUCTION:
-var DATA_URL = 'http://localhost:8000';
+// var DATA_URL = 'http://localhost:8000';
+
+// // FOR DEVELOPMENT:
+// // var DATA_URL = 'http://release:8000';
+// var DJANGO_URL = 'http://localhost:8000';
+// // var DATA_URL = 'http://192.168.1.76:8000';
+
+// // FOR PRODUCTION:
+// var DATA_URL = 'http://localhost:8000';
 
 
 var JIRA_URL = 'http://localhost:5051';
 var USER_URL = 'http://localhost:5051';
 var TEST_URL = 'http://localhost:5051';
+var JIRA_URL = 'https://diamanti.atlassian.net'
+
 // var VAGSERV_URL = 'http://@vagserv3:8000'
 
 

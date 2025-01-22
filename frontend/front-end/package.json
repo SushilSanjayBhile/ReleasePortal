@@ -84,6 +84,7 @@
     "react-router-config": "^5.0.1",
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
+    "react-sunburst-d3-v4": "^0.1.6",
     "react-test-renderer": "^16.8.6",
     "reactstrap": "^8.0.0",
     "reactstrap-date-picker": "0.0.7",
@@ -93,6 +94,7 @@
     "reselect": "^4.0.0",
     "shallowequal": "^1.1.0",
     "simple-line-icons": "^2.4.1",
+    "tslib": "^2.8.1",
     "xlsx": "^0.15.5"
   },
   "peerDependencies": {

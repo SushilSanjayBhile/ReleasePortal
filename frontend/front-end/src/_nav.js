@@ -1,7 +1,7 @@
 export default {
   items: [
     {
-      name: 'Dashboard',
+      name: 'Dashboard1',
       url: '/release/summary',
       icon: 'fa fa-tachometer',
 
